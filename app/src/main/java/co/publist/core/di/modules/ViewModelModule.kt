@@ -21,6 +21,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import co.publist.core.di.helper.ViewModelKey
 import co.publist.core.platform.ViewModelFactory
+import co.publist.features.login.LoginViewModel
 import co.publist.features.splash.SplashViewModel
 import dagger.Binds
 import dagger.Module
@@ -37,4 +38,10 @@ abstract class ViewModelModule {
     @ViewModelKey(SplashViewModel::class)
     abstract fun bindSplashViewModel(splashViewModel: SplashViewModel): ViewModel
 
-    }
+    @Binds
+    @IntoMap
+    @ViewModelKey(LoginViewModel::class)
+    abstract fun bindLoginViewModel(loginViewModel: LoginViewModel): ViewModel
+
+
+}
