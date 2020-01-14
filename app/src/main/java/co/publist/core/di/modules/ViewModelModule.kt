@@ -17,10 +17,14 @@
 package co.publist.core.di.modules
 
 
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import co.publist.core.di.helper.ViewModelKey
 import co.publist.core.platform.ViewModelFactory
+import co.publist.features.splash.SplashViewModel
 import dagger.Binds
 import dagger.Module
+import dagger.multibindings.IntoMap
 
 @Suppress("unused")
 @Module
@@ -28,9 +32,9 @@ abstract class ViewModelModule {
     @Binds
     abstract fun bindViewModelFactory(factory: ViewModelFactory): ViewModelProvider.Factory
 
-//    @Binds
-//    @IntoMap
-//    @ViewModelKey(SplashViewModel::class)
-//    abstract fun bindSplashViewModel(splashViewModel: SplashViewModel): ViewModel
+    @Binds
+    @IntoMap
+    @ViewModelKey(SplashViewModel::class)
+    abstract fun bindSplashViewModel(splashViewModel: SplashViewModel): ViewModel
 
     }
