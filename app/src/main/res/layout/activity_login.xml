@@ -36,7 +36,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/horizontalButtonMargin"
-        android:layout_marginEnd="@dimen/horizontalDefaultMargin"
+        android:layout_marginEnd="@dimen/horizontalButtonMargin"
         android:layout_marginTop="48dp"
         android:paddingTop="20dp"
         android:paddingBottom="20dp"
@@ -71,27 +71,39 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView"
         app:layout_constraintBottom_toTopOf="@id/textView2"/>
+
     <TextView
         android:id="@+id/textView2"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/horizontalDefaultMargin"
-        android:layout_marginEnd="@dimen/horizontalDefaultMargin"
         android:layout_marginTop="18dp"
         android:text="@string/or"
         android:textColor="@android:color/white"
         android:textSize="@dimen/headlineTextSize"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toTopOf="@id/buttonGuest"
-        app:layout_constraintTop_toBottomOf="@+id/buttonFacebook" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/buttonFacebook"
+        app:layout_constraintEnd_toStartOf="@id/buttonGoogle"
+        />
+
+    <com.google.android.gms.common.SignInButton
+        android:id="@+id/buttonGoogle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/horizontalDefaultMargin"
+        app:layout_constraintStart_toEndOf="@id/textView2"
+        app:layout_constraintTop_toBottomOf="@id/buttonFacebook"
+        app:layout_constraintBottom_toTopOf="@+id/buttonGuest"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonGuest"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/horizontalButtonMargin"
-        android:layout_marginEnd="@dimen/horizontalDefaultMargin"
+        android:layout_marginEnd="@dimen/horizontalButtonMargin"
         android:layout_marginTop="18dp"
         android:layout_marginBottom="51dp"
         android:backgroundTint="@android:color/white"
