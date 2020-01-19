@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.lifecycle.Observer
 import co.publist.R
 import co.publist.core.platform.BaseActivity
 import co.publist.core.platform.ViewModelFactory
@@ -44,12 +45,15 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
         //Log.d("AppLog", "key:" + FacebookSdk.getApplicationSignature(this))
         //CJd4ocudeMyO-cyv5X_brcfL_0Y
 
+        viewModel.postLiveData()
         setListeners()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        viewModel.getCallbackManager().onActivityResult(requestCode, resultCode, data)
-        super.onActivityResult(requestCode, resultCode, data)
+        viewModel.mCallbackManager.observe(this, Observer {
+            it.onActivityResult(requestCode, resultCode, data)
+            super.onActivityResult(requestCode, resultCode, data)
+        })
 
         if (requestCode == RC_SIGN_IN) {
             val task = GoogleSignIn.getSignedInAccountFromIntent(data)
@@ -67,29 +71,34 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
     }
 
     private fun setListeners() {
-        facebookLoginButton.setPermissions("email", "public_profile")
-        facebookLoginButton.registerCallback(viewModel.getCallbackManager(), object : FacebookCallback<LoginResult> {
-            override fun onSuccess(loginResult: LoginResult) {
-                Log.d(TAG, "facebook:onSuccess:$loginResult")
-                firebaseAuth(loginResult.accessToken.token,"Facebook")
-            }
+        viewModel.mCallbackManager.observe(this, Observer {
+            facebookLoginButton.setPermissions("email", "public_profile")
+            facebookLoginButton.registerCallback(it, object : FacebookCallback<LoginResult> {
+                override fun onSuccess(loginResult: LoginResult) {
+                    Log.d(TAG, "facebook:onSuccess:$loginResult")
+                    firebaseAuth(loginResult.accessToken.token,"Facebook")
+                }
 
-            override fun onCancel() {
-                Log.d(TAG, "facebook:onCancel")
-            }
+                override fun onCancel() {
+                    Log.d(TAG, "facebook:onCancel")
+                }
 
-            override fun onError(error: FacebookException) {
-                Log.d(TAG, "facebook:onError", error)
-            }
+                override fun onError(error: FacebookException) {
+                    Log.d(TAG, "facebook:onError", error)
+                }
+            })
         })
+
 
         buttonFacebook.setOnClickListener {
             facebookLoginButton.performClick()
         }
 
         buttonGoogle.setOnClickListener {
-            val signInIntent = viewModel.getGoogleSignInClient().signInIntent
-            startActivityForResult(signInIntent, RC_SIGN_IN)
+            viewModel.mGoogleSignInClient.observe(this, Observer {
+                val signInIntent = it.signInIntent
+                startActivityForResult(signInIntent, RC_SIGN_IN)
+            })
         }
     }
 
@@ -100,19 +109,21 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
         else if(service == "Google")
          credential = GoogleAuthProvider.getCredential(token,null)
 
-        viewModel.getFirebaseAuth().signInWithCredential(credential)
-            .addOnCompleteListener(this) { task ->
-                if (task.isSuccessful) {
-                    // Sign in success, update UI with the signed-in user's information
-                    Log.d(TAG, "signInWithCredential:success")
-                    val user = viewModel.getFirebaseAuth().currentUser
+        viewModel.mFirebaseAuth.observe(this, Observer {
+            it.signInWithCredential(credential)
+                .addOnCompleteListener(this) { task ->
+                    if (task.isSuccessful) {
+                        // Sign in success, update UI with the signed-in user's information
+                        Log.d(TAG, "signInWithCredential:success")
+                        val user = it.currentUser
 
-                } else {
-                    // If sign in fails, display a message to the user.
-                    Log.w(TAG, "signInWithCredential:failure", task.exception)
-                    Toast.makeText(baseContext, "Authentication failed.",
-                        Toast.LENGTH_SHORT).show() }
-            }
+                    } else {
+                        // If sign in fails, display a message to the user.
+                        Log.w(TAG, "signInWithCredential:failure", task.exception)
+                        Toast.makeText(baseContext, "Authentication failed.",
+                            Toast.LENGTH_SHORT).show() }
+                }
+        })
     }
 
     companion object {
