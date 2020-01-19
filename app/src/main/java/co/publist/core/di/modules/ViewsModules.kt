@@ -7,7 +7,7 @@ import dagger.android.ContributesAndroidInjector
 
 @Suppress("unused")
 @Module
-abstract class Modules {
+abstract class ViewsModules {
 
     @ContributesAndroidInjector
     abstract fun contributeSplashActivity(): SplashActivity
