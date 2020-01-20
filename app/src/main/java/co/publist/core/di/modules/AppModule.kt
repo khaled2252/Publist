@@ -8,6 +8,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -17,14 +18,14 @@ class AppModule {
 
     @Singleton
     @Provides
-    fun provideCallbackManager(): CallbackManager {
-        return CallbackManagerImpl()
+    fun provideFirebaseAuth(): FirebaseAuth {
+        return FirebaseAuth.getInstance()
     }
 
     @Singleton
     @Provides
-    fun provideFirebaseAuth(): FirebaseAuth {
-        return FirebaseAuth.getInstance()
+    fun provideFirebaseFirestore(): FirebaseFirestore {
+        return FirebaseFirestore.getInstance()
     }
 
     @Singleton
@@ -35,5 +36,11 @@ class AppModule {
             .requestEmail()
             .build()
         return GoogleSignIn.getClient(context,gso)
+    }
+
+    @Singleton
+    @Provides
+    fun provideCallbackManager(): CallbackManager {
+        return CallbackManagerImpl()
     }
 }

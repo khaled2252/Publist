@@ -9,16 +9,15 @@ import androidx.lifecycle.Observer
 import co.publist.R
 import co.publist.core.platform.BaseActivity
 import co.publist.core.platform.ViewModelFactory
-import com.facebook.*
+import com.facebook.FacebookCallback
+import com.facebook.FacebookException
+import com.facebook.FacebookSdk
 import com.facebook.login.LoginResult
 import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FacebookAuthProvider
-import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.android.synthetic.main.activity_login.*
 import javax.inject.Inject
@@ -36,14 +35,13 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
 
     override fun getBaseViewModelFactory() = viewModelFactory
 
-    private lateinit var credential : AuthCredential
+    private lateinit var credential: AuthCredential
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        //Log.d("AppLog", "key:" + FacebookSdk.getApplicationSignature(this))
-        //CJd4ocudeMyO-cyv5X_brcfL_0Y
+        Log.d("AppLog", "key:" + FacebookSdk.getApplicationSignature(this))
 
         viewModel.postLiveData()
         setListeners()
@@ -54,13 +52,14 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
             it.onActivityResult(requestCode, resultCode, data)
             super.onActivityResult(requestCode, resultCode, data)
         })
+        super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode == RC_SIGN_IN) {
             val task = GoogleSignIn.getSignedInAccountFromIntent(data)
             try {
                 // Google Sign In was successful, authenticate with Firebase
                 val account = task.getResult(ApiException::class.java)
-                firebaseAuth(account!!.idToken!!,"Google")
+                firebaseAuth(account!!.idToken!!, "Google")
             } catch (e: ApiException) {
                 // Google Sign In failed, update UI appropriately
                 Log.w(TAG, "Google sign in failed", e)
@@ -76,7 +75,7 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
             facebookLoginButton.registerCallback(it, object : FacebookCallback<LoginResult> {
                 override fun onSuccess(loginResult: LoginResult) {
                     Log.d(TAG, "facebook:onSuccess:$loginResult")
-                    firebaseAuth(loginResult.accessToken.token,"Facebook")
+                    firebaseAuth(loginResult.accessToken.token, "Facebook")
                 }
 
                 override fun onCancel() {
@@ -102,12 +101,12 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
         }
     }
 
-    private fun firebaseAuth(token: String,service : String) {
+    private fun firebaseAuth(token: String, service: String) {
 
-        if(service == "Facebook")
-         credential = FacebookAuthProvider.getCredential(token)
-        else if(service == "Google")
-         credential = GoogleAuthProvider.getCredential(token,null)
+        if (service == "Facebook")
+            credential = FacebookAuthProvider.getCredential(token)
+        else if (service == "Google")
+            credential = GoogleAuthProvider.getCredential(token, null)
 
         viewModel.mFirebaseAuth.observe(this, Observer {
             it.signInWithCredential(credential)
@@ -116,14 +115,59 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
                         // Sign in success, update UI with the signed-in user's information
                         Log.d(TAG, "signInWithCredential:success")
                         val user = it.currentUser
+                        val docId = getUserDocId(user!!.email!!)
+//                        if (docId == null) {
+//                            addNewUserAccount(addNewUser(user))
+//                            //Login as a new user completed
+//                            //Navigate to home
+//                        } else {
+//                            addUidInUserAccounts(docId)
+//                            //Login existing user completed
+//                            //Navigate to home
+//                        }
 
                     } else {
                         // If sign in fails, display a message to the user.
                         Log.w(TAG, "signInWithCredential:failure", task.exception)
-                        Toast.makeText(baseContext, "Authentication failed.",
-                            Toast.LENGTH_SHORT).show() }
+                        Toast.makeText(
+                            baseContext, "Authentication failed.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
                 }
         })
+    }
+
+    private fun addUidInUserAccounts(docId: String) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    private fun addNewUserAccount(docId: String) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    private fun addNewUser(user: FirebaseUser): String {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    private fun getUserDocId(email: String): String? {
+        viewModel.mFirebaseFirestore.observe(this, Observer {
+            it.collection("users")
+                .get()
+                .addOnSuccessListener { result ->
+                    for (document in result) {
+                        if(document.data.containsValue(email))
+                            Log.e("kkkk",document.id)
+                    }
+
+                    Log.e("kkkk","none")
+
+                }
+                .addOnFailureListener{
+
+                }
+        })
+        return null
     }
 
     companion object {

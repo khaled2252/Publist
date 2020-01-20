@@ -4,12 +4,14 @@ import co.publist.core.platform.BaseRepository
 import com.facebook.CallbackManager
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import javax.inject.Inject
 
 class LoginRepository @Inject constructor(
-    var callbackManager: CallbackManager,
     var mFirebaseAuth: FirebaseAuth,
-    var mGoogleSignInClient: GoogleSignInClient
+    var mFirebaseFirestore: FirebaseFirestore,
+    var mGoogleSignInClient: GoogleSignInClient,
+    var callbackManager: CallbackManager
 ) : BaseRepository(), LoginRepositoryInterface {
     override fun test() {
     }

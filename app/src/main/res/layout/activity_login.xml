@@ -26,6 +26,7 @@
         android:text="@string/login_headline"
         android:textColor="@android:color/white"
         android:textSize="@dimen/headlineTextSize"
+        android:fontFamily="@font/sfprodisplaybold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/buttonFacebook"
@@ -45,6 +46,7 @@
         android:textAllCaps="false"
         android:textColor="@android:color/white"
         android:textSize="@dimen/buttonLoginTextSize"
+        android:fontFamily="@font/lucidagrandebold"
         app:cornerRadius="10dp"
         app:icon="@drawable/ic_facebook"
         app:iconTint="@null"
@@ -111,8 +113,9 @@
         android:paddingBottom="20dp"
         android:text="@string/contiune_as_a_guest"
         android:textAllCaps="false"
-        android:textColor="@android:color/black"
+        android:textColor="@color/outerSpace"
         android:textSize="@dimen/buttonLoginTextSize"
+        android:fontFamily="@font/sfprodisplaysemibold"
         app:cornerRadius="10dp"
         app:icon="@drawable/ic_guest"
         app:iconGravity="textStart"
@@ -122,5 +125,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView2"
-        app:strokeColor="@android:color/white" />
+         />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -4,4 +4,8 @@
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
     <color name="sunsetOrange">#ff5a60</color>
+    <color name="dimGray">#646464</color>
+    <color name="outerSpace">#4a4a4a</color>
+    <color name="taupeGray">#8e8e93</color>
+    <color name="cornflowerBlue">#5699ff</color>
 </resources>

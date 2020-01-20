@@ -6,18 +6,21 @@ import co.publist.features.login.data.LoginRepository
 import com.facebook.CallbackManager
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import javax.inject.Inject
 
 class LoginViewModel @Inject constructor(private val loginRepository: LoginRepository) :
     BaseViewModel() {
 
-    val mCallbackManager = MutableLiveData<CallbackManager>()
     val mFirebaseAuth = MutableLiveData<FirebaseAuth>()
+    val mFirebaseFirestore = MutableLiveData<FirebaseFirestore>()
     val mGoogleSignInClient = MutableLiveData<GoogleSignInClient>()
+    val mCallbackManager = MutableLiveData<CallbackManager>()
 
     fun postLiveData() {
-        mCallbackManager.postValue(loginRepository.callbackManager)
         mFirebaseAuth.postValue(loginRepository.mFirebaseAuth)
+        mFirebaseFirestore.postValue(loginRepository.mFirebaseFirestore)
         mGoogleSignInClient.postValue(loginRepository.mGoogleSignInClient)
+        //mCallbackManager.postValue(loginRepository.callbackManager)
     }
 }
