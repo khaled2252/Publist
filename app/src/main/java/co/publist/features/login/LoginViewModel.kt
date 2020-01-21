@@ -21,6 +21,6 @@ class LoginViewModel @Inject constructor(private val loginRepository: LoginRepos
         mFirebaseAuth.postValue(loginRepository.mFirebaseAuth)
         mFirebaseFirestore.postValue(loginRepository.mFirebaseFirestore)
         mGoogleSignInClient.postValue(loginRepository.mGoogleSignInClient)
-        //mCallbackManager.postValue(loginRepository.callbackManager)
+        mCallbackManager.postValue(loginRepository.callbackManager)
     }
 }

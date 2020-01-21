@@ -1,24 +1,27 @@
 package co.publist.features.login
 
-
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import co.publist.R
 import co.publist.core.platform.BaseActivity
 import co.publist.core.platform.ViewModelFactory
+import co.publist.features.login.data.User
+import com.facebook.AccessToken
 import com.facebook.FacebookCallback
 import com.facebook.FacebookException
-import com.facebook.FacebookSdk
+import com.facebook.GraphRequest
 import com.facebook.login.LoginResult
 import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.common.api.ApiException
-import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FacebookAuthProvider
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.firestore.SetOptions
 import kotlinx.android.synthetic.main.activity_login.*
 import javax.inject.Inject
 
@@ -35,13 +38,11 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
 
     override fun getBaseViewModelFactory() = viewModelFactory
 
-    private lateinit var credential: AuthCredential
+    private val docId = MutableLiveData<String?>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
-
-        Log.d("AppLog", "key:" + FacebookSdk.getApplicationSignature(this))
 
         viewModel.postLiveData()
         setListeners()
@@ -52,14 +53,13 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
             it.onActivityResult(requestCode, resultCode, data)
             super.onActivityResult(requestCode, resultCode, data)
         })
-        super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode == RC_SIGN_IN) {
             val task = GoogleSignIn.getSignedInAccountFromIntent(data)
             try {
                 // Google Sign In was successful, authenticate with Firebase
                 val account = task.getResult(ApiException::class.java)
-                firebaseAuth(account!!.idToken!!, "Google")
+                googleFirebaseAuth(account!!)
             } catch (e: ApiException) {
                 // Google Sign In failed, update UI appropriately
                 Log.w(TAG, "Google sign in failed", e)
@@ -75,7 +75,7 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
             facebookLoginButton.registerCallback(it, object : FacebookCallback<LoginResult> {
                 override fun onSuccess(loginResult: LoginResult) {
                     Log.d(TAG, "facebook:onSuccess:$loginResult")
-                    firebaseAuth(loginResult.accessToken.token, "Facebook")
+                    facebookFirebaseAuth(loginResult.accessToken)
                 }
 
                 override fun onCancel() {
@@ -101,21 +101,15 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
         }
     }
 
-    private fun firebaseAuth(token: String, service: String) {
-
-        if (service == "Facebook")
-            credential = FacebookAuthProvider.getCredential(token)
-        else if (service == "Google")
-            credential = GoogleAuthProvider.getCredential(token, null)
-
+    private fun googleFirebaseAuth(user: GoogleSignInAccount) {
+        val credential = GoogleAuthProvider.getCredential(user.idToken, null)
         viewModel.mFirebaseAuth.observe(this, Observer {
             it.signInWithCredential(credential)
                 .addOnCompleteListener(this) { task ->
                     if (task.isSuccessful) {
                         // Sign in success, update UI with the signed-in user's information
                         Log.d(TAG, "signInWithCredential:success")
-                        val user = it.currentUser
-                        val docId = getUserDocId(user!!.email!!)
+                        val docId = getUserDocId(user.email!!)
 //                        if (docId == null) {
 //                            addNewUserAccount(addNewUser(user))
 //                            //Login as a new user completed
@@ -138,36 +132,128 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
         })
     }
 
-    private fun addUidInUserAccounts(docId: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    private fun facebookFirebaseAuth(accessToken: AccessToken) {
+
+        val credential = FacebookAuthProvider.getCredential(accessToken.token)
+        viewModel.mFirebaseAuth.observe(this, Observer {
+            it.signInWithCredential(credential)
+                .addOnCompleteListener(this) { task ->
+                    if (task.isSuccessful) {
+                        // Sign in success, update UI with the signed-in user's information
+                        Log.d(TAG, "signInWithCredential:success")
+                        val request = GraphRequest.newMeRequest(accessToken) { jsonObject, _ ->
+                            try {
+                                val email = jsonObject.getString("email")
+                                val name = jsonObject.getString("name")
+                                val id = jsonObject.getString("id")
+                                val profilePictureUrl = "https://graph.facebook.com/$id/picture?type=large"
+                                getUserDocId(email)
+                                docId.observe(this, Observer { documentId ->
+                                    if (documentId.isNullOrEmpty()) {
+                                        addNewUser(
+                                            email,
+                                            name,
+                                            profilePictureUrl,
+                                            it?.currentUser!!.uid,
+                                            "facebook"
+                                        )
+
+                                    } else {
+                                        updateProfilePictureUrl(documentId,profilePictureUrl)
+                                        addUidInUserAccounts(documentId, it.currentUser!!.uid,"facebook")
+                                        //Login existing user completed
+                                        //Navigate to home
+                                    }
+                                })
+
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                            }
+                        }
+                        val parameters = Bundle()
+                        parameters.putString("fields", "name,email,id,picture.type(large)")
+                        request.parameters = parameters
+                        request.executeAsync()
+
+
+                    } else {
+                        // If sign in fails, display a message to the user.
+                        Log.w(TAG, "signInWithCredential:failure", task.exception)
+                        Toast.makeText(
+                            baseContext, "Authentication failed.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+        })
     }
 
-    private fun addNewUserAccount(docId: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    private fun updateProfilePictureUrl(documentId: String, profilePictureUrl: String) {
+        viewModel.mFirebaseFirestore.observe(this, Observer {
+            // Get a reference to the restaurants collection
+            val users: CollectionReference = it.collection("users")
+            val data = hashMapOf("profilePictureUrl" to profilePictureUrl)
+            users.document(documentId).set(data, SetOptions.merge())
+        })
     }
 
-    private fun addNewUser(user: FirebaseUser): String {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    private fun addUidInUserAccounts(docId: String, uId: String,platform: String) {
+        viewModel.mFirebaseFirestore.observe(this, Observer {
+            // Get a reference to the restaurants collection
+            val userAccounts: CollectionReference = it.collection("userAccounts")
+            val userAccount = hashMapOf(
+                platform to uId
+            )
+            userAccounts.document(docId).set(userAccount,SetOptions.merge())
+        })    }
+
+    private fun addNewUserAccount(docId: String, uId: String, platform: String) {
+        viewModel.mFirebaseFirestore.observe(this, Observer {
+            // Get a reference to the restaurants collection
+            val userAccounts: CollectionReference = it.collection("userAccounts")
+            val userAccount = hashMapOf(
+                platform to uId
+            )
+            userAccounts.document(docId).set(userAccount)
+        })
     }
 
-    private fun getUserDocId(email: String): String? {
+    private fun addNewUser(
+        email: String,
+        name: String,
+        pictureUrl: String,
+        uid: String,
+        platform: String
+    ) {
+        viewModel.mFirebaseFirestore.observe(this, Observer {
+            // Get a reference to the restaurants collection
+            val users: CollectionReference = it.collection("users")
+            users.add(User(email, name, pictureUrl)).addOnSuccessListener { documentReference ->
+                addNewUserAccount(documentReference.id, uid, platform)
+                //Login as a new user completed
+                //Navigate to home
+            }
+        })
+    }
+
+    private fun getUserDocId(email: String) {
         viewModel.mFirebaseFirestore.observe(this, Observer {
             it.collection("users")
                 .get()
                 .addOnSuccessListener { result ->
                     for (document in result) {
-                        if(document.data.containsValue(email))
-                            Log.e("kkkk",document.id)
+                        if (document.data.containsValue(email))
+                        {
+                            docId.postValue(document.id)
+                            return@addOnSuccessListener
+                        }
                     }
-
-                    Log.e("kkkk","none")
-
+                    docId.postValue(null)
                 }
-                .addOnFailureListener{
-
+                .addOnFailureListener { exception ->
+                    Log.d(TAG, "Error getting documents: ", exception)
                 }
         })
-        return null
     }
 
     companion object {
