@@ -109,17 +109,24 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
                     if (task.isSuccessful) {
                         // Sign in success, update UI with the signed-in user's information
                         Log.d(TAG, "signInWithCredential:success")
-                        val docId = getUserDocId(user.email!!)
-//                        if (docId == null) {
-//                            addNewUserAccount(addNewUser(user))
-//                            //Login as a new user completed
-//                            //Navigate to home
-//                        } else {
-//                            addUidInUserAccounts(docId)
-//                            //Login existing user completed
-//                            //Navigate to home
-//                        }
+                        getUserDocId(user.email!!)
+                        docId.observe(this, Observer { documentId ->
+                            if (documentId.isNullOrEmpty()) {
+                                addNewUser(
+                                    user.email!!,
+                                    user.displayName!!,
+                                    user.photoUrl.toString(),
+                                    it?.currentUser!!.uid,
+                                    "google"
+                                )
 
+                            } else {
+                                updateProfilePictureUrl(documentId,user.photoUrl.toString())
+                                addUidInUserAccounts(documentId, it.currentUser!!.uid,"google")
+                                //Login existing user completed
+                                //Navigate to home
+                            }
+                        })
                     } else {
                         // If sign in fails, display a message to the user.
                         Log.w(TAG, "signInWithCredential:failure", task.exception)
@@ -171,7 +178,7 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
                             }
                         }
                         val parameters = Bundle()
-                        parameters.putString("fields", "name,email,id,picture.type(large)")
+                        parameters.putString("fields", "name,email,id")
                         request.parameters = parameters
                         request.executeAsync()
 
