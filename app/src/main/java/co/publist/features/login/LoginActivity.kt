@@ -4,12 +4,10 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import co.publist.R
 import co.publist.core.platform.BaseActivity
 import co.publist.core.platform.ViewModelFactory
-import co.publist.features.login.data.User
 import com.facebook.*
 import com.facebook.login.LoginResult
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -19,9 +17,7 @@ import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
-import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.SetOptions
 import kotlinx.android.synthetic.main.activity_login.*
 import javax.inject.Inject
 
@@ -105,20 +101,22 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
         viewModel.mCallbackManager.observe(this, Observer {
             mCallbackManager = it
             facebookLoginButton.setPermissions("email", "public_profile")
-            facebookLoginButton.registerCallback(mCallbackManager, object : FacebookCallback<LoginResult> {
-                override fun onSuccess(loginResult: LoginResult) {
-                    Log.d(TAG, "facebook:onSuccess:$loginResult")
-                    facebookFirebaseAuth(loginResult.accessToken)
-                }
+            facebookLoginButton.registerCallback(
+                mCallbackManager,
+                object : FacebookCallback<LoginResult> {
+                    override fun onSuccess(loginResult: LoginResult) {
+                        Log.d(TAG, "facebook:onSuccess:$loginResult")
+                        facebookFirebaseAuth(loginResult.accessToken)
+                    }
 
-                override fun onCancel() {
-                    Log.d(TAG, "facebook:onCancel")
-                }
+                    override fun onCancel() {
+                        Log.d(TAG, "facebook:onCancel")
+                    }
 
-                override fun onError(error: FacebookException) {
-                    Log.d(TAG, "facebook:onError", error)
-                }
-            })
+                    override fun onError(error: FacebookException) {
+                        Log.d(TAG, "facebook:onError", error)
+                    }
+                })
         })
 
         viewModel.mGoogleSignInClient.observe(this, Observer {
@@ -126,7 +124,7 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
         })
 
         viewModel.docIdLiveData.observe(this, Observer { documentId ->
-            registerUser(email, name, profilePictureUrl, uId, platform, documentId)
+            viewModel.registerUser(email, name, profilePictureUrl, uId, platform, documentId)
         })
     }
 
@@ -199,104 +197,6 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
                 }
         }
     }
-
-    private fun registerUser(
-        email: String,
-        name: String,
-        profilePictureUrl: String,
-        uId: String,
-        platform: String,
-        documentId: String?
-    ) {
-        if (documentId.isNullOrEmpty()) {
-            addNewUser(
-                email,
-                name,
-                profilePictureUrl,
-                uId,
-                platform
-            )
-
-        } else {
-            updateProfilePictureUrl(documentId, profilePictureUrl)
-            addUidInUserAccounts(documentId, uId, platform)
-            //Login existing user completed
-            //Navigate to home
-        }
-    }
-
-
-    private fun updateProfilePictureUrl(documentId: String, profilePictureUrl: String) {
-        mFirebaseFirestore?.let {
-            // Get a reference to the restaurants collection
-            val users: CollectionReference = it.collection("users")
-            val data = hashMapOf("profilePictureUrl" to profilePictureUrl)
-            users.document(documentId).set(data, SetOptions.merge()).addOnSuccessListener {
-                Log.d(TAG, "update profile picture successfully")
-            }.addOnFailureListener { exception ->
-                Log.e(TAG, exception.message.toString())
-            }
-        }
-    }
-
-    private fun addUidInUserAccounts(docId: String, uId: String, platform: String) {
-        mFirebaseFirestore.let {
-            // Get a reference to the restaurants collection
-            val userAccounts: CollectionReference = it!!.collection("userAccounts")
-            val userAccount = hashMapOf(
-                platform to uId
-            )
-            userAccounts.document(docId).set(userAccount, SetOptions.merge()).addOnSuccessListener {
-                Log.d(TAG, "Added uid in user accounts successfully")
-            }.addOnFailureListener { exception ->
-                Log.e(TAG, exception.message.toString())
-            }
-        }
-    }
-
-    private fun addNewUserAccount(docId: String, uId: String, platform: String) {
-        mFirebaseFirestore.let {
-            // Get a reference to the restaurants collection
-            val userAccounts: CollectionReference = it!!.collection("userAccounts")
-            val userAccount = hashMapOf(
-                platform to uId
-            )
-            userAccounts.document(docId).set(userAccount).addOnSuccessListener {
-                Log.d(TAG, "Added new user account successfully")
-            }.addOnFailureListener { exception ->
-                Log.e(TAG, exception.message.toString())
-            }
-        }
-    }
-    private fun addNewUser(
-        email: String,
-        name: String,
-        pictureUrl: String,
-        uid: String,
-        platform: String
-    ) {
-        mFirebaseFirestore?.let { it ->
-
-            // Get a reference to the restaurants collection
-            val users: CollectionReference = it.collection("users")
-            users.add(User(email, name, pictureUrl)).addOnSuccessListener { documentReference ->
-                addNewUserAccount(documentReference.id, uid, platform)
-                Toast.makeText(
-                    baseContext, "User registered successfully",
-                    Toast.LENGTH_SHORT
-                ).show()
-                //Login as a new user completed
-                //Navigate to home
-            }.addOnFailureListener {exception ->
-                Log.e(TAG,exception.message.toString())
-                Toast.makeText(
-                    baseContext, "User registered successfully",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
-    }
-
 
     companion object {
         private const val TAG = "LoginActivityTag"
