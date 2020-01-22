@@ -10,17 +10,17 @@ import co.publist.R
 import co.publist.core.platform.BaseActivity
 import co.publist.core.platform.ViewModelFactory
 import co.publist.features.login.data.User
-import com.facebook.AccessToken
-import com.facebook.FacebookCallback
-import com.facebook.FacebookException
-import com.facebook.GraphRequest
+import com.facebook.*
 import com.facebook.login.LoginResult
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FacebookAuthProvider
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import kotlinx.android.synthetic.main.activity_login.*
 import javax.inject.Inject
@@ -38,21 +38,33 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
 
     override fun getBaseViewModelFactory() = viewModelFactory
 
-    private val docId = MutableLiveData<String?>()
+    private var mFirebaseAuth: FirebaseAuth? = null
+    private var mFirebaseFirestore: FirebaseFirestore? = null
+    private var mCallbackManager: CallbackManager? = null
+    private var mGoogleSignInClient: GoogleSignInClient? = null
+    private val docIdLiveData = MutableLiveData<String?>()
+
+    lateinit var email: String
+    lateinit var name: String
+    lateinit var id: String
+    lateinit var profilePictureUrl: String
+    lateinit var uId: String
+    lateinit var platform: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
+        setObservers()
         viewModel.postLiveData()
         setListeners()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        viewModel.mCallbackManager.observe(this, Observer {
+        mCallbackManager?.let {
             it.onActivityResult(requestCode, resultCode, data)
             super.onActivityResult(requestCode, resultCode, data)
-        })
+        }
 
         if (requestCode == RC_SIGN_IN) {
             val task = GoogleSignIn.getSignedInAccountFromIntent(data)
@@ -62,7 +74,7 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
                 googleFirebaseAuth(account!!)
             } catch (e: ApiException) {
                 // Google Sign In failed, update UI appropriately
-                Log.w(TAG, "Google sign in failed", e)
+                Log.e(TAG, "Google sign in failed", e)
                 // ...
             }
         }
@@ -70,9 +82,31 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
     }
 
     private fun setListeners() {
+        buttonFacebook.setOnClickListener {
+            facebookLoginButton.performClick()
+        }
+
+        buttonGoogle.setOnClickListener {
+            mGoogleSignInClient?.let {
+                val signInIntent = it.signInIntent
+                startActivityForResult(signInIntent, RC_SIGN_IN)
+            }
+        }
+    }
+
+    private fun setObservers() {
+        viewModel.mFirebaseAuth.observe(this, Observer {
+            mFirebaseAuth = it
+        })
+
+        viewModel.mFirebaseFirestore.observe(this, Observer {
+            mFirebaseFirestore = it
+        })
+
         viewModel.mCallbackManager.observe(this, Observer {
+            mCallbackManager = it
             facebookLoginButton.setPermissions("email", "public_profile")
-            facebookLoginButton.registerCallback(it, object : FacebookCallback<LoginResult> {
+            facebookLoginButton.registerCallback(mCallbackManager, object : FacebookCallback<LoginResult> {
                 override fun onSuccess(loginResult: LoginResult) {
                     Log.d(TAG, "facebook:onSuccess:$loginResult")
                     facebookFirebaseAuth(loginResult.accessToken)
@@ -88,61 +122,45 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
             })
         })
 
+        viewModel.mGoogleSignInClient.observe(this, Observer {
+            mGoogleSignInClient = it
+        })
 
-        buttonFacebook.setOnClickListener {
-            facebookLoginButton.performClick()
-        }
-
-        buttonGoogle.setOnClickListener {
-            viewModel.mGoogleSignInClient.observe(this, Observer {
-                val signInIntent = it.signInIntent
-                startActivityForResult(signInIntent, RC_SIGN_IN)
-            })
-        }
+        docIdLiveData.observe(this, Observer { documentId ->
+            registerUser(email, name, profilePictureUrl, uId, platform, documentId)
+        })
     }
 
     private fun googleFirebaseAuth(user: GoogleSignInAccount) {
         val credential = GoogleAuthProvider.getCredential(user.idToken, null)
-        viewModel.mFirebaseAuth.observe(this, Observer {
+        mFirebaseAuth?.let {
             it.signInWithCredential(credential)
                 .addOnCompleteListener(this) { task ->
                     if (task.isSuccessful) {
                         // Sign in success, update UI with the signed-in user's information
                         Log.d(TAG, "signInWithCredential:success")
-                        getUserDocId(user.email!!)
-                        docId.observe(this, Observer { documentId ->
-                            if (documentId.isNullOrEmpty()) {
-                                addNewUser(
-                                    user.email!!,
-                                    user.displayName!!,
-                                    user.photoUrl.toString(),
-                                    it?.currentUser!!.uid,
-                                    "google"
-                                )
-
-                            } else {
-                                updateProfilePictureUrl(documentId,user.photoUrl.toString())
-                                addUidInUserAccounts(documentId, it.currentUser!!.uid,"google")
-                                //Login existing user completed
-                                //Navigate to home
-                            }
-                        })
+                        email = user.email!!
+                        name = user.displayName!!
+                        id = user.id!!
+                        profilePictureUrl = user.photoUrl.toString()
+                        uId = it.currentUser!!.uid
+                        platform = "google"
+                        getUserDocId(email)
                     } else {
                         // If sign in fails, display a message to the user.
-                        Log.w(TAG, "signInWithCredential:failure", task.exception)
+                        Log.e(TAG, "signInWithCredential:failure", task.exception)
                         Toast.makeText(
                             baseContext, "Authentication failed.",
                             Toast.LENGTH_SHORT
                         ).show()
                     }
                 }
-        })
+        }
     }
 
     private fun facebookFirebaseAuth(accessToken: AccessToken) {
-
         val credential = FacebookAuthProvider.getCredential(accessToken.token)
-        viewModel.mFirebaseAuth.observe(this, Observer {
+        mFirebaseAuth?.let {
             it.signInWithCredential(credential)
                 .addOnCompleteListener(this) { task ->
                     if (task.isSuccessful) {
@@ -150,31 +168,20 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
                         Log.d(TAG, "signInWithCredential:success")
                         val request = GraphRequest.newMeRequest(accessToken) { jsonObject, _ ->
                             try {
-                                val email = jsonObject.getString("email")
-                                val name = jsonObject.getString("name")
-                                val id = jsonObject.getString("id")
-                                val profilePictureUrl = "https://graph.facebook.com/$id/picture?type=large"
+                                email = jsonObject.getString("email")
+                                name = jsonObject.getString("name")
+                                id = jsonObject.getString("id")
+                                profilePictureUrl =
+                                    "https://graph.facebook.com/$id/picture?type=large"
+                                uId = it.currentUser!!.uid
+                                platform = "facebook"
                                 getUserDocId(email)
-                                docId.observe(this, Observer { documentId ->
-                                    if (documentId.isNullOrEmpty()) {
-                                        addNewUser(
-                                            email,
-                                            name,
-                                            profilePictureUrl,
-                                            it?.currentUser!!.uid,
-                                            "facebook"
-                                        )
-
-                                    } else {
-                                        updateProfilePictureUrl(documentId,profilePictureUrl)
-                                        addUidInUserAccounts(documentId, it.currentUser!!.uid,"facebook")
-                                        //Login existing user completed
-                                        //Navigate to home
-                                    }
-                                })
-
                             } catch (e: Exception) {
-                                e.printStackTrace()
+                                Log.e(TAG, "graphRequest:failure", e)
+                                Toast.makeText(
+                                    baseContext, "Retrieving user info failed",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                         }
                         val parameters = Bundle()
@@ -182,49 +189,86 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
                         request.parameters = parameters
                         request.executeAsync()
 
-
                     } else {
                         // If sign in fails, display a message to the user.
-                        Log.w(TAG, "signInWithCredential:failure", task.exception)
+                        Log.e(TAG, "signInWithCredential:failure", task.exception)
                         Toast.makeText(
                             baseContext, "Authentication failed.",
                             Toast.LENGTH_SHORT
                         ).show()
                     }
                 }
-        })
+        }
     }
 
+    private fun registerUser(
+        email: String,
+        name: String,
+        profilePictureUrl: String,
+        uId: String,
+        platform: String,
+        documentId: String?
+    ) {
+        if (documentId.isNullOrEmpty()) {
+            addNewUser(
+                email,
+                name,
+                profilePictureUrl,
+                uId,
+                platform
+            )
+
+        } else {
+            updateProfilePictureUrl(documentId, profilePictureUrl)
+            addUidInUserAccounts(documentId, uId, platform)
+            //Login existing user completed
+            //Navigate to home
+        }
+    }
+
+
     private fun updateProfilePictureUrl(documentId: String, profilePictureUrl: String) {
-        viewModel.mFirebaseFirestore.observe(this, Observer {
+        mFirebaseFirestore?.let {
             // Get a reference to the restaurants collection
             val users: CollectionReference = it.collection("users")
             val data = hashMapOf("profilePictureUrl" to profilePictureUrl)
-            users.document(documentId).set(data, SetOptions.merge())
-        })
+            users.document(documentId).set(data, SetOptions.merge()).addOnSuccessListener {
+                Log.d(TAG, "update profile picture successfully")
+            }.addOnFailureListener { exception ->
+                Log.e(TAG, exception.message.toString())
+            }
+        }
     }
 
-    private fun addUidInUserAccounts(docId: String, uId: String,platform: String) {
-        viewModel.mFirebaseFirestore.observe(this, Observer {
+    private fun addUidInUserAccounts(docId: String, uId: String, platform: String) {
+        mFirebaseFirestore.let {
             // Get a reference to the restaurants collection
-            val userAccounts: CollectionReference = it.collection("userAccounts")
+            val userAccounts: CollectionReference = it!!.collection("userAccounts")
             val userAccount = hashMapOf(
                 platform to uId
             )
-            userAccounts.document(docId).set(userAccount,SetOptions.merge())
-        })    }
+            userAccounts.document(docId).set(userAccount, SetOptions.merge()).addOnSuccessListener {
+                Log.d(TAG, "Added uid in user accounts successfully")
+            }.addOnFailureListener { exception ->
+                Log.e(TAG, exception.message.toString())
+            }
+        }
+    }
 
     private fun addNewUserAccount(docId: String, uId: String, platform: String) {
-        viewModel.mFirebaseFirestore.observe(this, Observer {
+        mFirebaseFirestore.let {
             // Get a reference to the restaurants collection
-            val userAccounts: CollectionReference = it.collection("userAccounts")
+            val userAccounts: CollectionReference = it!!.collection("userAccounts")
             val userAccount = hashMapOf(
                 platform to uId
             )
-            userAccounts.document(docId).set(userAccount)
-        })
+            userAccounts.document(docId).set(userAccount).addOnSuccessListener {
+                Log.d(TAG, "Added new user account successfully")
+            }.addOnFailureListener { exception ->
+                Log.e(TAG, exception.message.toString())
+            }
+        }
     }
-
     private fun addNewUser(
         email: String,
         name: String,
@@ -232,39 +276,49 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
         uid: String,
         platform: String
     ) {
-        viewModel.mFirebaseFirestore.observe(this, Observer {
+        mFirebaseFirestore?.let { it ->
+
             // Get a reference to the restaurants collection
             val users: CollectionReference = it.collection("users")
             users.add(User(email, name, pictureUrl)).addOnSuccessListener { documentReference ->
                 addNewUserAccount(documentReference.id, uid, platform)
+                Toast.makeText(
+                    baseContext, "User registered successfully",
+                    Toast.LENGTH_SHORT
+                ).show()
                 //Login as a new user completed
                 //Navigate to home
+            }.addOnFailureListener {exception ->
+                Log.e(TAG,exception.message.toString())
+                Toast.makeText(
+                    baseContext, "User registered successfully",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
-        })
+        }
     }
 
     private fun getUserDocId(email: String) {
-        viewModel.mFirebaseFirestore.observe(this, Observer {
+        mFirebaseFirestore?.let {
             it.collection("users")
                 .get()
                 .addOnSuccessListener { result ->
                     for (document in result) {
-                        if (document.data.containsValue(email))
-                        {
-                            docId.postValue(document.id)
+                        if (document.data.containsValue(email)) {
+                            docIdLiveData.postValue(document.id)
                             return@addOnSuccessListener
                         }
                     }
-                    docId.postValue(null)
+                    docIdLiveData.postValue(null)
                 }
                 .addOnFailureListener { exception ->
-                    Log.d(TAG, "Error getting documents: ", exception)
+                    Log.e(TAG, "Error getting documents: ", exception)
                 }
-        })
+        }
     }
 
     companion object {
-        private const val TAG = "LoginActivity"
+        private const val TAG = "LoginActivityTag"
         private const val RC_SIGN_IN = 9001
     }
 

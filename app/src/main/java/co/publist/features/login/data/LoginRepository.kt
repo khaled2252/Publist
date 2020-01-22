@@ -11,7 +11,7 @@ class LoginRepository @Inject constructor(
     var mFirebaseAuth: FirebaseAuth,
     var mFirebaseFirestore: FirebaseFirestore,
     var mGoogleSignInClient: GoogleSignInClient,
-    var callbackManager: CallbackManager
+    var mCallbackManager: CallbackManager
 ) : BaseRepository(), LoginRepositoryInterface {
     override fun test() {
     }
