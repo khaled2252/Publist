@@ -42,7 +42,6 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
     private var mFirebaseFirestore: FirebaseFirestore? = null
     private var mCallbackManager: CallbackManager? = null
     private var mGoogleSignInClient: GoogleSignInClient? = null
-    private val docIdLiveData = MutableLiveData<String?>()
 
     lateinit var email: String
     lateinit var name: String
@@ -126,7 +125,7 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
             mGoogleSignInClient = it
         })
 
-        docIdLiveData.observe(this, Observer { documentId ->
+        viewModel.docIdLiveData.observe(this, Observer { documentId ->
             registerUser(email, name, profilePictureUrl, uId, platform, documentId)
         })
     }
@@ -145,7 +144,7 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
                         profilePictureUrl = user.photoUrl.toString()
                         uId = it.currentUser!!.uid
                         platform = "google"
-                        getUserDocId(email)
+                        viewModel.getDocumentId(email)
                     } else {
                         // If sign in fails, display a message to the user.
                         Log.e(TAG, "signInWithCredential:failure", task.exception)
@@ -175,7 +174,7 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
                                     "https://graph.facebook.com/$id/picture?type=large"
                                 uId = it.currentUser!!.uid
                                 platform = "facebook"
-                                getUserDocId(email)
+                                viewModel.getDocumentId(email)
                             } catch (e: Exception) {
                                 Log.e(TAG, "graphRequest:failure", e)
                                 Toast.makeText(
@@ -298,24 +297,6 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
         }
     }
 
-    private fun getUserDocId(email: String) {
-        mFirebaseFirestore?.let {
-            it.collection("users")
-                .get()
-                .addOnSuccessListener { result ->
-                    for (document in result) {
-                        if (document.data.containsValue(email)) {
-                            docIdLiveData.postValue(document.id)
-                            return@addOnSuccessListener
-                        }
-                    }
-                    docIdLiveData.postValue(null)
-                }
-                .addOnFailureListener { exception ->
-                    Log.e(TAG, "Error getting documents: ", exception)
-                }
-        }
-    }
 
     companion object {
         private const val TAG = "LoginActivityTag"

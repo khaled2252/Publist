@@ -1,5 +1,6 @@
 package co.publist.features.login.data
 
+import android.util.Log
 import co.publist.core.platform.BaseRepository
 import com.facebook.CallbackManager
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -13,6 +14,20 @@ class LoginRepository @Inject constructor(
     var mGoogleSignInClient: GoogleSignInClient,
     var mCallbackManager: CallbackManager
 ) : BaseRepository(), LoginRepositoryInterface {
-    override fun test() {
+    override fun fetchUserDocId(email: String,listener : (String?)->Unit){
+        mFirebaseFirestore.let {
+            it.collection("users")
+                .get()
+                .addOnFailureListener { exception ->
+                    Log.e("LoginRepository", "Error getting documents: ", exception)
+                }.addOnSuccessListener{result ->
+                for (document in result!!) {
+                    if (document.data.containsValue(email)) {
+                        listener(document.id)
+                    }
+                }
+                    listener(null)
+            }
+        }
     }
 }

@@ -1,5 +1,5 @@
 package co.publist.features.login.data
 
 interface LoginRepositoryInterface {
-    fun test()
+    fun fetchUserDocId(email : String,listener : (String?)->Unit)
 }

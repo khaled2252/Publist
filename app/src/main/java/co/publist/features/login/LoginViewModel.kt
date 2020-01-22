@@ -17,10 +17,18 @@ class LoginViewModel @Inject constructor(private val loginRepository: LoginRepos
     val mGoogleSignInClient = MutableLiveData<GoogleSignInClient>()
     val mCallbackManager = MutableLiveData<CallbackManager>()
 
+    internal val docIdLiveData = MutableLiveData<String?>()
+
     fun postLiveData() {
         mFirebaseAuth.postValue(loginRepository.mFirebaseAuth)
         mFirebaseFirestore.postValue(loginRepository.mFirebaseFirestore)
         mGoogleSignInClient.postValue(loginRepository.mGoogleSignInClient)
         mCallbackManager.postValue(loginRepository.mCallbackManager)
+    }
+
+    fun getDocumentId(email : String){
+        loginRepository.fetchUserDocId(email){
+            docIdLiveData.postValue(it)
+        }
     }
 }
