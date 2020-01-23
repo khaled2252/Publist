@@ -17,6 +17,7 @@ class LoginViewModel @Inject constructor(private val loginRepository: LoginRepos
 
     val mGoogleSignInClient = MutableLiveData<GoogleSignInClient>()
     val mCallbackManager = MutableLiveData<CallbackManager>()
+    val newUserLoggedIn = MutableLiveData<Boolean>()
 
     private lateinit var registeringUser: RegisteringUser
 
@@ -25,23 +26,44 @@ class LoginViewModel @Inject constructor(private val loginRepository: LoginRepos
         mCallbackManager.postValue(loginRepository.mCallbackManager)
     }
 
+    fun googleFirebaseAuth(user: GoogleSignInAccount) {
+        subscribe(
+            loginRepository.authenticateGoogleUserWithFirebase(user.idToken!!),
+            Consumer { uId ->
+                registeringUser = RegisteringUser(
+                    user.email!!,
+                    user.displayName!!,
+                    user.id!!,
+                    user.idToken!!,
+                    user.photoUrl.toString(),
+                    uId, "google"
+                )
+                getDocumentId(user.email!!)
+            })
+    }
+
+    fun facebookFirebaseAuth(accessToken: AccessToken) {
+        subscribe(
+            loginRepository.authenticateFacebookUserWithFirebase(accessToken.token),
+            Consumer { uId ->
+                setFaceBookGraphRequest(accessToken, uId)
+            })
+    }
+
     private fun getDocumentId(email: String) {
         subscribe(loginRepository.fetchUserDocId(email), Consumer { documentId ->
-            registerUser(registeringUser,documentId)
+            registerUser(registeringUser, documentId)
         })
     }
 
     private fun updateProfilePicture(documentId: String, profilePictureUrl: String) {
         subscribe(loginRepository.updateProfilePictureUrl(documentId, profilePictureUrl), Action {
-            //todo toast
         })
     }
 
     private fun addUidInUserAccounts(documentId: String, uId: String, platform: String) {
         subscribe(loginRepository.addUidInUserAccounts(documentId, uId, platform), Action {
-            //todo toast
-            //Login existing user completed
-            //Navigate to home
+            newUserLoggedIn.postValue(false)
         })
     }
 
@@ -61,9 +83,7 @@ class LoginViewModel @Inject constructor(private val loginRepository: LoginRepos
 
     private fun addNewUserAccount(docId: String, uId: String, platform: String) {
         subscribe(loginRepository.addNewUserAccount(docId, uId, platform), Action {
-            //todo toast
-            //Login as a new user completed
-            //Navigate to home
+            newUserLoggedIn.postValue(true)
         })
     }
 
@@ -71,7 +91,7 @@ class LoginViewModel @Inject constructor(private val loginRepository: LoginRepos
         registeringUser: RegisteringUser,
         documentId: String?
     ) {
-        if (documentId=="null") {
+        if (documentId == "null") {
             addNewUser(
                 registeringUser.email!!,
                 registeringUser.name!!,
@@ -86,28 +106,7 @@ class LoginViewModel @Inject constructor(private val loginRepository: LoginRepos
         }
     }
 
-     fun googleFirebaseAuth(user: GoogleSignInAccount) {
-        subscribe(loginRepository.authenticateGoogleUserWithFirebase(user.idToken!!), Consumer { uId ->
-            registeringUser=RegisteringUser(user.email!!,
-                user.displayName!!,
-                user.id!!,
-                user.idToken!!,
-                user.photoUrl.toString(),
-                uId, "google"
-            )
-            getDocumentId(user.email!!)
-        })
-    }
-
-     fun facebookFirebaseAuth(accessToken: AccessToken) {
-        subscribe(
-            loginRepository.authenticateFacebookUserWithFirebase(accessToken.token),
-            Consumer { uId ->
-                setFaceBookGraphRequest(accessToken,uId)
-            })
-    }
-
-    private fun setFaceBookGraphRequest(accessToken: AccessToken,uId: String) {
+    private fun setFaceBookGraphRequest(accessToken: AccessToken, uId: String) {
         subscribe(
             loginRepository.setFaceBookGraphRequest(accessToken),
             Consumer {

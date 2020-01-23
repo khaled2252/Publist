@@ -8,17 +8,13 @@ import androidx.lifecycle.Observer
 import co.publist.R
 import co.publist.core.platform.BaseActivity
 import co.publist.core.platform.ViewModelFactory
-import co.publist.features.login.data.RegisteringUser
-import com.facebook.*
+import com.facebook.CallbackManager
+import com.facebook.FacebookCallback
+import com.facebook.FacebookException
 import com.facebook.login.LoginResult
 import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.common.api.ApiException
-import com.google.firebase.auth.FacebookAuthProvider
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.GoogleAuthProvider
-import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.activity_login.*
 import javax.inject.Inject
 
@@ -105,6 +101,13 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
 
         viewModel.mGoogleSignInClient.observe(this, Observer {
             mGoogleSignInClient = it
+        })
+
+        viewModel.newUserLoggedIn.observe(this, Observer {
+            if (it)
+                Toast.makeText(this, "Registered successfully", Toast.LENGTH_SHORT).show()
+            else
+                Toast.makeText(this, "Welcome back!", Toast.LENGTH_SHORT).show()
         })
     }
 
