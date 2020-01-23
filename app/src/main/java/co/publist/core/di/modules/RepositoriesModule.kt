@@ -17,31 +17,17 @@
 package co.publist.core.di.modules
 
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import co.publist.core.di.helper.ViewModelKey
-import co.publist.core.platform.ViewModelFactory
-import co.publist.features.login.LoginViewModel
-import co.publist.features.splash.SplashViewModel
+import co.publist.features.login.data.LoginRepository
+import co.publist.features.login.data.LoginRepositoryInterface
 import dagger.Binds
 import dagger.Module
-import dagger.multibindings.IntoMap
+import javax.inject.Singleton
 
 @Suppress("unused")
 @Module
-abstract class ViewModelModule {
-    @Binds
-    abstract fun bindViewModelFactory(factory: ViewModelFactory): ViewModelProvider.Factory
+abstract class RepositoriesModule {
 
     @Binds
-    @IntoMap
-    @ViewModelKey(SplashViewModel::class)
-    abstract fun bindSplashViewModel(splashViewModel: SplashViewModel): ViewModel
-
-    @Binds
-    @IntoMap
-    @ViewModelKey(LoginViewModel::class)
-    abstract fun bindLoginViewModel(loginViewModel: LoginViewModel): ViewModel
-
-
+    @Singleton
+    abstract fun bindLoginRepository(loginRepository: LoginRepository) : LoginRepositoryInterface
 }

@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">PubList</string>
+    <string name="login_headline">Welcome to Wishpub, to add public chechlist you need to be a guest or signed user..</string>
+    <string name="connect_with_facebook">Connect with Facebook</string>
+    <string name="or">Or..</string>
+    <string name="contiune_as_a_guest">Continue as a guest</string>
+    <string name="facebook_app_id">2442611249323495</string>
 </resources>

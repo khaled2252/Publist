@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="co.publist">
 
+    <uses-permission android:name="android.permission.INTERNET"/>
+
     <application
         android:name="co.publist.core.PubListApp"
         android:allowBackup="true"
@@ -24,6 +26,14 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".features.login.LoginActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.LoginScreen">
+        </activity>
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id" />
     </application>
 
 </manifest>

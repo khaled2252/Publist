@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="horizontalDefaultMargin">29dp</dimen>
+    <dimen name="horizontalButtonMargin">7dp</dimen>
+    <dimen name="buttonLoginTextSize">17sp</dimen>
+    <dimen name="headlineTextSize">28sp</dimen>
+    <dimen name="subtitleTextSize">18sp</dimen>
+</resources>
