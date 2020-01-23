@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white">
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/horizontalDefaultMargin"
+        android:layout_marginTop="46dp"
+        android:src="@drawable/ic_logo_red_background"
+        app:layout_constraintBottom_toTopOf="@id/textView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/horizontalDefaultMargin"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="@dimen/horizontalDefaultMargin"
+        android:fontFamily="@font/helvetica"
+        android:text="Choose some intersets to personalize your wish lists"
+        android:textColor="@color/dimGray"
+        android:textSize="@dimen/headlineTextSize"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/horizontalDefaultMargin"
+        android:layout_marginTop="24dp"
+        android:fontFamily="@font/helvetica"
+        android:text="Already have an account?"
+        android:textColor="@color/taupeGray"
+        android:textSize="15dp"
+        app:layout_constraintBottom_toTopOf="@+id/buttonFindWishes"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:fontFamily="@font/helvetica"
+        android:text="LOG IN"
+        android:textColor="@color/cornflowerBlue"
+        android:textSize="15dp"
+        android:textStyle="bold"
+        app:layout_constraintBaseline_toBaselineOf="@+id/textView2"
+        app:layout_constraintStart_toEndOf="@+id/textView2" />
+
+    <fragment
+        android:id="@+id/categoriesFragment"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="35dp"
+        android:layout_marginBottom="70dp"
+        android:layout_marginStart="@dimen/horizontalDefaultMargin"
+        android:layout_marginEnd="@dimen/horizontalDefaultMargin"
+        app:layout_constraintBottom_toTopOf="@+id/buttonFindWishes"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView2"
+        app:layout_constraintVertical_bias="0.289" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/buttonFindWishes"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/horizontalDefaultMargin"
+        android:layout_marginEnd="@dimen/horizontalDefaultMargin"
+        android:layout_marginTop="48dp"
+        android:paddingTop="20dp"
+        android:paddingBottom="20dp"
+        android:backgroundTint="@color/sunsetOrange"
+        android:text="find wish lists"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/buttonLoginTextSize"
+        android:fontFamily="@font/lucidagrandebold"
+        app:cornerRadius="10dp"
+        app:icon="@drawable/ic_facebook"
+        app:iconTint="@null"
+        app:iconGravity="textStart"
+        app:iconPadding="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView2"
+        app:strokeColor="@color/sunsetOrange"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
