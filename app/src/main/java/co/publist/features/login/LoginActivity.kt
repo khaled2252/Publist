@@ -8,6 +8,7 @@ import androidx.lifecycle.Observer
 import co.publist.R
 import co.publist.core.platform.BaseActivity
 import co.publist.core.platform.ViewModelFactory
+import co.publist.features.login.data.RegisteringUser
 import com.facebook.*
 import com.facebook.login.LoginResult
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -34,17 +35,8 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
 
     override fun getBaseViewModelFactory() = viewModelFactory
 
-    private var mFirebaseAuth: FirebaseAuth? = null
-    private var mFirebaseFirestore: FirebaseFirestore? = null
     private var mCallbackManager: CallbackManager? = null
     private var mGoogleSignInClient: GoogleSignInClient? = null
-
-    lateinit var email: String
-    lateinit var name: String
-    lateinit var id: String
-    lateinit var profilePictureUrl: String
-    lateinit var uId: String
-    lateinit var platform: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,7 +58,7 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
             try {
                 // Google Sign In was successful, authenticate with Firebase
                 val account = task.getResult(ApiException::class.java)
-                googleFirebaseAuth(account!!)
+                viewModel.googleFirebaseAuth(account!!)
             } catch (e: ApiException) {
                 // Google Sign In failed, update UI appropriately
                 Log.e(TAG, "Google sign in failed", e)
@@ -90,14 +82,6 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
     }
 
     private fun setObservers() {
-        viewModel.mFirebaseAuth.observe(this, Observer {
-            mFirebaseAuth = it
-        })
-
-        viewModel.mFirebaseFirestore.observe(this, Observer {
-            mFirebaseFirestore = it
-        })
-
         viewModel.mCallbackManager.observe(this, Observer {
             mCallbackManager = it
             facebookLoginButton.setPermissions("email", "public_profile")
@@ -106,7 +90,7 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
                 object : FacebookCallback<LoginResult> {
                     override fun onSuccess(loginResult: LoginResult) {
                         Log.d(TAG, "facebook:onSuccess:$loginResult")
-                        facebookFirebaseAuth(loginResult.accessToken)
+                        viewModel.facebookFirebaseAuth(loginResult.accessToken)
                     }
 
                     override fun onCancel() {
@@ -122,80 +106,6 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
         viewModel.mGoogleSignInClient.observe(this, Observer {
             mGoogleSignInClient = it
         })
-
-        viewModel.docIdLiveData.observe(this, Observer { documentId ->
-            viewModel.registerUser(email, name, profilePictureUrl, uId, platform, documentId)
-        })
-    }
-
-    private fun googleFirebaseAuth(user: GoogleSignInAccount) {
-        val credential = GoogleAuthProvider.getCredential(user.idToken, null)
-        mFirebaseAuth?.let {
-            it.signInWithCredential(credential)
-                .addOnCompleteListener(this) { task ->
-                    if (task.isSuccessful) {
-                        // Sign in success, update UI with the signed-in user's information
-                        Log.d(TAG, "signInWithCredential:success")
-                        email = user.email!!
-                        name = user.displayName!!
-                        id = user.id!!
-                        profilePictureUrl = user.photoUrl.toString()
-                        uId = it.currentUser!!.uid
-                        platform = "google"
-                        viewModel.getDocumentId(email)
-                    } else {
-                        // If sign in fails, display a message to the user.
-                        Log.e(TAG, "signInWithCredential:failure", task.exception)
-                        Toast.makeText(
-                            baseContext, "Authentication failed.",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }
-        }
-    }
-
-    private fun facebookFirebaseAuth(accessToken: AccessToken) {
-        val credential = FacebookAuthProvider.getCredential(accessToken.token)
-        mFirebaseAuth?.let {
-            it.signInWithCredential(credential)
-                .addOnCompleteListener(this) { task ->
-                    if (task.isSuccessful) {
-                        // Sign in success, update UI with the signed-in user's information
-                        Log.d(TAG, "signInWithCredential:success")
-                        val request = GraphRequest.newMeRequest(accessToken) { jsonObject, _ ->
-                            try {
-                                email = jsonObject.getString("email")
-                                name = jsonObject.getString("name")
-                                id = jsonObject.getString("id")
-                                profilePictureUrl =
-                                    "https://graph.facebook.com/$id/picture?type=large"
-                                uId = it.currentUser!!.uid
-                                platform = "facebook"
-                                viewModel.getDocumentId(email)
-                            } catch (e: Exception) {
-                                Log.e(TAG, "graphRequest:failure", e)
-                                Toast.makeText(
-                                    baseContext, "Retrieving user info failed",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                        }
-                        val parameters = Bundle()
-                        parameters.putString("fields", "name,email,id")
-                        request.parameters = parameters
-                        request.executeAsync()
-
-                    } else {
-                        // If sign in fails, display a message to the user.
-                        Log.e(TAG, "signInWithCredential:failure", task.exception)
-                        Toast.makeText(
-                            baseContext, "Authentication failed.",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }
-        }
     }
 
     companion object {

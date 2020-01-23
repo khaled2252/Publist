@@ -1,5 +1,6 @@
 package co.publist.features.login.data
 
+import com.facebook.AccessToken
 import io.reactivex.Completable
 import io.reactivex.Single
 
@@ -16,4 +17,7 @@ interface LoginRepositoryInterface {
     ): Single<String>
 
     fun addNewUserAccount(docId: String, uId: String, platform: String): Completable
+    fun authenticateGoogleUserWithFirebase(userIdToken: String): Single<String>
+    fun authenticateFacebookUserWithFirebase(accessToken: String): Single<String>
+    fun setFaceBookGraphRequest(accessToken: AccessToken): Single<RegisteringUser>
 }

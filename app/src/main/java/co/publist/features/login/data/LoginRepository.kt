@@ -1,11 +1,17 @@
 package co.publist.features.login.data
 
+import android.os.Bundle
 import android.util.Log
 import co.publist.core.platform.BaseRepository
 import co.publist.features.login.LoginActivity
+import com.facebook.AccessToken
 import com.facebook.CallbackManager
+import com.facebook.GraphRequest
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
@@ -31,9 +37,10 @@ class LoginRepository @Inject constructor(
                         for (document in result!!) {
                             if (document.data.containsValue(email)) {
                                 singleEmitter.onSuccess(document.id)
+                                return@addOnSuccessListener
                             }
                         }
-                        singleEmitter.onSuccess(null.toString())
+                        singleEmitter.onSuccess("null")
                     }
             }
         }
@@ -118,6 +125,72 @@ class LoginRepository @Inject constructor(
                     singleEmitter.onError(exception)
                 }
             }
+        }
+    }
+
+    override fun authenticateGoogleUserWithFirebase(
+        userIdToken: String
+    ): Single<String>{
+        return Single.create { singleEmitter ->
+            mFirebaseAuth.let {
+                val credential = GoogleAuthProvider.getCredential(userIdToken, null)
+                it.signInWithCredential(credential)
+                    .addOnSuccessListener { result ->
+                        // Sign in success, update UI with the signed-in user's information
+                        Log.d("LoginRepository", "signInWithCredential:success")
+                        singleEmitter.onSuccess(result.user!!.uid)
+                    }.addOnFailureListener{exception ->
+                        singleEmitter.onError(exception)
+                            // If sign in fails, display a message to the user.
+                            Log.e("LoginRepository", "signInWithCredential:failure", exception)
+                        }
+                    }
+            }
+    }
+
+    override fun authenticateFacebookUserWithFirebase(
+        accessToken: String
+    ): Single<String>{
+        return Single.create { singleEmitter ->
+            mFirebaseAuth.let {
+                val credential = FacebookAuthProvider.getCredential(accessToken)
+                it.signInWithCredential(credential)
+                    .addOnSuccessListener { result ->
+                        // Sign in success, update UI with the signed-in user's information
+                        Log.d("LoginRepository", "signInWithCredential:success")
+                        singleEmitter.onSuccess(result.user!!.uid)
+                    }.addOnFailureListener{exception ->
+                        singleEmitter.onError(exception)
+                        // If sign in fails, display a message to the user.
+                        Log.e("LoginRepository", "signInWithCredential:failure", exception)
+                    }
+            }
+        }
+    }
+
+    override fun setFaceBookGraphRequest(
+        accessToken: AccessToken
+    ): Single<RegisteringUser>{
+        return Single.create { singleEmitter ->
+
+            val request = GraphRequest.newMeRequest(accessToken) { jsonObject, _ ->
+                try {
+                    val email = jsonObject.getString("email")
+                    val name = jsonObject.getString("name")
+                    val id = jsonObject.getString("id")
+                    val profilePictureUrl =
+                        "https://graph.facebook.com/$id/picture?type=large"
+                    singleEmitter.onSuccess(RegisteringUser(email,name,profilePictureUrl=profilePictureUrl))
+                } catch (e: Exception) {
+                    Log.e("LoginRepository", "graphRequest:failure", e)
+                    singleEmitter.onError(e)
+                }
+            }
+
+            val parameters = Bundle()
+            parameters.putString("fields", "name,email,id")
+            request.parameters = parameters
+            request.executeAsync()
         }
     }
 
