@@ -4,11 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.Observer
 import co.publist.R
 import co.publist.core.platform.BaseFragment
 import co.publist.core.platform.ViewModelFactory
+import com.firebase.ui.database.SnapshotParser
+import com.google.firebase.firestore.FirebaseFirestore
 import javax.inject.Inject
+
 
 class CategoriesFragment : BaseFragment<CategoriesViewModel>() {
 
@@ -34,7 +36,23 @@ class CategoriesFragment : BaseFragment<CategoriesViewModel>() {
     }
 
     private fun initView() {
+        val parser =
+            SnapshotParser { snapshot ->
+                val category = snapshot.getValue(Category::class.java)
+                if (category != null) {
+                    category.id = snapshot.key!!
+                }
+                category!!
+            }
+        var mFirebaseFirestore =  FirebaseFirestore.getInstance()
 
+        val query = FirebaseFirestore.getInstance()
+            .collection("chats")
+            .orderBy("timestamp")
+            .limit(50)
+//        val options: FirestoreRecyclerOptions<Category> = Builder<Category>()
+//            .setQuery(query, Category::class.java)
+//            .build()
     }
 
 }
