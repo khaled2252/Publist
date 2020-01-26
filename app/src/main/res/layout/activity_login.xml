@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/horizontalDefaultMargin"
         android:layout_marginTop="127dp"
-        android:src="@drawable/ic_logo"
+        android:src="@drawable/ic_logo_white_background"
         app:layout_constraintBottom_toTopOf="@id/textView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -111,7 +111,7 @@
         android:backgroundTint="@android:color/white"
         android:paddingTop="20dp"
         android:paddingBottom="20dp"
-        android:text="@string/contiune_as_a_guest"
+        android:text="@string/continue_as_a_guest"
         android:textAllCaps="false"
         android:textColor="@color/outerSpace"
         android:textSize="@dimen/buttonLoginTextSize"

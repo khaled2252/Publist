@@ -76,6 +76,11 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
                 startActivityForResult(signInIntent, RC_SIGN_IN)
             }
         }
+
+        buttonGuest.setOnClickListener {
+            startActivity(Intent(this,IntroActivity::class.java))
+
+        }
     }
 
     private fun setObservers() {

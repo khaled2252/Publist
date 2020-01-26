@@ -2,19 +2,19 @@ package co.publist.features.intro
 
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.widget.Toast
 import co.publist.R
 import co.publist.core.platform.BaseActivity
 import co.publist.core.platform.ViewModelFactory
 import co.publist.features.categories.CategoriesFragment
-import co.publist.features.categories.CategoriesViewModel
+import kotlinx.android.synthetic.main.activity_intro.*
 import javax.inject.Inject
 
 
-class IntroActivity : BaseActivity<CategoriesViewModel>() {
+class IntroActivity : BaseActivity<IntroViewModel>() {
 
     @Inject
-    lateinit var viewModel: CategoriesViewModel
+    lateinit var viewModel: IntroViewModel
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
@@ -27,9 +27,19 @@ class IntroActivity : BaseActivity<CategoriesViewModel>() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_intro)
 
+        val categoriesFragment= supportFragmentManager.findFragmentById(R.id.categoriesFragment) as CategoriesFragment
+        buttonFindWishes.setOnClickListener {
+            if(categoriesFragment.viewModel.selectedCategories.size<1)
+                Toast.makeText(this,"You must select at least 1 category",
+                    Toast.LENGTH_SHORT).show()
+            else {
+                //todo navigate to home
+            }
+        }
+
+        loginButton.setOnClickListener {
+            finish()
+        }
     }
 
-    private fun addFragment(containerViewId: Int, fragment: Fragment, tag: String) {
-        supportFragmentManager.beginTransaction().add(containerViewId, fragment, tag).commit()
-    }
 }

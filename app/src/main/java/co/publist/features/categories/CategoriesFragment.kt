@@ -47,10 +47,22 @@ class CategoriesFragment : BaseFragment<CategoriesViewModel>() {
             .setQuery(query, Category::class.java)
             .build()
 
-        categoriesRecyclerView.layoutManager = StaggeredGridLayoutManager(5,RecyclerView.HORIZONTAL)
-        val adapter = CategoriesAdapter(options)
+
+        val displayMetrics = context!!.resources.displayMetrics
+        val dpWidth = displayMetrics.widthPixels / displayMetrics.density
+        val noOfColumns = (dpWidth /100 ).toInt()
+
+        categoriesRecyclerView.layoutManager = StaggeredGridLayoutManager(noOfColumns,RecyclerView.HORIZONTAL)
+        val adapter = CategoriesAdapter(options,this) { id, adding ->
+            if (adding)
+                viewModel.addSelectedCategory(id)
+            else
+                viewModel.removeSelectedCategory(id)
+
+        }
         adapter.startListening()
         categoriesRecyclerView.adapter = adapter
+
     }
 
 }
