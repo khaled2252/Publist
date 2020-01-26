@@ -59,20 +59,17 @@
         app:layout_constraintBaseline_toBaselineOf="@+id/textView2"
         app:layout_constraintStart_toEndOf="@+id/textView2" />
 
-    <fragment
+    <androidx.fragment.app.FragmentContainerView
         android:id="@+id/categoriesFragment"
+        android:name="co.publist.features.categories.CategoriesFragment"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="35dp"
-        android:layout_marginBottom="70dp"
         android:layout_marginStart="@dimen/horizontalDefaultMargin"
         android:layout_marginEnd="@dimen/horizontalDefaultMargin"
-        app:layout_constraintBottom_toTopOf="@+id/buttonFindWishes"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView2"
-        app:layout_constraintVertical_bias="0.289" />
+        app:layout_constraintBottom_toTopOf="@id/buttonFindWishes"/>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonFindWishes"
@@ -89,14 +86,11 @@
         android:textSize="@dimen/buttonLoginTextSize"
         android:fontFamily="@font/lucidagrandebold"
         app:cornerRadius="10dp"
-        app:icon="@drawable/ic_facebook"
-        app:iconTint="@null"
         app:iconGravity="textStart"
         app:iconPadding="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView2"
+        app:layout_constraintTop_toBottomOf="@+id/categoriesFragment"
         app:strokeColor="@color/sunsetOrange"
         />
-
 </androidx.constraintlayout.widget.ConstraintLayout>

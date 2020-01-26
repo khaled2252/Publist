@@ -31,6 +31,12 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.LoginScreen">
         </activity>
+
+        <activity
+            android:name=".features.intro.IntroActivity"
+            android:screenOrientation="portrait">
+        </activity>
+
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />

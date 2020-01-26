@@ -4,11 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import co.publist.R
 import co.publist.core.platform.BaseFragment
 import co.publist.core.platform.ViewModelFactory
-import com.firebase.ui.database.SnapshotParser
+import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.android.synthetic.main.fragment_categories.*
 import javax.inject.Inject
 
 
@@ -36,23 +39,18 @@ class CategoriesFragment : BaseFragment<CategoriesViewModel>() {
     }
 
     private fun initView() {
-        val parser =
-            SnapshotParser { snapshot ->
-                val category = snapshot.getValue(Category::class.java)
-                if (category != null) {
-                    category.id = snapshot.key!!
-                }
-                category!!
-            }
-        var mFirebaseFirestore =  FirebaseFirestore.getInstance()
 
         val query = FirebaseFirestore.getInstance()
-            .collection("chats")
-            .orderBy("timestamp")
-            .limit(50)
-//        val options: FirestoreRecyclerOptions<Category> = Builder<Category>()
-//            .setQuery(query, Category::class.java)
-//            .build()
+            .collection("categories")
+
+        val options: FirestoreRecyclerOptions<Category> = FirestoreRecyclerOptions.Builder<Category>()
+            .setQuery(query, Category::class.java)
+            .build()
+
+        categoriesRecyclerView.layoutManager = StaggeredGridLayoutManager(5,RecyclerView.HORIZONTAL)
+        val adapter = CategoriesAdapter(options)
+        adapter.startListening()
+        categoriesRecyclerView.adapter = adapter
     }
 
 }

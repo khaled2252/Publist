@@ -1,4 +1,6 @@
 package co.publist.features.categories
 
-class Category
-(val en : String,var id : String)
+class Category() {
+    var id: String? = null
+    var name :String? = null
+}
