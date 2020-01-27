@@ -4,12 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import co.publist.R
 import co.publist.core.platform.BaseFragment
 import co.publist.core.platform.ViewModelFactory
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
+import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.fragment_categories.*
 import javax.inject.Inject
@@ -47,12 +46,9 @@ class CategoriesFragment : BaseFragment<CategoriesViewModel>() {
             .setQuery(query, Category::class.java)
             .build()
 
+        val layoutManager = FlexboxLayoutManager(this.context)
 
-        val displayMetrics = context!!.resources.displayMetrics
-        val dpWidth = displayMetrics.widthPixels / displayMetrics.density
-        val noOfColumns = (dpWidth /100 ).toInt()
-
-        categoriesRecyclerView.layoutManager = StaggeredGridLayoutManager(noOfColumns,RecyclerView.HORIZONTAL)
+            categoriesRecyclerView.layoutManager = layoutManager
         val adapter = CategoriesAdapter(options,this) { id, adding ->
             if (adding)
                 viewModel.addSelectedCategory(id)

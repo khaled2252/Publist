@@ -11,6 +11,7 @@ import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import kotlinx.android.synthetic.main.item_category.view.*
 
+
 class CategoriesAdapter(
     options: FirestoreRecyclerOptions<Category>,
     val categoriesFragment : CategoriesFragment,
@@ -32,6 +33,12 @@ class CategoriesAdapter(
             category: Category,
             position: Int
         ) {
+            //todo align items to fill rows
+//            val lp: ViewGroup.LayoutParams = itemView.layoutParams
+//            if (lp is FlexboxLayoutManager.LayoutParams) {
+//                lp.flexGrow = 2.0f
+//                lp.setAlignSelf(AlignItems.STRETCH)
+//            }
             category.id = snapshots.getSnapshot(position).id
             itemView.btnCategoryName.text = category.name
             itemView.btnCategoryName.addOnCheckedChangeListener { button, isChecked ->

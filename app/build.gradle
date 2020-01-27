@@ -86,4 +86,7 @@ dependencies {
     implementation 'com.jakewharton.timber:timber:4.7.1'
     implementation 'com.orhanobut:logger:2.2.0'
 
+    //UI
+    implementation 'com.google.android:flexbox:2.0.1'
+
 }
