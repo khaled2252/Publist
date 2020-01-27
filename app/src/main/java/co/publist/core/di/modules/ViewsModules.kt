@@ -1,6 +1,7 @@
 package co.publist.core.di.modules
 
 import co.publist.features.categories.CategoriesFragment
+import co.publist.features.editprofile.EditProfileActivity
 import co.publist.features.intro.IntroActivity
 import co.publist.features.login.LoginActivity
 import co.publist.features.splash.SplashActivity
@@ -22,5 +23,8 @@ abstract class ViewsModules {
 
     @ContributesAndroidInjector
     abstract fun contributeCategoriesFragment(): CategoriesFragment
+
+    @ContributesAndroidInjector
+    abstract fun contributeEditProfileActivity(): EditProfileActivity
 
 }

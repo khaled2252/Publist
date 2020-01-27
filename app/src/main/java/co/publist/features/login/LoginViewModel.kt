@@ -12,7 +12,8 @@ import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
 import javax.inject.Inject
 
-class LoginViewModel @Inject constructor(private val loginRepository: LoginRepository) :
+class LoginViewModel @Inject constructor(
+    private val loginRepository: LoginRepository) :
     BaseViewModel() {
 
     val mGoogleSignInClient = MutableLiveData<GoogleSignInClient>()
@@ -63,7 +64,14 @@ class LoginViewModel @Inject constructor(private val loginRepository: LoginRepos
 
     private fun addUidInUserAccounts(documentId: String, uId: String, platform: String) {
         subscribe(loginRepository.addUidInUserAccounts(documentId, uId, platform), Action {
-            newUserLoggedIn.postValue(false)
+            handleLoggedInUser(documentId, false)
+        })
+    }
+
+    private fun handleLoggedInUser(documentId: String, newUser: Boolean) {
+        subscribe(loginRepository.fetchUserInformation(documentId), Consumer {
+            loginRepository.saveUserToSharedPreferences(it)
+            newUserLoggedIn.postValue(newUser)
         })
     }
 
@@ -81,9 +89,9 @@ class LoginViewModel @Inject constructor(private val loginRepository: LoginRepos
             })
     }
 
-    private fun addNewUserAccount(docId: String, uId: String, platform: String) {
-        subscribe(loginRepository.addNewUserAccount(docId, uId, platform), Action {
-            newUserLoggedIn.postValue(true)
+    private fun addNewUserAccount(documentId: String, uId: String, platform: String) {
+        subscribe(loginRepository.addNewUserAccount(documentId, uId, platform), Action {
+            handleLoggedInUser(documentId, true)
         })
     }
 

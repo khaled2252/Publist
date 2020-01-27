@@ -8,6 +8,7 @@ import androidx.lifecycle.Observer
 import co.publist.R
 import co.publist.core.platform.BaseActivity
 import co.publist.core.platform.ViewModelFactory
+import co.publist.features.editprofile.EditProfileActivity
 import co.publist.features.intro.IntroActivity
 import com.facebook.CallbackManager
 import com.facebook.FacebookCallback
@@ -115,7 +116,7 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
             else
                 Toast.makeText(this, "Welcome back!", Toast.LENGTH_SHORT).show()
 
-            startActivity(Intent(this,IntroActivity::class.java))
+            startActivity(Intent(this,EditProfileActivity::class.java))
         })
     }
 

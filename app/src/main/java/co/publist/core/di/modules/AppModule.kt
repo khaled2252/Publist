@@ -2,6 +2,8 @@ package co.publist.core.di.modules;
 
 import android.content.Context
 import co.publist.R
+import co.publist.core.data.local.LocalDataSource
+import co.publist.core.data.local.LocalDataSourceImpl
 import com.facebook.CallbackManager
 import com.facebook.internal.CallbackManagerImpl
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -42,5 +44,11 @@ class AppModule {
     @Provides
     fun provideCallbackManager(): CallbackManager {
         return CallbackManagerImpl()
+    }
+
+    @Singleton
+    @Provides
+    fun provideLocalDataSource(context: Context): LocalDataSource {
+        return LocalDataSourceImpl(context)
     }
 }

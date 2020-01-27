@@ -1,6 +1,8 @@
 package co.publist.features.login.data
 
 import android.os.Bundle
+import co.publist.core.data.User
+import co.publist.core.data.local.LocalDataSource
 import co.publist.core.platform.BaseRepository
 import com.facebook.AccessToken
 import com.facebook.CallbackManager
@@ -17,10 +19,12 @@ import io.reactivex.Single
 import javax.inject.Inject
 
 class LoginRepository @Inject constructor(
-    var mFirebaseAuth: FirebaseAuth,
-    var mFirebaseFirestore: FirebaseFirestore,
-    var mGoogleSignInClient: GoogleSignInClient,
-    var mCallbackManager: CallbackManager
+    private val mFirebaseAuth: FirebaseAuth,
+    private val mFirebaseFirestore: FirebaseFirestore,
+    val mGoogleSignInClient: GoogleSignInClient, //todo move google,callback to viewmodel
+    val mCallbackManager: CallbackManager,
+    private val localDataSource: LocalDataSource
+
 ) : BaseRepository(), LoginRepositoryInterface {
     override fun fetchUserDocId(email: String): Single<String?> {
         return Single.create { singleEmitter ->
@@ -181,5 +185,23 @@ class LoginRepository @Inject constructor(
         }
     }
 
+    override fun fetchUserInformation(userDocId: String): Single<User> {
+        return Single.create { singleEmitter ->
+            mFirebaseFirestore.let {
+                it.collection("users")
+                    .document(userDocId)
+                    .get().addOnFailureListener { exception ->
+                        singleEmitter.onError(exception)
+                    }.addOnSuccessListener { documentSnapshot ->
+                        val user = documentSnapshot.toObject(User::class.java)
+                        singleEmitter.onSuccess(user!!)
+                    }
+            }
+        }
+    }
+
+    override fun saveUserToSharedPreferences(user: User) {
+        localDataSource.getSharedPreferences().saveUser(user)
+    }
 
 }
