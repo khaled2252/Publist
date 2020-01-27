@@ -40,6 +40,10 @@ class IntroActivity : BaseActivity<IntroViewModel>() {
         loginButton.setOnClickListener {
             finish()
         }
+
+        skipTextView.setOnClickListener {
+            //todo navigate to home
+        }
     }
 
 }

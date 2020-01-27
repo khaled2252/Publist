@@ -23,7 +23,13 @@ class CategoriesAdapter(
             LayoutInflater.from(parent.context).inflate(R.layout.item_category, parent, false)
         return CategoryViewHolder(view)
     }
+    override fun getItemId(position: Int): Long {
+        return position.toLong()
+    }
 
+    override fun getItemViewType(position: Int): Int {
+        return position
+    }
     override fun onBindViewHolder(holder: CategoryViewHolder, position: Int, category: Category) {
         holder.bind(category, position)
     }
@@ -41,31 +47,33 @@ class CategoriesAdapter(
 //            }
             category.id = snapshots.getSnapshot(position).id
             itemView.btnCategoryName.text = category.name
-            itemView.btnCategoryName.addOnCheckedChangeListener { button, isChecked ->
-                if (!isChecked) {
-                    button.setBackgroundColor(
+            itemView.btnCategoryName.setOnClickListener {
+                if (itemView.btnCategoryName.isSelected) {
+                    itemView.btnCategoryName.setBackgroundColor(
                         ContextCompat.getColor(
                             itemView.context,
                             R.color.gray
                         )
                     )
-                    button.setTextColor(
+                    itemView.btnCategoryName.setTextColor(
                         ContextCompat.getColor(
                             itemView.context,
                             R.color.outerSpace
                         )
                     )
+                    itemView.btnCategoryName.isSelected=false
                     //unchecked
                     listener(category.id!!, false)
                 } else {
                     if (categoriesFragment.viewModel.selectedCategories.size <5) {
-                        button.setBackgroundColor(
+                        itemView.btnCategoryName.setBackgroundColor(
                             ContextCompat.getColor(
                                 itemView.context,
                                 R.color.outerSpace
                             )
                         )
-                        button.setTextColor(ContextCompat.getColor(itemView.context, R.color.gray))
+                        itemView.btnCategoryName.setTextColor(ContextCompat.getColor(itemView.context, R.color.gray))
+                        itemView.btnCategoryName.isSelected=true
                         //checked
                         listener(category.id!!, true)
 
@@ -74,8 +82,7 @@ class CategoriesAdapter(
                             itemView.context, "You can select at most 5 categories",
                             Toast.LENGTH_SHORT
                         ).show()
-                }
-            }
+                }            }
         }
     }
 }

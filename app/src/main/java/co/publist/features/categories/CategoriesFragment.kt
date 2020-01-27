@@ -56,6 +56,7 @@ class CategoriesFragment : BaseFragment<CategoriesViewModel>() {
                 viewModel.removeSelectedCategory(id)
 
         }
+        adapter.setHasStableIds(true) //To avoid recycling view holders while scrolling thus removing selected colors
         adapter.startListening()
         categoriesRecyclerView.adapter = adapter
 
