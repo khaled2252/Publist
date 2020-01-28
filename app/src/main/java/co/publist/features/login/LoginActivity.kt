@@ -8,6 +8,7 @@ import androidx.lifecycle.Observer
 import co.publist.R
 import co.publist.core.platform.BaseActivity
 import co.publist.core.platform.ViewModelFactory
+import co.publist.features.intro.IntroActivity
 import com.facebook.CallbackManager
 import com.facebook.FacebookCallback
 import com.facebook.FacebookException
@@ -75,6 +76,11 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
                 startActivityForResult(signInIntent, RC_SIGN_IN)
             }
         }
+
+        buttonGuest.setOnClickListener {
+            startActivity(Intent(this,IntroActivity::class.java))
+
+        }
     }
 
     private fun setObservers() {
@@ -108,6 +114,8 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
                 Toast.makeText(this, "Registered successfully", Toast.LENGTH_SHORT).show()
             else
                 Toast.makeText(this, "Welcome back!", Toast.LENGTH_SHORT).show()
+
+            startActivity(Intent(this,IntroActivity::class.java))
         })
     }
 

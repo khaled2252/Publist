@@ -21,6 +21,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import co.publist.core.di.helper.ViewModelKey
 import co.publist.core.platform.ViewModelFactory
+import co.publist.features.categories.CategoriesViewModel
+import co.publist.features.intro.IntroViewModel
 import co.publist.features.login.LoginViewModel
 import co.publist.features.splash.SplashViewModel
 import dagger.Binds
@@ -40,8 +42,12 @@ abstract class ViewModelModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey(LoginViewModel::class)
-    abstract fun bindLoginViewModel(loginViewModel: LoginViewModel): ViewModel
+    @ViewModelKey(IntroViewModel::class)
+    abstract fun bindIntroViewModel(introViewModel: IntroViewModel): ViewModel
 
+    @Binds
+    @IntoMap
+    @ViewModelKey(CategoriesViewModel::class)
+    abstract fun bindCategoriesViewModel(categoriesViewModel: CategoriesViewModel): ViewModel
 
 }

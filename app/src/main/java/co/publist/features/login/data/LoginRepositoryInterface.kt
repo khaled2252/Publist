@@ -11,7 +11,7 @@ interface LoginRepositoryInterface {
     fun addNewUser(
         email: String,
         name: String,
-        pictureUrl: String,
+        profilePictureUrl: String,
         uid: String,
         platform: String
     ): Single<String>

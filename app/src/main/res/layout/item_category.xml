@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnCategoryName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="7dp"
+        android:textColor="@color/outerSpace"
+        android:backgroundTint="@color/gray"
+        android:fontFamily="@font/sfprodisplaysemibold"
+        android:textSize="14sp"
+        android:textAllCaps="false"
+        app:cornerRadius="7dp"
+        android:stateListAnimator="@null"
+        android:checkable="true"
+        tools:text="test" />
+
+</LinearLayout>
