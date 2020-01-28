@@ -12,7 +12,6 @@ import co.publist.core.platform.BaseFragment
 import co.publist.core.platform.ViewModelFactory
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.android.flexbox.FlexboxLayoutManager
-import com.google.android.material.button.MaterialButton
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.fragment_categories.*
 import javax.inject.Inject
@@ -53,19 +52,24 @@ class CategoriesFragment : BaseFragment<CategoriesViewModel>() {
         val layoutManager = FlexboxLayoutManager(this.context)
 
             categoriesRecyclerView.layoutManager = layoutManager
-        val adapter = CategoriesAdapter(options) { id, isAdding , buttonId ->
-            viewModel.addSelectedCategory(id,isAdding,buttonId)
+        val adapter = CategoriesAdapter(options) { id , button ->
+            viewModel.addCategory(id,button)
         }
         adapter.setHasStableIds(true) //To avoid recycling view holders while scrolling thus removing selected colors
         adapter.startListening()
         categoriesRecyclerView.adapter = adapter
 
-        viewModel.reachedMaximumSelection.observe(viewLifecycleOwner, Observer {
-            view?.findViewById<MaterialButton>(it)?.let{ button ->
+        viewModel.addSelectedCategory.observe(viewLifecycleOwner, Observer {button ->
+                button.setBackgroundColor(ContextCompat.getColor(button.context,R.color.outerSpace))
+                button.setTextColor(ContextCompat.getColor(button.context, R.color.gray))
+        })
+
+        viewModel.removeSelectedCategory.observe(viewLifecycleOwner, Observer {button ->
                 button.setBackgroundColor(ContextCompat.getColor(button.context,R.color.gray))
                 button.setTextColor(ContextCompat.getColor(button.context,R.color.outerSpace))
-                button.isSelected=false
-            }
+        })
+
+        viewModel.reachedMaximumSelection.observe(viewLifecycleOwner, Observer {
             Toast.makeText(this.context, "You can select at most 5 categories",Toast.LENGTH_SHORT).show()
         })
     }
