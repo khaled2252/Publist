@@ -8,21 +8,20 @@ import javax.inject.Inject
 
 class CategoriesViewModel @Inject constructor(private val categoriesRepository: CategoriesRepositoryInterface) : BaseViewModel() {
 
-    val selectedCategories = ArrayList<String>()
-    val addSelectedCategory = MutableLiveData<Boolean>()
-    val removeSelectedCategory = MutableLiveData<Boolean>()
+    val selectedCategoriesList = ArrayList<String>()
+    val selectedCategory = MutableLiveData<Boolean>()
     val reachedMaximumSelection = MutableLiveData<Boolean>()
 
     fun addCategory(categoryId: String?) {
-        if (!selectedCategories.contains(categoryId)) {
-            if (selectedCategories.size < 5) {
-                selectedCategories.add(categoryId!!)
-                addSelectedCategory.postValue(true)
+        if (!selectedCategoriesList.contains(categoryId)) {
+            if (selectedCategoriesList.size < 5) {
+                selectedCategoriesList.add(categoryId!!)
+                selectedCategory.postValue(true)
             } else
                 reachedMaximumSelection.postValue(true)
         } else {
-            selectedCategories.remove(categoryId!!)
-            removeSelectedCategory.postValue(true)
+            selectedCategoriesList.remove(categoryId!!)
+            selectedCategory.postValue(false)
         }
     }
 

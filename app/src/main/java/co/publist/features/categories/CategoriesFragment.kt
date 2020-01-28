@@ -64,35 +64,37 @@ class CategoriesFragment : BaseFragment<CategoriesViewModel>() {
     }
 
     private fun setObservers() {
-        viewModel.addSelectedCategory.observe(viewLifecycleOwner, Observer {
-            lastClickedButton.setBackgroundColor(
-                ContextCompat.getColor(
-                    lastClickedButton.context,
-                    R.color.outerSpace
+        viewModel.selectedCategory.observe(viewLifecycleOwner, Observer { isAdding ->
+            if (isAdding) {
+                lastClickedButton.setBackgroundColor(
+                    ContextCompat.getColor(
+                        lastClickedButton.context,
+                        R.color.outerSpace
+                    )
                 )
-            )
-            lastClickedButton.setTextColor(
-                ContextCompat.getColor(
-                    lastClickedButton.context,
-                    R.color.gray
+                lastClickedButton.setTextColor(
+                    ContextCompat.getColor(
+                        lastClickedButton.context,
+                        R.color.gray
+                    )
                 )
-            )
-        })
+            } else {
+                lastClickedButton.setBackgroundColor(
+                    ContextCompat.getColor(
+                        lastClickedButton.context,
+                        R.color.gray
+                    )
+                )
+                lastClickedButton.setTextColor(
+                    ContextCompat.getColor(
+                        lastClickedButton.context,
+                        R.color.outerSpace
+                    )
+                )
+            }
+        }
 
-        viewModel.removeSelectedCategory.observe(viewLifecycleOwner, Observer {
-            lastClickedButton.setBackgroundColor(
-                ContextCompat.getColor(
-                    lastClickedButton.context,
-                    R.color.gray
-                )
-            )
-            lastClickedButton.setTextColor(
-                ContextCompat.getColor(
-                    lastClickedButton.context,
-                    R.color.outerSpace
-                )
-            )
-        })
+        )
 
         viewModel.reachedMaximumSelection.observe(viewLifecycleOwner, Observer {
             Toast.makeText(this.context, "You can select at most 5 categories", Toast.LENGTH_SHORT)

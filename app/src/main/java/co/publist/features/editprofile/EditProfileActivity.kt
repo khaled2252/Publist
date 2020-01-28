@@ -8,7 +8,7 @@ import androidx.lifecycle.Observer
 import co.publist.R
 import co.publist.core.platform.BaseActivity
 import co.publist.core.platform.ViewModelFactory
-import co.publist.core.utils.Utils.loadImage
+import co.publist.core.utils.Utils.loadProfilePicture
 import co.publist.databinding.ActivityEditProfileBinding
 import co.publist.features.categories.CategoriesFragment
 import kotlinx.android.synthetic.main.activity_edit_profile.*
@@ -30,10 +30,11 @@ class EditProfileActivity : BaseActivity<EditProfileViewModel>() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val binding = DataBindingUtil.setContentView<ActivityEditProfileBinding>(this, R.layout.activity_edit_profile)
+        DataBindingUtil.setContentView<ActivityEditProfileBinding>(this, R.layout.activity_edit_profile).executePendingBindings()
+
         val categoriesFragment= supportFragmentManager.findFragmentById(R.id.categoriesFragment) as CategoriesFragment
         buttonFindWishes.setOnClickListener {
-            if(categoriesFragment.viewModel.selectedCategories.size<1)
+            if(categoriesFragment.viewModel.selectedCategoriesList.size<1)
                 Toast.makeText(this,"You must select at least 1 category",
                     Toast.LENGTH_SHORT).show()
             else {
@@ -42,9 +43,8 @@ class EditProfileActivity : BaseActivity<EditProfileViewModel>() {
         }
         viewModel.onCreated()
         viewModel.userLiveData.observe(this, Observer {user ->
-            nameTextView.text =user.name
-            loadImage(profilePictureImageView,user?.profilePictureUrl)
-            //todo loadSelectedCategories()
+            nameTextView.text = user.name
+            loadProfilePicture(profilePictureImageView, user.profilePictureUrl)
         })
 
     }

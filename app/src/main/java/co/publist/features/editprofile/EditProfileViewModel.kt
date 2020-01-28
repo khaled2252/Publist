@@ -15,7 +15,6 @@ class EditProfileViewModel @Inject constructor(private val editProfileRepository
         val user = editProfileRepository.getUserInformation()
         if (user != null)
             userLiveData.postValue(user)
-
     }
 
 }
