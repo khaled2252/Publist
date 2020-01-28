@@ -8,9 +8,8 @@
     <application
         android:name="co.publist.core.PubListApp"
         android:allowBackup="true"
-        android:icon="@drawable/ic_logo"
+        android:icon="@drawable/ic_logo_white_background"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
@@ -34,12 +33,15 @@
 
         <activity
             android:name=".features.intro.IntroActivity"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.IntroScreen">
         </activity>
 
         <activity
             android:name=".features.editprofile.EditProfileActivity"
-            android:screenOrientation="portrait">
+            android:label="@string/edit_profile"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.EditProfileScreen">
         </activity>
 
         <meta-data
