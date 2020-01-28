@@ -6,6 +6,7 @@ import android.os.IBinder
 import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import androidx.databinding.BindingAdapter
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 
@@ -17,10 +18,16 @@ object Utils {
         inputMethodManager.hideSoftInputFromWindow(iBinder, 0)
     }
 
-    @BindingAdapter("profilePicture")
-    fun loadImage(view: ImageView, imageUrl: String?) {
+    @JvmStatic
+    @BindingAdapter("profilePictureUrl")
+    fun loadProfilePicture(view: ImageView, imageUrl: String?) {
+        val circularProgressDrawable = CircularProgressDrawable(view.context)
+        circularProgressDrawable.strokeWidth = 5f
+        circularProgressDrawable.centerRadius = 30f
+        circularProgressDrawable.start()
         Glide.with(view)
             .load(imageUrl)
+            .placeholder(circularProgressDrawable)
             .apply(RequestOptions.circleCropTransform())
             .into(view)
     }

@@ -1,31 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="colorPrimary">@color/sunsetOrange</item>
         <item name="colorPrimaryDark">@color/white</item>
         <item name="colorAccent">@color/white</item>
+        <!-- Status bar -->
+        <item name="android:statusBarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
-    <style name="AppTheme.SplashScreen" >
+    <style name="AppTheme.SplashScreen">
         <item name="android:statusBarColor">@color/sunsetOrange</item>
+        <item name="android:windowLightStatusBar">false</item>
         <!--        To remove white screen before splash-->
         <item name="android:windowDisablePreview">true</item>
         <item name="android:windowIsTranslucent">true</item>
     </style>
 
-    <!-- Login screen -->
-    <style name="AppTheme.LoginScreen" >
+    <style name="AppTheme.LoginScreen">
         <item name="android:statusBarColor">@color/sunsetOrange</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
-
-    <!-- Intro screen -->
-    <style name="AppTheme.IntroScreen" >
-    </style>
-
-    <!-- Edit Profile screen -->
-    <style name="AppTheme.EditProfileScreen" >
-        <item name="android:windowNoTitle">false</item>
-    </style>
-
 </resources>

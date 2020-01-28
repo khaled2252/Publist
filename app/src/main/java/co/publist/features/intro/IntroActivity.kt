@@ -29,7 +29,7 @@ class IntroActivity : BaseActivity<IntroViewModel>() {
 
         val categoriesFragment= supportFragmentManager.findFragmentById(R.id.categoriesFragment) as CategoriesFragment
         buttonFindWishes.setOnClickListener {
-            if(categoriesFragment.viewModel.selectedCategories.size<1)
+            if(categoriesFragment.viewModel.selectedCategoriesList.size<1)
                 Toast.makeText(this,"You must select at least 1 category",
                     Toast.LENGTH_SHORT).show()
             else {
