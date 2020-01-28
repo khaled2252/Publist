@@ -2,28 +2,31 @@ package co.publist.features.categories
 
 import androidx.lifecycle.MutableLiveData
 import co.publist.core.platform.BaseViewModel
-import com.google.android.material.button.MaterialButton
+import co.publist.features.categories.data.CategoriesRepositoryInterface
+import com.google.firebase.firestore.Query
 import javax.inject.Inject
 
-class CategoriesViewModel @Inject constructor() : BaseViewModel() {
+class CategoriesViewModel @Inject constructor(private val categoriesRepository: CategoriesRepositoryInterface) : BaseViewModel() {
 
     val selectedCategories = ArrayList<String>()
-    val addSelectedCategory = MutableLiveData<MaterialButton>()
-    val removeSelectedCategory = MutableLiveData<MaterialButton>()
+    val addSelectedCategory = MutableLiveData<Boolean>()
+    val removeSelectedCategory = MutableLiveData<Boolean>()
     val reachedMaximumSelection = MutableLiveData<Boolean>()
-    fun addCategory(
-        categoryId: String?,
-        buttonId: MaterialButton
-    ) {
+
+    fun addCategory(categoryId: String?) {
         if (!selectedCategories.contains(categoryId)) {
             if (selectedCategories.size < 5) {
                 selectedCategories.add(categoryId!!)
-                addSelectedCategory.postValue(buttonId)
+                addSelectedCategory.postValue(true)
             } else
                 reachedMaximumSelection.postValue(true)
         } else {
             selectedCategories.remove(categoryId!!)
-            removeSelectedCategory.postValue(buttonId)
+            removeSelectedCategory.postValue(true)
         }
+    }
+
+    fun getCategoriesQuery(): Query {
+        return categoriesRepository.getCategoriesQuery()
     }
 }

@@ -17,6 +17,8 @@
 package co.publist.core.di.modules
 
 
+import co.publist.features.categories.data.CategoriesRepository
+import co.publist.features.categories.data.CategoriesRepositoryInterface
 import co.publist.features.login.data.LoginRepository
 import co.publist.features.login.data.LoginRepositoryInterface
 import dagger.Binds
@@ -30,4 +32,8 @@ abstract class RepositoriesModule {
     @Binds
     @Singleton
     abstract fun bindLoginRepository(loginRepository: LoginRepository) : LoginRepositoryInterface
+
+    @Binds
+    @Singleton
+    abstract fun bindCategoriesRepository(categoriesRepository: CategoriesRepository) : CategoriesRepositoryInterface
 }

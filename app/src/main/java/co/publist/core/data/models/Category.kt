@@ -1,4 +1,4 @@
-package co.publist.features.categories
+package co.publist.core.data.models
 
 class Category {
     var name :String? = null
