@@ -1,4 +1,4 @@
-package co.publist.core.data
+package co.publist.core.data.models
 
 data class User (
     var myCategories : ArrayList<String>? = null,

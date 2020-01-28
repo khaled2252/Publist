@@ -1,21 +1,21 @@
 package co.publist.features.editprofile
 
-import co.publist.core.data.User
+import androidx.lifecycle.MutableLiveData
+import co.publist.core.data.models.User
 import co.publist.core.platform.BaseViewModel
-import co.publist.features.editprofile.data.EditProfileRepository
+import co.publist.features.editprofile.data.EditProfileRepositoryInterface
 import javax.inject.Inject
 
 
-class EditProfileViewModel @Inject constructor(private val editProfileRepository: EditProfileRepository) : BaseViewModel() {
+class EditProfileViewModel @Inject constructor(private val editProfileRepository: EditProfileRepositoryInterface) : BaseViewModel() {
 
-    var user : User? =null
+    var userLiveData = MutableLiveData<User>()
 
-    fun onCreated() : User? {
-        user = editProfileRepository.getUserInformation()
-        return if (user!=null)
-            user as User
-        else
-            null
+    fun onCreated(){
+        val user = editProfileRepository.getUserInformation()
+        if (user != null)
+            userLiveData.postValue(user)
+
     }
 
 }

@@ -3,7 +3,7 @@ package co.publist.core.data.local
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
-import co.publist.core.data.User
+import co.publist.core.data.models.User
 import com.google.gson.Gson
 
 import javax.inject.Inject

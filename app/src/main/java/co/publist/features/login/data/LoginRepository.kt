@@ -1,8 +1,8 @@
 package co.publist.features.login.data
 
 import android.os.Bundle
-import co.publist.core.data.User
 import co.publist.core.data.local.LocalDataSource
+import co.publist.core.data.models.User
 import co.publist.core.platform.BaseRepository
 import com.facebook.AccessToken
 import com.facebook.CallbackManager
