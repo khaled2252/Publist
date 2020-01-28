@@ -3,19 +3,18 @@ package co.publist.features.categories
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import co.publist.R
+import co.publist.core.data.models.Category
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
+import com.google.android.material.button.MaterialButton
 import kotlinx.android.synthetic.main.item_category.view.*
 
 
 class CategoriesAdapter(
     options: FirestoreRecyclerOptions<Category>,
-    val categoriesFragment : CategoriesFragment,
-    val listener: ( id : String,adding : Boolean) ->Unit
+    val listener: (documentId : String?, buttonId : MaterialButton) ->Unit
 ) :
     FirestoreRecyclerAdapter<Category, CategoriesAdapter.CategoryViewHolder>(options) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategoryViewHolder {
@@ -39,50 +38,12 @@ class CategoriesAdapter(
             category: Category,
             position: Int
         ) {
-            //todo align items to fill rows
-//            val lp: ViewGroup.LayoutParams = itemView.layoutParams
-//            if (lp is FlexboxLayoutManager.LayoutParams) {
-//                lp.flexGrow = 2.0f
-//                lp.setAlignSelf(AlignItems.STRETCH)
-//            }
-            category.id = snapshots.getSnapshot(position).id
             itemView.btnCategoryName.text = category.name
-            itemView.btnCategoryName.setOnClickListener {
-                if (itemView.btnCategoryName.isSelected) {
-                    itemView.btnCategoryName.setBackgroundColor(
-                        ContextCompat.getColor(
-                            itemView.context,
-                            R.color.gray
-                        )
-                    )
-                    itemView.btnCategoryName.setTextColor(
-                        ContextCompat.getColor(
-                            itemView.context,
-                            R.color.outerSpace
-                        )
-                    )
-                    itemView.btnCategoryName.isSelected=false
-                    //unchecked
-                    listener(category.id!!, false)
-                } else {
-                    if (categoriesFragment.viewModel.selectedCategories.size <5) {
-                        itemView.btnCategoryName.setBackgroundColor(
-                            ContextCompat.getColor(
-                                itemView.context,
-                                R.color.outerSpace
-                            )
-                        )
-                        itemView.btnCategoryName.setTextColor(ContextCompat.getColor(itemView.context, R.color.gray))
-                        itemView.btnCategoryName.isSelected=true
-                        //checked
-                        listener(category.id!!, true)
+            val documentId = snapshots.getSnapshot(position).id
 
-                    } else
-                        Toast.makeText(
-                            itemView.context, "You can select at most 5 categories",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                }            }
+            itemView.btnCategoryName.setOnClickListener {
+                listener(documentId,itemView.btnCategoryName)
+            }
         }
     }
 }
