@@ -4,11 +4,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.Observer
 import co.publist.R
 import co.publist.core.platform.BaseFragment
 import co.publist.core.platform.ViewModelFactory
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.android.flexbox.FlexboxLayoutManager
+import com.google.android.material.button.MaterialButton
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.fragment_categories.*
 import javax.inject.Inject
@@ -49,17 +53,21 @@ class CategoriesFragment : BaseFragment<CategoriesViewModel>() {
         val layoutManager = FlexboxLayoutManager(this.context)
 
             categoriesRecyclerView.layoutManager = layoutManager
-        val adapter = CategoriesAdapter(options,this) { id, adding ->
-            if (adding)
-                viewModel.addSelectedCategory(id)
-            else
-                viewModel.removeSelectedCategory(id)
-
+        val adapter = CategoriesAdapter(options) { id, isAdding , buttonId ->
+            viewModel.addSelectedCategory(id,isAdding,buttonId)
         }
         adapter.setHasStableIds(true) //To avoid recycling view holders while scrolling thus removing selected colors
         adapter.startListening()
         categoriesRecyclerView.adapter = adapter
 
+        viewModel.reachedMaximumSelection.observe(viewLifecycleOwner, Observer {
+            view?.findViewById<MaterialButton>(it)?.let{ button ->
+                button.setBackgroundColor(ContextCompat.getColor(button.context,R.color.gray))
+                button.setTextColor(ContextCompat.getColor(button.context,R.color.outerSpace))
+                button.isSelected=false
+            }
+            Toast.makeText(this.context, "You can select at most 5 categories",Toast.LENGTH_SHORT).show()
+        })
     }
 
 }
