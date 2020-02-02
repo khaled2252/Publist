@@ -19,13 +19,11 @@ class CategoriesRepository @Inject constructor(
 
     override fun getUserCategories(): Single<ArrayList<String>> {
         return Single.create { singleEmitter ->
-            val userDocId = localDataSource.getSharedPreferences().getUser()?.id
-            if (userDocId == null) {
-                singleEmitter.onSuccess(ArrayList())
-            } else {
+            val user = localDataSource.getSharedPreferences().getUser()
+            if (user?.myCategories == null) {
                 val userCategories = ArrayList<String>()
                 mFirebaseFirestore.collection("users")
-                    .document(userDocId)
+                    .document(user?.id!!)
                     .collection("myCategories").get()
                     .addOnFailureListener { exception ->
                         singleEmitter.onError(exception)
@@ -33,15 +31,19 @@ class CategoriesRepository @Inject constructor(
                         for (document in documents) {
                             userCategories.add(document.id)
                         }
+                        localDataSource.getSharedPreferences().updateUserCategories(userCategories)
                         singleEmitter.onSuccess(userCategories)
                     }
             }
+            else
+                singleEmitter.onSuccess(user.myCategories!!)
         }
     }
 
     override fun updateUserCategories(selectedCategoriesList : ArrayList<String>) : Completable {
         return Completable.create {completableEmitter ->
             localDataSource.getSharedPreferences().updateUserCategories(selectedCategoriesList)
+
             val docId = localDataSource.getSharedPreferences().getUser()?.id
             val batch: WriteBatch = mFirebaseFirestore.batch()
             val collectionReference = mFirebaseFirestore

@@ -70,7 +70,6 @@ class LoginViewModel @Inject constructor(
 
     private fun handleLoggedInUser(documentId: String, newUser: Boolean) {
         subscribe(loginRepository.fetchUserInformation(documentId), Consumer {
-            loginRepository.saveUserToSharedPreferences(it)
             newUserLoggedIn.postValue(newUser)
         })
     }

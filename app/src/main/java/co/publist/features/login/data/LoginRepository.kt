@@ -115,6 +115,9 @@ class LoginRepository @Inject constructor(
                 )
                 users.add(data).addOnSuccessListener { documentReference ->
                     singleEmitter.onSuccess(documentReference.id)
+                    users.document(documentReference.id).collection("myCategories").add(emptyMap<String,String>())
+                    users.document(documentReference.id).collection("myFavorites").add(emptyMap<String,String>())
+                    users.document(documentReference.id).collection("myLists").add(emptyMap<String,String>())
                 }.addOnFailureListener { exception ->
                     singleEmitter.onError(exception)
                 }
@@ -195,14 +198,11 @@ class LoginRepository @Inject constructor(
                     }.addOnSuccessListener { documentSnapshot ->
                         val user = documentSnapshot.toObject(User::class.java)
                         user?.id=userDocId
-                        singleEmitter.onSuccess(user!!)
+                        localDataSource.getSharedPreferences().setUser(user!!)
+                        singleEmitter.onSuccess(user)
                     }
             }
         }
-    }
-
-    override fun saveUserToSharedPreferences(user: User) {
-        localDataSource.getSharedPreferences().setUser(user)
     }
 
 }

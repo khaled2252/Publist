@@ -49,10 +49,7 @@ class EditProfileActivity : BaseActivity<EditProfileViewModel>() {
             loadProfilePicture(profilePictureImageView, user.profilePictureUrl)
         })
 
-        categoriesFragment.viewModel.actionButtonLiveData.observe(this, Observer { viable ->
-            if (viable)
-            //todo navigate to home
-            else
+        categoriesFragment.viewModel.actionButtonLiveData.observe(this, Observer {
                 Toast.makeText(
                     this,
                     "You must select at least 1 category",
@@ -64,6 +61,7 @@ class EditProfileActivity : BaseActivity<EditProfileViewModel>() {
         categoriesFragment.viewModel.saveCategoriesLiveData.observe(this, Observer {
             Toast.makeText(this, "Saved successfully!", Toast.LENGTH_SHORT)
                 .show()
+            //todo navigate to home
         })
     }
 

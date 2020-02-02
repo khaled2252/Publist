@@ -22,5 +22,4 @@ interface LoginRepositoryInterface {
     fun authenticateFacebookUserWithFirebase(accessToken: String): Single<String>
     fun setFaceBookGraphRequest(accessToken: AccessToken): Single<RegisteringUser>
     fun fetchUserInformation(userDocId: String): Single<User>
-    fun saveUserToSharedPreferences(user: User)
 }

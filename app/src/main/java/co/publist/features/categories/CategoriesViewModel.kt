@@ -48,11 +48,10 @@ class CategoriesViewModel @Inject constructor(
 
     fun handleActionButton(action : String?) {
         if(selectedCategoriesList.size<1)
-            actionButtonLiveData.postValue(false)
+            actionButtonLiveData.postValue(true)
         else {
             if(action=="save")
                 saveCategories()
-            actionButtonLiveData.postValue(true)
         }
     }
 
