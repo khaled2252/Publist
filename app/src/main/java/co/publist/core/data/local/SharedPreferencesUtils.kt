@@ -40,7 +40,7 @@ class SharedPreferencesUtils @Inject constructor(context: Context) :
         mPrefs.edit().clear().apply()
     }
 
-    override fun updateUser(user: User) {
+    override fun setUser(user: User) {
         val gson = Gson()
         val json = gson.toJson(user)
         mPrefs.edit().putString(USER_TAG, json).apply()
@@ -50,6 +50,15 @@ class SharedPreferencesUtils @Inject constructor(context: Context) :
         val gson = Gson()
         val json = mPrefs.getString(USER_TAG, null)
         return gson.fromJson<User>(json, User::class.java)
+    }
+
+    override fun updateUserCategories(categoriesList : ArrayList<String>) {
+        val gson = Gson()
+        val json = mPrefs.getString(USER_TAG, null)
+        val userObject = gson.fromJson<User>(json, User::class.java)
+        userObject.myCategories = categoriesList
+        mPrefs.edit().putString(USER_TAG, gson.toJson(userObject)).apply()
+
     }
 
     companion object {
@@ -66,7 +75,8 @@ interface SharedPreferencesInterface {
 
 interface PublistSharedPreferencesInterface {
     fun getUser(): User?
-    fun updateUser(user: User)
+    fun setUser(user: User)
+    fun updateUserCategories(categoriesList: ArrayList<String>)
     fun clearData()
     fun setToken(token: String)
     fun getToken(): String?

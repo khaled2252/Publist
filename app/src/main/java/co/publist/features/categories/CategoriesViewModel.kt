@@ -10,7 +10,7 @@ import javax.inject.Inject
 
 class CategoriesViewModel @Inject constructor(
     private val categoriesRepository: CategoriesRepositoryInterface,
-    localDataSource: LocalDataSource
+    private val localDataSource: LocalDataSource
 ) : BaseViewModel() {
     init {
         getSelectedCategories(localDataSource.getSharedPreferences().getUser()?.id)
@@ -20,6 +20,7 @@ class CategoriesViewModel @Inject constructor(
     var previouslySelectedCategoriesList = MutableLiveData<ArrayList<String>>()
     val selectedCategory = MutableLiveData<Boolean>()
     val reachedMaximumSelection = MutableLiveData<Boolean>()
+    val actionButtonLiveData = MutableLiveData<Boolean>()
 
     fun addCategory(categoryId: String?) {
         if (!selectedCategoriesList.contains(categoryId)) {
@@ -42,6 +43,20 @@ class CategoriesViewModel @Inject constructor(
         subscribe(categoriesRepository.getUserCategories(userDocId), Consumer { list ->
             previouslySelectedCategoriesList.postValue(list)
         })
+    }
+
+    fun handleActionButton(action : String?) {
+        if(selectedCategoriesList.size<1)
+            actionButtonLiveData.postValue(false)
+        else {
+            if(action=="save")
+                saveCategories()
+            actionButtonLiveData.postValue(true)
+        }
+    }
+
+    private fun saveCategories() {
+        localDataSource.getSharedPreferences().updateUserCategories(selectedCategoriesList)
     }
 
 }

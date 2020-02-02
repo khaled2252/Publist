@@ -202,7 +202,7 @@ class LoginRepository @Inject constructor(
     }
 
     override fun saveUserToSharedPreferences(user: User) {
-        localDataSource.getSharedPreferences().updateUser(user)
+        localDataSource.getSharedPreferences().setUser(user)
     }
 
 }

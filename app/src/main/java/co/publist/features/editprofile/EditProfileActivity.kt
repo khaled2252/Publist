@@ -12,7 +12,6 @@ import co.publist.core.utils.Utils.loadProfilePicture
 import co.publist.databinding.ActivityEditProfileBinding
 import co.publist.features.categories.CategoriesFragment
 import kotlinx.android.synthetic.main.activity_edit_profile.*
-import kotlinx.android.synthetic.main.activity_intro.buttonFindWishes
 import javax.inject.Inject
 
 
@@ -28,25 +27,45 @@ class EditProfileActivity : BaseActivity<EditProfileViewModel>() {
 
     override fun getBaseViewModelFactory() = viewModelFactory
 
+    private lateinit var categoriesFragment: CategoriesFragment
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        DataBindingUtil.setContentView<ActivityEditProfileBinding>(this, R.layout.activity_edit_profile).executePendingBindings()
+        DataBindingUtil.setContentView<ActivityEditProfileBinding>(
+            this,
+            R.layout.activity_edit_profile
+        ).executePendingBindings()
+        categoriesFragment =
+            supportFragmentManager.findFragmentById(R.id.categoriesFragment) as CategoriesFragment
 
-        val categoriesFragment= supportFragmentManager.findFragmentById(R.id.categoriesFragment) as CategoriesFragment
-        buttonFindWishes.setOnClickListener {
-            if(categoriesFragment.viewModel.selectedCategoriesList.size<1)
-                Toast.makeText(this,"You must select at least 1 category",
-                    Toast.LENGTH_SHORT).show()
-            else {
-                //todo navigate to home
-            }
-        }
         viewModel.onCreated()
-        viewModel.userLiveData.observe(this, Observer {user ->
+        setObservers()
+        setListeners()
+    }
+
+    private fun setObservers() {
+        viewModel.userLiveData.observe(this, Observer { user ->
             nameTextView.text = user.name
             loadProfilePicture(profilePictureImageView, user.profilePictureUrl)
         })
 
+        categoriesFragment.viewModel.actionButtonLiveData.observe(this, Observer { viable ->
+            if (viable)
+            //todo navigate to home
+            else
+                Toast.makeText(
+                    this,
+                    "You must select at least 1 category",
+                    Toast.LENGTH_SHORT
+                ).show()
+
+        })
+    }
+
+    private fun setListeners() {
+        buttonSave.setOnClickListener {
+            categoriesFragment.viewModel.handleActionButton("save")
+        }
     }
 
 }
