@@ -60,6 +60,11 @@ class EditProfileActivity : BaseActivity<EditProfileViewModel>() {
                 ).show()
 
         })
+
+        categoriesFragment.viewModel.saveCategoriesLiveData.observe(this, Observer {
+            Toast.makeText(this, "Saved successfully!", Toast.LENGTH_SHORT)
+                .show()
+        })
     }
 
     private fun setListeners() {

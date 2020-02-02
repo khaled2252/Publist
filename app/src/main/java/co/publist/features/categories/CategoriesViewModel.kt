@@ -1,19 +1,18 @@
 package co.publist.features.categories
 
 import androidx.lifecycle.MutableLiveData
-import co.publist.core.data.local.LocalDataSource
 import co.publist.core.platform.BaseViewModel
 import co.publist.features.categories.data.CategoriesRepositoryInterface
 import com.google.firebase.firestore.Query
+import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
 import javax.inject.Inject
 
 class CategoriesViewModel @Inject constructor(
-    private val categoriesRepository: CategoriesRepositoryInterface,
-    private val localDataSource: LocalDataSource
+    private val categoriesRepository: CategoriesRepositoryInterface
 ) : BaseViewModel() {
     init {
-        getSelectedCategories(localDataSource.getSharedPreferences().getUser()?.id)
+        getSelectedCategories()
     }
 
     var selectedCategoriesList = ArrayList<String>()
@@ -21,6 +20,7 @@ class CategoriesViewModel @Inject constructor(
     val selectedCategory = MutableLiveData<Boolean>()
     val reachedMaximumSelection = MutableLiveData<Boolean>()
     val actionButtonLiveData = MutableLiveData<Boolean>()
+    val saveCategoriesLiveData = MutableLiveData<Boolean>()
 
     fun addCategory(categoryId: String?) {
         if (!selectedCategoriesList.contains(categoryId)) {
@@ -39,8 +39,9 @@ class CategoriesViewModel @Inject constructor(
         return categoriesRepository.getCategoriesQuery()
     }
 
-    private fun getSelectedCategories(userDocId: String?) {
-        subscribe(categoriesRepository.getUserCategories(userDocId), Consumer { list ->
+    private fun getSelectedCategories() {
+        subscribe(categoriesRepository.getUserCategories(), Consumer { list ->
+            selectedCategoriesList = list
             previouslySelectedCategoriesList.postValue(list)
         })
     }
@@ -56,7 +57,9 @@ class CategoriesViewModel @Inject constructor(
     }
 
     private fun saveCategories() {
-        localDataSource.getSharedPreferences().updateUserCategories(selectedCategoriesList)
+        subscribe(categoriesRepository.updateUserCategories(selectedCategoriesList), Action {
+            saveCategoriesLiveData.postValue(true)
+        })
     }
 
 }

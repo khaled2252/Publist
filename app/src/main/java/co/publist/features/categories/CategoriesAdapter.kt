@@ -3,6 +3,7 @@ package co.publist.features.categories
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import co.publist.R
 import co.publist.core.data.models.Category
@@ -42,8 +43,22 @@ class CategoriesAdapter(
             itemView.btnCategoryName.text = category.name
             val documentId = snapshots.getSnapshot(position).id
 
+            //Check previously selected categories
             if(selectedCategoriesList.contains(documentId))
-                listener(documentId,itemView.btnCategoryName)
+            {
+                itemView.btnCategoryName.setBackgroundColor(
+                    ContextCompat.getColor(
+                        itemView.btnCategoryName.context,
+                        R.color.outerSpace
+                    )
+                )
+                itemView.btnCategoryName.setTextColor(
+                    ContextCompat.getColor(
+                        itemView.btnCategoryName.context,
+                        R.color.gray
+                    )
+                )
+            }
 
             itemView.btnCategoryName.setOnClickListener {
                 listener(documentId,itemView.btnCategoryName)
