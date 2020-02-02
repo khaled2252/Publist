@@ -1,6 +1,7 @@
 package co.publist.core.data.models
 
 data class User (
+    var id : String? = null,
     var myCategories : ArrayList<String>? = null,
     var myFavorites : ArrayList<String>? = null,
     var myLists : ArrayList<String>? = null,

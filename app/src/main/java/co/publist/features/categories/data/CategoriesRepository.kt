@@ -11,12 +11,24 @@ class CategoriesRepository @Inject constructor(var mFirebaseFirestore: FirebaseF
         return mFirebaseFirestore.collection("categories")
     }
 
-    override fun getCategories(selectedCategories: ArrayList<String>?): Single<ArrayList<String>> {
-        return Single.create {
-            if (selectedCategories != null) {
-                it.onSuccess(selectedCategories)
+    override fun getUserCategories(userDocId: String?): Single<ArrayList<String>> {
+        return Single.create { singleEmitter ->
+            if (userDocId == null) {
+                singleEmitter.onSuccess(ArrayList())
+            } else {
+                val userCategories = ArrayList<String>()
+                mFirebaseFirestore.collection("users")
+                    .document(userDocId)
+                    .collection("myCategories").get()
+                    .addOnFailureListener { exception ->
+                        singleEmitter.onError(exception)
+                    }.addOnSuccessListener { documents ->
+                        for (document in documents) {
+                            userCategories.add(document.id)
+                        }
+                        singleEmitter.onSuccess(userCategories)
+                    }
             }
         }
-
     }
 }

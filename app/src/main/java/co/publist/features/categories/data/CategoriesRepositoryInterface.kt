@@ -5,5 +5,5 @@ import io.reactivex.Single
 
 interface CategoriesRepositoryInterface {
     fun getCategoriesQuery() : CollectionReference
-    fun getCategories(selectedCategories : ArrayList<String>?) : Single<ArrayList<String>>
+    fun getUserCategories(userDocId : String?) : Single<ArrayList<String>>
 }

@@ -40,7 +40,7 @@ class SharedPreferencesUtils @Inject constructor(context: Context) :
         mPrefs.edit().clear().apply()
     }
 
-    override fun saveUser(user: User) {
+    override fun updateUser(user: User) {
         val gson = Gson()
         val json = gson.toJson(user)
         mPrefs.edit().putString(USER_TAG, json).apply()
@@ -66,9 +66,9 @@ interface SharedPreferencesInterface {
 
 interface PublistSharedPreferencesInterface {
     fun getUser(): User?
-    fun saveUser(user: User)
+    fun updateUser(user: User)
     fun clearData()
     fun setToken(token: String)
     fun getToken(): String?
     fun getPref(): SharedPreferences
-    }
+}

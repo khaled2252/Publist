@@ -1,17 +1,23 @@
 package co.publist.features.categories
 
 import androidx.lifecycle.MutableLiveData
+import co.publist.core.data.local.LocalDataSource
 import co.publist.core.platform.BaseViewModel
 import co.publist.features.categories.data.CategoriesRepositoryInterface
 import com.google.firebase.firestore.Query
 import io.reactivex.functions.Consumer
 import javax.inject.Inject
 
-class CategoriesViewModel @Inject constructor(private val categoriesRepository: CategoriesRepositoryInterface) : BaseViewModel() {
-init {
-    getSelectedCategories()
-}
+class CategoriesViewModel @Inject constructor(
+    private val categoriesRepository: CategoriesRepositoryInterface,
+    localDataSource: LocalDataSource
+) : BaseViewModel() {
+    init {
+        getSelectedCategories(localDataSource.getSharedPreferences().getUser()?.id)
+    }
+
     var selectedCategoriesList = ArrayList<String>()
+    var previouslySelectedCategoriesList = MutableLiveData<ArrayList<String>>()
     val selectedCategory = MutableLiveData<Boolean>()
     val reachedMaximumSelection = MutableLiveData<Boolean>()
 
@@ -32,9 +38,9 @@ init {
         return categoriesRepository.getCategoriesQuery()
     }
 
-    private fun getSelectedCategories() {
-        subscribe(categoriesRepository.getCategories(null), Consumer { list ->
-            selectedCategoriesList = list
+    private fun getSelectedCategories(userDocId: String?) {
+        subscribe(categoriesRepository.getUserCategories(userDocId), Consumer { list ->
+            previouslySelectedCategoriesList.postValue(list)
         })
     }
 

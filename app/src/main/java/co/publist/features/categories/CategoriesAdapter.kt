@@ -14,6 +14,7 @@ import kotlinx.android.synthetic.main.item_category.view.*
 
 class CategoriesAdapter(
     options: FirestoreRecyclerOptions<Category>,
+    val selectedCategoriesList : ArrayList<String>,
     val listener: (documentId : String?, buttonId : MaterialButton) ->Unit
 ) :
     FirestoreRecyclerAdapter<Category, CategoriesAdapter.CategoryViewHolder>(options) {
@@ -40,6 +41,9 @@ class CategoriesAdapter(
         ) {
             itemView.btnCategoryName.text = category.name
             val documentId = snapshots.getSnapshot(position).id
+
+            if(selectedCategoriesList.contains(documentId))
+                listener(documentId,itemView.btnCategoryName)
 
             itemView.btnCategoryName.setOnClickListener {
                 listener(documentId,itemView.btnCategoryName)

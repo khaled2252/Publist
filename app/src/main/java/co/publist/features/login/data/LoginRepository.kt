@@ -194,6 +194,7 @@ class LoginRepository @Inject constructor(
                         singleEmitter.onError(exception)
                     }.addOnSuccessListener { documentSnapshot ->
                         val user = documentSnapshot.toObject(User::class.java)
+                        user?.id=userDocId
                         singleEmitter.onSuccess(user!!)
                     }
             }
@@ -201,7 +202,7 @@ class LoginRepository @Inject constructor(
     }
 
     override fun saveUserToSharedPreferences(user: User) {
-        localDataSource.getSharedPreferences().saveUser(user)
+        localDataSource.getSharedPreferences().updateUser(user)
     }
 
 }

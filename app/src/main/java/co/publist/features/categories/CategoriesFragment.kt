@@ -40,11 +40,10 @@ class CategoriesFragment : BaseFragment<CategoriesViewModel>() {
     private lateinit var lastClickedButton: MaterialButton
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        setAdapter()
         setObservers()
     }
 
-    private fun setAdapter() {
+    private fun setAdapter(selectedCategoriesList : ArrayList<String>) {
 
         categoriesRecyclerView.layoutManager = FlexboxLayoutManager(this.context)
 
@@ -53,7 +52,7 @@ class CategoriesFragment : BaseFragment<CategoriesViewModel>() {
                 .setQuery(viewModel.getCategoriesQuery(), Category::class.java)
                 .build()
 
-        val adapter = CategoriesAdapter(options) { id, button ->
+        val adapter = CategoriesAdapter(options, selectedCategoriesList) { id, button ->
             lastClickedButton = button
             viewModel.addCategory(id)
         }
@@ -64,6 +63,10 @@ class CategoriesFragment : BaseFragment<CategoriesViewModel>() {
     }
 
     private fun setObservers() {
+        viewModel.previouslySelectedCategoriesList.observe(viewLifecycleOwner, Observer {list ->
+            setAdapter(list)
+        })
+
         viewModel.selectedCategory.observe(viewLifecycleOwner, Observer { isAdding ->
             if (isAdding) {
                 lastClickedButton.setBackgroundColor(
