@@ -8,6 +8,7 @@ import androidx.lifecycle.Observer
 import co.publist.R
 import co.publist.core.platform.BaseActivity
 import co.publist.core.platform.ViewModelFactory
+import co.publist.core.utils.Utils.Constants.SAVE_ACTION
 import co.publist.core.utils.Utils.loadProfilePicture
 import co.publist.databinding.ActivityEditProfileBinding
 import co.publist.features.categories.CategoriesFragment
@@ -52,14 +53,14 @@ class EditProfileActivity : BaseActivity<EditProfileViewModel>() {
         categoriesFragment.viewModel.actionButtonLiveData.observe(this, Observer {
                 Toast.makeText(
                     this,
-                    "You must select at least 1 category",
+                    R.string.minimum_categories,
                     Toast.LENGTH_SHORT
                 ).show()
 
         })
 
         categoriesFragment.viewModel.saveCategoriesLiveData.observe(this, Observer {
-            Toast.makeText(this, "Saved successfully!", Toast.LENGTH_SHORT)
+            Toast.makeText(this, getString(R.string.saved_successfully), Toast.LENGTH_SHORT)
                 .show()
             //todo navigate to home
         })
@@ -67,7 +68,7 @@ class EditProfileActivity : BaseActivity<EditProfileViewModel>() {
 
     private fun setListeners() {
         buttonSave.setOnClickListener {
-            categoriesFragment.viewModel.handleActionButton("save")
+            categoriesFragment.viewModel.handleActionButton(SAVE_ACTION)
         }
     }
 

@@ -7,6 +7,7 @@ import androidx.lifecycle.Observer
 import co.publist.R
 import co.publist.core.platform.BaseActivity
 import co.publist.core.platform.ViewModelFactory
+import co.publist.core.utils.Utils.Constants.FIND_ACTION
 import co.publist.features.categories.CategoriesFragment
 import kotlinx.android.synthetic.main.activity_intro.*
 import javax.inject.Inject
@@ -42,7 +43,7 @@ class IntroActivity : BaseActivity<IntroViewModel>() {
             else
                 Toast.makeText(
                     this,
-                    "You must select at least 1 category",
+                    getString(R.string.minimum_categories),
                     Toast.LENGTH_SHORT
                 ).show()
         })
@@ -50,7 +51,7 @@ class IntroActivity : BaseActivity<IntroViewModel>() {
 
     private fun setListeners(){
         buttonFindWishes.setOnClickListener {
-            categoriesFragment.viewModel.handleActionButton("find")
+            categoriesFragment.viewModel.handleActionButton(FIND_ACTION)
         }
 
         loginButton.setOnClickListener {

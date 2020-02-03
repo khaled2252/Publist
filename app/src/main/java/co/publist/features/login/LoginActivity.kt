@@ -2,12 +2,13 @@ package co.publist.features.login
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.Observer
 import co.publist.R
 import co.publist.core.platform.BaseActivity
 import co.publist.core.platform.ViewModelFactory
+import co.publist.core.utils.Utils.Constants.EMAIL_PERMISSION
+import co.publist.core.utils.Utils.Constants.PROFILE_PICTURE_PERMISSION
 import co.publist.features.editprofile.EditProfileActivity
 import co.publist.features.intro.IntroActivity
 import com.facebook.CallbackManager
@@ -18,6 +19,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.common.api.ApiException
 import kotlinx.android.synthetic.main.activity_login.*
+import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -58,9 +60,7 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
                 val account = task.getResult(ApiException::class.java)
                 viewModel.googleFirebaseAuth(account!!)
             } catch (e: ApiException) {
-                // Google Sign In failed, update UI appropriately
-                Log.e(TAG, "Google sign in failed", e)
-                // ...
+                Timber.e(e,"Google sign in failed")
             }
         }
 
@@ -80,48 +80,45 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
 
         buttonGuest.setOnClickListener {
             startActivity(Intent(this,IntroActivity::class.java))
-
         }
     }
 
     private fun setObservers() {
-        viewModel.mCallbackManager.observe(this, Observer {
+        viewModel.callbackManagerLiveData.observe(this, Observer {
             mCallbackManager = it
-            facebookLoginButton.setPermissions("email", "public_profile")
+            facebookLoginButton.setPermissions(EMAIL_PERMISSION, PROFILE_PICTURE_PERMISSION)
             facebookLoginButton.registerCallback(
                 mCallbackManager,
                 object : FacebookCallback<LoginResult> {
                     override fun onSuccess(loginResult: LoginResult) {
-                        Log.d(TAG, "facebook:onSuccess:$loginResult")
                         viewModel.facebookFirebaseAuth(loginResult.accessToken)
                     }
 
                     override fun onCancel() {
-                        Log.d(TAG, "facebook:onCancel")
+                        Timber.d("facebook:onCancel")
                     }
 
                     override fun onError(error: FacebookException) {
-                        Log.d(TAG, "facebook:onError", error)
+                        Timber.d(error,"facebook:onError")
                     }
                 })
         })
 
-        viewModel.mGoogleSignInClient.observe(this, Observer {
+        viewModel.googleSignInClientLiveData.observe(this, Observer {
             mGoogleSignInClient = it
         })
 
         viewModel.newUserLoggedIn.observe(this, Observer {
             if (it)
-                Toast.makeText(this, "Registered successfully", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.registered_successfully), Toast.LENGTH_SHORT).show()
             else
-                Toast.makeText(this, "Welcome back!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.welcome_back), Toast.LENGTH_SHORT).show()
 
             startActivity(Intent(this,EditProfileActivity::class.java))
         })
     }
 
     companion object {
-        private const val TAG = "LoginActivityTag"
         private const val RC_SIGN_IN = 9001
     }
 

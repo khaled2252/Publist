@@ -100,7 +100,7 @@ class CategoriesFragment : BaseFragment<CategoriesViewModel>() {
         )
 
         viewModel.reachedMaximumSelection.observe(viewLifecycleOwner, Observer {
-            Toast.makeText(this.context, "You can select at most 5 categories", Toast.LENGTH_SHORT)
+            Toast.makeText(this.context, getString(R.string.maximum_categories), Toast.LENGTH_SHORT)
                 .show()
         })
     }

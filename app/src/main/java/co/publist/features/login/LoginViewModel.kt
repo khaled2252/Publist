@@ -2,7 +2,9 @@ package co.publist.features.login
 
 import androidx.lifecycle.MutableLiveData
 import co.publist.core.platform.BaseViewModel
-import co.publist.features.login.data.LoginRepository
+import co.publist.core.utils.Utils.Constants.PLATFORM_FACEBOOK
+import co.publist.core.utils.Utils.Constants.PLATFORM_GOOGLE
+import co.publist.features.login.data.LoginRepositoryInterface
 import co.publist.features.login.data.RegisteringUser
 import com.facebook.AccessToken
 import com.facebook.CallbackManager
@@ -13,18 +15,21 @@ import io.reactivex.functions.Consumer
 import javax.inject.Inject
 
 class LoginViewModel @Inject constructor(
-    private val loginRepository: LoginRepository) :
+    private val loginRepository: LoginRepositoryInterface,
+    private val mGoogleSignInClient: GoogleSignInClient,
+    private val mCallbackManager: CallbackManager
+) :
     BaseViewModel() {
 
-    val mGoogleSignInClient = MutableLiveData<GoogleSignInClient>()
-    val mCallbackManager = MutableLiveData<CallbackManager>()
+    val googleSignInClientLiveData = MutableLiveData<GoogleSignInClient>()
+    val callbackManagerLiveData = MutableLiveData<CallbackManager>()
     val newUserLoggedIn = MutableLiveData<Boolean>()
 
     private lateinit var registeringUser: RegisteringUser
 
     fun postLiveData() {
-        mGoogleSignInClient.postValue(loginRepository.mGoogleSignInClient)
-        mCallbackManager.postValue(loginRepository.mCallbackManager)
+        googleSignInClientLiveData.postValue(mGoogleSignInClient)
+        callbackManagerLiveData.postValue(mCallbackManager)
     }
 
     fun googleFirebaseAuth(user: GoogleSignInAccount) {
@@ -37,7 +42,7 @@ class LoginViewModel @Inject constructor(
                     user.id!!,
                     user.idToken!!,
                     user.photoUrl.toString(),
-                    uId, "google"
+                    uId, PLATFORM_GOOGLE
                 )
                 getDocumentId(user.email!!)
             })
@@ -119,7 +124,7 @@ class LoginViewModel @Inject constructor(
             Consumer {
                 registeringUser = it
                 registeringUser.uId = uId
-                registeringUser.platform = "facebook"
+                registeringUser.platform = PLATFORM_FACEBOOK
                 getDocumentId(it.email!!)
             })
     }

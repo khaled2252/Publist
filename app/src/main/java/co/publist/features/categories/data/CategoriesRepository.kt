@@ -1,6 +1,9 @@
 package co.publist.features.categories.data
 
 import co.publist.core.data.local.LocalDataSource
+import co.publist.core.utils.Utils.Constants.CATEGORIES_COLLECTION_PATH
+import co.publist.core.utils.Utils.Constants.MY_CATEGORIES_COLLECTION_PATH
+import co.publist.core.utils.Utils.Constants.USERS_COLLECTION_PATH
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.WriteBatch
@@ -14,7 +17,7 @@ class CategoriesRepository @Inject constructor(
 ) :
     CategoriesRepositoryInterface {
     override fun getCategoriesQuery(): CollectionReference {
-        return mFirebaseFirestore.collection("categories")
+        return mFirebaseFirestore.collection(CATEGORIES_COLLECTION_PATH)
     }
 
     override fun getUserCategories(): Single<ArrayList<String>> {
@@ -22,9 +25,9 @@ class CategoriesRepository @Inject constructor(
             val user = localDataSource.getSharedPreferences().getUser()
             if (user?.myCategories == null) {
                 val userCategories = ArrayList<String>()
-                mFirebaseFirestore.collection("users")
+                mFirebaseFirestore.collection(USERS_COLLECTION_PATH)
                     .document(user?.id!!)
-                    .collection("myCategories").get()
+                    .collection(MY_CATEGORIES_COLLECTION_PATH).get()
                     .addOnFailureListener { exception ->
                         singleEmitter.onError(exception)
                     }.addOnSuccessListener { documents ->
@@ -47,9 +50,9 @@ class CategoriesRepository @Inject constructor(
             val docId = localDataSource.getSharedPreferences().getUser()?.id
             val batch: WriteBatch = mFirebaseFirestore.batch()
             val collectionReference = mFirebaseFirestore
-                .collection("users")
+                .collection(USERS_COLLECTION_PATH)
                 .document(docId!!)
-                .collection("myCategories")
+                .collection(MY_CATEGORIES_COLLECTION_PATH)
 
             collectionReference.get().addOnSuccessListener {documents ->
                 for (document in documents) {

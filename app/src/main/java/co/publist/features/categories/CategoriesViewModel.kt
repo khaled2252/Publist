@@ -2,6 +2,9 @@ package co.publist.features.categories
 
 import androidx.lifecycle.MutableLiveData
 import co.publist.core.platform.BaseViewModel
+import co.publist.core.utils.Utils.Constants.MAXIMUM_SELECTED_CATEGORIES
+import co.publist.core.utils.Utils.Constants.MINIMUM_SELECTED_CATEGORIES
+import co.publist.core.utils.Utils.Constants.SAVE_ACTION
 import co.publist.features.categories.data.CategoriesRepositoryInterface
 import com.google.firebase.firestore.Query
 import io.reactivex.functions.Action
@@ -24,7 +27,7 @@ class CategoriesViewModel @Inject constructor(
 
     fun addCategory(categoryId: String?) {
         if (!selectedCategoriesList.contains(categoryId)) {
-            if (selectedCategoriesList.size < 5) {
+            if (selectedCategoriesList.size < MAXIMUM_SELECTED_CATEGORIES) {
                 selectedCategoriesList.add(categoryId!!)
                 selectedCategory.postValue(true)
             } else
@@ -47,10 +50,10 @@ class CategoriesViewModel @Inject constructor(
     }
 
     fun handleActionButton(action : String?) {
-        if(selectedCategoriesList.size<1)
+        if(selectedCategoriesList.size< MINIMUM_SELECTED_CATEGORIES)
             actionButtonLiveData.postValue(true)
         else {
-            if(action=="save")
+            if(action== SAVE_ACTION)
                 saveCategories()
         }
     }
