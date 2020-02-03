@@ -31,20 +31,22 @@ class CategoriesRepository @Inject constructor(
                     .addOnFailureListener { exception ->
                         singleEmitter.onError(exception)
                     }.addOnSuccessListener { documents ->
-                        for (document in documents) {
-                            userCategories.add(document.id)
+                        if (!documents.isEmpty) { //Will go through if myCategories exists in firestore
+                            for (document in documents) {
+                                userCategories.add(document.id)
+                            }
+                            localDataSource.getSharedPreferences()
+                                .updateUserCategories(userCategories)
                         }
-                        localDataSource.getSharedPreferences().updateUserCategories(userCategories)
                         singleEmitter.onSuccess(userCategories)
                     }
-            }
-            else
+            } else
                 singleEmitter.onSuccess(user.myCategories!!)
         }
     }
 
-    override fun updateUserCategories(selectedCategoriesList : ArrayList<String>) : Completable {
-        return Completable.create {completableEmitter ->
+    override fun updateUserCategories(selectedCategoriesList: ArrayList<String>): Completable {
+        return Completable.create { completableEmitter ->
             localDataSource.getSharedPreferences().updateUserCategories(selectedCategoriesList)
 
             val docId = localDataSource.getSharedPreferences().getUser()?.id
@@ -54,22 +56,31 @@ class CategoriesRepository @Inject constructor(
                 .document(docId!!)
                 .collection(MY_CATEGORIES_COLLECTION_PATH)
 
-            collectionReference.get().addOnSuccessListener {documents ->
-                for (document in documents) {
-                    collectionReference.document(document.id).delete()
-                }
+            collectionReference.get()
 
-                for (categoryId in selectedCategoriesList) {
-                    batch.set(collectionReference.document(categoryId), emptyMap<String , String>())
-                }
+                .addOnSuccessListener { documents ->
+                    //will create myCategories if is not created
 
-                batch.commit()
-                    .addOnFailureListener { exception ->
-                        completableEmitter.onError(exception)
-                    }.addOnSuccessListener {
-                        completableEmitter.onComplete()
+                    //Delete existing saved categories
+                    for (document in documents) {
+                        collectionReference.document(document.id).delete()
                     }
-            }
+
+                    //Add new saved categories
+                    for (categoryId in selectedCategoriesList) {
+                        batch.set(
+                            collectionReference.document(categoryId),
+                            emptyMap<String, String>()
+                        )
+                    }
+
+                    batch.commit()
+                        .addOnFailureListener { exception ->
+                            completableEmitter.onError(exception)
+                        }.addOnSuccessListener {
+                            completableEmitter.onComplete()
+                        }
+                }
 
         }
 

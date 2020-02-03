@@ -6,8 +6,6 @@ import co.publist.core.data.models.User
 import co.publist.core.platform.BaseRepository
 import co.publist.core.utils.Utils.Constants.EMAIL_FIELD
 import co.publist.core.utils.Utils.Constants.MY_CATEGORIES_COLLECTION_PATH
-import co.publist.core.utils.Utils.Constants.MY_FAVORITES_COLLECTION_PATH
-import co.publist.core.utils.Utils.Constants.MY_LISTS_COLLECTION_PATH
 import co.publist.core.utils.Utils.Constants.NAME_FIELD
 import co.publist.core.utils.Utils.Constants.PROFILE_PICTURE_URL_FIELD
 import co.publist.core.utils.Utils.Constants.USERS_COLLECTION_PATH
@@ -119,8 +117,6 @@ class LoginRepository @Inject constructor(
                 )
                 users.add(data).addOnSuccessListener { documentReference ->
                     users.document(documentReference.id).collection(MY_CATEGORIES_COLLECTION_PATH).add(emptyMap<String,String>())
-                    users.document(documentReference.id).collection(MY_FAVORITES_COLLECTION_PATH).add(emptyMap<String,String>())
-                    users.document(documentReference.id).collection(MY_LISTS_COLLECTION_PATH).add(emptyMap<String,String>())
                     singleEmitter.onSuccess(documentReference.id)
                 }.addOnFailureListener { exception ->
                     singleEmitter.onError(exception)
