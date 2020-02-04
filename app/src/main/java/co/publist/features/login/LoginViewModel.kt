@@ -2,7 +2,9 @@ package co.publist.features.login
 
 import androidx.lifecycle.MutableLiveData
 import co.publist.core.platform.BaseViewModel
-import co.publist.features.login.data.LoginRepository
+import co.publist.core.utils.Utils.Constants.PLATFORM_FACEBOOK
+import co.publist.core.utils.Utils.Constants.PLATFORM_GOOGLE
+import co.publist.features.login.data.LoginRepositoryInterface
 import co.publist.features.login.data.RegisteringUser
 import com.facebook.AccessToken
 import com.facebook.CallbackManager
@@ -12,18 +14,22 @@ import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
 import javax.inject.Inject
 
-class LoginViewModel @Inject constructor(private val loginRepository: LoginRepository) :
+class LoginViewModel @Inject constructor(
+    private val loginRepository: LoginRepositoryInterface,
+    private val mGoogleSignInClient: GoogleSignInClient,
+    private val mCallbackManager: CallbackManager
+) :
     BaseViewModel() {
 
-    val mGoogleSignInClient = MutableLiveData<GoogleSignInClient>()
-    val mCallbackManager = MutableLiveData<CallbackManager>()
+    val googleSignInClientLiveData = MutableLiveData<GoogleSignInClient>()
+    val callbackManagerLiveData = MutableLiveData<CallbackManager>()
     val newUserLoggedIn = MutableLiveData<Boolean>()
 
     private lateinit var registeringUser: RegisteringUser
 
     fun postLiveData() {
-        mGoogleSignInClient.postValue(loginRepository.mGoogleSignInClient)
-        mCallbackManager.postValue(loginRepository.mCallbackManager)
+        googleSignInClientLiveData.postValue(mGoogleSignInClient)
+        callbackManagerLiveData.postValue(mCallbackManager)
     }
 
     fun googleFirebaseAuth(user: GoogleSignInAccount) {
@@ -36,7 +42,7 @@ class LoginViewModel @Inject constructor(private val loginRepository: LoginRepos
                     user.id!!,
                     user.idToken!!,
                     user.photoUrl.toString(),
-                    uId, "google"
+                    uId, PLATFORM_GOOGLE
                 )
                 getDocumentId(user.email!!)
             })
@@ -63,7 +69,13 @@ class LoginViewModel @Inject constructor(private val loginRepository: LoginRepos
 
     private fun addUidInUserAccounts(documentId: String, uId: String, platform: String) {
         subscribe(loginRepository.addUidInUserAccounts(documentId, uId, platform), Action {
-            newUserLoggedIn.postValue(false)
+            handleLoggedInUser(documentId, false)
+        })
+    }
+
+    private fun handleLoggedInUser(documentId: String, newUser: Boolean) {
+        subscribe(loginRepository.fetchUserInformation(documentId), Consumer {
+            newUserLoggedIn.postValue(newUser)
         })
     }
 
@@ -81,9 +93,9 @@ class LoginViewModel @Inject constructor(private val loginRepository: LoginRepos
             })
     }
 
-    private fun addNewUserAccount(docId: String, uId: String, platform: String) {
-        subscribe(loginRepository.addNewUserAccount(docId, uId, platform), Action {
-            newUserLoggedIn.postValue(true)
+    private fun addNewUserAccount(documentId: String, uId: String, platform: String) {
+        subscribe(loginRepository.addNewUserAccount(documentId, uId, platform), Action {
+            handleLoggedInUser(documentId, true)
         })
     }
 
@@ -112,7 +124,7 @@ class LoginViewModel @Inject constructor(private val loginRepository: LoginRepos
             Consumer {
                 registeringUser = it
                 registeringUser.uId = uId
-                registeringUser.platform = "facebook"
+                registeringUser.platform = PLATFORM_FACEBOOK
                 getDocumentId(it.email!!)
             })
     }

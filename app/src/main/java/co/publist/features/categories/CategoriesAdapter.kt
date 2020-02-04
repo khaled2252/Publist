@@ -3,6 +3,7 @@ package co.publist.features.categories
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import co.publist.R
 import co.publist.core.data.models.Category
@@ -14,6 +15,7 @@ import kotlinx.android.synthetic.main.item_category.view.*
 
 class CategoriesAdapter(
     options: FirestoreRecyclerOptions<Category>,
+    val previouslySelectedCategoriesList : ArrayList<String>,
     val listener: (documentId : String?, buttonId : MaterialButton) ->Unit
 ) :
     FirestoreRecyclerAdapter<Category, CategoriesAdapter.CategoryViewHolder>(options) {
@@ -40,6 +42,23 @@ class CategoriesAdapter(
         ) {
             itemView.btnCategoryName.text = category.name
             val documentId = snapshots.getSnapshot(position).id
+
+            //Highlight previously selected categories
+            if(previouslySelectedCategoriesList.contains(documentId))
+            {
+                itemView.btnCategoryName.setBackgroundColor(
+                    ContextCompat.getColor(
+                        itemView.btnCategoryName.context,
+                        R.color.outerSpace
+                    )
+                )
+                itemView.btnCategoryName.setTextColor(
+                    ContextCompat.getColor(
+                        itemView.btnCategoryName.context,
+                        R.color.gray
+                    )
+                )
+            }
 
             itemView.btnCategoryName.setOnClickListener {
                 listener(documentId,itemView.btnCategoryName)

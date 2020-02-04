@@ -1,11 +1,17 @@
 package co.publist.features.login.data
 
 import android.os.Bundle
+import co.publist.core.data.local.LocalDataSource
+import co.publist.core.data.models.User
 import co.publist.core.platform.BaseRepository
+import co.publist.core.utils.Utils.Constants.EMAIL_FIELD
+import co.publist.core.utils.Utils.Constants.MY_CATEGORIES_COLLECTION_PATH
+import co.publist.core.utils.Utils.Constants.NAME_FIELD
+import co.publist.core.utils.Utils.Constants.PROFILE_PICTURE_URL_FIELD
+import co.publist.core.utils.Utils.Constants.USERS_COLLECTION_PATH
+import co.publist.core.utils.Utils.Constants.USER_ACCOUNTS_COLLECTION_PATH
 import com.facebook.AccessToken
-import com.facebook.CallbackManager
 import com.facebook.GraphRequest
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
@@ -17,15 +23,15 @@ import io.reactivex.Single
 import javax.inject.Inject
 
 class LoginRepository @Inject constructor(
-    var mFirebaseAuth: FirebaseAuth,
-    var mFirebaseFirestore: FirebaseFirestore,
-    var mGoogleSignInClient: GoogleSignInClient,
-    var mCallbackManager: CallbackManager
+    private val mFirebaseAuth: FirebaseAuth,
+    private val mFirebaseFirestore: FirebaseFirestore,
+    private val localDataSource: LocalDataSource
+
 ) : BaseRepository(), LoginRepositoryInterface {
     override fun fetchUserDocId(email: String): Single<String?> {
         return Single.create { singleEmitter ->
             mFirebaseFirestore.let {
-                it.collection("users")
+                it.collection(USERS_COLLECTION_PATH)
                     .get()
                     .addOnFailureListener { exception ->
                         singleEmitter.onError(exception)
@@ -48,8 +54,8 @@ class LoginRepository @Inject constructor(
     ): Completable {
         return Completable.create { completableEmitter ->
             mFirebaseFirestore.let {
-                val users: CollectionReference = it.collection("users")
-                val data = hashMapOf("profilePictureUrl" to profilePictureUrl)
+                val users: CollectionReference = it.collection(USERS_COLLECTION_PATH)
+                val data = hashMapOf(PROFILE_PICTURE_URL_FIELD to profilePictureUrl)
                 users.document(documentId).set(data, SetOptions.merge())
                     .addOnSuccessListener {
                         completableEmitter.onComplete()
@@ -64,7 +70,7 @@ class LoginRepository @Inject constructor(
     override fun addUidInUserAccounts(docId: String, uId: String, platform: String): Completable {
         return Completable.create { completableEmitter ->
             mFirebaseFirestore.let {
-                val userAccounts: CollectionReference = it.collection("userAccounts")
+                val userAccounts: CollectionReference = it.collection(USER_ACCOUNTS_COLLECTION_PATH)
                 val userAccount = hashMapOf(
                     platform to uId
                 )
@@ -81,7 +87,7 @@ class LoginRepository @Inject constructor(
     override fun addNewUserAccount(docId: String, uId: String, platform: String): Completable {
         return Completable.create { completableEmitter ->
             mFirebaseFirestore.let {
-                val userAccounts: CollectionReference = it.collection("userAccounts")
+                val userAccounts: CollectionReference = it.collection(USER_ACCOUNTS_COLLECTION_PATH)
                 val userAccount = hashMapOf(
                     platform to uId
                 )
@@ -103,13 +109,14 @@ class LoginRepository @Inject constructor(
     ): Single<String> {
         return Single.create { singleEmitter ->
             mFirebaseFirestore.let { it ->
-                val users: CollectionReference = it.collection("users")
+                val users: CollectionReference = it.collection(USERS_COLLECTION_PATH)
                 val data = hashMapOf(
-                    "email" to email,
-                    "name" to name,
-                    "profilePictureUrl" to profilePictureUrl
+                    EMAIL_FIELD to email,
+                    NAME_FIELD to name,
+                    PROFILE_PICTURE_URL_FIELD to profilePictureUrl
                 )
                 users.add(data).addOnSuccessListener { documentReference ->
+                    users.document(documentReference.id).collection(MY_CATEGORIES_COLLECTION_PATH).add(emptyMap<String,String>())
                     singleEmitter.onSuccess(documentReference.id)
                 }.addOnFailureListener { exception ->
                     singleEmitter.onError(exception)
@@ -181,5 +188,21 @@ class LoginRepository @Inject constructor(
         }
     }
 
+    override fun fetchUserInformation(userDocId: String): Single<User> {
+        return Single.create { singleEmitter ->
+            mFirebaseFirestore.let {
+                it.collection(USERS_COLLECTION_PATH)
+                    .document(userDocId)
+                    .get().addOnFailureListener { exception ->
+                        singleEmitter.onError(exception)
+                    }.addOnSuccessListener { documentSnapshot ->
+                        val user = documentSnapshot.toObject(User::class.java)
+                        user?.id=userDocId
+                        localDataSource.getSharedPreferences().setUser(user!!)
+                        singleEmitter.onSuccess(user)
+                    }
+            }
+        }
+    }
 
 }
