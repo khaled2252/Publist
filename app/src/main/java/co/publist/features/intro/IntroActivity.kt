@@ -1,6 +1,7 @@
 package co.publist.features.intro
 
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.lifecycle.Observer
@@ -9,6 +10,7 @@ import co.publist.core.platform.BaseActivity
 import co.publist.core.platform.ViewModelFactory
 import co.publist.core.utils.Utils.Constants.FIND_ACTION
 import co.publist.features.categories.CategoriesFragment
+import co.publist.features.home.HomeActivity
 import kotlinx.android.synthetic.main.activity_intro.*
 import javax.inject.Inject
 
@@ -39,7 +41,10 @@ class IntroActivity : BaseActivity<IntroViewModel>() {
     private fun setObservers(){
         categoriesFragment.viewModel.actionButtonLiveData.observe(this, Observer { viable ->
             if (viable)
-            //todo navigate to home
+            {
+                finish()
+                startActivity(Intent(this,HomeActivity::class.java))
+            }
             else
                 Toast.makeText(
                     this,
@@ -59,7 +64,8 @@ class IntroActivity : BaseActivity<IntroViewModel>() {
         }
 
         skipTextView.setOnClickListener {
-            //todo navigate to home
+            finish()
+            startActivity(Intent(this,HomeActivity::class.java))
         }
     }
 }

@@ -21,8 +21,12 @@ import co.publist.features.categories.data.CategoriesRepository
 import co.publist.features.categories.data.CategoriesRepositoryInterface
 import co.publist.features.editprofile.data.EditProfileRepository
 import co.publist.features.editprofile.data.EditProfileRepositoryInterface
+import co.publist.features.home.data.HomeRepository
+import co.publist.features.home.data.HomeRepositoryInterface
 import co.publist.features.login.data.LoginRepository
 import co.publist.features.login.data.LoginRepositoryInterface
+import co.publist.features.splash.data.SplashRepository
+import co.publist.features.splash.data.SplashRepositoryInterface
 import dagger.Binds
 import dagger.Module
 import javax.inject.Singleton
@@ -33,13 +37,21 @@ abstract class RepositoriesModule {
 
     @Binds
     @Singleton
-    abstract fun bindLoginRepository(loginRepository: LoginRepository) : LoginRepositoryInterface
+    abstract fun bindLoginRepository(loginRepository: LoginRepository): LoginRepositoryInterface
 
     @Binds
     @Singleton
-    abstract fun bindCategoriesRepository(categoriesRepository: CategoriesRepository) : CategoriesRepositoryInterface
+    abstract fun bindCategoriesRepository(categoriesRepository: CategoriesRepository): CategoriesRepositoryInterface
 
     @Binds
     @Singleton
-    abstract fun bindEditProfileRepository(editProfileRepository: EditProfileRepository) : EditProfileRepositoryInterface
+    abstract fun bindEditProfileRepository(editProfileRepository: EditProfileRepository): EditProfileRepositoryInterface
+
+    @Binds
+    @Singleton
+    abstract fun bindHomeRepository(homeRepository: HomeRepository): HomeRepositoryInterface
+
+    @Binds
+    @Singleton
+    abstract fun bindSplashRepository(splashRepository: SplashRepository): SplashRepositoryInterface
 }

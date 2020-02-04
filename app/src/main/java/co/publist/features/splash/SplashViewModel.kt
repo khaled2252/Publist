@@ -4,17 +4,28 @@ import android.os.Handler
 import androidx.lifecycle.MutableLiveData
 import co.publist.core.platform.BaseViewModel
 import co.publist.core.utils.Utils.Constants.SPLASH_DELAY
+import co.publist.features.splash.data.SplashRepositoryInterface
 import javax.inject.Inject
 
 
-class SplashViewModel @Inject constructor() : BaseViewModel() {
+class SplashViewModel @Inject constructor(private val splashRepository: SplashRepositoryInterface) :
+    BaseViewModel() {
 
-    val loaded: MutableLiveData<Boolean> = MutableLiveData(false)
+    val userLoggedIn = MutableLiveData<Pair<Boolean, Boolean>>()
 
-    fun onScreenCreate() {
+    fun onCreated() {
+        var isNewUser = false
+        var isMyCategoriesEmpty = false
+        val user = splashRepository.getUser()
+
+        if (user == null)
+            isNewUser = true
+        if(user?.myCategories.isNullOrEmpty())
+            isMyCategoriesEmpty = true
+
         Handler().postDelayed({
-            loaded.value = true
+            userLoggedIn.postValue(Pair(isNewUser, isMyCategoriesEmpty))
         }, SPLASH_DELAY)
     }
-
 }
+

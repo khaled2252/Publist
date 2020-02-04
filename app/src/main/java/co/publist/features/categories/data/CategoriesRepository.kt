@@ -22,26 +22,29 @@ class CategoriesRepository @Inject constructor(
 
     override fun getUserCategories(): Single<ArrayList<String>> {
         return Single.create { singleEmitter ->
+            val userCategories = ArrayList<String>()
             val user = localDataSource.getSharedPreferences().getUser()
-            if (user?.myCategories == null) {
-                val userCategories = ArrayList<String>()
+            if (user !=null && user.myCategories == null) {
                 mFirebaseFirestore.collection(USERS_COLLECTION_PATH)
-                    .document(user?.id!!)
+                    .document(user.id!!)
                     .collection(MY_CATEGORIES_COLLECTION_PATH).get()
                     .addOnFailureListener { exception ->
                         singleEmitter.onError(exception)
                     }.addOnSuccessListener { documents ->
-                        if (!documents.isEmpty) { //Will go through if myCategories exists in firestore
-                            for (document in documents) {
-                                userCategories.add(document.id)
-                            }
-                            localDataSource.getSharedPreferences()
-                                .updateUserCategories(userCategories)
+                        for (document in documents) {
+                            userCategories.add(document.id)
                         }
-                        singleEmitter.onSuccess(userCategories)
+
+                        localDataSource.getSharedPreferences()
+                                .updateUserCategories(userCategories)
+
+                        singleEmitter.onSuccess(userCategories) //Registered user with a new list
                     }
             } else
-                singleEmitter.onSuccess(user.myCategories!!)
+                if(user?.myCategories !=null)
+                singleEmitter.onSuccess(user.myCategories!!) //Registered user with already saved list
+            else
+                    singleEmitter.onSuccess(userCategories) //Guest user (empty list emitted)
         }
     }
 

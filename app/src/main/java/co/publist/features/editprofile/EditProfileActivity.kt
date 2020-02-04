@@ -1,6 +1,7 @@
 package co.publist.features.editprofile
 
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
@@ -12,6 +13,7 @@ import co.publist.core.utils.Utils.Constants.SAVE_ACTION
 import co.publist.core.utils.Utils.loadProfilePicture
 import co.publist.databinding.ActivityEditProfileBinding
 import co.publist.features.categories.CategoriesFragment
+import co.publist.features.home.HomeActivity
 import kotlinx.android.synthetic.main.activity_edit_profile.*
 import javax.inject.Inject
 
@@ -62,7 +64,10 @@ class EditProfileActivity : BaseActivity<EditProfileViewModel>() {
         categoriesFragment.viewModel.saveCategoriesLiveData.observe(this, Observer {
             Toast.makeText(this, getString(R.string.saved_successfully), Toast.LENGTH_SHORT)
                 .show()
-            //todo navigate to home
+            finish()
+            val intent = Intent(this,HomeActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP //If coming already from home (get last HomeActivity on top stack)
+            startActivity(intent)
         })
     }
 

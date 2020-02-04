@@ -28,14 +28,6 @@ class SharedPreferencesUtils @Inject constructor(context: Context) :
         return mPrefs.getString(key, null)
     }
 
-    override fun setToken(token: String) {
-        putString(TOKEN, token)
-    }
-
-    override fun getToken(): String? {
-        return getString(TOKEN)
-    }
-
     override fun clearData() {
         mPrefs.edit().clear().apply()
     }
@@ -58,12 +50,14 @@ class SharedPreferencesUtils @Inject constructor(context: Context) :
         val userObject = gson.fromJson<User>(json, User::class.java)
         userObject.myCategories = categoriesList
         mPrefs.edit().putString(USER_TAG, gson.toJson(userObject)).apply()
+    }
 
+    override fun deleteUser(){
+        mPrefs.edit().remove(USER_TAG).apply()
     }
 
     companion object {
         private const val MY_PREFS = "SHARED_PREFERENCES"
-        private const val TOKEN = "TOKEN"
         private const val USER_TAG = "User"
     }
 }
@@ -76,9 +70,8 @@ interface SharedPreferencesInterface {
 interface PublistSharedPreferencesInterface {
     fun getUser(): User?
     fun setUser(user: User)
+    fun deleteUser()
     fun updateUserCategories(categoriesList: ArrayList<String>)
     fun clearData()
-    fun setToken(token: String)
-    fun getToken(): String?
     fun getPref(): SharedPreferences
 }

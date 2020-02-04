@@ -23,6 +23,7 @@ import co.publist.core.di.helper.ViewModelKey
 import co.publist.core.platform.ViewModelFactory
 import co.publist.features.categories.CategoriesViewModel
 import co.publist.features.editprofile.EditProfileViewModel
+import co.publist.features.home.HomeViewModel
 import co.publist.features.intro.IntroViewModel
 import co.publist.features.splash.SplashViewModel
 import dagger.Binds
@@ -54,5 +55,10 @@ abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(EditProfileViewModel::class)
     abstract fun bindEditProfileViewModel(editProfileViewModel: EditProfileViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(HomeViewModel::class)
+    abstract fun bindHomwViewModel(homeViewModel: HomeViewModel): ViewModel
 
 }

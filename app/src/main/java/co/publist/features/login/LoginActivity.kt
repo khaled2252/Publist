@@ -60,7 +60,7 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
                 val account = task.getResult(ApiException::class.java)
                 viewModel.googleFirebaseAuth(account!!)
             } catch (e: ApiException) {
-                Timber.e(e,"Google sign in failed")
+                Timber.e(e, "Google sign in failed")
             }
         }
 
@@ -79,7 +79,7 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
         }
 
         buttonGuest.setOnClickListener {
-            startActivity(Intent(this,IntroActivity::class.java))
+            startActivity(Intent(this, IntroActivity::class.java))
         }
     }
 
@@ -99,7 +99,7 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
                     }
 
                     override fun onError(error: FacebookException) {
-                        Timber.d(error,"facebook:onError")
+                        Timber.d(error, "facebook:onError")
                     }
                 })
         })
@@ -108,12 +108,13 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
             mGoogleSignInClient = it
         })
 
-        viewModel.newUserLoggedIn.observe(this, Observer {
+        viewModel.userLoggedIn.observe(this, Observer {
             if (it)
                 Toast.makeText(this, getString(R.string.registered_successfully), Toast.LENGTH_SHORT).show()
             else
                 Toast.makeText(this, getString(R.string.welcome_back), Toast.LENGTH_SHORT).show()
 
+            finish()
             startActivity(Intent(this,EditProfileActivity::class.java))
         })
     }

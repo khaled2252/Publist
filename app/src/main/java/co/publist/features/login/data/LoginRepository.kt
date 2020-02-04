@@ -5,7 +5,6 @@ import co.publist.core.data.local.LocalDataSource
 import co.publist.core.data.models.User
 import co.publist.core.platform.BaseRepository
 import co.publist.core.utils.Utils.Constants.EMAIL_FIELD
-import co.publist.core.utils.Utils.Constants.MY_CATEGORIES_COLLECTION_PATH
 import co.publist.core.utils.Utils.Constants.NAME_FIELD
 import co.publist.core.utils.Utils.Constants.PROFILE_PICTURE_URL_FIELD
 import co.publist.core.utils.Utils.Constants.USERS_COLLECTION_PATH
@@ -116,7 +115,6 @@ class LoginRepository @Inject constructor(
                     PROFILE_PICTURE_URL_FIELD to profilePictureUrl
                 )
                 users.add(data).addOnSuccessListener { documentReference ->
-                    users.document(documentReference.id).collection(MY_CATEGORIES_COLLECTION_PATH).add(emptyMap<String,String>())
                     singleEmitter.onSuccess(documentReference.id)
                 }.addOnFailureListener { exception ->
                     singleEmitter.onError(exception)

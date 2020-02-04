@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@color/platinum">
+
+        <include
+            android:id="@+id/app_bar"
+            layout="@layout/app_bar" />
+
+        <View android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@drawable/toolbar_dropshadow"/>
+
+        <TextView
+            android:id="@+id/addWishTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:paddingTop="15dp"
+            android:paddingBottom="15dp"
+            android:paddingStart="12dp"
+            android:fontFamily="@font/sfprodisplaysemibold"
+            android:text="What is your wish list ?"
+            android:textColor="@color/taupeGray"
+            android:background="@color/white"
+            android:textSize="20sp" />
+
+<!--        <androidx.fragment.app.FragmentContainerView-->
+<!--            android:id="@+id/categoriesFragment"-->
+<!--            android:name="co.publist.features.categories.CategoriesFragment"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="600dp"-->
+<!--            android:layout_marginStart="@dimen/horizontalButtonMargin"-->
+<!--            android:layout_marginTop="20dp"-->
+<!--            android:layout_marginEnd="@dimen/horizontalButtonMargin" />-->
+
+    </LinearLayout>
+</layout>

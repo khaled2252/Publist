@@ -23,7 +23,7 @@ class LoginViewModel @Inject constructor(
 
     val googleSignInClientLiveData = MutableLiveData<GoogleSignInClient>()
     val callbackManagerLiveData = MutableLiveData<CallbackManager>()
-    val newUserLoggedIn = MutableLiveData<Boolean>()
+    val userLoggedIn = MutableLiveData<Boolean>()
 
     private lateinit var registeringUser: RegisteringUser
 
@@ -75,7 +75,7 @@ class LoginViewModel @Inject constructor(
 
     private fun handleLoggedInUser(documentId: String, newUser: Boolean) {
         subscribe(loginRepository.fetchUserInformation(documentId), Consumer {
-            newUserLoggedIn.postValue(newUser)
+            userLoggedIn.postValue(newUser)
         })
     }
 
