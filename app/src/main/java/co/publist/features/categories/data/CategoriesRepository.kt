@@ -88,4 +88,8 @@ class CategoriesRepository @Inject constructor(
         }
 
     }
+
+    override fun saveGuestCategories(selectedCategoriesList: ArrayList<String>) {
+        localDataSource.getSharedPreferences().saveTemporaryCategories(selectedCategoriesList)
+    }
 }

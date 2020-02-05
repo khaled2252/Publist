@@ -8,4 +8,5 @@ interface CategoriesRepositoryInterface {
     fun getCategoriesQuery() : CollectionReference
     fun getUserCategories(): Single<ArrayList<String>>
     fun updateUserCategories(selectedCategoriesList : ArrayList<String>) : Completable
+    fun saveGuestCategories(selectedCategoriesList: ArrayList<String>)
 }

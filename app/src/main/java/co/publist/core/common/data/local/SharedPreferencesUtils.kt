@@ -5,6 +5,8 @@ import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import co.publist.core.common.data.models.User
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import java.lang.reflect.Type
 
 import javax.inject.Inject
 
@@ -21,44 +23,54 @@ class SharedPreferencesUtils @Inject constructor(context: Context) :
     }
 
     override fun putString(key: String, value: String) {
-        mPrefs.edit().putString(key, value).apply()
+        getPref().edit().putString(key, value).apply()
     }
 
     override fun getString(key: String): String? {
-        return mPrefs.getString(key, null)
+        return getPref().getString(key, null)
     }
 
     override fun clearData() {
-        mPrefs.edit().clear().apply()
+        getPref().edit().clear().apply()
     }
 
     override fun setUser(user: User) {
-        val gson = Gson()
-        val json = gson.toJson(user)
-        mPrefs.edit().putString(USER_TAG, json).apply()
+        val json = Gson().toJson(user)
+        putString(USER_TAG, json)
     }
 
     override fun getUser(): User? {
-        val gson = Gson()
-        val json = mPrefs.getString(USER_TAG, null)
-        return gson.fromJson<User>(json, User::class.java)
+        val json = getPref().getString(USER_TAG, null)
+        return Gson().fromJson<User>(json, User::class.java)
     }
 
-    override fun updateUserCategories(categoriesList : ArrayList<String>) {
+    override fun updateUserCategories(categoriesList: ArrayList<String>) {
         val gson = Gson()
-        val json = mPrefs.getString(USER_TAG, null)
+        val json = getPref().getString(USER_TAG, null)
         val userObject = gson.fromJson<User>(json, User::class.java)
         userObject.myCategories = categoriesList
-        mPrefs.edit().putString(USER_TAG, gson.toJson(userObject)).apply()
+        putString(USER_TAG, gson.toJson(userObject))
     }
 
-    override fun deleteUser(){
-        mPrefs.edit().remove(USER_TAG).apply()
+    override fun deleteUser() {
+        getPref().edit().remove(USER_TAG).apply()
+    }
+
+    override fun saveTemporaryCategories(selectedCategoriesList: ArrayList<String>) {
+        val json = Gson().toJson(selectedCategoriesList)
+        putString(TEMPORARY_CATEGORIES_TAG, json)
+    }
+
+    override fun getTemporaryCategories(): ArrayList<String> {
+        val json = getPref().getString(TEMPORARY_CATEGORIES_TAG, null)
+        val groupListType: Type = object : TypeToken<ArrayList<String?>?>() {}.type
+        return Gson().fromJson(json, groupListType)
     }
 
     companion object {
         private const val MY_PREFS = "SHARED_PREFERENCES"
         private const val USER_TAG = "User"
+        private const val TEMPORARY_CATEGORIES_TAG = "Categories"
     }
 }
 
@@ -74,4 +86,6 @@ interface PublistSharedPreferencesInterface {
     fun updateUserCategories(categoriesList: ArrayList<String>)
     fun clearData()
     fun getPref(): SharedPreferences
+    fun saveTemporaryCategories(selectedCategoriesList: java.util.ArrayList<String>)
+    fun getTemporaryCategories(): ArrayList<String>
 }

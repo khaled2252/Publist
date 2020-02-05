@@ -30,15 +30,19 @@ class SplashActivity : BaseActivity<SplashViewModel>() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
         viewModel.onCreated()
-        viewModel.userLoggedIn.observe(this, Observer {pair ->
-            if (pair.first) { // is new user ?
+        viewModel.userLoggedIn.observe(this, Observer { pair ->
+            val isNewUser = pair.first
+            val isMyCategoriesEmpty = pair.second
+            when {
+                isNewUser -> {
                     navigateToLogin()
-                } else
-                if (pair.second) //is myCategories empty ?
-                        navigateEditProfile()
-                else {
+                }
+               isMyCategoriesEmpty
+                -> navigateEditProfile()
+                else -> {
                     navigateToHome()
                 }
+            }
         })
     }
 
@@ -56,7 +60,7 @@ class SplashActivity : BaseActivity<SplashViewModel>() {
 
     private fun navigateToHome() {
         finish()
-        Toast.makeText(this,R.string.welcome_back,Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, R.string.welcome_back, Toast.LENGTH_SHORT).show()
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
         startActivity(Intent(this, HomeActivity::class.java))
     }

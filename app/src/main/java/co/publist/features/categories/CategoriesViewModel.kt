@@ -2,6 +2,7 @@ package co.publist.features.categories
 
 import androidx.lifecycle.MutableLiveData
 import co.publist.core.platform.BaseViewModel
+import co.publist.core.utils.Utils.Constants.FIND_ACTION
 import co.publist.core.utils.Utils.Constants.MAXIMUM_SELECTED_CATEGORIES
 import co.publist.core.utils.Utils.Constants.MINIMUM_SELECTED_CATEGORIES
 import co.publist.core.utils.Utils.Constants.SAVE_ACTION
@@ -51,14 +52,22 @@ class CategoriesViewModel @Inject constructor(
 
     fun handleActionButton(action : String?) {
         if(selectedCategoriesList.size< MINIMUM_SELECTED_CATEGORIES)
-            actionButtonLiveData.postValue(true)
+            actionButtonLiveData.postValue(false)
         else {
-            if(action== SAVE_ACTION)
-                saveCategories()
+            if(action == SAVE_ACTION)
+                saveUserCategories()
+            else if (action == FIND_ACTION)
+                saveGuestCategories()
+
+            actionButtonLiveData.postValue(true)
         }
     }
 
-    private fun saveCategories() {
+    private fun saveGuestCategories() {
+        categoriesRepository.saveGuestCategories(selectedCategoriesList)
+    }
+
+    private fun saveUserCategories() {
         subscribe(categoriesRepository.updateUserCategories(selectedCategoriesList), Action {
             saveCategoriesLiveData.postValue(true)
         })
