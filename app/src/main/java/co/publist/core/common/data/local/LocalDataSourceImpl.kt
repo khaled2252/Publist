@@ -1,4 +1,4 @@
-package co.publist.core.data.local
+package co.publist.core.common.data.local
 
 import android.content.Context
 

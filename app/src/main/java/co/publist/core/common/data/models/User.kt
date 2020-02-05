@@ -1,4 +1,4 @@
-package co.publist.core.data.models
+package co.publist.core.common.data.models
 
 data class User (
     var id : String? = null,

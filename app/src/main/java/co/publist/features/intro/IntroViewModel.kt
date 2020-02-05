@@ -6,5 +6,4 @@ import javax.inject.Inject
 
 class IntroViewModel @Inject constructor() : BaseViewModel() {
 
-
 }

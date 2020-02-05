@@ -2,13 +2,13 @@ package co.publist.features.splash
 
 import android.os.Handler
 import androidx.lifecycle.MutableLiveData
+import co.publist.core.common.data.repositories.user.UserRepositoryInterface
 import co.publist.core.platform.BaseViewModel
 import co.publist.core.utils.Utils.Constants.SPLASH_DELAY
-import co.publist.features.splash.data.SplashRepositoryInterface
 import javax.inject.Inject
 
 
-class SplashViewModel @Inject constructor(private val splashRepository: SplashRepositoryInterface) :
+class SplashViewModel @Inject constructor(private val userRepository: UserRepositoryInterface) :
     BaseViewModel() {
 
     val userLoggedIn = MutableLiveData<Pair<Boolean, Boolean>>()
@@ -16,7 +16,7 @@ class SplashViewModel @Inject constructor(private val splashRepository: SplashRe
     fun onCreated() {
         var isNewUser = false
         var isMyCategoriesEmpty = false
-        val user = splashRepository.getUser()
+        val user = userRepository.getUser()
 
         if (user == null)
             isNewUser = true

@@ -1,26 +1,25 @@
 package co.publist.features.home
 
 import androidx.lifecycle.MutableLiveData
-import co.publist.core.data.models.User
+import co.publist.core.common.data.models.User
+import co.publist.core.common.data.repositories.user.UserRepositoryInterface
 import co.publist.core.platform.BaseViewModel
-import co.publist.features.home.data.HomeRepositoryInterface
 import javax.inject.Inject
 
-
-class HomeViewModel @Inject constructor(private val homeRepository: HomeRepositoryInterface) :
+class HomeViewModel @Inject constructor(private val userRepository: UserRepositoryInterface) :
     BaseViewModel() {
 
     var userLiveData = MutableLiveData<User>()
     var logoutLiveData = MutableLiveData<Boolean>()
     var isGuest = MutableLiveData<Boolean>()
-    val user = homeRepository.getUserInformation()
+    val user = userRepository.getUser()
 
     fun onCreated() {
         userLiveData.postValue(user)
     }
 
     fun handleLogout() {
-        homeRepository.deleteCurrentUser()
+        userRepository.deleteCurrentUser()
         logoutLiveData.postValue(true)
     }
 

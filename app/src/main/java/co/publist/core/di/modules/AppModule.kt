@@ -2,8 +2,8 @@ package co.publist.core.di.modules;
 
 import android.content.Context
 import co.publist.R
-import co.publist.core.data.local.LocalDataSource
-import co.publist.core.data.local.LocalDataSourceImpl
+import co.publist.core.common.data.local.LocalDataSource
+import co.publist.core.common.data.local.LocalDataSourceImpl
 import com.facebook.CallbackManager
 import com.facebook.internal.CallbackManagerImpl
 import com.google.android.gms.auth.api.signin.GoogleSignIn

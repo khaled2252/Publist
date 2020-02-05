@@ -1,8 +1,8 @@
 package co.publist.features.login.data
 
 import android.os.Bundle
-import co.publist.core.data.local.LocalDataSource
-import co.publist.core.data.models.User
+import co.publist.core.common.data.local.LocalDataSource
+import co.publist.core.common.data.models.User
 import co.publist.core.platform.BaseRepository
 import co.publist.core.utils.Utils.Constants.EMAIL_FIELD
 import co.publist.core.utils.Utils.Constants.NAME_FIELD

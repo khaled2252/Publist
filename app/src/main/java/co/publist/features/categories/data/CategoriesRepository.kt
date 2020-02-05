@@ -1,6 +1,6 @@
 package co.publist.features.categories.data
 
-import co.publist.core.data.local.LocalDataSource
+import co.publist.core.common.data.local.LocalDataSource
 import co.publist.core.utils.Utils.Constants.CATEGORIES_COLLECTION_PATH
 import co.publist.core.utils.Utils.Constants.MY_CATEGORIES_COLLECTION_PATH
 import co.publist.core.utils.Utils.Constants.USERS_COLLECTION_PATH

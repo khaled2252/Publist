@@ -8,7 +8,7 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import co.publist.R
-import co.publist.core.data.models.Category
+import co.publist.core.common.data.models.Category
 import co.publist.core.platform.BaseFragment
 import co.publist.core.platform.ViewModelFactory
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
