@@ -26,6 +26,7 @@ import co.publist.features.editprofile.EditProfileViewModel
 import co.publist.features.home.HomeViewModel
 import co.publist.features.intro.IntroViewModel
 import co.publist.features.splash.SplashViewModel
+import co.publist.features.wishes.WishesViewModel
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap
@@ -59,6 +60,11 @@ abstract class ViewModelModule {
     @Binds
     @IntoMap
     @ViewModelKey(HomeViewModel::class)
-    abstract fun bindHomwViewModel(homeViewModel: HomeViewModel): ViewModel
+    abstract fun bindHomeViewModel(homeViewModel: HomeViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(WishesViewModel::class)
+    abstract fun bindWishesViewModel(wishesViewModel: WishesViewModel): ViewModel
 
 }

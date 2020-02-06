@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <variable
+            name="imageUrl"
+            type="String" />
+    </data>
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="6dp"
+    android:background="@color/white">
+
+    <TextView
+        android:id="@+id/categoryNameTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="Travel"
+        android:textColor="@color/Manatee"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="15dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/timeTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text=".18h"
+        android:textColor="@color/Manatee"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="15dp"
+        app:layout_constraintStart_toEndOf="@id/categoryNameTextView"
+        app:layout_constraintTop_toTopOf="parent" />
+
+<!--    constrainedWidth to fit text even if textSize gets bigger-->
+<!--    horizontal bias to shift textView towards start instead of center (when smaller)-->
+    <TextView
+        android:id="@+id/titleTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="5dp"
+        android:fontFamily="@font/sfprodisplaybold"
+        android:textColor="@color/dimGray"
+        android:textSize="20sp"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/favoriteImageView"
+        app:layout_constraintTop_toBottomOf="@+id/timeTextView"
+        tools:text="The ULTIMATE Backpacking Europe Travel Guide" />
+
+    <ImageView
+        android:id="@+id/favoriteImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="15dp"
+        android:src="@drawable/ic_heart"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/profilePictureImageView"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="15dp"
+        tools:src="@drawable/ic_guest"
+        app:profilePictureUrl="@{imageUrl}"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/titleTextView"/>
+
+    <TextView
+        android:id="@+id/userNameTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="28dp"
+        android:textColor="@color/Manatee"
+        app:layout_constraintStart_toEndOf="@id/profilePictureImageView"
+        app:layout_constraintTop_toBottomOf="@id/titleTextView"
+        tools:text="Kate Norris" />
+
+    <ImageView
+        android:id="@+id/wishImageView"
+        android:layout_width="0dp"
+        android:layout_height="200dp"
+        android:layout_marginTop="15dp"
+        tools:src="@drawable/image_test"
+        app:wishImageUrl="@{imageUrl}"
+        android:scaleType="fitXY"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/profilePictureImageView"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/todoListRecyclerView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        tools:listitem="@layout/item_todo"
+        tools:itemCount="3"
+        app:layout_constraintTop_toBottomOf="@id/wishImageView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
+</androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

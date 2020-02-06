@@ -29,14 +29,12 @@
             android:background="@color/white"
             android:textSize="20sp" />
 
-<!--        <androidx.fragment.app.FragmentContainerView-->
-<!--            android:id="@+id/categoriesFragment"-->
-<!--            android:name="co.publist.features.categories.CategoriesFragment"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="600dp"-->
-<!--            android:layout_marginStart="@dimen/horizontalButtonMargin"-->
-<!--            android:layout_marginTop="20dp"-->
-<!--            android:layout_marginEnd="@dimen/horizontalButtonMargin" />-->
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/wishesFragment"
+            android:name="co.publist.features.wishes.WishesFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp" />
 
     </LinearLayout>
 </layout>

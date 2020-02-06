@@ -6,7 +6,7 @@ import android.os.IBinder
 import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import androidx.databinding.BindingAdapter
-import androidx.swiperefreshlayout.widget.CircularProgressDrawable
+import co.publist.R
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 
@@ -21,14 +21,19 @@ object Utils {
     @JvmStatic
     @BindingAdapter("profilePictureUrl")
     fun loadProfilePicture(view: ImageView, imageUrl: String?) {
-        val circularProgressDrawable = CircularProgressDrawable(view.context)
-        circularProgressDrawable.strokeWidth = 5f
-        circularProgressDrawable.centerRadius = 30f
-        circularProgressDrawable.start()
         Glide.with(view)
             .load(imageUrl)
-            .placeholder(circularProgressDrawable)
+            .placeholder(R.drawable.ic_user_2x)
             .apply(RequestOptions.circleCropTransform())
+            .into(view)
+    }
+
+    @JvmStatic
+    @BindingAdapter("wishImageUrl")
+    fun loadWishImage(view: ImageView, imageUrl: String?) {
+        Glide.with(view)
+            .load(imageUrl)
+            .placeholder(R.drawable.ph_wish_image)
             .into(view)
     }
 
@@ -46,6 +51,7 @@ object Utils {
         const val MY_FAVORITES_COLLECTION_PATH = "myFavorites"
         const val MY_LISTS_COLLECTION_PATH = "myLists"
         const val CATEGORIES_COLLECTION_PATH = "categories"
+        const val WISHES_COLLECTION_PATH = "wishes"
         const val PROFILE_PICTURE_URL_FIELD = "profilePictureUrl"
         const val EMAIL_FIELD = "email"
         const val NAME_FIELD = "name"

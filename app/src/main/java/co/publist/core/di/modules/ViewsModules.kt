@@ -6,6 +6,7 @@ import co.publist.features.home.HomeActivity
 import co.publist.features.intro.IntroActivity
 import co.publist.features.login.LoginActivity
 import co.publist.features.splash.SplashActivity
+import co.publist.features.wishes.WishesFragment
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
@@ -30,5 +31,8 @@ abstract class ViewsModules {
 
     @ContributesAndroidInjector
     abstract fun contributeHomeActivity(): HomeActivity
+
+    @ContributesAndroidInjector
+    abstract fun contributeWishesActivity(): WishesFragment
 
 }
