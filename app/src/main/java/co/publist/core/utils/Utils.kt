@@ -3,12 +3,14 @@ package co.publist.core.utils
 import android.app.Activity
 import android.content.Context
 import android.os.IBinder
+import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import androidx.databinding.BindingAdapter
 import co.publist.R
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.squareup.picasso.Picasso
 
 object Utils {
 
@@ -31,14 +33,19 @@ object Utils {
     @JvmStatic
     @BindingAdapter("wishImageUrl")
     fun loadWishImage(view: ImageView, imageUrl: String?) {
-        Glide.with(view)
-            .load(imageUrl)
-            .placeholder(R.drawable.ph_wish_image)
-            .into(view)
+        if (!imageUrl.isNullOrEmpty()) {
+            view.visibility = View.VISIBLE
+            Picasso.get()
+                .load(imageUrl)
+                .fit()
+                .error(R.drawable.ph_wish_image)
+                .placeholder(R.drawable.ph_wish_image)
+                .into(view)
+        }
     }
 
-    object Constants{
-        const val SPLASH_DELAY :Long = 2000
+    object Constants {
+        const val SPLASH_DELAY: Long = 2000
         const val MINIMUM_SELECTED_CATEGORIES = 1
         const val MAXIMUM_SELECTED_CATEGORIES = 5
         const val PLATFORM_GOOGLE = "google"

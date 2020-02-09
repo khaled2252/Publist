@@ -12,7 +12,6 @@ import co.publist.core.common.data.models.Category
 import co.publist.core.platform.BaseFragment
 import co.publist.core.platform.ViewModelFactory
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
-import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.material.button.MaterialButton
 import kotlinx.android.synthetic.main.fragment_categories.*
 import javax.inject.Inject
@@ -44,9 +43,6 @@ class CategoriesFragment : BaseFragment<CategoriesViewModel>() {
     }
 
     private fun setAdapter(selectedCategoriesList : ArrayList<String>) {
-
-        categoriesRecyclerView.layoutManager = FlexboxLayoutManager(this.context)
-
         val options: FirestoreRecyclerOptions<Category> =
             FirestoreRecyclerOptions.Builder<Category>()
                 .setQuery(viewModel.getCategoriesQuery(), Category::class.java)

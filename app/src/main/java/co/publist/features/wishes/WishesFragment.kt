@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.widget.LinearLayoutManager
 import co.publist.R
 import co.publist.core.platform.BaseFragment
 import co.publist.core.platform.ViewModelFactory
@@ -39,9 +38,6 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
     }
 
     private fun setAdapter() {
-
-        wishesRecyclerView.layoutManager = LinearLayoutManager(this.context)
-
         val options: FirestoreRecyclerOptions<WishView> =
             FirestoreRecyclerOptions.Builder<WishView>()
                 .setQuery(viewModel.getWishesQuery(), WishView::class.java)
