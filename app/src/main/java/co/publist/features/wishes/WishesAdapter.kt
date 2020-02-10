@@ -52,13 +52,14 @@ class WishesAdapter(
             loadProfilePicture(binding.profilePictureImageView, wish.creator?.imagePath)
             binding.userNameTextView.text = wish.creator?.name
             loadWishImage(binding.wishImageView, wish.wishPhotoURL)
-            binding.todoListRecyclerView.layoutManager = object  : LinearLayoutManager(itemView.context){
-                override fun onLayoutCompleted(state: RecyclerView.State?) {
-                    Toast.makeText(itemView.context,"sss",Toast.LENGTH_SHORT).show()
-                    super.onLayoutCompleted(state)
-                }
+            val todoAdapter =  TodosAdapter(wish.items!!,binding.moreTextView)
+            binding.moreTextView.text = """${(wish.items!!.size - 3)} More Check Points"""
+
+            binding.todoListRecyclerView.post {
+                if(wish.items!!.size>3)
+                todoAdapter.removeExtra()
             }
-            binding.todoListRecyclerView.adapter = TodosAdapter(wish.items!!,binding.moreTextView)
+            binding.todoListRecyclerView.adapter =todoAdapter
 
         }
     }

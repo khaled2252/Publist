@@ -14,21 +14,23 @@ class TodosAdapter(
     var todoList: ArrayList<Todo>,
     moreTextView: TextView
 ) :
-    RecyclerView.Adapter<TodosAdapter.TodoViewHolder>(){
-    private val expandableList =  ArrayList<Todo>()
+    RecyclerView.Adapter<TodosAdapter.TodoViewHolder>() {
+    private val expandableList = ArrayList<Todo>()
     private var isExpanded = false
+
     init {
-        if(todoList.size<4)
+        if (todoList.size <= 3)
             moreTextView.visibility = View.GONE
-        else if(!isExpanded)
+        else if (!isExpanded)
             moreTextView.setOnClickListener {
+                moreTextView.text = "Go to details"
                 expandList()
             }
-        else
-        {
+        else {
             //todo navigate to details
         }
     }
+
 
     private fun expandList() {
         todoList.addAll(expandableList)
@@ -41,6 +43,7 @@ class TodosAdapter(
             LayoutInflater.from(parent.context).inflate(R.layout.item_todo, parent, false)
         return TodoViewHolder(view)
     }
+
     override fun getItemId(position: Int): Long {
         return position.toLong()
     }
@@ -48,19 +51,18 @@ class TodosAdapter(
     override fun getItemViewType(position: Int): Int {
         return position
     }
+
     override fun onBindViewHolder(holder: TodoViewHolder, position: Int) {
         holder.bind(todoList[position])
-        if(position>3) {
+        if (position >= 3) {
             expandableList.add(todoList[position])
-//            todoList.removeAt(position)
         }
     }
 
     inner class TodoViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun bind(
             todo: Todo
-        )
-        {
+        ) {
             itemView.todoTextView.text = todo.name
         }
     }
@@ -70,5 +72,9 @@ class TodosAdapter(
         return todoList.size
     }
 
-
+    fun removeExtra() {
+        for (position in 3 until todoList.size)
+            todoList.removeAt(position)
+        notifyDataSetChanged()
+    }
 }

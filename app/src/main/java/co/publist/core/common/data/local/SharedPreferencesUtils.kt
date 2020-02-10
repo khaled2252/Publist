@@ -61,7 +61,7 @@ class SharedPreferencesUtils @Inject constructor(context: Context) :
         putString(TEMPORARY_CATEGORIES_TAG, json)
     }
 
-    override fun getTemporaryCategories(): ArrayList<String> {
+    override fun getTemporaryCategories(): ArrayList<String>? {
         val json = getPref().getString(TEMPORARY_CATEGORIES_TAG, null)
         val groupListType: Type = object : TypeToken<ArrayList<String?>?>() {}.type
         return Gson().fromJson(json, groupListType)
@@ -86,6 +86,6 @@ interface PublistSharedPreferencesInterface {
     fun updateUserCategories(categoriesList: ArrayList<String>)
     fun clearData()
     fun getPref(): SharedPreferences
-    fun saveTemporaryCategories(selectedCategoriesList: java.util.ArrayList<String>)
-    fun getTemporaryCategories(): ArrayList<String>
+    fun saveTemporaryCategories(selectedCategoriesList: ArrayList<String>)
+    fun getTemporaryCategories(): ArrayList<String>?
 }

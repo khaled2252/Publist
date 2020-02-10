@@ -10,128 +10,135 @@
             type="String" />
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white">
+        android:background="@color/white"
+        app:cardElevation="10dp">
 
-        <View
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="6dp"
-            android:background="@color/platinum"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/categoryNameTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="15dp"
-            android:layout_marginTop="15dp"
-            android:textColor="@color/Manatee"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="Travel" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="6dp"
+                android:background="@color/platinum"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/timeTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:layout_marginTop="15dp"
-            android:textColor="@color/Manatee"
-            app:layout_constraintStart_toEndOf="@id/categoryNameTextView"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text=".18h" />
+            <TextView
+                android:id="@+id/categoryNameTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="15dp"
+                android:textColor="@color/Manatee"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Travel" />
 
-        <!--    constrainedWidth to fit text even if textSize gets bigger-->
-        <!--    horizontal bias to shift textView towards start instead of center (when smaller)-->
-        <TextView
-            android:id="@+id/titleTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="5dp"
-            android:fontFamily="@font/sfprodisplaybold"
-            android:textColor="@color/dimGray"
-            android:textSize="20sp"
-            app:layout_constrainedWidth="true"
-            app:layout_constraintEnd_toStartOf="@id/favoriteImageView"
-            app:layout_constraintHorizontal_bias="0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/timeTextView"
-            tools:text="The ULTIMATE Backpacking Europe Travel Guide" />
+            <TextView
+                android:id="@+id/timeTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="15dp"
+                android:textColor="@color/Manatee"
+                app:layout_constraintStart_toEndOf="@id/categoryNameTextView"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text=".18h" />
 
-        <ImageView
-            android:id="@+id/favoriteImageView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:layout_marginEnd="15dp"
-            android:src="@drawable/ic_heart"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            <!--    constrainedWidth to fit text even if textSize gets bigger-->
+            <!--    horizontal bias to shift textView towards start instead of center (when smaller)-->
+            <TextView
+                android:id="@+id/titleTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="5dp"
+                android:fontFamily="@font/sfprodisplaybold"
+                android:textColor="@color/dimGray"
+                android:textSize="20sp"
+                app:layout_constrainedWidth="true"
+                app:layout_constraintEnd_toStartOf="@id/favoriteImageView"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/timeTextView"
+                tools:text="The ULTIMATE Backpacking Europe Travel Guide" />
 
-        <ImageView
-            android:id="@+id/profilePictureImageView"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="15dp"
-            android:layout_marginEnd="15dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/titleTextView"
-            app:profilePictureUrl="@{imageUrl}"
-            tools:src="@drawable/ic_guest" />
+            <ImageView
+                android:id="@+id/favoriteImageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:layout_marginEnd="15dp"
+                android:src="@drawable/ic_heart"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/userNameTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="28dp"
-            android:textColor="@color/Manatee"
-            app:layout_constraintStart_toEndOf="@id/profilePictureImageView"
-            app:layout_constraintTop_toBottomOf="@id/titleTextView"
-            tools:text="Kate Norris" />
+            <ImageView
+                android:id="@+id/profilePictureImageView"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginEnd="15dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/titleTextView"
+                app:profilePictureUrl="@{imageUrl}"
+                tools:src="@drawable/ic_guest" />
 
-        <ImageView
-            android:id="@+id/wishImageView"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:layout_marginTop="15dp"
-            android:scaleType="fitXY"
-            android:visibility="gone"
-            app:layout_constraintBottom_toTopOf="@id/todoListRecyclerView"
-            app:layout_constraintTop_toBottomOf="@id/profilePictureImageView"
-            app:wishImageUrl="@{imageUrl}"
-            tools:src="@drawable/image_test"
-            tools:visibility="visible" />
+            <TextView
+                android:id="@+id/userNameTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="28dp"
+                android:textColor="@color/Manatee"
+                app:layout_constraintStart_toEndOf="@id/profilePictureImageView"
+                app:layout_constraintTop_toBottomOf="@id/titleTextView"
+                tools:text="Kate Norris" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/todoListRecyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:orientation="vertical"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintBottom_toTopOf="@+id/moreTextView"
-            app:layout_constraintTop_toBottomOf="@id/wishImageView"
-            tools:itemCount="3"
-            tools:listitem="@layout/item_todo" />
+            <ImageView
+                android:id="@+id/wishImageView"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_marginTop="15dp"
+                android:scaleType="fitXY"
+                android:visibility="gone"
+                app:layout_constraintBottom_toTopOf="@id/todoListRecyclerView"
+                app:layout_constraintTop_toBottomOf="@id/profilePictureImageView"
+                app:wishImageUrl="@{imageUrl}"
+                tools:src="@drawable/image_test"
+                tools:visibility="visible" />
 
-        <TextView
-            android:id="@+id/moreTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:drawableEnd="@drawable/ic_down"
-            android:drawablePadding="10dp"
-            android:fontFamily="@font/sfprodisplaysemibold"
-            android:textColor="@color/sunsetOrange"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/todoListRecyclerView"
-            tools:text="3 More Check Points" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/todoListRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="15dp"
+                android:orientation="vertical"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintBottom_toTopOf="@+id/moreTextView"
+                app:layout_constraintTop_toBottomOf="@id/wishImageView"
+                tools:itemCount="3"
+                tools:listitem="@layout/item_todo" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <TextView
+                android:id="@+id/moreTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="15dp"
+                android:drawableEnd="@drawable/ic_down"
+                android:drawablePadding="10dp"
+                android:fontFamily="@font/sfprodisplaysemibold"
+                android:textColor="@color/sunsetOrange"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/todoListRecyclerView"
+                tools:text="3 More Check Points" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
 </layout>
