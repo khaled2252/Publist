@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import co.publist.R
 import co.publist.core.platform.BaseFragment
 import co.publist.core.platform.ViewModelFactory
-import co.publist.features.wishes.data.WishView
+import co.publist.features.wishes.data.Wish
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import kotlinx.android.synthetic.main.fragment_wishes.*
 import javax.inject.Inject
@@ -38,9 +38,9 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
     }
 
     private fun setAdapter() {
-        val options: FirestoreRecyclerOptions<WishView> =
-            FirestoreRecyclerOptions.Builder<WishView>()
-                .setQuery(viewModel.getWishesQuery(), WishView::class.java)
+        val options: FirestoreRecyclerOptions<Wish> =
+            FirestoreRecyclerOptions.Builder<Wish>()
+                .setQuery(viewModel.getWishesQuery(), Wish::class.java)
                 .build()
 
         val adapter = WishesAdapter(options)

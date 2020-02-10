@@ -2,11 +2,13 @@ package co.publist.features.wishes
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import co.publist.core.utils.Utils.loadProfilePicture
 import co.publist.core.utils.Utils.loadWishImage
 import co.publist.databinding.ItemWishBinding
-import co.publist.features.wishes.data.WishView
+import co.publist.features.wishes.data.Wish
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import org.ocpsoft.prettytime.PrettyTime
@@ -14,15 +16,16 @@ import java.util.*
 
 
 class WishesAdapter(
-    options: FirestoreRecyclerOptions<WishView>
+    options: FirestoreRecyclerOptions<Wish>
 ) :
-    FirestoreRecyclerAdapter<WishView, WishesAdapter.WishViewHolder>(options) {
+    FirestoreRecyclerAdapter<Wish, WishesAdapter.WishViewHolder>(options) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WishViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = ItemWishBinding.inflate(inflater)
         binding.executePendingBindings()
-         return WishViewHolder(binding)
+        return WishViewHolder(binding)
     }
+
     override fun getItemId(position: Int): Long {
         return position.toLong()
     }
@@ -30,25 +33,33 @@ class WishesAdapter(
     override fun getItemViewType(position: Int): Int {
         return position
     }
-    override fun onBindViewHolder(holder: WishViewHolder, position: Int, wish: WishView) {
-        holder.bind(wish, position)
+
+    override fun onBindViewHolder(holder: WishViewHolder, position: Int, wish: Wish) {
+        holder.bind(wish)
     }
 
-    inner class WishViewHolder(private val binding: ItemWishBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class WishViewHolder(private val binding: ItemWishBinding) :
+        RecyclerView.ViewHolder(binding.root) {
         fun bind(
-            wish: WishView,
-            position: Int
-        )
-        {
+            wish: Wish
+        ) {
             binding.categoryNameTextView.text = wish.category?.get(0)?.name
             val prettyTime = PrettyTime(Locale.getDefault())
             val date = wish.date?.toDate()
-            val timeAgo = ". "+prettyTime.format(date)
+            val timeAgo = ". " + prettyTime.format(date)
             binding.timeTextView.text = timeAgo
             binding.titleTextView.text = wish.title
             loadProfilePicture(binding.profilePictureImageView, wish.creator?.imagePath)
             binding.userNameTextView.text = wish.creator?.name
-            loadWishImage(binding.wishImageView,wish.wishPhotoURL)
+            loadWishImage(binding.wishImageView, wish.wishPhotoURL)
+            binding.todoListRecyclerView.layoutManager = object  : LinearLayoutManager(itemView.context){
+                override fun onLayoutCompleted(state: RecyclerView.State?) {
+                    Toast.makeText(itemView.context,"sss",Toast.LENGTH_SHORT).show()
+                    super.onLayoutCompleted(state)
+                }
+            }
+            binding.todoListRecyclerView.adapter = TodosAdapter(wish.items!!,binding.moreTextView)
+
         }
     }
 }

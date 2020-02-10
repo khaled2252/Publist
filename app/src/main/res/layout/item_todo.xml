@@ -1,44 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <com.google.android.material.radiobutton.MaterialRadioButton
-        android:id="@+id/chipButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:buttonTint="@color/sunsetOrange"
-        android:layout_marginStart="10dp"
-        app:layout_constraintEnd_toStartOf="@id/wishTextView"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/checkButton"
+            style="@android:style/Widget.CompoundButton.RadioButton"
+            android:layout_marginTop="10dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="10dp"
+            android:buttonTint="@color/sunsetOrange" />
 
-    <TextView
-        android:id="@+id/wishTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        tools:text="Check the Landmarks of the city"
-        android:textColor="@color/outerSpace"
-        android:layout_marginTop="15dp"
-        app:layout_constrainedWidth="true"
-        app:layout_constraintStart_toEndOf="@+id/chipButton"
-        app:layout_constraintEnd_toStartOf="@+id/finishedThisTextView"
-        app:layout_constraintTop_toTopOf="parent" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/finishedThisTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
-        android:layout_marginEnd="15dp"
-        android:layout_marginTop="15dp"
-        android:textColor="@color/Manatee"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/wishTextView"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="+50 Finished this" />
+            <TextView
+                android:id="@+id/todoTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:layout_marginEnd="10dp"
+                android:textColor="@color/outerSpace"
+                app:layout_constrainedWidth="true"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/dashed_line"
+                tools:text="Check the Landmarks of the city" />
+
+<!--            <TextView-->
+<!--                android:id="@+id/finishedThisTextView"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginStart="15dp"-->
+<!--                android:layout_marginEnd="15dp"-->
+<!--                android:layout_marginTop="15dp"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintStart_toEndOf="@id/todoTextView"-->
+<!--                app:layout_constraintTop_toTopOf="parent"-->
+<!--                tools:text="+50 Finished this" />-->
+
+            <View
+                android:id="@+id/dashed_line"
+                android:layout_width="match_parent"
+                android:layout_height="4dp"
+                android:layout_marginTop="7dp"
+                android:background="@drawable/dashed_line"
+                android:layerType="software"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/todoTextView" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+</LinearLayout>
+
+
+

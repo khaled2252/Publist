@@ -62,6 +62,7 @@ object Utils {
         const val PROFILE_PICTURE_URL_FIELD = "profilePictureUrl"
         const val EMAIL_FIELD = "email"
         const val NAME_FIELD = "name"
+        const val DATE_FIELD = "date"
         const val FIND_ACTION = "find"
         const val SAVE_ACTION = "save"
     }
