@@ -2,8 +2,6 @@ package co.publist.features.wishes
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import co.publist.core.utils.Utils.loadProfilePicture
 import co.publist.core.utils.Utils.loadWishImage
@@ -13,12 +11,14 @@ import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import org.ocpsoft.prettytime.PrettyTime
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 class WishesAdapter(
     options: FirestoreRecyclerOptions<Wish>
 ) :
     FirestoreRecyclerAdapter<Wish, WishesAdapter.WishViewHolder>(options) {
+    val todosAdapterArrayList = ArrayList<TodosAdapter>()
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WishViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = ItemWishBinding.inflate(inflater)
@@ -44,22 +44,35 @@ class WishesAdapter(
             wish: Wish
         ) {
             binding.categoryNameTextView.text = wish.category?.get(0)?.name
+            binding.titleTextView.text = wish.title
+
+            //Load ago time
             val prettyTime = PrettyTime(Locale.getDefault())
             val date = wish.date?.toDate()
             val timeAgo = ". " + prettyTime.format(date)
             binding.timeTextView.text = timeAgo
-            binding.titleTextView.text = wish.title
+
+            //Load creator data
             loadProfilePicture(binding.profilePictureImageView, wish.creator?.imagePath)
             binding.userNameTextView.text = wish.creator?.name
-            loadWishImage(binding.wishImageView, wish.wishPhotoURL)
-            val todoAdapter =  TodosAdapter(wish.items!!,binding.moreTextView)
-            binding.moreTextView.text = """${(wish.items!!.size - 3)} More Check Points"""
 
+            //Load wish data
+            loadWishImage(binding.wishImageView, wish.wishPhotoURL)
+            val todosAdapter =  TodosAdapter(wish.items!!,binding.moreTextView,binding.arrowImageView,todosAdapterArrayList.size){
+                //Collapse all other lists except for the current one expanding
+                for(adapterIndex in 0 until todosAdapterArrayList.size)
+                {
+                    if(adapterIndex!=it)
+                    todosAdapterArrayList[adapterIndex].collapseExtraTodosPostLoading()
+                }
+            }
+            todosAdapterArrayList.add(todosAdapter)
+            todosAdapter.setHasStableIds(true)
+            binding.todoListRecyclerView.adapter = todosAdapter
             binding.todoListRecyclerView.post {
                 if(wish.items!!.size>3)
-                todoAdapter.removeExtra()
+                todosAdapter.collapseExtraTodosPostLoading()
             }
-            binding.todoListRecyclerView.adapter =todoAdapter
 
         }
     }
