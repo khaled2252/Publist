@@ -52,7 +52,8 @@ class EditProfileActivity : BaseActivity<EditProfileViewModel>() {
             loadProfilePicture(profilePictureImageView, user.profilePictureUrl)
         })
 
-        categoriesFragment.viewModel.actionButtonLiveData.observe(this, Observer {
+        categoriesFragment.viewModel.actionButtonLiveData.observe(this, Observer {viable ->
+            if(!viable)
                 Toast.makeText(
                     this,
                     R.string.minimum_categories,

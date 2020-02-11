@@ -58,8 +58,6 @@ class CategoriesViewModel @Inject constructor(
                 saveUserCategories()
             else if (action == FIND_ACTION)
                 saveGuestCategories()
-
-            actionButtonLiveData.postValue(true)
         }
     }
 
