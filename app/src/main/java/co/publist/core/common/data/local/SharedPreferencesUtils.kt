@@ -67,6 +67,10 @@ class SharedPreferencesUtils @Inject constructor(context: Context) :
         return Gson().fromJson(json, groupListType)
     }
 
+    override fun clearGuestCategories() {
+        getPref().edit().remove(TEMPORARY_CATEGORIES_TAG).apply()
+    }
+
     companion object {
         private const val MY_PREFS = "SHARED_PREFERENCES"
         private const val USER_TAG = "User"
@@ -88,4 +92,5 @@ interface PublistSharedPreferencesInterface {
     fun getPref(): SharedPreferences
     fun saveTemporaryCategories(selectedCategoriesList: ArrayList<String>)
     fun getTemporaryCategories(): ArrayList<String>?
+    fun clearGuestCategories()
 }

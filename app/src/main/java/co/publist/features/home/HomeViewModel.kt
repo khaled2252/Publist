@@ -4,12 +4,12 @@ import androidx.lifecycle.MutableLiveData
 import co.publist.core.common.data.models.User
 import co.publist.core.common.data.repositories.user.UserRepositoryInterface
 import co.publist.core.platform.BaseViewModel
-import co.publist.features.home.data.HomeRepositoryInterface
+import co.publist.features.categories.data.CategoriesRepositoryInterface
 import javax.inject.Inject
 
 class HomeViewModel @Inject constructor(
     private val userRepository: UserRepositoryInterface,
-    private val homeRepository: HomeRepositoryInterface
+    private val categoryRepository: CategoriesRepositoryInterface
 ) :
     BaseViewModel() {
 
@@ -23,7 +23,7 @@ class HomeViewModel @Inject constructor(
         if (user != null)
             userLiveData.postValue(user)
         else
-            guestLiveData.postValue(homeRepository.getGuestCategories())
+            guestLiveData.postValue(categoryRepository.getGuestCategories())
     }
 
     fun handleLogout() {
@@ -36,5 +36,9 @@ class HomeViewModel @Inject constructor(
             isGuest.postValue(true)
         else
             isGuest.postValue(false)
+    }
+
+    fun clearGuestCategories(){
+        categoryRepository.clearGuestCategories()
     }
 }

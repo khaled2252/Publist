@@ -7,9 +7,4 @@ class HomeRepository @Inject constructor(
     private val localDataSource: LocalDataSource
 
 )  : HomeRepositoryInterface{
-
-    override fun getGuestCategories(): ArrayList<String>? {
-        return localDataSource.getSharedPreferences().getTemporaryCategories()
-    }
-
 }

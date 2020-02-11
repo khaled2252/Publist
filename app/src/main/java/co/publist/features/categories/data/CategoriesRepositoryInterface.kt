@@ -9,4 +9,6 @@ interface CategoriesRepositoryInterface {
     fun getUserCategories(): Single<ArrayList<String>>
     fun updateUserCategories(selectedCategoriesList : ArrayList<String>) : Completable
     fun saveGuestCategories(selectedCategoriesList: ArrayList<String>)
+    fun getGuestCategories() : ArrayList<String>?
+    fun clearGuestCategories()
 }

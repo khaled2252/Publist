@@ -92,4 +92,12 @@ class CategoriesRepository @Inject constructor(
     override fun saveGuestCategories(selectedCategoriesList: ArrayList<String>) {
         localDataSource.getSharedPreferences().saveTemporaryCategories(selectedCategoriesList)
     }
+
+    override fun getGuestCategories() : ArrayList<String>? {
+       return localDataSource.getSharedPreferences().getTemporaryCategories()
+    }
+
+    override fun clearGuestCategories() {
+        localDataSource.getSharedPreferences().clearGuestCategories()
+    }
 }

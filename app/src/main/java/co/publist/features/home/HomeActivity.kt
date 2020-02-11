@@ -42,6 +42,11 @@ class HomeActivity : BaseActivity<HomeViewModel>() {
         setListeners()
     }
 
+    override fun onDestroy() {
+        viewModel.clearGuestCategories()
+        super.onDestroy()
+    }
+
     private fun setObservers() {
         viewModel.userLiveData.observe(this, Observer { user ->
             Utils.loadProfilePicture(profilePictureImageView, user.profilePictureUrl)

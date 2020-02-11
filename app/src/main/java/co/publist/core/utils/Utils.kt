@@ -64,6 +64,7 @@ object Utils {
         const val EMAIL_FIELD = "email"
         const val NAME_FIELD = "name"
         const val DATE_FIELD = "date"
+        const val CATEGORY_ID_FIELD = "categoryId"
         const val FIND_ACTION = "find"
         const val SAVE_ACTION = "save"
     }
