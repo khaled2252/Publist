@@ -1,49 +1,39 @@
 package co.publist.core.common.data.local.db
 
 import android.content.Context
+import androidx.paging.DataSource
 import co.publist.core.common.data.models.CategoryDbEntity
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 import javax.inject.Inject
 
 class DataBaseAccess @Inject constructor(context: Context) : DataBaseInterface {
-    private val database: PublistDataBase
+    private val database: PublistDataBase = PublistDataBase.getInstance(context)
     private val publistDao: PublistDao
     private val ioExecutor: Executor
 
     init {
-        database = PublistDataBase.getInstance(context)
-        publistDao = database.taniaDao()
+        publistDao = database.publistDao()
         ioExecutor = Executors.newSingleThreadExecutor()
     }
 
-    override fun insert(categoriesList: List<CategoryDbEntity>) {
+    override fun updateCategories(categoriesList: List<CategoryDbEntity>) {
         publistDao.insert(categoriesList)
     }
 
+    override fun getCategories(): DataSource.Factory<Int, CategoryDbEntity> {
+        return publistDao.getCategories()
+    }
 
-//    override fun getCouponById(id: Int): CouponDbEntity? {
-//        return publistDao.getCouponById(id)
-//    }
-//
-//    override fun getItems(): DataSource.Factory<Int, ItemDbEntity> {
-//        return publistDao.getItems()
-//    }
-//
-//    override fun deleteAllItems() {
-//        return publistDao.deleteAllItems()
-//    }
-//
-//    override fun updateItem(id: Int, count: Int) {
-//        ioExecutor.execute { publistDao.updateItem(id, count) }
-//    }
+    override fun deleteCategories() {
+        return publistDao.deleteCategories()
+    }
 
 }
+
 interface DataBaseInterface {
-    fun insert(categoriesList: List<CategoryDbEntity>)
-//    fun getCouponById(id: Int): CouponDbEntity?
-//    fun getItems(): DataSource.Factory<Int, ItemDbEntity>
-//    fun deleteAllItems()
-//    fun updateItem(id: Int, count: Int)
+    fun getCategories(): DataSource.Factory<Int, CategoryDbEntity>
+    fun updateCategories(categoriesList: List<CategoryDbEntity>)
+    fun deleteCategories()
 
 }

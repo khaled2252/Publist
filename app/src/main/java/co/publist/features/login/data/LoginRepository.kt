@@ -3,7 +3,6 @@ package co.publist.features.login.data
 import android.os.Bundle
 import co.publist.core.common.data.local.LocalDataSource
 import co.publist.core.common.data.models.User
-import co.publist.core.platform.BaseRepository
 import co.publist.core.utils.Utils.Constants.EMAIL_FIELD
 import co.publist.core.utils.Utils.Constants.NAME_FIELD
 import co.publist.core.utils.Utils.Constants.PROFILE_PICTURE_URL_FIELD
@@ -26,7 +25,7 @@ class LoginRepository @Inject constructor(
     private val mFirebaseFirestore: FirebaseFirestore,
     private val localDataSource: LocalDataSource
 
-) : BaseRepository(), LoginRepositoryInterface {
+) :  LoginRepositoryInterface {
     override fun fetchUserDocId(email: String): Single<String?> {
         return Single.create { singleEmitter ->
             mFirebaseFirestore.let {

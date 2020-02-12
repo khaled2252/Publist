@@ -13,7 +13,7 @@ import co.publist.core.common.data.models.CategoryDbEntity
     exportSchema = false
 )
 abstract class PublistDataBase : RoomDatabase() {
-    abstract fun taniaDao(): PublistDao
+    abstract fun publistDao(): PublistDao
 
     companion object {
 
