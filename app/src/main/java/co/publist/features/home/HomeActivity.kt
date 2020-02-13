@@ -43,18 +43,19 @@ class HomeActivity : BaseActivity<HomeViewModel>() {
     }
 
     override fun onDestroy() {
-        viewModel.clearGuestCategories()
+        viewModel.clearGuestSelectedCategories()
         super.onDestroy()
     }
 
     private fun setObservers() {
         viewModel.userLiveData.observe(this, Observer { user ->
+            if(user!=null)
             Utils.loadProfilePicture(profilePictureImageView, user.profilePictureUrl)
-        })
-
-        viewModel.guestLiveData.observe(this, Observer { guestCategories ->
-            profilePictureImageView.setImageResource(R.drawable.ic_user_2x)
-            logoutTextView.visibility = View.GONE
+            else
+            {
+                profilePictureImageView.setImageResource(R.drawable.ic_user_2x)
+                logoutTextView.visibility = View.GONE
+            }
         })
 
         viewModel.logoutLiveData.observe(this, Observer {

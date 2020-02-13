@@ -5,6 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import co.publist.core.common.data.models.CategoryDbEntity
+import co.publist.core.utils.Utils.Constants.DB_NAME
 
 
 @Database(
@@ -27,9 +28,10 @@ abstract class PublistDataBase : RoomDatabase() {
             }
 
         private fun buildDatabase(context: Context) =
-            Room.inMemoryDatabaseBuilder(
+            Room.databaseBuilder(
                 context.applicationContext,
                 PublistDataBase::class.java
+                , DB_NAME
             )
                 .fallbackToDestructiveMigration()
                 .build()

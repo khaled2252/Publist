@@ -4,11 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.Observer
 import co.publist.R
 import co.publist.core.platform.BaseFragment
 import co.publist.core.platform.ViewModelFactory
 import co.publist.features.wishes.data.Wish
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
+import com.google.firebase.firestore.Query
 import kotlinx.android.synthetic.main.fragment_wishes.*
 import javax.inject.Inject
 
@@ -33,14 +35,19 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        setAdapter()
         setObservers()
     }
 
-    private fun setAdapter() {
+    private fun setObservers() {
+        viewModel.wishesQueryLiveData.observe(viewLifecycleOwner , Observer {query ->
+            setAdapter(query)
+        })
+    }
+
+    private fun setAdapter(query : Query) {
         val options: FirestoreRecyclerOptions<Wish> =
             FirestoreRecyclerOptions.Builder<Wish>()
-                .setQuery(viewModel.getWishesQuery(), Wish::class.java)
+                .setQuery(query, Wish::class.java)
                 .build()
 
         val adapter = WishesAdapter(options)
@@ -48,10 +55,6 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
         adapter.setHasStableIds(true) //To avoid recycling view holders while scrolling thus removing selected colors
         adapter.startListening() //To fetch data from firestore
         wishesRecyclerView.adapter = adapter
-    }
-
-    private fun setObservers() {
-
     }
 
 }

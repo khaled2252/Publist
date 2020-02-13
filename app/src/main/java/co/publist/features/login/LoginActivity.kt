@@ -114,8 +114,8 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
             else
                 Toast.makeText(this, getString(R.string.welcome_back), Toast.LENGTH_SHORT).show()
 
-            finish()
             startActivity(Intent(this,EditProfileActivity::class.java))
+            finish()
         })
     }
 

@@ -9,7 +9,6 @@ import androidx.lifecycle.Observer
 import co.publist.R
 import co.publist.core.platform.BaseActivity
 import co.publist.core.platform.ViewModelFactory
-import co.publist.core.utils.Utils.Constants.SAVE_ACTION
 import co.publist.core.utils.Utils.loadProfilePicture
 import co.publist.databinding.ActivityEditProfileBinding
 import co.publist.features.categories.CategoriesFragment
@@ -65,16 +64,16 @@ class EditProfileActivity : BaseActivity<EditProfileViewModel>() {
         categoriesFragment.viewModel.saveCategoriesLiveData.observe(this, Observer {
             Toast.makeText(this, getString(R.string.saved_successfully), Toast.LENGTH_SHORT)
                 .show()
-            finish()
             val intent = Intent(this,HomeActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP //If coming already from home (get last HomeActivity on top stack)
             startActivity(intent)
+            finish()
         })
     }
 
     private fun setListeners() {
         buttonSave.setOnClickListener {
-            categoriesFragment.viewModel.handleActionButton(SAVE_ACTION)
+            categoriesFragment.viewModel.handleActionButton()
         }
     }
 

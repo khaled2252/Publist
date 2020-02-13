@@ -47,21 +47,21 @@ class SplashActivity : BaseActivity<SplashViewModel>() {
     }
 
     private fun navigateEditProfile() {
-        finish()
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
         startActivity(Intent(this, EditProfileActivity::class.java))
+        finish()
     }
 
     private fun navigateToLogin() {
-        finish()
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
         startActivity(Intent(this, LoginActivity::class.java))
+        finish()
     }
 
     private fun navigateToHome() {
-        finish()
         Toast.makeText(this, R.string.welcome_back, Toast.LENGTH_SHORT).show()
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
         startActivity(Intent(this, HomeActivity::class.java))
+        finish()
     }
 }

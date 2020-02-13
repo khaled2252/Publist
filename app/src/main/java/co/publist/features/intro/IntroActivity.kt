@@ -8,7 +8,6 @@ import androidx.lifecycle.Observer
 import co.publist.R
 import co.publist.core.platform.BaseActivity
 import co.publist.core.platform.ViewModelFactory
-import co.publist.core.utils.Utils.Constants.FIND_ACTION
 import co.publist.features.categories.CategoriesFragment
 import co.publist.features.home.HomeActivity
 import kotlinx.android.synthetic.main.activity_intro.*
@@ -42,8 +41,8 @@ class IntroActivity : BaseActivity<IntroViewModel>() {
         categoriesFragment.viewModel.actionButtonLiveData.observe(this, Observer { viable ->
             if (viable)
             {
-                finish()
                 startActivity(Intent(this,HomeActivity::class.java))
+                finish()
             }
             else
                 Toast.makeText(
@@ -56,7 +55,7 @@ class IntroActivity : BaseActivity<IntroViewModel>() {
 
     private fun setListeners(){
         buttonFindWishes.setOnClickListener {
-            categoriesFragment.viewModel.handleActionButton(FIND_ACTION)
+            categoriesFragment.viewModel.handleActionButton()
         }
 
         loginButton.setOnClickListener {
@@ -64,8 +63,8 @@ class IntroActivity : BaseActivity<IntroViewModel>() {
         }
 
         skipTextView.setOnClickListener {
-            finish()
             startActivity(Intent(this,HomeActivity::class.java))
+            finish()
         }
     }
 }

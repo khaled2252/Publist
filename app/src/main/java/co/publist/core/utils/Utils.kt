@@ -45,6 +45,7 @@ object Utils {
     }
 
     object Constants {
+        const val DB_NAME = "PublistDb"
         const val SPLASH_DELAY: Long = 2000
         const val MINIMUM_SELECTED_CATEGORIES = 1
         const val MAXIMUM_SELECTED_CATEGORIES = 5

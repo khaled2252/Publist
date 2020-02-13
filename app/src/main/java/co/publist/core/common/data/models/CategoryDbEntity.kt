@@ -6,7 +6,6 @@ import com.google.gson.annotations.SerializedName
 
 @Entity(tableName = "Categories")
 data class CategoryDbEntity(
-    @PrimaryKey @field:SerializedName("id") val id: Int,
-    @field:SerializedName("name") val name: String
+    @PrimaryKey @field:SerializedName("id") val id: String
 
 )

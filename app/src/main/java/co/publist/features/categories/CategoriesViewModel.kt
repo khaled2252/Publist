@@ -1,11 +1,10 @@
 package co.publist.features.categories
 
 import androidx.lifecycle.MutableLiveData
+import co.publist.core.common.data.repositories.user.UserRepositoryInterface
 import co.publist.core.platform.BaseViewModel
-import co.publist.core.utils.Utils.Constants.FIND_ACTION
 import co.publist.core.utils.Utils.Constants.MAXIMUM_SELECTED_CATEGORIES
 import co.publist.core.utils.Utils.Constants.MINIMUM_SELECTED_CATEGORIES
-import co.publist.core.utils.Utils.Constants.SAVE_ACTION
 import co.publist.features.categories.data.CategoriesRepositoryInterface
 import com.google.firebase.firestore.Query
 import io.reactivex.functions.Action
@@ -13,7 +12,8 @@ import io.reactivex.functions.Consumer
 import javax.inject.Inject
 
 class CategoriesViewModel @Inject constructor(
-    private val categoriesRepository: CategoriesRepositoryInterface
+    private val categoriesRepository: CategoriesRepositoryInterface,
+    private val userRepository: UserRepositoryInterface
 ) : BaseViewModel() {
     init {
         getSelectedCategories()
@@ -44,29 +44,39 @@ class CategoriesViewModel @Inject constructor(
     }
 
     private fun getSelectedCategories() {
-        subscribe(categoriesRepository.getUserCategories(), Consumer { list ->
-            selectedCategoriesList = list
-            previouslySelectedCategoriesList.postValue(list)
-        })
+        val user = userRepository.getUser()
+        if (user==null)
+        {
+            subscribe(categoriesRepository.getLocalSelectedCategories(), Consumer { localCategories ->
+                selectedCategoriesList = localCategories
+                previouslySelectedCategoriesList.postValue(selectedCategoriesList)
+            })
+        }
+
+        else
+        {
+            subscribe(categoriesRepository.fetchSelectedCategories(user.id!!), Consumer { list ->
+                //Update categories in database
+                categoriesRepository.updateLocalSelectedCategories(list)
+
+                selectedCategoriesList = list
+                previouslySelectedCategoriesList.postValue(selectedCategoriesList)
+
+            })
+        }
+
     }
 
-    fun handleActionButton(action : String?) {
+    fun handleActionButton() {
         if(selectedCategoriesList.size< MINIMUM_SELECTED_CATEGORIES)
             actionButtonLiveData.postValue(false)
         else {
-            if(action == SAVE_ACTION)
-                saveUserCategories()
-            else if (action == FIND_ACTION)
-                saveGuestCategories()
+            saveSelectedCategories()
         }
     }
 
-    private fun saveGuestCategories() {
-        categoriesRepository.saveGuestCategories(selectedCategoriesList)
-    }
-
-    private fun saveUserCategories() {
-        subscribe(categoriesRepository.updateUserCategories(selectedCategoriesList), Action {
+    private fun saveSelectedCategories() {
+        subscribe(categoriesRepository.updateRemoteSelectedCategories(selectedCategoriesList), Action {
             saveCategoriesLiveData.postValue(true)
         })
     }

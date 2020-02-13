@@ -3,6 +3,7 @@ package co.publist.core.common.data.local.db
 import android.content.Context
 import androidx.paging.DataSource
 import co.publist.core.common.data.models.CategoryDbEntity
+import io.reactivex.Single
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 import javax.inject.Inject
@@ -21,8 +22,13 @@ class DataBaseAccess @Inject constructor(context: Context) : DataBaseInterface {
         publistDao.insert(categoriesList)
     }
 
-    override fun getCategories(): DataSource.Factory<Int, CategoryDbEntity> {
+    override fun getCategories(): Single<List<CategoryDbEntity>>
+    {
         return publistDao.getCategories()
+    }
+
+    override fun getCategoriesDataSource(): DataSource.Factory<Int, CategoryDbEntity> {
+        return publistDao.getCategoriesDataSource()
     }
 
     override fun deleteCategories() {
@@ -32,7 +38,8 @@ class DataBaseAccess @Inject constructor(context: Context) : DataBaseInterface {
 }
 
 interface DataBaseInterface {
-    fun getCategories(): DataSource.Factory<Int, CategoryDbEntity>
+    fun getCategories():Single<List<CategoryDbEntity>>
+    fun getCategoriesDataSource(): DataSource.Factory<Int, CategoryDbEntity>
     fun updateCategories(categoriesList: List<CategoryDbEntity>)
     fun deleteCategories()
 
