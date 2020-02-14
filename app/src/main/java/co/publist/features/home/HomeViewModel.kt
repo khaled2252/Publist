@@ -14,7 +14,6 @@ class HomeViewModel @Inject constructor(
     BaseViewModel() {
 
     var userLiveData = MutableLiveData<User>()
-    var logoutLiveData = MutableLiveData<Boolean>()
     var isGuest = MutableLiveData<Boolean>()
     val user = userRepository.getUser()
 
@@ -25,7 +24,7 @@ class HomeViewModel @Inject constructor(
     fun handleLogout() {
         userRepository.deleteCurrentUser()
         categoryRepository.clearLocalSelectedCategories()
-        logoutLiveData.postValue(true)
+        //todo clear lists, favorites etc..
     }
 
     fun handleEditProfile() {

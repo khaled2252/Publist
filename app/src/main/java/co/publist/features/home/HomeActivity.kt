@@ -49,28 +49,12 @@ class HomeActivity : BaseActivity<HomeViewModel>() {
 
     private fun setObservers() {
         viewModel.userLiveData.observe(this, Observer { user ->
-            if(user!=null)
-            Utils.loadProfilePicture(profilePictureImageView, user.profilePictureUrl)
-            else
-            {
+            if (user != null)
+                Utils.loadProfilePicture(profilePictureImageView, user.profilePictureUrl)
+            else {
                 profilePictureImageView.setImageResource(R.drawable.ic_user_2x)
                 logoutTextView.visibility = View.GONE
             }
-        })
-
-        viewModel.logoutLiveData.observe(this, Observer {
-            val builder = AlertDialog.Builder(this)
-
-            builder.setMessage("Are you sure you want to logout?")
-            builder.setNeutralButton("YES") { _, _ ->
-                Toast.makeText(applicationContext, "Logged out successfully!", Toast.LENGTH_SHORT)
-                    .show()
-                finish()
-                startActivity(Intent(this, LoginActivity::class.java))
-            }
-            builder.setPositiveButton("No") { _, _ ->
-            }
-            builder.create().show()
         })
 
         viewModel.isGuest.observe(this, Observer { isGuest ->
@@ -83,6 +67,20 @@ class HomeActivity : BaseActivity<HomeViewModel>() {
 
     private fun setListeners() {
         logoutTextView.setOnClickListener {
+            val builder = AlertDialog.Builder(this)
+
+            builder.setMessage("Are you sure you want to logout?")
+            builder.setNeutralButton("YES") { _, _ ->
+                viewModel.handleLogout()
+                Toast.makeText(applicationContext, "Logged out successfully!", Toast.LENGTH_SHORT)
+                    .show()
+                finish()
+                startActivity(Intent(this, LoginActivity::class.java))
+            }
+            builder.setPositiveButton("No") { _, _ ->
+            }
+            builder.create().show()
+
             viewModel.handleLogout()
         }
 
