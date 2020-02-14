@@ -9,5 +9,5 @@ class Wish {
     var title :String? = null
     val creator : Creator? = null
     var wishPhotoURL :String? = null
-    var items :ArrayList<Todo>? = null
+    var items :Map<String,Todo>? = null
 }

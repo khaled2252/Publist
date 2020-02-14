@@ -58,7 +58,7 @@ class WishesAdapter(
 
             //Load wish data
             loadWishImage(binding.wishImageView, wish.wishPhotoURL)
-            val todosAdapter =  TodosAdapter(wish.items!!,binding.moreTextView,binding.arrowImageView,todosAdapterArrayList.size){
+            val todosAdapter =  TodosAdapter(ArrayList(wish.items!!.values),binding.moreTextView,binding.arrowImageView,todosAdapterArrayList.size){
                 //Collapse all other lists except for the current one expanding
                 for(adapterIndex in 0 until todosAdapterArrayList.size)
                 {
