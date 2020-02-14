@@ -80,8 +80,6 @@ class HomeActivity : BaseActivity<HomeViewModel>() {
             builder.setPositiveButton("No") { _, _ ->
             }
             builder.create().show()
-
-            viewModel.handleLogout()
         }
 
         profilePictureImageView.setOnClickListener {
