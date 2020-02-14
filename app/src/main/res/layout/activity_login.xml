@@ -34,13 +34,12 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonFacebook"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/horizontalButtonMargin"
         android:layout_marginTop="48dp"
         android:layout_marginEnd="@dimen/horizontalButtonMargin"
-        android:backgroundTint="@android:color/transparent"
+        android:backgroundTint="@color/sunsetOrange"
         android:fontFamily="@font/lucidagrandebold"
         android:paddingTop="20dp"
         android:paddingBottom="20dp"
@@ -50,6 +49,7 @@
         android:textSize="@dimen/buttonLoginTextSize"
         app:cornerRadius="10dp"
         app:icon="@drawable/ic_facebook"
+        app:iconSize="@dimen/buttonIconSize"
         app:iconGravity="textStart"
         app:iconPadding="20dp"
         app:iconTint="@null"
@@ -58,7 +58,8 @@
         app:layout_constraintTop_toBottomOf="@+id/textView"
         app:layout_constraintBottom_toTopOf="@id/buttonGoogle"
         app:strokeColor="@android:color/white"
-        app:strokeWidth="1.5dp" />
+        app:strokeWidth="1.5dp"
+        />
 
     <com.facebook.login.widget.LoginButton
         android:id="@+id/facebookLoginButton"
@@ -71,40 +72,42 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView" />
 
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/horizontalDefaultMargin"
-        android:layout_marginTop="15dp"
-        android:layout_marginBottom="15dp"
-        android:text="@string/or"
-        android:textColor="@android:color/white"
-        android:textSize="@dimen/headlineTextSize"
-        app:layout_constraintBottom_toTopOf="@id/buttonGuest"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/buttonFacebook"
-        app:layout_constraintEnd_toStartOf="@id/buttonGoogle"
-        />
-
-    <com.google.android.gms.common.SignInButton
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonGoogle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
-        android:layout_marginBottom="15dp"
-        android:layout_marginStart="50dp"
+        android:layout_marginStart="@dimen/horizontalButtonMargin"
         android:layout_marginEnd="@dimen/horizontalButtonMargin"
         app:layout_constraintBottom_toTopOf="@+id/buttonGuest"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/textView2"
-        app:layout_constraintTop_toBottomOf="@id/buttonFacebook" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/buttonFacebook"
+        android:backgroundTint="@color/sunsetOrange"
+        android:fontFamily="@font/lucidagrandebold"
+        android:paddingTop="20dp"
+        android:paddingBottom="20dp"
+        android:text="@string/connect_with_google"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/buttonLoginTextSize"
+        app:cornerRadius="10dp"
+        app:icon="@drawable/ic_google"
+        app:iconSize="@dimen/buttonIconSize"
+        app:iconGravity="textStart"
+        app:iconPadding="20dp"
+        app:iconTint="@null"
+        app:strokeColor="@android:color/white"
+        app:strokeWidth="1.5dp"
+        />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonGuest"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/horizontalButtonMargin"
+        android:layout_marginTop="15dp"
+
         android:layout_marginEnd="@dimen/horizontalButtonMargin"
         android:layout_marginBottom="51dp"
         android:backgroundTint="@android:color/white"
@@ -116,7 +119,8 @@
         android:textColor="@color/outerSpace"
         android:textSize="@dimen/buttonLoginTextSize"
         app:cornerRadius="10dp"
-        app:icon="@drawable/ic_guest"
+        app:icon="@drawable/ic_user_2x"
+        app:iconSize="@dimen/buttonIconSize"
         app:iconGravity="textStart"
         app:iconPadding="20dp"
         app:iconTint="@null"

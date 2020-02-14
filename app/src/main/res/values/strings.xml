@@ -2,6 +2,7 @@
     <string name="app_name">Publist</string>
     <string name="login_headline">Welcome to Publist, to add public checklist you need to be a guest or a signed user..</string>
     <string name="connect_with_facebook">Connect with Facebook</string>
+    <string name="connect_with_google">Connect with Google</string>
     <string name="or">Or..</string>
     <string name="continue_as_a_guest">Continue as a guest</string>
     <string name="facebook_app_id">2442611249323495</string>
