@@ -19,6 +19,7 @@ class DataBaseAccess @Inject constructor(context: Context) : DataBaseInterface {
     }
 
     override fun updateCategories(categoriesList: List<CategoryDbEntity>) {
+        publistDao.deleteCategories()
         publistDao.insert(categoriesList)
     }
 

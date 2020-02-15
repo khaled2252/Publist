@@ -76,6 +76,7 @@ class CategoriesViewModel @Inject constructor(
     }
 
     private fun saveSelectedCategories() {
+        categoriesRepository.updateLocalSelectedCategories(selectedCategoriesList)
         subscribe(categoriesRepository.updateRemoteSelectedCategories(selectedCategoriesList), Action {
             saveCategoriesLiveData.postValue(true)
         })

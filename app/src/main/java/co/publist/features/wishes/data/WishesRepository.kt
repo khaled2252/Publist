@@ -17,7 +17,7 @@ class WishesRepository @Inject constructor(
 
     override fun getFilteredWishesQuery(categoryList: ArrayList<String>): Query {
         return mFirebaseFirestore.collection(WISHES_COLLECTION_PATH)
-            .whereEqualTo(CATEGORY_ID_FIELD, categoryList)
+            .whereArrayContainsAny(CATEGORY_ID_FIELD, categoryList)
             .orderBy(DATE_FIELD, Query.Direction.DESCENDING)
     }
 

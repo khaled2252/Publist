@@ -21,5 +21,5 @@ interface PublistDao {
     fun getCategoriesDataSource(): DataSource.Factory<Int, CategoryDbEntity>
 
     @Query("DELETE FROM Categories")
-        fun deleteCategories()
+    fun deleteCategories()
 }
