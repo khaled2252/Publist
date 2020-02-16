@@ -51,7 +51,7 @@ class EditProfileActivity : BaseActivity<EditProfileViewModel>() {
             loadProfilePicture(profilePictureImageView, user.profilePictureUrl)
         })
 
-        categoriesFragment.viewModel.actionButtonLiveData.observe(this, Observer {viable ->
+        categoriesFragment.viewModel.actionButtonLiveData.observe(this, Observer { viable ->
             if(!viable)
                 Toast.makeText(
                     this,
@@ -73,7 +73,7 @@ class EditProfileActivity : BaseActivity<EditProfileViewModel>() {
 
     private fun setListeners() {
         buttonSave.setOnClickListener {
-            categoriesFragment.viewModel.handleActionButton()
+            categoriesFragment.viewModel.handleActionButton(true)
         }
     }
 

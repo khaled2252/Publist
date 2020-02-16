@@ -39,23 +39,25 @@ class IntroActivity : BaseActivity<IntroViewModel>() {
 
     private fun setObservers(){
         categoriesFragment.viewModel.actionButtonLiveData.observe(this, Observer { viable ->
-            if (viable)
+            if (!viable)
             {
-                startActivity(Intent(this,HomeActivity::class.java))
-                finish()
-            }
-            else
                 Toast.makeText(
                     this,
                     getString(R.string.minimum_categories),
                     Toast.LENGTH_SHORT
                 ).show()
+            }
+         })
+
+        categoriesFragment.viewModel.saveCategoriesLiveData.observe(this, Observer {
+            startActivity(Intent(this,HomeActivity::class.java))
+            finish()
         })
     }
 
     private fun setListeners(){
         buttonFindWishes.setOnClickListener {
-            categoriesFragment.viewModel.handleActionButton()
+            categoriesFragment.viewModel.handleActionButton(false)
         }
 
         loginButton.setOnClickListener {

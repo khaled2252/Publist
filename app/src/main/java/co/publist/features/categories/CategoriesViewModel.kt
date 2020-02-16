@@ -45,16 +45,14 @@ class CategoriesViewModel @Inject constructor(
 
     private fun getSelectedCategories() {
         val user = userRepository.getUser()
-        if (user==null)
-        {
-            subscribe(categoriesRepository.getLocalSelectedCategories(), Consumer { localCategories ->
-                selectedCategoriesList = localCategories
-                previouslySelectedCategoriesList.postValue(selectedCategoriesList)
-            })
-        }
-
-        else
-        {
+        if (user == null) {
+            subscribe(
+                categoriesRepository.getLocalSelectedCategories(),
+                Consumer { localCategories ->
+                    selectedCategoriesList = localCategories
+                    previouslySelectedCategoriesList.postValue(selectedCategoriesList)
+                })
+        } else {
             subscribe(categoriesRepository.fetchSelectedCategories(user.id!!), Consumer { list ->
                 //Update categories in database
                 categoriesRepository.updateLocalSelectedCategories(list)
@@ -67,19 +65,26 @@ class CategoriesViewModel @Inject constructor(
 
     }
 
-    fun handleActionButton() {
-        if(selectedCategoriesList.size< MINIMUM_SELECTED_CATEGORIES)
-            actionButtonLiveData.postValue(false)
-        else {
-            saveSelectedCategories()
+    fun handleActionButton(isUser: Boolean) {
+        when {
+            selectedCategoriesList.size < MINIMUM_SELECTED_CATEGORIES -> actionButtonLiveData.postValue(false)
+            isUser -> saveUserSelectedCategories()
+            else -> saveGuestSelectedCategories()
         }
     }
 
-    private fun saveSelectedCategories() {
+    private fun saveUserSelectedCategories() {
         categoriesRepository.updateLocalSelectedCategories(selectedCategoriesList)
-        subscribe(categoriesRepository.updateRemoteSelectedCategories(selectedCategoriesList), Action {
-            saveCategoriesLiveData.postValue(true)
-        })
+        subscribe(
+            categoriesRepository.updateRemoteSelectedCategories(selectedCategoriesList),
+            Action {
+                saveCategoriesLiveData.postValue(true)
+            })
+    }
+
+    private fun saveGuestSelectedCategories() {
+        categoriesRepository.updateLocalSelectedCategories(selectedCategoriesList)
+        saveCategoriesLiveData.postValue(true)
     }
 
 }

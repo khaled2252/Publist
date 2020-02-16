@@ -52,7 +52,7 @@ class HomeActivity : BaseActivity<HomeViewModel>() {
             if (user != null)
                 Utils.loadProfilePicture(profilePictureImageView, user.profilePictureUrl)
             else {
-                profilePictureImageView.setImageResource(R.drawable.ic_user_2x)
+                profilePictureImageView.setImageResource(R.drawable.ic_guest)
                 logoutTextView.visibility = View.GONE
             }
         })

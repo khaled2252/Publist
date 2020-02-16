@@ -25,7 +25,7 @@ object Utils {
     fun loadProfilePicture(view: ImageView, imageUrl: String?) {
         Glide.with(view)
             .load(imageUrl)
-            .placeholder(R.drawable.ic_user_2x)
+            .placeholder(R.drawable.ic_guest)
             .apply(RequestOptions.circleCropTransform())
             .into(view)
     }
