@@ -13,9 +13,10 @@ class HomeViewModel @Inject constructor(
 ) :
     BaseViewModel() {
 
-    var userLiveData = MutableLiveData<User>()
-    var isGuest = MutableLiveData<Boolean>()
     val user = userRepository.getUser()
+    var userLiveData = MutableLiveData<User>()
+    var profilePictureClickLiveData = MutableLiveData<Boolean>()
+    var addWishClickLiveData = MutableLiveData<Boolean>()
 
     fun onCreated() {
         userLiveData.postValue(user)
@@ -29,13 +30,21 @@ class HomeViewModel @Inject constructor(
 
     fun handleEditProfile() {
         if (user == null)
-            isGuest.postValue(true)
+            profilePictureClickLiveData.postValue(true)
         else
-            isGuest.postValue(false)
+            profilePictureClickLiveData.postValue(false)
     }
 
     fun clearGuestSelectedCategories() {
         if(user == null)
         categoryRepository.clearLocalSelectedCategories()
+    }
+
+    fun handleAddWish() {
+        if(user == null)
+        addWishClickLiveData.postValue(true)
+        else
+            addWishClickLiveData.postValue(false)
+
     }
 }

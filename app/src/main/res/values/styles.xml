@@ -28,4 +28,10 @@
         <item name="android:windowNoTitle">false</item>
     </style>
 
+    <!-- Create Wish screen -->
+    <style name="AppTheme.CreateWishScreen" >
+        <item name="android:windowNoTitle">false</item>
+        <item name="android:windowSoftInputMode">adjustPan</item>
+    </style>
+
 </resources>

@@ -2,7 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="co.publist">
-
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
@@ -45,6 +46,12 @@
         </activity>
 
         <activity android:name=".features.home.HomeActivity" />
+
+        <activity
+            android:name=".features.createwish.CreateWishActivity"
+            android:label="Create a wish"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.CreateWishScreen" />
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"

@@ -13,8 +13,10 @@ import co.publist.core.platform.BaseActivity
 import co.publist.core.platform.ViewModelFactory
 import co.publist.core.utils.Utils
 import co.publist.databinding.ActivityHomeBinding
+import co.publist.features.createwish.CreateWishActivity
 import co.publist.features.editprofile.EditProfileActivity
 import co.publist.features.login.LoginActivity
+import kotlinx.android.synthetic.main.activity_home.*
 import kotlinx.android.synthetic.main.app_bar.*
 import javax.inject.Inject
 
@@ -57,11 +59,18 @@ class HomeActivity : BaseActivity<HomeViewModel>() {
             }
         })
 
-        viewModel.isGuest.observe(this, Observer { isGuest ->
+        viewModel.profilePictureClickLiveData.observe(this, Observer { isGuest ->
             if (isGuest)
                 finish()
             else
                 startActivity(Intent(this, EditProfileActivity::class.java))
+        })
+
+        viewModel.addWishClickLiveData.observe(this, Observer { isGuest ->
+            if (isGuest)
+                finish()
+            else
+                startActivity(Intent(this, CreateWishActivity::class.java))
         })
     }
 
@@ -84,6 +93,10 @@ class HomeActivity : BaseActivity<HomeViewModel>() {
 
         profilePictureImageView.setOnClickListener {
             viewModel.handleEditProfile()
+        }
+
+        addWishTextView.setOnClickListener {
+            viewModel.handleAddWish()
         }
     }
 

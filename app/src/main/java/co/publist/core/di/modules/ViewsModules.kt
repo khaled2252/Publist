@@ -1,6 +1,7 @@
 package co.publist.core.di.modules
 
 import co.publist.features.categories.CategoriesFragment
+import co.publist.features.createwish.CreateWishActivity
 import co.publist.features.editprofile.EditProfileActivity
 import co.publist.features.home.HomeActivity
 import co.publist.features.intro.IntroActivity
@@ -34,5 +35,8 @@ abstract class ViewsModules {
 
     @ContributesAndroidInjector
     abstract fun contributeWishesActivity(): WishesFragment
+
+    @ContributesAndroidInjector
+    abstract fun contributeCreateWishActivity(): CreateWishActivity
 
 }

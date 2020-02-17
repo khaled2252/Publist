@@ -5,6 +5,7 @@ import co.publist.core.utils.Utils.Constants.DATE_FIELD
 import co.publist.core.utils.Utils.Constants.WISHES_COLLECTION_PATH
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import io.reactivex.Completable
 import javax.inject.Inject
 
 class WishesRepository @Inject constructor(
@@ -21,4 +22,14 @@ class WishesRepository @Inject constructor(
             .orderBy(DATE_FIELD, Query.Direction.DESCENDING)
     }
 
+    override fun createWish(wish: Wish): Completable {
+
+        return Completable.create {completableEmitter ->
+            mFirebaseFirestore.collection(WISHES_COLLECTION_PATH).add(wish).addOnFailureListener {
+                completableEmitter.onError(it)
+            }.addOnSuccessListener {
+                completableEmitter.onComplete()
+            }
+        }
+    }
 }
