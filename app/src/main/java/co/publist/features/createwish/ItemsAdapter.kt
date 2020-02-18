@@ -34,6 +34,7 @@ class ItemsAdapter :
     fun removeItem(position: Int) {
         list.removeAt(position)
         notifyItemRemoved(position)
+        notifyItemRangeChanged(position, list.size)
     }
 
     fun addItem(item : String)

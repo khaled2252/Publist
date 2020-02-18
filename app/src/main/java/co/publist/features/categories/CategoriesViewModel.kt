@@ -25,14 +25,26 @@ class CategoriesViewModel @Inject constructor(
     val reachedMaximumSelection = MutableLiveData<Boolean>()
     val actionButtonLiveData = MutableLiveData<Boolean>()
     val saveCategoriesLiveData = MutableLiveData<Boolean>()
+    val isCreatingWish = false
 
     fun addCategory(categoryId: String?) {
         if (!selectedCategoriesList.contains(categoryId)) {
-            if (selectedCategoriesList.size < MAXIMUM_SELECTED_CATEGORIES) {
-                selectedCategoriesList.add(categoryId!!)
-                selectedCategory.postValue(true)
-            } else
-                reachedMaximumSelection.postValue(true)
+            if (!isCreatingWish)
+            {
+                if (selectedCategoriesList.size < MAXIMUM_SELECTED_CATEGORIES) {
+                    selectedCategoriesList.add(categoryId!!)
+                    selectedCategory.postValue(true)
+                } else
+                    reachedMaximumSelection.postValue(false)
+        }
+            else
+            {
+                if (selectedCategoriesList.size < 1) {
+                    selectedCategoriesList.add(categoryId!!)
+                    selectedCategory.postValue(true)
+                } else
+                    reachedMaximumSelection.postValue(true)
+            }
         } else {
             selectedCategoriesList.remove(categoryId!!)
             selectedCategory.postValue(false)

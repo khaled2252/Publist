@@ -95,8 +95,11 @@ class CategoriesFragment : BaseFragment<CategoriesViewModel>() {
 
         )
 
-        viewModel.reachedMaximumSelection.observe(viewLifecycleOwner, Observer {
+        viewModel.reachedMaximumSelection.observe(viewLifecycleOwner, Observer {isCreatingWish ->
+            if(!isCreatingWish)
             Toast.makeText(this.context, getString(R.string.maximum_categories), Toast.LENGTH_SHORT)
+                .show()
+            else Toast.makeText(this.context, getString(R.string.maximum_categories_create_wish), Toast.LENGTH_SHORT)
                 .show()
         })
     }
