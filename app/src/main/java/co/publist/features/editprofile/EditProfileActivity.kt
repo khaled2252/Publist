@@ -37,12 +37,16 @@ class EditProfileActivity : BaseActivity<EditProfileViewModel>() {
             this,
             R.layout.activity_edit_profile
         ).executePendingBindings()
-        categoriesFragment =
-            supportFragmentManager.findFragmentById(R.id.categoriesFragment) as CategoriesFragment
-
-        viewModel.onCreated()
+        onCreated()
         setObservers()
         setListeners()
+    }
+
+    private fun onCreated() {
+        categoriesFragment =
+            supportFragmentManager.findFragmentById(R.id.categoriesFragment) as CategoriesFragment
+        categoriesFragment.viewModel.getSelectedCategories()
+        viewModel.onCreated()
     }
 
     private fun setObservers() {

@@ -15,30 +15,23 @@ class CategoriesViewModel @Inject constructor(
     private val categoriesRepository: CategoriesRepositoryInterface,
     private val userRepository: UserRepositoryInterface
 ) : BaseViewModel() {
-    init {
-        getSelectedCategories()
-    }
-
     var selectedCategoriesList = ArrayList<String>()
     var previouslySelectedCategoriesList = MutableLiveData<ArrayList<String>>()
     val selectedCategory = MutableLiveData<Boolean>()
     val reachedMaximumSelection = MutableLiveData<Boolean>()
     val actionButtonLiveData = MutableLiveData<Boolean>()
     val saveCategoriesLiveData = MutableLiveData<Boolean>()
-    val isCreatingWish = false
+    var isCreatingWish = false
 
     fun addCategory(categoryId: String?) {
         if (!selectedCategoriesList.contains(categoryId)) {
-            if (!isCreatingWish)
-            {
+            if (!isCreatingWish) {
                 if (selectedCategoriesList.size < MAXIMUM_SELECTED_CATEGORIES) {
                     selectedCategoriesList.add(categoryId!!)
                     selectedCategory.postValue(true)
                 } else
                     reachedMaximumSelection.postValue(false)
-        }
-            else
-            {
+            } else {
                 if (selectedCategoriesList.size < 1) {
                     selectedCategoriesList.add(categoryId!!)
                     selectedCategory.postValue(true)
@@ -55,34 +48,41 @@ class CategoriesViewModel @Inject constructor(
         return categoriesRepository.getCategoriesQuery()
     }
 
-    private fun getSelectedCategories() {
+    fun getSelectedCategories() {
         val user = userRepository.getUser()
         if (user == null) {
-            subscribe(
-                categoriesRepository.getLocalSelectedCategories(),
-                Consumer { localCategories ->
-                    selectedCategoriesList = localCategories
-                    previouslySelectedCategoriesList.postValue(selectedCategoriesList)
-                })
+                subscribe(
+                    categoriesRepository.getLocalSelectedCategories(),
+                    Consumer { localCategories ->
+                        selectedCategoriesList = localCategories
+                        previouslySelectedCategoriesList.postValue(selectedCategoriesList)
+                    })
         } else {
+            if (!isCreatingWish)
             subscribe(categoriesRepository.fetchSelectedCategories(user.id!!), Consumer { list ->
                 //Update categories in database
                 categoriesRepository.updateLocalSelectedCategories(list)
 
                 selectedCategoriesList = list
                 previouslySelectedCategoriesList.postValue(selectedCategoriesList)
-
             })
+            else
+                previouslySelectedCategoriesList.postValue(selectedCategoriesList) //Empty selected categories on start when creating wish
         }
 
     }
 
     fun handleActionButton(isUser: Boolean) {
-        when {
-            selectedCategoriesList.size < MINIMUM_SELECTED_CATEGORIES -> actionButtonLiveData.postValue(false)
-            isUser -> saveUserSelectedCategories()
-            else -> saveGuestSelectedCategories()
-        }
+        if (!isCreatingWish) {
+            when {
+                selectedCategoriesList.size < MINIMUM_SELECTED_CATEGORIES -> actionButtonLiveData.postValue(
+                    false
+                )
+                isUser -> saveUserSelectedCategories()
+                else -> saveGuestSelectedCategories()
+            }
+        } else
+                saveCategoriesLiveData.postValue(true)
     }
 
     private fun saveUserSelectedCategories() {

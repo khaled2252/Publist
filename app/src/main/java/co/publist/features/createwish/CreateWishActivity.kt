@@ -14,6 +14,7 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.View.OnTouchListener
+import android.view.WindowManager
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -23,6 +24,8 @@ import androidx.recyclerview.widget.ItemTouchHelper.*
 import co.publist.R
 import co.publist.core.platform.BaseActivity
 import co.publist.core.platform.ViewModelFactory
+import co.publist.features.categories.CategoriesFragment
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.android.synthetic.main.activity_create_wish.*
 import timber.log.Timber
 import java.io.IOException
@@ -41,13 +44,23 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
     override fun getBaseViewModelFactory() = viewModelFactory
 
     private lateinit var adapter: ItemsAdapter
+    private lateinit var categoriesFragment: CategoriesFragment
+    private lateinit var sheetBehavior : BottomSheetBehavior<*>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_wish)
+        onCreated()
         setAdapter()
         setObservers()
         setListeners()
+    }
+
+    private fun onCreated() {
+        categoriesFragment= supportFragmentManager.findFragmentById(R.id.categoriesFragment) as CategoriesFragment
+        sheetBehavior = BottomSheetBehavior.from(categoriesFragmentBottomSheet)
+        categoriesFragment.viewModel.isCreatingWish = true
+        categoriesFragment.viewModel.getSelectedCategories()
     }
 
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -152,18 +165,51 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
     }
 
     private fun setObservers() {
+        categoriesFragment.viewModel.saveCategoriesLiveData.observe(this, Observer {
+            //Update items in CreateWishViewModel by items in CategoriesViewModel
+            viewModel.items = categoriesFragment.viewModel.selectedCategoriesList
+        })
+
 
         viewModel.validationLiveData.observe(this, Observer {valid ->
             if(valid)
                 postButton.isEnabled = true
         })
-
     }
 
     private fun setListeners() {
 
-        addCategoryTextView.setOnClickListener {
+        categoryDoneButton.setOnClickListener {
+            categoriesFragment.viewModel.handleActionButton(true)
+            sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+        }
 
+        blurredBgView.setOnClickListener {
+            categoriesFragment.viewModel.handleActionButton(true)
+            sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+        }
+
+        sheetBehavior.addBottomSheetCallback(object :BottomSheetBehavior.BottomSheetCallback(){
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                blurredBgView.visibility = View.VISIBLE
+                blurredBgView.alpha = slideOffset
+                window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+                       }
+
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                    blurredBgView.visibility = View.GONE
+                    window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+                }
+
+            }
+        })
+        addCategoryTextView.setOnClickListener {
+            if (sheetBehavior.state != BottomSheetBehavior.STATE_EXPANDED) {
+                sheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+            } else {
+                sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED)
+            }
         }
 
         postButton.setOnClickListener {

@@ -31,10 +31,15 @@ class IntroActivity : BaseActivity<IntroViewModel>() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_intro)
-        categoriesFragment= supportFragmentManager.findFragmentById(R.id.categoriesFragment) as CategoriesFragment
-
+        onCreated()
         setObservers()
         setListeners()
+    }
+
+    private fun onCreated() {
+        categoriesFragment =
+            supportFragmentManager.findFragmentById(R.id.categoriesFragment) as CategoriesFragment
+        categoriesFragment.viewModel.getSelectedCategories()
     }
 
     private fun setObservers(){
