@@ -73,7 +73,6 @@ class CategoriesViewModel @Inject constructor(
     }
 
     fun handleActionButton(isUser: Boolean) {
-        if (!isCreatingWish) {
             when {
                 selectedCategoriesList.size < MINIMUM_SELECTED_CATEGORIES -> actionButtonLiveData.postValue(
                     false
@@ -81,8 +80,7 @@ class CategoriesViewModel @Inject constructor(
                 isUser -> saveUserSelectedCategories()
                 else -> saveGuestSelectedCategories()
             }
-        } else
-                saveCategoriesLiveData.postValue(true)
+
     }
 
     private fun saveUserSelectedCategories() {

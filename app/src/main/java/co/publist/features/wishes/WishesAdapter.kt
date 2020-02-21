@@ -3,10 +3,10 @@ package co.publist.features.wishes
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import co.publist.core.common.data.models.Wish
 import co.publist.core.utils.Utils.loadProfilePicture
 import co.publist.core.utils.Utils.loadWishImage
 import co.publist.databinding.ItemWishBinding
-import co.publist.features.wishes.data.Wish
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import org.ocpsoft.prettytime.PrettyTime

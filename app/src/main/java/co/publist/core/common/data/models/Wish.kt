@@ -1,6 +1,5 @@
-package co.publist.features.wishes.data
+package co.publist.core.common.data.models
 
-import co.publist.core.common.data.models.Category
 import com.google.firebase.Timestamp
 
 class Wish {
@@ -9,5 +8,5 @@ class Wish {
     var title :String? = null
     val creator : Creator? = null
     var wishPhotoURL :String? = null
-    var items :Map<String,Todo>? = null
+    var items :Map<String, Todo>? = null
 }

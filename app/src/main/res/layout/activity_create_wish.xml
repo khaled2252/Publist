@@ -224,7 +224,8 @@
             android:id="@+id/categoriesFragment"
             android:name="co.publist.features.categories.CategoriesFragment"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/categoryDoneButton"
@@ -236,5 +237,5 @@
             android:text="Done"
             app:cornerRadius="10dp" />
     </LinearLayout>
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

@@ -10,7 +10,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 
-class ItemsAdapter :
+class ItemsAdapter (private val listChangedListener: () -> Unit):
     RecyclerView.Adapter<ItemsAdapter.ItemViewHolder>() {
     private val list = ArrayList<String>()
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
@@ -35,12 +35,18 @@ class ItemsAdapter :
         list.removeAt(position)
         notifyItemRemoved(position)
         notifyItemRangeChanged(position, list.size)
+        listChangedListener()
     }
 
     fun addItem(item : String)
     {
         list.add(item)
         notifyDataSetChanged()
+        listChangedListener()
+    }
+
+    fun getlist(): java.util.ArrayList<String> {
+        return list
     }
 
     override fun getItemCount(): Int {

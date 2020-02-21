@@ -1,4 +1,4 @@
-package co.publist.features.wishes.data
+package co.publist.core.common.data.models
 
 class Creator {
     var imagePath :String? = null

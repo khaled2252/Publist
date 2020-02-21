@@ -3,6 +3,7 @@ package co.publist.core.platform
 
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.MotionEvent
 import android.view.View
 import android.widget.ProgressBar
 import androidx.annotation.CallSuper
@@ -14,6 +15,7 @@ import co.publist.core.utils.Utils
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import javax.inject.Inject
+
 
 abstract class BaseActivity<MBaseViewModel : BaseViewModel>
     : AppCompatActivity(), HasSupportFragmentInjector {
@@ -84,6 +86,14 @@ abstract class BaseActivity<MBaseViewModel : BaseViewModel>
             android.R.id.home -> onBackPressed()
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    //Hide keyboard when clicking anywhere (while keyboard is open)
+    override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+        if (currentFocus != null) {
+            hideKeyboard()
+        }
+        return super.dispatchTouchEvent(ev)
     }
 
     fun hideKeyboard() {

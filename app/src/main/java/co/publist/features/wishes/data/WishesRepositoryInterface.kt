@@ -1,4 +1,5 @@
 package co.publist.features.wishes.data
+import co.publist.core.common.data.models.Wish
 import com.google.firebase.firestore.Query
 import io.reactivex.Completable
 

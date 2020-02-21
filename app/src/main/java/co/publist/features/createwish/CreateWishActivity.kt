@@ -10,11 +10,11 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.View.OnTouchListener
 import android.view.WindowManager
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -45,7 +45,7 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
 
     private lateinit var adapter: ItemsAdapter
     private lateinit var categoriesFragment: CategoriesFragment
-    private lateinit var sheetBehavior : BottomSheetBehavior<*>
+    private lateinit var sheetBehavior: BottomSheetBehavior<*>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,7 +57,8 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
     }
 
     private fun onCreated() {
-        categoriesFragment= supportFragmentManager.findFragmentById(R.id.categoriesFragment) as CategoriesFragment
+        categoriesFragment =
+            supportFragmentManager.findFragmentById(R.id.categoriesFragment) as CategoriesFragment
         sheetBehavior = BottomSheetBehavior.from(categoriesFragmentBottomSheet)
         categoriesFragment.viewModel.isCreatingWish = true
         categoriesFragment.viewModel.getSelectedCategories()
@@ -99,60 +100,40 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
         requestCode: Int,
         permissions: Array<String>, grantResults: IntArray
     ) {
-        when (requestCode) {
-            1 -> {
-                val perms = HashMap<String, Int>()
-                // Initialize the map with both permissions
-                perms[Manifest.permission.CAMERA] = PackageManager.PERMISSION_GRANTED
-                perms[Manifest.permission.READ_EXTERNAL_STORAGE] = PackageManager.PERMISSION_GRANTED
-                // Fill with actual results from user
-                if (grantResults.isNotEmpty()) {
-                    for (i in permissions.indices)
-                        perms[permissions[i]] = grantResults[i]
-                    // Check for both permissions
-                    if (perms[Manifest.permission.CAMERA] == PackageManager.PERMISSION_GRANTED
-                        && perms[Manifest.permission.READ_EXTERNAL_STORAGE] == PackageManager.PERMISSION_GRANTED
-                    ) {
-                        // process the normal flow
-                        showCameraGalleryDialog()
-                        //else any one or both the permissions are not granted
-                    } else {
-                        Log.d("tag", "Some permissions are not granted ask again ")
-                        //permission is denied (this is the first time, when "never ask again" is not checked) so ask again explaining the usage of permission
-                        //                        // shouldShowRequestPermissionRationale will return true
-                        //show the dialog or snackbar saying its necessary and try again otherwise proceed with setup.
-                        if (ActivityCompat.shouldShowRequestPermissionRationale(
-                                this,
-                                Manifest.permission.CAMERA
-                            )
-                            || ActivityCompat.shouldShowRequestPermissionRationale(
-                                this,
-                                Manifest.permission.READ_EXTERNAL_STORAGE
-                            )
-                        ) {
-//                            showDialogOK("Service Permissions are required for this app",
-//                                DialogInterface.OnClickListener { dialog, which ->
-//                                    when (which) {
-//                                        DialogInterface.BUTTON_POSITIVE -> checkAndRequestPermissions()
-//                                        DialogInterface.BUTTON_NEGATIVE ->
-//                                            // proceed with logic by disabling the related features or quit the app.
-//                                            finish()
-//                                    }
-//                                })
-                        } else {
-//                            explain("You need to give some mandatory permissions to continue. Do you want to go to app settings?")
-                            //                            //proceed with logic by disabling the related features or quit the app.
-                        }//permission is denied (and never ask again is  checked)
-                        //shouldShowRequestPermissionRationale will return false
-                    }
+        if (grantResults.isNotEmpty()) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED && permissions[0] == Manifest.permission.READ_EXTERNAL_STORAGE
+            )
+                navigateToCamera()
+            else if (grantResults[0] == PackageManager.PERMISSION_GRANTED && permissions[0] == Manifest.permission.READ_EXTERNAL_STORAGE)
+                navigateToGallery()
+            else {
+                //permission is denied (this is the first time, when "never ask again" is not checked) so ask again explaining the usage of permission
+                // shouldShowRequestPermissionRationale will return true
+                if (ActivityCompat.shouldShowRequestPermissionRationale(
+                        this,
+                        permissions[0]
+                    )
+                ) {
+                    Toast.makeText(this, "Permission is required to proceed", Toast.LENGTH_SHORT)
+                        .show()
+                } else {
+                    //permission is denied (and never ask again is  checked)
+                    //shouldShowRequestPermissionRationale will return false
+                    Toast.makeText(
+                        this,
+                        "Enable permissions from settings to proceed",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         }
-
     }
 
     private fun setAdapter() {
-        adapter = ItemsAdapter()
+        adapter = ItemsAdapter {
+            viewModel.items = adapter.getlist()
+            viewModel.validateEntries()
+        }
         itemsRecyclerView.adapter = adapter
 
         // Setup ItemTouchHelper
@@ -165,41 +146,48 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
     }
 
     private fun setObservers() {
-        categoriesFragment.viewModel.saveCategoriesLiveData.observe(this, Observer {
-            //Update items in CreateWishViewModel by items in CategoriesViewModel
-            viewModel.items = categoriesFragment.viewModel.selectedCategoriesList
+        viewModel.validationLiveData.observe(this, Observer { isValid ->
+            postButton.isEnabled = isValid
+        })
+
+        viewModel.addingWishLiveData.observe(this, Observer { isCreated ->
+            if (isCreated)
+            //todo Toast created successfully , navigates back to home
+            else
+                Toast.makeText(this, "You have to make at least 3 items", Toast.LENGTH_SHORT).show()
         })
 
 
-        viewModel.validationLiveData.observe(this, Observer {valid ->
-            if(valid)
-                postButton.isEnabled = true
-        })
     }
 
     private fun setListeners() {
+        postButton.setOnClickListener {
+            viewModel.postWish()
+        }
 
         categoryDoneButton.setOnClickListener {
-            categoriesFragment.viewModel.handleActionButton(true)
             sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         }
 
         blurredBgView.setOnClickListener {
-            categoriesFragment.viewModel.handleActionButton(true)
             sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         }
 
-        sheetBehavior.addBottomSheetCallback(object :BottomSheetBehavior.BottomSheetCallback(){
+        sheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
             override fun onSlide(bottomSheet: View, slideOffset: Float) {
                 blurredBgView.visibility = View.VISIBLE
+                //Change alpha on sliding
                 blurredBgView.alpha = slideOffset
                 window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-                       }
+            }
 
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
                     blurredBgView.visibility = View.GONE
                     window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+                    viewModel.category =
+                        categoriesFragment.viewModel.selectedCategoriesList.getOrElse(0) { "" }
+                    viewModel.validateEntries()
                 }
 
             }
@@ -212,10 +200,6 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
             }
         }
 
-        postButton.setOnClickListener {
-            viewModel.addWish()
-        }
-
         deletePhotoImageView.setOnClickListener {
             it.visibility = View.GONE
             photoImageView.visibility = View.GONE
@@ -223,8 +207,7 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
         }
 
         addPhotoTextView.setOnClickListener {
-            if (checkAndRequestPermissions())
-                showCameraGalleryDialog()
+            showCameraGalleryDialog()
         }
 
         titleEditText.setOnFocusChangeListener { _, hasFocus ->
@@ -239,6 +222,19 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
             }
 
         }
+
+        titleEditText.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(text: Editable?) {
+                viewModel.title = text.toString()
+                viewModel.validateEntries()
+            }
+
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            }
+        })
 
         itemEditText.setOnFocusChangeListener { _, hasFocus ->
             when {
@@ -260,13 +256,15 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
                         R.drawable.ic_done,
                         0
                     )
-                else
+                else {
                     itemEditText.setCompoundDrawablesWithIntrinsicBounds(
                         0,
                         0,
                         R.drawable.ic_done_active,
                         0
                     )
+                    viewModel.validateEntries()
+                }
             }
 
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
@@ -291,8 +289,8 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
                     if (itemEditText.text!!.isNotEmpty()) {
                         adapter.addItem(itemEditText.text.toString())
                         itemEditText.text = null
+                        this.hideKeyboard() // works only before clearing focus
                         itemEditText.clearFocus()
-                        this.hideKeyboard() //todo not working
                     }
                     return@OnTouchListener true
                 }
@@ -302,7 +300,8 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
     }
 
     private fun showCameraGalleryDialog() {
-        val pictureDialog = AlertDialog.Builder(this,android.R.style.Theme_Material_Light_Dialog_NoActionBar)
+        val pictureDialog =
+            AlertDialog.Builder(this, android.R.style.Theme_Material_Light_Dialog_NoActionBar)
         pictureDialog.setTitle("Add a Photo")
         val pictureDialogItems = arrayOf("Select photo from gallery", "Capture photo from camera")
         pictureDialog.setItems(
@@ -310,19 +309,31 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
         ) { _, which ->
             when (which) {
                 0 -> {
-                    val galleryIntent = Intent(
-                        Intent.ACTION_PICK,
-                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-                    )
-                    startActivityForResult(galleryIntent, GALLERY)
+                    if (checkAndRequestPermissions(GALLERY)) {
+                        navigateToGallery()
+                    }
                 }
                 1 -> {
-                    val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                    startActivityForResult(intent, CAMERA)
+                    if (checkAndRequestPermissions(CAMERA)) {
+                        navigateToCamera()
+                    }
                 }
             }
         }
         pictureDialog.show()
+    }
+
+    private fun navigateToCamera() {
+        val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        startActivityForResult(cameraIntent, CAMERA)
+    }
+
+    private fun navigateToGallery() {
+        val galleryIntent = Intent(
+            Intent.ACTION_PICK,
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+        )
+        startActivityForResult(galleryIntent, GALLERY)
     }
 
     private fun loadPhotoToImageView(bitmap: Bitmap?) {
@@ -332,23 +343,25 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
         addPhotoTextView.visibility = View.INVISIBLE
     }
 
-    private fun checkAndRequestPermissions(): Boolean {
+    private fun checkAndRequestPermissions(permissionType: Int): Boolean {
         val cameraPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
         val readPermission =
             ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
 
-        val listPermissionsNeeded = ArrayList<String>()
+        var permissionNeeded = ""
 
-        if (cameraPermission != PackageManager.PERMISSION_GRANTED) {
-            listPermissionsNeeded.add(Manifest.permission.CAMERA)
+        if (permissionType == CAMERA) {
+            if (cameraPermission != PackageManager.PERMISSION_GRANTED) {
+                permissionNeeded = Manifest.permission.CAMERA
+            }
+        } else if (permissionType == GALLERY) {
+            if (readPermission != PackageManager.PERMISSION_GRANTED) {
+                permissionNeeded = Manifest.permission.READ_EXTERNAL_STORAGE
+            }
         }
 
-        if (readPermission != PackageManager.PERMISSION_GRANTED) {
-            listPermissionsNeeded.add(Manifest.permission.READ_EXTERNAL_STORAGE)
-        }
-
-        if (listPermissionsNeeded.isNotEmpty()) {
-            ActivityCompat.requestPermissions(this, listPermissionsNeeded.toTypedArray(), 1)
+        if (permissionNeeded.isNotEmpty()) {
+            ActivityCompat.requestPermissions(this, arrayOf(permissionNeeded), 1)
             return false
         }
         return true

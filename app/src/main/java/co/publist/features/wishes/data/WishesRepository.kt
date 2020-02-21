@@ -1,5 +1,6 @@
 package co.publist.features.wishes.data
 
+import co.publist.core.common.data.models.Wish
 import co.publist.core.utils.Utils.Constants.CATEGORY_ID_FIELD
 import co.publist.core.utils.Utils.Constants.DATE_FIELD
 import co.publist.core.utils.Utils.Constants.WISHES_COLLECTION_PATH

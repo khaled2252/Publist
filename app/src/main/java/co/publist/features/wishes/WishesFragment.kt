@@ -6,9 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import co.publist.R
+import co.publist.core.common.data.models.Wish
 import co.publist.core.platform.BaseFragment
 import co.publist.core.platform.ViewModelFactory
-import co.publist.features.wishes.data.Wish
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.firebase.firestore.Query
 import kotlinx.android.synthetic.main.fragment_wishes.*
