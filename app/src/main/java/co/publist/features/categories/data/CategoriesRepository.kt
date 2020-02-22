@@ -2,6 +2,7 @@ package co.publist.features.categories.data
 
 import android.os.AsyncTask
 import co.publist.core.common.data.local.LocalDataSource
+import co.publist.core.common.data.models.Category
 import co.publist.core.common.data.models.Mapper
 import co.publist.core.utils.Utils.Constants.CATEGORIES_COLLECTION_PATH
 import co.publist.core.utils.Utils.Constants.MY_CATEGORIES_COLLECTION_PATH
@@ -91,6 +92,19 @@ class CategoriesRepository @Inject constructor(
     override fun updateLocalSelectedCategories(selectedCategoriesList: ArrayList<String>) {
         AsyncTask.execute {
             localDataSource.getPublistDataBase().updateCategories(Mapper.mapToCategoryDbEntityList(selectedCategoriesList))
+        }
+    }
+
+    override fun getCategoryFromId(categoryId : String): Single<Category> {
+        return Single.create { singleEmitter ->
+                mFirebaseFirestore.collection(CATEGORIES_COLLECTION_PATH)
+                .document(categoryId).get()
+                .addOnFailureListener { exception ->
+                    singleEmitter.onError(exception)
+                }.addOnSuccessListener { documentSnapshot ->
+                        val category= documentSnapshot.toObject(Category::class.java)
+                        singleEmitter.onSuccess(category!!)
+                }
         }
     }
 

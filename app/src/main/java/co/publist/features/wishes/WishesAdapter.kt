@@ -43,22 +43,22 @@ class WishesAdapter(
         fun bind(
             wish: Wish
         ) {
-            binding.categoryNameTextView.text = wish.category[0].name
+            binding.categoryNameTextView.text = wish.category!![0].name
             binding.titleTextView.text = wish.title
 
             //Load ago time
             val prettyTime = PrettyTime(Locale.getDefault())
-            val date = wish.date.toDate()
+            val date = wish.date?.toDate()
             val timeAgo = ". " + prettyTime.format(date)
             binding.timeTextView.text = timeAgo
 
             //Load creator data
-            loadProfilePicture(binding.profilePictureImageView, wish.creator.imagePath)
-            binding.userNameTextView.text = wish.creator.name
+            loadProfilePicture(binding.profilePictureImageView, wish.creator?.imagePath)
+            binding.userNameTextView.text = wish.creator?.name
 
             //Load wish data
             loadWishImage(binding.wishImageView, wish.wishPhotoURL)
-            val todosAdapter =  TodosAdapter(ArrayList(wish.items.values),binding.moreTextView,binding.arrowImageView,todosAdapterArrayList.size){
+            val todosAdapter =  TodosAdapter(ArrayList(wish.items!!.values),binding.moreTextView,binding.arrowImageView,todosAdapterArrayList.size){
                 //Collapse all other lists except for the current one expanding
                 for(adapterIndex in 0 until todosAdapterArrayList.size)
                 {
@@ -70,7 +70,7 @@ class WishesAdapter(
             todosAdapter.setHasStableIds(true)
             binding.todoListRecyclerView.adapter = todosAdapter
             binding.todoListRecyclerView.post {
-                if(wish.items.size>3)
+                if(wish.items!!.size>3)
                 todosAdapter.collapseExtraTodosPostLoading()
             }
 

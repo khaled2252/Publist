@@ -187,7 +187,7 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
                     blurredBgView.visibility = View.GONE
                     window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-                    viewModel.category =
+                    viewModel.categoryId =
                         categoriesFragment.viewModel.selectedCategoriesList.getOrElse(0) { "" }
                     viewModel.validateEntries()
                 }
@@ -291,8 +291,7 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
                     if (itemEditText.text!!.isNotEmpty()) {
                         adapter.addItem(itemEditText.text.toString())
                         itemEditText.text = null
-                        this.hideKeyboard() // works only before clearing focus
-                        itemEditText.clearFocus()
+                        this.hideKeyboard()
                     }
                     return@OnTouchListener true
                 }

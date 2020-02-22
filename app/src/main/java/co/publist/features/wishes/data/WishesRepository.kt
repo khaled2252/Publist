@@ -34,27 +34,34 @@ class WishesRepository @Inject constructor(
     override fun createWish(wish: Wish): Completable {
 
         return Completable.create { completableEmitter ->
-            mFirebaseFirestore.collection(WISHES_COLLECTION_PATH).add(wish).addOnFailureListener {
-                completableEmitter.onError(it)
-            }.addOnSuccessListener {
-                completableEmitter.onComplete()
-            }
+            mFirebaseFirestore.collection(WISHES_COLLECTION_PATH).add(wish)
+                .addOnFailureListener {
+                    completableEmitter.onError(it)
+                }.addOnSuccessListener {
+                    mFirebaseFirestore.collection(WISHES_COLLECTION_PATH).document(it.id)
+                        .update("wishId", it.id)
+                        .addOnSuccessListener {
+                            completableEmitter.onComplete()
+                        }
+                        .addOnFailureListener {
+                        }
+                }
         }
     }
 
     override fun uploadImage(imageUri: String): Single<String> {
         return Single.create { completableEmitter ->
             val reference =
-                mFirebaseStorage.reference.child("WishListCoverPhoto/" + UUID.randomUUID().toString())
+                mFirebaseStorage.reference.child("WishListCoverPhoto/" + UUID.randomUUID().toString().toUpperCase())
             val uploadTask = reference.putFile(Uri.parse(imageUri))
-                uploadTask.continueWithTask(Continuation<UploadTask.TaskSnapshot, Task<Uri>> {
-                    return@Continuation reference.downloadUrl
-                }).addOnCompleteListener { task ->
-                        val downloadUri = task.result
-                        completableEmitter.onSuccess(downloadUri.toString())
-                }.addOnFailureListener {
-                    completableEmitter.onError(it)
-                }
+            uploadTask.continueWithTask(Continuation<UploadTask.TaskSnapshot, Task<Uri>> {
+                return@Continuation reference.downloadUrl
+            }).addOnCompleteListener { task ->
+                val downloadUri = task.result
+                completableEmitter.onSuccess(downloadUri.toString())
+            }.addOnFailureListener {
+                completableEmitter.onError(it)
+            }
 
         }
     }
