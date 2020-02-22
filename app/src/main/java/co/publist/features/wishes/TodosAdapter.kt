@@ -7,20 +7,20 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import co.publist.R
-import co.publist.core.common.data.models.Todo
+import co.publist.core.common.data.models.Item
 import co.publist.core.utils.Utils.Constants.MAX_VISIBLE_TODOS
 import kotlinx.android.synthetic.main.item_todo.view.*
 
 
 class TodosAdapter(
-    var todoList: ArrayList<Todo>,
+    var itemList: ArrayList<Item>,
     private val moreTextView: TextView,
     private val arrowImageView: ImageView,
     private val adapterIndex : Int,
     val listener : (Int) -> Unit
 ) :
     RecyclerView.Adapter<TodosAdapter.TodoViewHolder>() {
-    private val expandableList = ArrayList<Todo>()
+    private val expandableList = ArrayList<Item>()
     private var isExpanded = false
 
     init {
@@ -42,30 +42,30 @@ class TodosAdapter(
     }
 
     override fun getItemCount(): Int {
-        return todoList.size
+        return itemList.size
     }
 
     override fun onBindViewHolder(holder: TodoViewHolder, position: Int) {
-        holder.bind(todoList[position])
+        holder.bind(itemList[position])
         if (position >= MAX_VISIBLE_TODOS) {
-            expandableList.add(todoList[position])
+            expandableList.add(itemList[position])
         }
     }
 
     inner class TodoViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun bind(
-            todo: Todo
+            item: Item
         ) {
-            itemView.todoTextView.text = todo.name
+            itemView.todoTextView.text = item.name
         }
     }
 
     private fun setExpandingConditions() {
-        if (todoList.size <= MAX_VISIBLE_TODOS) {
+        if (itemList.size <= MAX_VISIBLE_TODOS) {
             moreTextView.visibility = View.GONE
             arrowImageView.visibility = View.GONE
         } else if (!isExpanded) {
-            val extraTodosNumber = todoList.size - MAX_VISIBLE_TODOS
+            val extraTodosNumber = itemList.size - MAX_VISIBLE_TODOS
             if(extraTodosNumber==1)
                 moreTextView.text = "$extraTodosNumber More Check Point"
             else
@@ -93,7 +93,7 @@ class TodosAdapter(
 //                anim.isFillEnabled = true
 //                anim.fillAfter = true
 //                arrowImageView.startAnimation(anim)
-        todoList.addAll(expandableList)
+        itemList.addAll(expandableList)
         isExpanded = true
         notifyDataSetChanged()
     }
@@ -101,8 +101,8 @@ class TodosAdapter(
     fun collapseExtraTodosPostLoading() {
         moreTextView.visibility = View.GONE
         arrowImageView.visibility = View.GONE
-        for (position in MAX_VISIBLE_TODOS until todoList.size)
-            todoList.removeAt(todoList.size - 1)
+        for (position in MAX_VISIBLE_TODOS until itemList.size)
+            itemList.removeAt(itemList.size - 1)
         notifyDataSetChanged()
     }
 }

@@ -71,6 +71,7 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
         if (requestCode == GALLERY) {
             if (data != null) {
                 val contentURI = data.data
+                viewModel.wishImageUri = contentURI.toString()
                 try {
                     val bitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                         val source: ImageDecoder.Source =
@@ -90,6 +91,7 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
 
         } else if (requestCode == CAMERA) {
             if (data != null) {
+                viewModel.wishImageUri = data.data.toString()
                 val bitmap = data.extras!!.get("data") as Bitmap
                 loadPhotoToImageView(bitmap)
             }

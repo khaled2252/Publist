@@ -1,6 +1,7 @@
 package co.publist.core.common.data.models
 
-class Creator {
-    var imagePath :String? = null
-    var name :String? = null
-}
+data class Creator(
+    var id: String,
+    var imagePath:String,
+    var name:String
+)
