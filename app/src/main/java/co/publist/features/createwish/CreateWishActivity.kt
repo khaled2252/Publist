@@ -54,7 +54,7 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
     private lateinit var categoriesFragment: CategoriesFragment
     private lateinit var sheetBehavior: BottomSheetBehavior<*>
     //File Path , Uri From Camera
-    private var imageFilePath = ""
+    private lateinit var imageFilePath : String
     private lateinit var photoUri : Uri
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -99,12 +99,10 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
 
             }
 
-        } else if (requestCode == CAMERA) {
-            if(imageFilePath.isNotEmpty()) {
+        } else if (requestCode == CAMERA && resultCode == RESULT_OK) {
                 val bitmap = BitmapFactory.decodeFile(imageFilePath)
                 loadPhotoToImageView(bitmap)
                 viewModel.wishImageUri = photoUri.toString()
-            }
         }
     }
 
@@ -296,7 +294,7 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
             }
         })
 
-        itemEditText.setOnTouchListener(OnTouchListener { v, event ->
+        itemEditText.setOnTouchListener(OnTouchListener { _, event ->
             val DRAWABLE_RIGHT = 2
             if (event.action == MotionEvent.ACTION_UP) {
                 if (event.rawX >= itemEditText.right - itemEditText.compoundDrawables[DRAWABLE_RIGHT].bounds.width()
@@ -346,16 +344,18 @@ private fun createImageFile() : File{
                 getExternalFilesDir(Environment.DIRECTORY_PICTURES)
     val image = File.createTempFile(
                     imageFileName,  /* prefix */
-                    ".jpg",         /* suffix */
+                    ".jpeg",   /* suffix */
                     storageDir      /* directory */
     )
     imageFilePath = image.absolutePath
     return image
 }
+
     private fun navigateToCamera() {
         val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         val photoFile = createImageFile()
         photoUri = getUriForFile(this, applicationContext.packageName + ".provider", photoFile)
+        //Need to create a file to let camera store image in it using Extra_output, to get Uri , to Upload , without this it will send bitmap in data.extras
         cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
         startActivityForResult(cameraIntent, CAMERA)
     }
