@@ -4,9 +4,12 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
@@ -18,6 +21,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider.getUriForFile
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ItemTouchHelper.*
@@ -28,7 +32,10 @@ import co.publist.features.categories.CategoriesFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.android.synthetic.main.activity_create_wish.*
 import timber.log.Timber
+import java.io.File
 import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.*
 import javax.inject.Inject
 
 
@@ -46,6 +53,9 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
     private lateinit var adapter: ItemsAdapter
     private lateinit var categoriesFragment: CategoriesFragment
     private lateinit var sheetBehavior: BottomSheetBehavior<*>
+    //File Path , Uri From Camera
+    private var imageFilePath = ""
+    private lateinit var photoUri : Uri
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -90,10 +100,10 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
             }
 
         } else if (requestCode == CAMERA) {
-            if (data != null) {
-                viewModel.wishImageUri = data.data.toString()
-                val bitmap = data.extras!!.get("data") as Bitmap
+            if(imageFilePath.isNotEmpty()) {
+                val bitmap = BitmapFactory.decodeFile(imageFilePath)
                 loadPhotoToImageView(bitmap)
+                viewModel.wishImageUri = photoUri.toString()
             }
         }
     }
@@ -103,7 +113,7 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
         permissions: Array<String>, grantResults: IntArray
     ) {
         if (grantResults.isNotEmpty()) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED && permissions[0] == Manifest.permission.READ_EXTERNAL_STORAGE
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED && permissions[0] == Manifest.permission.CAMERA
             )
                 navigateToCamera()
             else if (grantResults[0] == PackageManager.PERMISSION_GRANTED && permissions[0] == Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -154,7 +164,10 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
 
         viewModel.addingWishLiveData.observe(this, Observer { isCreated ->
             if (isCreated)
-            //todo Toast created successfully , navigates back to home
+            {
+                Toast.makeText(this,"Posted Successfully!",Toast.LENGTH_SHORT).show()
+                finish()
+            }
             else
                 Toast.makeText(this, "You have to make at least 3 items", Toast.LENGTH_SHORT).show()
         })
@@ -291,7 +304,7 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
                     if (itemEditText.text!!.isNotEmpty()) {
                         adapter.addItem(itemEditText.text.toString())
                         itemEditText.text = null
-                        this.hideKeyboard()
+                        itemEditText.isCursorVisible = false
                     }
                     return@OnTouchListener true
                 }
@@ -324,8 +337,26 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
         pictureDialog.show()
     }
 
+private fun createImageFile() : File{
+    val timeStamp =
+         SimpleDateFormat("yyyyMMdd_HHmmss",
+                      Locale.getDefault()).format(Date())
+    val imageFileName = "IMG_" + timeStamp + "_"
+    val storageDir =
+                getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+    val image = File.createTempFile(
+                    imageFileName,  /* prefix */
+                    ".jpg",         /* suffix */
+                    storageDir      /* directory */
+    )
+    imageFilePath = image.absolutePath
+    return image
+}
     private fun navigateToCamera() {
         val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        val photoFile = createImageFile()
+        photoUri = getUriForFile(this, applicationContext.packageName + ".provider", photoFile)
+        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
         startActivityForResult(cameraIntent, CAMERA)
     }
 

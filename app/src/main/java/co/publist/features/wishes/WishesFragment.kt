@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import co.publist.R
-import co.publist.core.common.data.models.Wish
+import co.publist.core.common.data.models.wish.Wish
 import co.publist.core.platform.BaseFragment
 import co.publist.core.platform.ViewModelFactory
 import com.firebase.ui.firestore.FirestoreRecyclerOptions

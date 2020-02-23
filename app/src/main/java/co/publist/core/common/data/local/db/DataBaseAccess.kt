@@ -2,7 +2,7 @@ package co.publist.core.common.data.local.db
 
 import android.content.Context
 import androidx.paging.DataSource
-import co.publist.core.common.data.models.CategoryDbEntity
+import co.publist.core.common.data.models.category.CategoryDbEntity
 import io.reactivex.Single
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors

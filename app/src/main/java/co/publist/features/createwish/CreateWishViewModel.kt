@@ -1,13 +1,13 @@
 package co.publist.features.createwish
 
 import androidx.lifecycle.MutableLiveData
-import co.publist.core.common.data.models.Creator
-import co.publist.core.common.data.models.Item
-import co.publist.core.common.data.models.Wish
+import co.publist.core.common.data.models.wish.Creator
+import co.publist.core.common.data.models.wish.Item
+import co.publist.core.common.data.models.wish.Wish
 import co.publist.core.common.data.repositories.user.UserRepositoryInterface
+import co.publist.core.common.data.repositories.wish.WishesRepositoryInterface
 import co.publist.core.platform.BaseViewModel
 import co.publist.features.categories.data.CategoriesRepositoryInterface
-import co.publist.features.wishes.data.WishesRepositoryInterface
 import com.google.firebase.Timestamp
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
@@ -46,13 +46,20 @@ class CreateWishViewModel @Inject constructor(
     private fun createWish(categoryId: String, title: String, items: ArrayList<String>) {
         subscribe(categoriesRepository.getCategoryFromId(categoryId), Consumer { category ->
             val user = userRepository.getUser()
-            val creator = Creator(user!!.id!!, user.profilePictureUrl!!, user.name!!)
+            val creator = Creator(
+                user!!.id!!,
+                user.profilePictureUrl!!,
+                user.name!!
+            )
             val date = Timestamp(Calendar.getInstance().time)
             val listMap = mutableMapOf<String, Item>()
             val itemIdList = ArrayList<String>()
             for (itemPosition in 0 until items.size) {
                 val id = UUID.randomUUID().toString().toUpperCase()
-                val item = Item(name = items[itemPosition], orderId = itemPosition)
+                val item = Item(
+                    name = items[itemPosition],
+                    orderId = itemPosition
+                )
                 listMap[id] = item
                 itemIdList.add(id)
             }

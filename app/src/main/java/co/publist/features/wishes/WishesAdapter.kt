@@ -3,7 +3,7 @@ package co.publist.features.wishes
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import co.publist.core.common.data.models.Wish
+import co.publist.core.common.data.models.wish.Wish
 import co.publist.core.utils.Utils.loadProfilePicture
 import co.publist.core.utils.Utils.loadWishImage
 import co.publist.databinding.ItemWishBinding

@@ -19,14 +19,14 @@ package co.publist.core.di.modules
 
 import co.publist.core.common.data.repositories.user.UserRepository
 import co.publist.core.common.data.repositories.user.UserRepositoryInterface
+import co.publist.core.common.data.repositories.wish.WishesRepository
+import co.publist.core.common.data.repositories.wish.WishesRepositoryInterface
 import co.publist.features.categories.data.CategoriesRepository
 import co.publist.features.categories.data.CategoriesRepositoryInterface
 import co.publist.features.home.data.HomeRepository
 import co.publist.features.home.data.HomeRepositoryInterface
 import co.publist.features.login.data.LoginRepository
 import co.publist.features.login.data.LoginRepositoryInterface
-import co.publist.features.wishes.data.WishesRepository
-import co.publist.features.wishes.data.WishesRepositoryInterface
 import dagger.Binds
 import dagger.Module
 import javax.inject.Singleton

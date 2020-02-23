@@ -1,4 +1,4 @@
-package co.publist.core.common.data.models
+package co.publist.core.common.data.models.category
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

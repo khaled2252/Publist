@@ -5,7 +5,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import co.publist.core.common.data.models.CategoryDbEntity
+import co.publist.core.common.data.models.category.CategoryDbEntity
 import io.reactivex.Single
 
 

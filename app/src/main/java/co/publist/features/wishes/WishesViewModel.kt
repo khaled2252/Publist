@@ -1,9 +1,9 @@
 package co.publist.features.wishes
 
 import androidx.lifecycle.MutableLiveData
+import co.publist.core.common.data.repositories.wish.WishesRepositoryInterface
 import co.publist.core.platform.BaseViewModel
 import co.publist.features.categories.data.CategoriesRepositoryInterface
-import co.publist.features.wishes.data.WishesRepositoryInterface
 import com.google.firebase.firestore.Query
 import io.reactivex.functions.Consumer
 import javax.inject.Inject

@@ -1,4 +1,4 @@
-package co.publist.core.common.data.models
+package co.publist.core.common.data.models.wish
 
 data class Item (
     var completeCount :Int? = 0,

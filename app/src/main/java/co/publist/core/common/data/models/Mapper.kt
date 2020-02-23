@@ -1,13 +1,14 @@
 package co.publist.core.common.data.models
 
+import co.publist.core.common.data.models.category.CategoryDbEntity
 import com.google.firebase.firestore.QueryDocumentSnapshot
 import com.google.firebase.firestore.QuerySnapshot
 
 object Mapper {
      private fun mapToCategoryDbEntity(item: String): CategoryDbEntity =
-        CategoryDbEntity(
-            id = item
-        )
+         CategoryDbEntity(
+             id = item
+         )
 
      private fun mapToString(categoryDbEntity: CategoryDbEntity): String =
         categoryDbEntity.id

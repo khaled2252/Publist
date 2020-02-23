@@ -1,5 +1,6 @@
-package co.publist.core.common.data.models
+package co.publist.core.common.data.models.wish
 
+import co.publist.core.common.data.models.category.Category
 import com.google.firebase.Timestamp
 
 data class Wish(

@@ -1,7 +1,7 @@
-package co.publist.features.wishes.data
+package co.publist.core.common.data.repositories.wish
 
 import android.net.Uri
-import co.publist.core.common.data.models.Wish
+import co.publist.core.common.data.models.wish.Wish
 import co.publist.core.utils.Utils.Constants.CATEGORY_ID_FIELD
 import co.publist.core.utils.Utils.Constants.DATE_FIELD
 import co.publist.core.utils.Utils.Constants.WISHES_COLLECTION_PATH
@@ -10,6 +10,7 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageMetadata
 import com.google.firebase.storage.UploadTask
 import io.reactivex.Completable
 import io.reactivex.Single
@@ -52,8 +53,11 @@ class WishesRepository @Inject constructor(
     override fun uploadImage(imageUri: String): Single<String> {
         return Single.create { completableEmitter ->
             val reference =
-                mFirebaseStorage.reference.child("WishListCoverPhoto/" + UUID.randomUUID().toString().toUpperCase())
-            val uploadTask = reference.putFile(Uri.parse(imageUri))
+                mFirebaseStorage.reference.child("WishListCoverPhoto/" + UUID.randomUUID().toString().toUpperCase()+".jpeg")
+            var metadata = StorageMetadata.Builder()
+                .setContentType("application/octet-stream")
+                .build()
+            val uploadTask = reference.putFile(Uri.parse(imageUri),metadata)
             uploadTask.continueWithTask(Continuation<UploadTask.TaskSnapshot, Task<Uri>> {
                 return@Continuation reference.downloadUrl
             }).addOnCompleteListener { task ->
