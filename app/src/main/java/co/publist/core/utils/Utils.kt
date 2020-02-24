@@ -11,6 +11,8 @@ import co.publist.R
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.squareup.picasso.Picasso
+import kotlin.math.abs
+
 
 object Utils {
 
@@ -42,6 +44,23 @@ object Utils {
                 .placeholder(R.drawable.ph_wish_image)
                 .into(view)
         }
+    }
+
+    fun getDistanceBetweenViews(
+        firstView: View,
+        secondView: View
+    ): Int {
+        val firstPosition = IntArray(2)
+        val secondPosition = IntArray(2)
+        firstView.measure(
+            View.MeasureSpec.UNSPECIFIED,
+            View.MeasureSpec.UNSPECIFIED
+        )
+        firstView.getLocationInWindow(firstPosition)
+        secondView.getLocationInWindow(secondPosition)
+        val b = firstView.measuredHeight + firstPosition[1]
+        val t = secondPosition[1]
+        return abs(b - t)
     }
 
     object Constants {

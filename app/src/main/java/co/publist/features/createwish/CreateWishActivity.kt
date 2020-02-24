@@ -16,10 +16,12 @@ import android.text.TextWatcher
 import android.view.MotionEvent
 import android.view.View
 import android.view.View.OnTouchListener
+import android.view.ViewTreeObserver
 import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider.getUriForFile
@@ -29,6 +31,7 @@ import androidx.recyclerview.widget.ItemTouchHelper.*
 import co.publist.R
 import co.publist.core.platform.BaseActivity
 import co.publist.core.platform.ViewModelFactory
+import co.publist.core.utils.Utils.getDistanceBetweenViews
 import co.publist.features.categories.CategoriesFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.android.synthetic.main.activity_create_wish.*
@@ -65,14 +68,6 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
         setAdapter()
         setObservers()
         setListeners()
-    }
-
-    private fun onCreated() {
-        categoriesFragment =
-            supportFragmentManager.findFragmentById(R.id.categoriesFragment) as CategoriesFragment
-        sheetBehavior = BottomSheetBehavior.from(categoriesFragmentBottomSheet)
-        categoriesFragment.viewModel.isCreatingWish = true
-        categoriesFragment.viewModel.getSelectedCategories()
     }
 
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -140,6 +135,38 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
         }
     }
 
+    private fun checkAndRequestPermissions(permissionType: Int): Boolean {
+        val cameraPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+        val readPermission =
+            ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+
+        var permissionNeeded = ""
+
+        if (permissionType == CAMERA) {
+            if (cameraPermission != PackageManager.PERMISSION_GRANTED) {
+                permissionNeeded = Manifest.permission.CAMERA
+            }
+        } else if (permissionType == GALLERY) {
+            if (readPermission != PackageManager.PERMISSION_GRANTED) {
+                permissionNeeded = Manifest.permission.READ_EXTERNAL_STORAGE
+            }
+        }
+
+        if (permissionNeeded.isNotEmpty()) {
+            ActivityCompat.requestPermissions(this, arrayOf(permissionNeeded), 1)
+            return false
+        }
+        return true
+    }
+
+    private fun onCreated() {
+        categoriesFragment =
+            supportFragmentManager.findFragmentById(R.id.categoriesFragment) as CategoriesFragment
+        sheetBehavior = BottomSheetBehavior.from(categoriesFragmentBottomSheet)
+        categoriesFragment.viewModel.isCreatingWish = true
+        categoriesFragment.viewModel.getSelectedCategories()
+    }
+
     private fun setAdapter() {
         adapter = ItemsAdapter {
             viewModel.items = adapter.getlist()
@@ -175,6 +202,15 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
     }
 
     private fun setListeners() {
+
+        activityCreateWishLayout.viewTreeObserver.addOnGlobalLayoutListener(object :
+            ViewTreeObserver.OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                activityCreateWishLayout.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                setUpItemsRecyclerViewMaxHeight()
+            }
+
+        })
         postButton.setOnClickListener {
             viewModel.postWish()
         }
@@ -199,12 +235,12 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
                     blurredBgView.visibility = View.GONE
                     window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-                    val category = categoriesFragment.viewModel.selectedCategoriesList.getOrElse(0){""}
+                    val category =
+                        categoriesFragment.viewModel.selectedCategoriesList.getOrElse(0) { "" }
                     if (category.isNotEmpty()) {
                         viewModel.categoryId = category
                         viewModel.getCategoryObject()
-                    }
-                    else
+                    } else
                         addCategoryTextView.text = "Choose Categories"
 
                     viewModel.validateEntries()
@@ -323,6 +359,14 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
         })
     }
 
+    private fun setUpItemsRecyclerViewMaxHeight() {
+        val distance = getDistanceBetweenViews(postButton, itemEditText)
+        val params = itemsRecyclerView.layoutParams as ConstraintLayout.LayoutParams
+        params.matchConstraintMaxHeight =
+            distance - (2 * itemEditText.measuredHeight + postButton.measuredHeight)
+        itemsRecyclerView.layoutParams = params
+    }
+
     private fun itemDoneOnClick() {
         if (itemEditText.text!!.isNotEmpty()) {
             adapter.addItem(itemEditText.text.toString())
@@ -395,31 +439,7 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
         addPhotoTextView.visibility = View.INVISIBLE
         listTextView.setPadding(0, 130, 0, 0)
     }
-
-    private fun checkAndRequestPermissions(permissionType: Int): Boolean {
-        val cameraPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-        val readPermission =
-            ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
-
-        var permissionNeeded = ""
-
-        if (permissionType == CAMERA) {
-            if (cameraPermission != PackageManager.PERMISSION_GRANTED) {
-                permissionNeeded = Manifest.permission.CAMERA
-            }
-        } else if (permissionType == GALLERY) {
-            if (readPermission != PackageManager.PERMISSION_GRANTED) {
-                permissionNeeded = Manifest.permission.READ_EXTERNAL_STORAGE
-            }
-        }
-
-        if (permissionNeeded.isNotEmpty()) {
-            ActivityCompat.requestPermissions(this, arrayOf(permissionNeeded), 1)
-            return false
-        }
-        return true
-    }
-
+    
     companion object {
         private const val GALLERY = 1
         private const val CAMERA = 2
