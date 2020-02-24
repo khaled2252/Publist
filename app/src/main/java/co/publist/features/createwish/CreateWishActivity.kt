@@ -17,6 +17,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.View.OnTouchListener
 import android.view.WindowManager
+import android.view.inputmethod.EditorInfo
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
@@ -214,13 +215,22 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
         }
 
         deletePhotoImageView.setOnClickListener {
-            it.visibility = View.GONE
-            photoImageView.visibility = View.GONE
+            imageLayout.visibility = View.GONE
             addPhotoTextView.visibility = View.VISIBLE
+            listTextView.setPadding(0,0,0,0)
         }
 
         addPhotoTextView.setOnClickListener {
             showCameraGalleryDialog()
+        }
+
+        itemEditText.setOnEditorActionListener { _, actionId, _ ->
+            if(actionId== EditorInfo.IME_ACTION_NEXT){
+                itemDoneOnClick()
+                hideKeyboard()
+                itemEditText.requestFocus()
+            }
+            false
         }
 
         titleEditText.setOnFocusChangeListener { _, hasFocus ->
@@ -299,16 +309,19 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
             if (event.action == MotionEvent.ACTION_UP) {
                 if (event.rawX >= itemEditText.right - itemEditText.compoundDrawables[DRAWABLE_RIGHT].bounds.width()
                 ) {
-                    if (itemEditText.text!!.isNotEmpty()) {
-                        adapter.addItem(itemEditText.text.toString())
-                        itemEditText.text = null
-                        itemEditText.isCursorVisible = false
-                    }
-                    return@OnTouchListener true
+                    itemDoneOnClick()
+                    return@OnTouchListener false
                 }
             }
             false
         })
+    }
+
+    private fun itemDoneOnClick() {
+        if (itemEditText.text!!.isNotEmpty()) {
+            adapter.addItem(itemEditText.text.toString())
+            itemEditText.text = null
+        }
     }
 
     private fun showCameraGalleryDialog() {
@@ -369,10 +382,10 @@ private fun createImageFile() : File{
     }
 
     private fun loadPhotoToImageView(bitmap: Bitmap?) {
-        photoImageView.visibility = View.VISIBLE
         photoImageView.setImageBitmap(bitmap)
-        deletePhotoImageView.visibility = View.VISIBLE
+        imageLayout.visibility = View.VISIBLE
         addPhotoTextView.visibility = View.INVISIBLE
+        listTextView.setPadding(0,130,0,0)
     }
 
     private fun checkAndRequestPermissions(permissionType: Int): Boolean {
