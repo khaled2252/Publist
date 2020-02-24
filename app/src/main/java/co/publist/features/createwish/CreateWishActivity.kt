@@ -55,8 +55,8 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
     private lateinit var categoriesFragment: CategoriesFragment
     private lateinit var sheetBehavior: BottomSheetBehavior<*>
     //File Path , Uri From Camera
-    private lateinit var imageFilePath : String
-    private lateinit var photoUri : Uri
+    private lateinit var imageFilePath: String
+    private lateinit var photoUri: Uri
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -101,9 +101,9 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
             }
 
         } else if (requestCode == CAMERA && resultCode == RESULT_OK) {
-                val bitmap = BitmapFactory.decodeFile(imageFilePath)
-                loadPhotoToImageView(bitmap)
-                viewModel.wishImageUri = photoUri.toString()
+            val bitmap = BitmapFactory.decodeFile(imageFilePath)
+            loadPhotoToImageView(bitmap)
+            viewModel.wishImageUri = photoUri.toString()
         }
     }
 
@@ -162,16 +162,16 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
         })
 
         viewModel.addingWishLiveData.observe(this, Observer { isCreated ->
-            if (isCreated)
-            {
-                Toast.makeText(this,"Posted Successfully!",Toast.LENGTH_SHORT).show()
+            if (isCreated) {
+                Toast.makeText(this, "Posted Successfully!", Toast.LENGTH_SHORT).show()
                 finish()
-            }
-            else
+            } else
                 Toast.makeText(this, "You have to make at least 3 items", Toast.LENGTH_SHORT).show()
         })
 
-
+        viewModel.categoryLiveData.observe(this, Observer { categoryName ->
+            addCategoryTextView.text = categoryName
+        })
     }
 
     private fun setListeners() {
@@ -199,8 +199,14 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
                     blurredBgView.visibility = View.GONE
                     window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-                    viewModel.categoryId =
-                        categoriesFragment.viewModel.selectedCategoriesList.getOrElse(0) { "" }
+                    val category = categoriesFragment.viewModel.selectedCategoriesList.getOrElse(0){""}
+                    if (category.isNotEmpty()) {
+                        viewModel.categoryId = category
+                        viewModel.getCategoryObject()
+                    }
+                    else
+                        addCategoryTextView.text = "Choose Categories"
+
                     viewModel.validateEntries()
                 }
 
@@ -217,7 +223,7 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
         deletePhotoImageView.setOnClickListener {
             imageLayout.visibility = View.GONE
             addPhotoTextView.visibility = View.VISIBLE
-            listTextView.setPadding(0,0,0,0)
+            listTextView.setPadding(0, 0, 0, 0)
         }
 
         addPhotoTextView.setOnClickListener {
@@ -225,7 +231,7 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
         }
 
         itemEditText.setOnEditorActionListener { _, actionId, _ ->
-            if(actionId== EditorInfo.IME_ACTION_NEXT){
+            if (actionId == EditorInfo.IME_ACTION_NEXT) {
                 itemDoneOnClick()
                 hideKeyboard()
                 itemEditText.requestFocus()
@@ -348,21 +354,23 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
         pictureDialog.show()
     }
 
-private fun createImageFile() : File{
-    val timeStamp =
-         SimpleDateFormat("yyyyMMdd_HHmmss",
-                      Locale.getDefault()).format(Date())
-    val imageFileName = "IMG_" + timeStamp + "_"
-    val storageDir =
-                getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-    val image = File.createTempFile(
-                    imageFileName,  /* prefix */
-                    ".jpeg",   /* suffix */
-                    storageDir      /* directory */
-    )
-    imageFilePath = image.absolutePath
-    return image
-}
+    private fun createImageFile(): File {
+        val timeStamp =
+            SimpleDateFormat(
+                "yyyyMMdd_HHmmss",
+                Locale.getDefault()
+            ).format(Date())
+        val imageFileName = "IMG_" + timeStamp + "_"
+        val storageDir =
+            getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        val image = File.createTempFile(
+            imageFileName,  /* prefix */
+            ".jpeg",   /* suffix */
+            storageDir      /* directory */
+        )
+        imageFilePath = image.absolutePath
+        return image
+    }
 
     private fun navigateToCamera() {
         val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
@@ -385,7 +393,7 @@ private fun createImageFile() : File{
         photoImageView.setImageBitmap(bitmap)
         imageLayout.visibility = View.VISIBLE
         addPhotoTextView.visibility = View.INVISIBLE
-        listTextView.setPadding(0,130,0,0)
+        listTextView.setPadding(0, 130, 0, 0)
     }
 
     private fun checkAndRequestPermissions(permissionType: Int): Boolean {

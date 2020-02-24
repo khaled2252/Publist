@@ -1,6 +1,7 @@
 package co.publist.features.createwish
 
 import androidx.lifecycle.MutableLiveData
+import co.publist.core.common.data.models.category.Category
 import co.publist.core.common.data.models.wish.Creator
 import co.publist.core.common.data.models.wish.Item
 import co.publist.core.common.data.models.wish.Wish
@@ -21,8 +22,10 @@ class CreateWishViewModel @Inject constructor(
     private val categoriesRepository: CategoriesRepositoryInterface
 ) : BaseViewModel() {
 
+    val categoryLiveData = MutableLiveData<String>()
     val validationLiveData = MutableLiveData<Boolean>()
     val addingWishLiveData = MutableLiveData<Boolean>()
+    var categoryObject = Category()
     var categoryId = ""
     var title = ""
     var wishImageUri = ""
@@ -44,7 +47,7 @@ class CreateWishViewModel @Inject constructor(
     }
 
     private fun createWish(categoryId: String, title: String, items: ArrayList<String>) {
-        subscribe(categoriesRepository.getCategoryFromId(categoryId), Consumer { category ->
+
             val user = userRepository.getUser()
             val creator = Creator(
                 user!!.id!!,
@@ -65,7 +68,7 @@ class CreateWishViewModel @Inject constructor(
             }
 
             val wish = Wish(
-                category = arrayListOf(category),
+                category = arrayListOf(categoryObject),
                 categoryId = arrayListOf(categoryId),
                 creator = creator,
                 date = date,
@@ -85,8 +88,14 @@ class CreateWishViewModel @Inject constructor(
                 subscribe(wishesRepository.createWish(wish), Action {
                     addingWishLiveData.postValue(true)
                 })
-        })
+
     }
+
+    fun getCategoryObject() {
+        subscribe(categoriesRepository.getCategoryFromId(categoryId), Consumer { category ->
+            categoryObject = category
+            categoryLiveData.postValue(category.name)
+        }) }
 
 }
 
