@@ -5,9 +5,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.ImageDecoder
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
@@ -34,10 +32,10 @@ import co.publist.core.platform.ViewModelFactory
 import co.publist.core.utils.Utils.getDistanceBetweenViews
 import co.publist.features.categories.CategoriesFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.theartofdev.edmodo.cropper.CropImage
+import com.theartofdev.edmodo.cropper.CropImageView
 import kotlinx.android.synthetic.main.activity_create_wish.*
-import timber.log.Timber
 import java.io.File
-import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -57,7 +55,6 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
     private lateinit var adapter: ItemsAdapter
     private lateinit var categoriesFragment: CategoriesFragment
     private lateinit var sheetBehavior: BottomSheetBehavior<*>
-    //File Path , Uri From Camera
     private lateinit var imageFilePath: String
     private lateinit var photoUri: Uri
 
@@ -77,29 +74,28 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
         if (requestCode == GALLERY) {
             if (data != null) {
                 val contentURI = data.data
-                viewModel.wishImageUri = contentURI.toString()
-                try {
-                    val bitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                        val source: ImageDecoder.Source =
-                            ImageDecoder.createSource(this.contentResolver, contentURI!!)
-                        ImageDecoder.decodeBitmap(source)
-                    } else {
-                        MediaStore.Images.Media.getBitmap(this.contentResolver, contentURI)
-                    }
-
-                    loadPhotoToImageView(bitmap)
-
-                } catch (e: IOException) {
-                    Timber.e(e)
-                }
-
+                startCropping(contentURI)
             }
 
         } else if (requestCode == CAMERA && resultCode == RESULT_OK) {
-            val bitmap = BitmapFactory.decodeFile(imageFilePath)
-            loadPhotoToImageView(bitmap)
-            viewModel.wishImageUri = photoUri.toString()
+            startCropping(photoUri)
         }
+        else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                val bitmap = BitmapFactory.decodeFile(imageFilePath)
+                loadPhotoToImageView(bitmap)
+                viewModel.wishImageUri = photoUri.toString()
+            }
+        }
+    }
+
+    private fun startCropping(contentURI: Uri?) {
+        CropImage.activity(contentURI)
+            .setGuidelines(CropImageView.Guidelines.ON)
+            .setAspectRatio(2, 1)
+            .setOutputUri(photoUri)
+            .setOutputCompressFormat(Bitmap.CompressFormat.JPEG)
+            .start(this)
     }
 
     override fun onRequestPermissionsResult(
@@ -426,6 +422,8 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
     }
 
     private fun navigateToGallery() {
+        val photoFile = createImageFile()
+        photoUri = getUriForFile(this, applicationContext.packageName + ".provider", photoFile)
         val galleryIntent = Intent(
             Intent.ACTION_PICK,
             MediaStore.Images.Media.EXTERNAL_CONTENT_URI
@@ -439,7 +437,7 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
         addPhotoTextView.visibility = View.INVISIBLE
         listTextView.setPadding(0, 130, 0, 0)
     }
-    
+
     companion object {
         private const val GALLERY = 1
         private const val CAMERA = 2

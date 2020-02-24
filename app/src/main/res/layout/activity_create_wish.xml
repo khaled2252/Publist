@@ -143,17 +143,16 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/addPhotoTextView" />
 
-            <!-- constraintHeightMax and constraintHeightDefault to set max height for recyclerview in constraint layout-->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/itemsRecyclerView"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:layout_marginBottom="5dp"
                 android:orientation="vertical"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constrainedHeight="true"
                 app:layout_constraintBottom_toTopOf="@id/itemInputLayout"
-                app:layout_constraintHeight_default="wrap"
                 app:layout_constraintTop_toBottomOf="@id/listTextView"
                 app:layout_constraintVertical_bias="0"
                 tools:itemCount="3"
