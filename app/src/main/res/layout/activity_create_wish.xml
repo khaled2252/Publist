@@ -69,7 +69,7 @@
                 app:boxStrokeColor="@color/text_input_layout_stroke_color"
                 app:boxStrokeWidth="1dp"
                 app:hintAnimationEnabled="false"
-                app:hintTextColor="@color/sunsetOrange"
+                app:hintTextColor="@color/gray"
                 app:layout_constraintTop_toBottomOf="@+id/textView3">
 
                 <com.google.android.material.textfield.TextInputEditText
