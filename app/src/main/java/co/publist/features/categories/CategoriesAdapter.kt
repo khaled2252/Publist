@@ -15,8 +15,8 @@ import kotlinx.android.synthetic.main.item_category.view.*
 
 class CategoriesAdapter(
     options: FirestoreRecyclerOptions<Category>,
-    val previouslySelectedCategoriesList : ArrayList<String>,
-    val listener: (documentId : String?, buttonId : MaterialButton) ->Unit
+    val previouslySelectedCategoriesList : ArrayList<Category>,
+    val listener: (documentId : Category, buttonId : MaterialButton) ->Unit
 ) :
     FirestoreRecyclerAdapter<Category, CategoriesAdapter.CategoryViewHolder>(options) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategoryViewHolder {
@@ -40,11 +40,11 @@ class CategoriesAdapter(
             category: Category,
             position: Int
         ) {
+            category.id = snapshots.getSnapshot(position).id
             itemView.btnCategoryName.text = category.name
-            val documentId = snapshots.getSnapshot(position).id
 
             //Highlight previously selected categories
-            if(previouslySelectedCategoriesList.contains(documentId))
+            if(previouslySelectedCategoriesList.map{ it.id }.contains(category.id!!))
             {
                 itemView.btnCategoryName.setBackgroundColor(
                     ContextCompat.getColor(
@@ -61,7 +61,7 @@ class CategoriesAdapter(
             }
 
             itemView.btnCategoryName.setOnClickListener {
-                listener(documentId,itemView.btnCategoryName)
+                listener(category,itemView.btnCategoryName)
             }
         }
     }

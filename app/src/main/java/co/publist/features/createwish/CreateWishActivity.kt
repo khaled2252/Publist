@@ -193,9 +193,6 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
                 Toast.makeText(this, "You have to make at least 3 items", Toast.LENGTH_SHORT).show()
         })
 
-        viewModel.categoryLiveData.observe(this, Observer { categoryName ->
-            addCategoryTextView.text = categoryName
-        })
     }
 
     private fun setListeners() {
@@ -233,10 +230,10 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
                     blurredBgView.visibility = View.GONE
                     window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
                     val category =
-                        categoriesFragment.viewModel.selectedCategoriesList.getOrElse(0) { "" }
-                    if (category.isNotEmpty()) {
-                        viewModel.categoryId = category
-                        viewModel.getCategoryObject()
+                        categoriesFragment.viewModel.selectedCategoriesList.getOrNull(0)
+                    if (category != null) {
+                        viewModel.category = category
+                        addCategoryTextView.text = category.name
                     } else
                         addCategoryTextView.text = "Choose Categories"
 

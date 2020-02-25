@@ -7,10 +7,10 @@ import io.reactivex.Single
 
 interface CategoriesRepositoryInterface {
     fun getCategoriesQuery(): CollectionReference
-    fun fetchSelectedCategories(userId: String): Single<ArrayList<String>>
-    fun getLocalSelectedCategories(): Single<ArrayList<String>>
-    fun updateRemoteSelectedCategories(selectedCategoriesList: ArrayList<String>): Completable
-    fun updateLocalSelectedCategories(selectedCategoriesList: ArrayList<String>)
+    fun fetchUserSelectedCategories(userId: String): Single<ArrayList<Category>>
+    fun getLocalSelectedCategories(): Single<ArrayList<Category>>
+    fun updateRemoteSelectedCategories(selectedCategoriesList: ArrayList<Category>): Completable
+    fun updateLocalSelectedCategories(selectedCategoriesList: ArrayList<Category>)
     fun clearLocalSelectedCategories()
     fun getCategoryFromId(categoryId : String) : Single<Category>
 }

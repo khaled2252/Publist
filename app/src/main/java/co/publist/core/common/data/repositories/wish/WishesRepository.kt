@@ -26,7 +26,7 @@ class WishesRepository @Inject constructor(
             .orderBy(DATE_FIELD, Query.Direction.DESCENDING)//Latest first
     }
 
-    override fun getFilteredWishesQuery(categoryList: ArrayList<String>): Query {
+    override fun getFilteredWishesQuery(categoryList: ArrayList<String?>): Query {
         return mFirebaseFirestore.collection(WISHES_COLLECTION_PATH)
             .whereArrayContainsAny(CATEGORY_ID_FIELD, categoryList)
             .orderBy(DATE_FIELD, Query.Direction.DESCENDING)

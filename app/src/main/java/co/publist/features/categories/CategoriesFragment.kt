@@ -42,15 +42,15 @@ class CategoriesFragment : BaseFragment<CategoriesViewModel>() {
         setObservers()
     }
 
-    private fun setAdapter(selectedCategoriesList : ArrayList<String>) {
+    private fun setAdapter(selectedCategoriesList : ArrayList<Category>) {
         val options: FirestoreRecyclerOptions<Category> =
             FirestoreRecyclerOptions.Builder<Category>()
                 .setQuery(viewModel.getCategoriesQuery(), Category::class.java)
                 .build()
 
-        val adapter = CategoriesAdapter(options, selectedCategoriesList) { id, button ->
+        val adapter = CategoriesAdapter(options, selectedCategoriesList) { category, button ->
             lastClickedButton = button
-            viewModel.addCategory(id)
+            viewModel.addCategory(category)
         }
 
         adapter.setHasStableIds(true) //To avoid recycling view holders while scrolling thus removing selected colors

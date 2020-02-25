@@ -19,7 +19,7 @@ class WishesViewModel @Inject constructor(
             if (categories.isNullOrEmpty())
                 wishesQueryLiveData.postValue(wishesRepository.getAllWishesQuery())
             else
-                wishesQueryLiveData.postValue(wishesRepository.getFilteredWishesQuery(categories))
+                wishesQueryLiveData.postValue(wishesRepository.getFilteredWishesQuery(ArrayList(categories.map{it.id})))
         })
 
 

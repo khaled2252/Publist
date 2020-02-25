@@ -8,7 +8,6 @@ import co.publist.core.common.data.models.wish.Wish
 import co.publist.core.common.data.repositories.user.UserRepositoryInterface
 import co.publist.core.common.data.repositories.wish.WishesRepositoryInterface
 import co.publist.core.platform.BaseViewModel
-import co.publist.features.categories.data.CategoriesRepositoryInterface
 import com.google.firebase.Timestamp
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
@@ -18,21 +17,18 @@ import kotlin.collections.ArrayList
 
 class CreateWishViewModel @Inject constructor(
     private val wishesRepository: WishesRepositoryInterface,
-    private val userRepository: UserRepositoryInterface,
-    private val categoriesRepository: CategoriesRepositoryInterface
+    private val userRepository: UserRepositoryInterface
 ) : BaseViewModel() {
 
-    val categoryLiveData = MutableLiveData<String>()
     val validationLiveData = MutableLiveData<Boolean>()
     val addingWishLiveData = MutableLiveData<Boolean>()
-    var categoryObject = Category()
-    var categoryId = ""
+    var category : Category? = null
     var title = ""
     var wishImageUri = ""
     var items = ArrayList<String>()
 
     fun validateEntries() {
-        if (categoryId.isNotEmpty() && title.isNotBlank() && (items.size > 0))
+        if (category != null && title.isNotBlank() && (items.size > 0))
             validationLiveData.postValue(true)
         else
             validationLiveData.postValue(false)
@@ -42,11 +38,11 @@ class CreateWishViewModel @Inject constructor(
         if (items.size < 3)
             addingWishLiveData.postValue(false)
         else {
-            createWish(categoryId, title, items)
+            createWish(category!!, title, items)
         }
     }
 
-    private fun createWish(categoryId: String, title: String, items: ArrayList<String>) {
+    private fun createWish(category: Category, title: String, items: ArrayList<String>) {
 
             val user = userRepository.getUser()
             val creator = Creator(
@@ -68,8 +64,8 @@ class CreateWishViewModel @Inject constructor(
             }
 
             val wish = Wish(
-                category = arrayListOf(categoryObject),
-                categoryId = arrayListOf(categoryId),
+                category = arrayListOf(category),
+                categoryId = arrayListOf(category.id),
                 creator = creator,
                 date = date,
                 items = listMap,
@@ -90,12 +86,6 @@ class CreateWishViewModel @Inject constructor(
                 })
 
     }
-
-    fun getCategoryObject() {
-        subscribe(categoriesRepository.getCategoryFromId(categoryId), Consumer { category ->
-            categoryObject = category
-            categoryLiveData.postValue(category.name)
-        }) }
 
 }
 
