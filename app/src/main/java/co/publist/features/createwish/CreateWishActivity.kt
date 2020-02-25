@@ -167,6 +167,7 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
         adapter = ItemsAdapter {
             viewModel.items = adapter.getlist()
             viewModel.validateEntries()
+            itemsRecyclerView.scrollToPosition(viewModel.items.size - 1)
         }
         itemsRecyclerView.adapter = adapter
 
@@ -265,7 +266,6 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
         itemEditText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_NEXT) {
                 itemDoneOnClick()
-                hideKeyboard()
                 itemEditText.requestFocus()
             }
             false
@@ -367,6 +367,7 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
         if (itemEditText.text!!.isNotEmpty()) {
             adapter.addItem(itemEditText.text.toString())
             itemEditText.text = null
+            hideKeyboard()
         }
     }
 

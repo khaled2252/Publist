@@ -23,6 +23,7 @@ class SplashViewModel @Inject constructor(private val userRepository: UserReposi
         if (user == null)
             isNewUser = true
 
+        //Checking Local , because if user saved categories before they are stored in local
         subscribe(categoryRepository.getLocalSelectedCategories(), Consumer {
             if(it.isNullOrEmpty())
                 isMyCategoriesEmpty = true

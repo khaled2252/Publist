@@ -33,16 +33,13 @@ class SplashActivity : BaseActivity<SplashViewModel>() {
         viewModel.userLoggedIn.observe(this, Observer { pair ->
             val isNewUser = pair.first
             val isMyCategoriesEmpty = pair.second
-            when {
-                isNewUser -> {
-                    navigateToLogin()
-                }
-               isMyCategoriesEmpty
-                -> navigateEditProfile()
-                else -> {
+            if (!isNewUser) {
+                if (isMyCategoriesEmpty)
+                    navigateEditProfile()
+                else
                     navigateToHome()
-                }
-            }
+            } else
+                navigateToLogin()
         })
     }
 

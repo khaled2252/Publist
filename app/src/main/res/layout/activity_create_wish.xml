@@ -66,10 +66,10 @@
                 android:layout_marginEnd="30dp"
                 android:hint="Type something"
                 app:boxBackgroundColor="@color/white"
-                app:boxStrokeColor="@color/gray"
+                app:boxStrokeColor="@color/text_input_layout_stroke_color"
                 app:boxStrokeWidth="1dp"
                 app:hintAnimationEnabled="false"
-                app:hintTextColor="@color/gray"
+                app:hintTextColor="@color/sunsetOrange"
                 app:layout_constraintTop_toBottomOf="@+id/textView3">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -77,7 +77,8 @@
                     style="@style/Theme.AppCompat.Light"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingBottom="75dp" />
+                    android:paddingBottom="75dp"
+                    android:textColor="@color/dimGray" />
             </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -104,7 +105,7 @@
                 android:layout_marginTop="40dp"
                 android:layout_marginEnd="30dp"
                 android:background="@drawable/border"
-                android:visibility="gone"
+                android:visibility="visible"
                 app:layout_constraintBottom_toTopOf="@id/listTextView"
                 app:layout_constraintTop_toBottomOf="@id/titleInputLayout">
 
@@ -167,7 +168,7 @@
                 android:layout_marginEnd="30dp"
                 android:hint="Add Text"
                 app:boxBackgroundColor="@color/white"
-                app:boxStrokeColor="@color/gray"
+                app:boxStrokeColor="@color/text_input_layout_stroke_color"
                 app:boxStrokeWidth="1dp"
                 app:hintAnimationEnabled="false"
                 app:hintTextColor="@color/gray"
@@ -180,7 +181,8 @@
                     android:layout_height="wrap_content"
                     android:drawableEnd="@drawable/ic_done"
                     android:inputType="text"
-                    android:maxLines="1" />
+                    android:maxLines="1"
+                    android:textColor="@color/dimGray" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.button.MaterialButton
@@ -190,7 +192,7 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="50dp"
                 android:layout_marginEnd="20dp"
-                android:layout_marginBottom="30dp"
+                android:layout_marginBottom="10dp"
                 android:background="@color/sunsetOrange"
                 android:enabled="false"
                 android:fontFamily="@font/sfprodisplaybold"
