@@ -429,6 +429,25 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
         startActivityForResult(galleryIntent, GALLERY)
     }
 
+    private fun navigateToCamera() {
+        val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        val photoFile = createImageFile()
+        photoUri = getUriForFile(this, applicationContext.packageName + ".provider", photoFile)
+        //Need to create a file to let camera store image in it using Extra_output, to get Uri , to Upload , without this it will send bitmap in data.extras
+        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
+        startActivityForResult(cameraIntent, CAMERA)
+    }
+
+    private fun navigateToGallery() {
+        val photoFile = createImageFile()
+        photoUri = getUriForFile(this, applicationContext.packageName + ".provider", photoFile)
+        val galleryIntent = Intent(
+            Intent.ACTION_PICK,
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+        )
+        startActivityForResult(galleryIntent, GALLERY)
+    }
+
     private fun loadPhotoToImageView(bitmap: Bitmap?) {
         photoImageView.setImageBitmap(bitmap)
         imageLayout.visibility = View.VISIBLE

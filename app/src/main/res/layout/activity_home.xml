@@ -23,8 +23,9 @@
             android:paddingTop="15dp"
             android:paddingBottom="15dp"
             android:paddingStart="12dp"
+            android:paddingEnd="12dp"
             android:fontFamily="@font/sfprodisplaysemibold"
-            android:text="What is your wish list ?"
+            android:text="@string/what_is_your_wish_list"
             android:textColor="@color/taupeGray"
             android:background="@color/white"
             android:textSize="20sp" />

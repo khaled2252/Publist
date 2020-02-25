@@ -28,7 +28,7 @@
                 android:paddingTop="15dp"
                 android:paddingEnd="30dp"
                 android:paddingBottom="15dp"
-                android:text="Choose Categories"
+                android:text="@string/create_wish_categories_default"
                 android:textColor="@color/dimGray"
                 android:textSize="20sp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -51,7 +51,7 @@
                 android:layout_marginStart="40dp"
                 android:layout_marginTop="15dp"
                 android:fontFamily="@font/sfprodisplaysemibold"
-                android:text="Title"
+                android:text="@string/title"
                 android:textColor="@color/dimGray"
                 android:textSize="20sp"
                 app:layout_constraintStart_toStartOf="parent"
@@ -64,7 +64,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="30dp"
                 android:layout_marginEnd="30dp"
-                android:hint="Type something"
+                android:hint="@string/title_hint"
                 app:boxBackgroundColor="@color/white"
                 app:boxStrokeColor="@color/text_input_layout_stroke_color"
                 app:boxStrokeWidth="1dp"
@@ -91,13 +91,13 @@
                 android:drawableStart="@drawable/ic_attachment_black_24dp"
                 android:drawablePadding="5dp"
                 android:fontFamily="@font/sfprodisplaymedium"
-                android:text="Add Photo (optional)"
+                android:text="@string/add_photo_optional"
                 android:textColor="@color/dark_grey"
                 android:textSize="16sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/titleInputLayout" />
 
-            <RelativeLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/imageLayout"
                 android:layout_width="match_parent"
                 android:layout_height="80dp"
@@ -113,7 +113,9 @@
                     android:id="@+id/photoImageView"
                     android:layout_width="120dp"
                     android:layout_height="60dp"
-                    android:layout_alignParentStart="true"
+                    app:layout_constraintTop_toTopOf="@id/imageLayout"
+                    app:layout_constraintBottom_toBottomOf="@id/imageLayout"
+                    app:layout_constraintStart_toStartOf="@id/imageLayout"
                     android:layout_marginStart="15dp"
                     android:layout_marginTop="10dp"
                     android:layout_marginBottom="10dp"
@@ -123,13 +125,13 @@
                     android:id="@+id/deletePhotoImageView"
                     android:layout_width="15dp"
                     android:layout_height="15dp"
-                    android:layout_alignParentTop="true"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentBottom="true"
+                    app:layout_constraintTop_toTopOf="@id/imageLayout"
+                    app:layout_constraintEnd_toEndOf="@id/imageLayout"
+                    app:layout_constraintBottom_toBottomOf="@id/imageLayout"
                     android:layout_gravity="center"
                     android:layout_marginEnd="15dp"
                     android:src="@drawable/ic_cross" />
-            </RelativeLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <TextView
                 android:id="@+id/listTextView"
@@ -138,7 +140,7 @@
                 android:layout_marginStart="40dp"
                 android:layout_marginTop="20dp"
                 android:fontFamily="@font/sfprodisplaysemibold"
-                android:text="List"
+                android:text="@string/wish_list_title"
                 android:textColor="@color/dimGray"
                 android:textSize="20sp"
                 app:layout_constraintStart_toStartOf="parent"
@@ -166,7 +168,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="30dp"
                 android:layout_marginEnd="30dp"
-                android:hint="Add Text"
+                android:hint="@string/add_item_hint"
                 app:boxBackgroundColor="@color/white"
                 app:boxStrokeColor="@color/text_input_layout_stroke_color"
                 app:boxStrokeWidth="1dp"
@@ -196,7 +198,7 @@
                 android:background="@color/sunsetOrange"
                 android:enabled="false"
                 android:fontFamily="@font/sfprodisplaybold"
-                android:text="Post"
+                android:text="@string/create_wish_post"
                 app:cornerRadius="10dp"
                 app:layout_constraintBottom_toBottomOf="parent" />
 
@@ -231,9 +233,9 @@
             android:layout_marginTop="20dp"
             android:layout_marginBottom="20dp"
             android:fontFamily="@font/sfprodisplaybold"
-            android:text="Choose Categories"
+            android:text="@string/create_wish_categories_default"
             android:textColor="@color/liver"
-            android:textSize="16dp">
+            android:textSize="16sp">
 
         </TextView>
 
@@ -251,7 +253,7 @@
             android:layout_margin="10dp"
             android:background="@color/sunsetOrange"
             android:fontFamily="@font/sfprodisplaybold"
-            android:text="Done"
+            android:text="@string/choose_category_done"
             app:cornerRadius="10dp" />
     </LinearLayout>
 

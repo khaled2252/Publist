@@ -2,67 +2,65 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
 
-        <com.google.android.material.checkbox.MaterialCheckBox
-            android:id="@+id/checkButton"
-            style="@android:style/Widget.CompoundButton.RadioButton"
-            android:layout_marginTop="10dp"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_marginStart="20dp"
+    <com.google.android.material.checkbox.MaterialCheckBox
+        android:id="@+id/checkButton"
+        style="@android:style/Widget.CompoundButton.RadioButton"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:buttonTint="@color/sunsetOrange" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/todoTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
             android:layout_marginEnd="10dp"
-            android:buttonTint="@color/sunsetOrange" />
+            android:fontFamily="@font/sfprodisplaysemibold"
+            android:textColor="@color/outerSpace"
+            android:textSize="16sp"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintBottom_toTopOf="@id/dashed_line"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Check the Landmarks of the city" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:orientation="vertical"
+        <!--            <TextView-->
+        <!--                android:id="@+id/finishedThisTextView"-->
+        <!--                android:layout_width="wrap_content"-->
+        <!--                android:layout_height="wrap_content"-->
+        <!--                android:layout_marginStart="15dp"-->
+        <!--                android:layout_marginEnd="15dp"-->
+        <!--                android:layout_marginTop="15dp"-->
+        <!--                app:layout_constraintEnd_toEndOf="parent"-->
+        <!--                app:layout_constraintStart_toEndOf="@id/todoTextView"-->
+        <!--                app:layout_constraintTop_toTopOf="parent"-->
+        <!--                tools:text="+50 Finished this" />-->
+
+        <View
+            android:id="@+id/dashed_line"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:id="@+id/todoTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                android:layout_marginEnd="10dp"
-                android:textColor="@color/outerSpace"
-                android:fontFamily="@font/sfprodisplaysemibold"
-                android:textSize="16dp"
-                app:layout_constrainedWidth="true"
-                app:layout_constraintHorizontal_bias="0"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toTopOf="@id/dashed_line"
-                tools:text="Check the Landmarks of the city" />
-
-<!--            <TextView-->
-<!--                android:id="@+id/finishedThisTextView"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_marginStart="15dp"-->
-<!--                android:layout_marginEnd="15dp"-->
-<!--                android:layout_marginTop="15dp"-->
-<!--                app:layout_constraintEnd_toEndOf="parent"-->
-<!--                app:layout_constraintStart_toEndOf="@id/todoTextView"-->
-<!--                app:layout_constraintTop_toTopOf="parent"-->
-<!--                tools:text="+50 Finished this" />-->
-
-            <View
-                android:id="@+id/dashed_line"
-                android:layout_width="match_parent"
-                android:layout_height="4dp"
-                android:layout_marginTop="22dp"
-                android:background="@drawable/dashed_line"
-                android:layerType="software"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/todoTextView" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-
+            android:layout_height="4dp"
+            android:layout_marginTop="22dp"
+            android:background="@drawable/dashed_line"
+            android:layerType="software"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/todoTextView" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </LinearLayout>
 
