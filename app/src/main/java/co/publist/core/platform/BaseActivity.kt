@@ -2,10 +2,12 @@ package co.publist.core.platform
 
 
 import android.os.Bundle
+import android.os.Handler
 import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
 import android.widget.ProgressBar
+import android.widget.Toast
 import androidx.annotation.CallSuper
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -95,6 +97,24 @@ abstract class BaseActivity<MBaseViewModel : BaseViewModel>
         }
         return super.dispatchTouchEvent(ev)
     }
+
+    private var doubleBackToExitPressedOnce = false
+    override fun onBackPressed() {
+        if (isTaskRoot) {
+            if (doubleBackToExitPressedOnce) {
+                super.onBackPressed()
+                return
+            }
+
+            this.doubleBackToExitPressedOnce = true
+            Toast.makeText(this, getString(R.string.click_again_to_exit), Toast.LENGTH_SHORT).show()
+
+            Handler().postDelayed({ doubleBackToExitPressedOnce = false }, 2000)
+        }
+        else
+            super.onBackPressed()
+    }
+
 
     fun hideKeyboard() {
         if (window.currentFocus != null)
