@@ -2,8 +2,9 @@ package co.publist.features.login
 
 import androidx.lifecycle.MutableLiveData
 import co.publist.core.platform.BaseViewModel
-import co.publist.core.utils.Utils.Constants.PLATFORM_FACEBOOK
-import co.publist.core.utils.Utils.Constants.PLATFORM_GOOGLE
+import co.publist.core.utils.Extensions.Constants.PLATFORM_FACEBOOK
+import co.publist.core.utils.Extensions.Constants.PLATFORM_GOOGLE
+import co.publist.features.categories.data.CategoriesRepositoryInterface
 import co.publist.features.login.data.LoginRepositoryInterface
 import co.publist.features.login.data.RegisteringUser
 import com.facebook.AccessToken
@@ -17,13 +18,14 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(
     private val loginRepository: LoginRepositoryInterface,
     private val mGoogleSignInClient: GoogleSignInClient,
-    private val mCallbackManager: CallbackManager
+    private val mCallbackManager: CallbackManager,
+    private val categoriesRepository: CategoriesRepositoryInterface
 ) :
     BaseViewModel() {
 
     val googleSignInClientLiveData = MutableLiveData<GoogleSignInClient>()
     val callbackManagerLiveData = MutableLiveData<CallbackManager>()
-    val newUserLoggedIn = MutableLiveData<Boolean>()
+    val userLoggedIn = MutableLiveData<Pair<Boolean,Boolean>>()
 
     private lateinit var registeringUser: RegisteringUser
 
@@ -73,9 +75,16 @@ class LoginViewModel @Inject constructor(
         })
     }
 
-    private fun handleLoggedInUser(documentId: String, newUser: Boolean) {
+    private fun handleLoggedInUser(documentId: String, isNewUser: Boolean) {
         subscribe(loginRepository.fetchUserInformation(documentId), Consumer {
-            newUserLoggedIn.postValue(newUser)
+            //Checking remote , because if user didn't save categories it will not be in remote,
+            //not checking local , because it will be empty in both cases (saved or not saved),
+            //because new user is logging in i.e previous data is cleared after logout
+            subscribe(categoriesRepository.fetchUserSelectedCategories(documentId), Consumer { categoryList ->
+                val isMyCategoriesEmpty = categoryList.isEmpty()
+                userLoggedIn.postValue(Pair(isNewUser,isMyCategoriesEmpty))
+            })
+
         })
     }
 

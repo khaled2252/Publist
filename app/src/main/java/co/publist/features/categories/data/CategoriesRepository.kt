@@ -1,10 +1,14 @@
 package co.publist.features.categories.data
 
-import co.publist.core.data.local.LocalDataSource
-import co.publist.core.utils.Utils.Constants.CATEGORIES_COLLECTION_PATH
-import co.publist.core.utils.Utils.Constants.MY_CATEGORIES_COLLECTION_PATH
-import co.publist.core.utils.Utils.Constants.USERS_COLLECTION_PATH
+import android.os.AsyncTask
+import co.publist.core.common.data.local.LocalDataSource
+import co.publist.core.common.data.models.Mapper
+import co.publist.core.common.data.models.category.Category
+import co.publist.core.utils.Extensions.Constants.CATEGORIES_COLLECTION_PATH
+import co.publist.core.utils.Extensions.Constants.MY_CATEGORIES_COLLECTION_PATH
+import co.publist.core.utils.Extensions.Constants.USERS_COLLECTION_PATH
 import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.WriteBatch
 import io.reactivex.Completable
@@ -20,35 +24,40 @@ class CategoriesRepository @Inject constructor(
         return mFirebaseFirestore.collection(CATEGORIES_COLLECTION_PATH)
     }
 
-    override fun getUserCategories(): Single<ArrayList<String>> {
+    override fun fetchUserSelectedCategories(userId: String): Single<ArrayList<Category>> {
         return Single.create { singleEmitter ->
-            val user = localDataSource.getSharedPreferences().getUser()
-            if (user?.myCategories == null) {
-                val userCategories = ArrayList<String>()
-                mFirebaseFirestore.collection(USERS_COLLECTION_PATH)
-                    .document(user?.id!!)
-                    .collection(MY_CATEGORIES_COLLECTION_PATH).get()
-                    .addOnFailureListener { exception ->
-                        singleEmitter.onError(exception)
-                    }.addOnSuccessListener { documents ->
-                        if (!documents.isEmpty) { //Will go through if myCategories exists in firestore
-                            for (document in documents) {
-                                userCategories.add(document.id)
+            mFirebaseFirestore.collection(USERS_COLLECTION_PATH)
+                .document(userId)
+                .collection(MY_CATEGORIES_COLLECTION_PATH).get()
+                .addOnFailureListener { exception ->
+                    singleEmitter.onError(exception)
+                }.addOnSuccessListener { documents ->
+                    if (!documents.isEmpty) {
+                        mFirebaseFirestore.collection(CATEGORIES_COLLECTION_PATH)
+                            .whereIn(
+                                FieldPath.documentId(),
+                                Mapper.mapToCategoryArrayList(documents).map { it.id })
+                            .get()
+                            .addOnFailureListener { exception ->
+                                singleEmitter.onError(exception)
+                            }.addOnSuccessListener { querySnapshot ->
+                                singleEmitter.onSuccess(Mapper.mapToCategoryArrayList(querySnapshot))
                             }
-                            localDataSource.getSharedPreferences()
-                                .updateUserCategories(userCategories)
-                        }
-                        singleEmitter.onSuccess(userCategories)
                     }
-            } else
-                singleEmitter.onSuccess(user.myCategories!!)
+                    else
+                        singleEmitter.onSuccess(arrayListOf()) //Emit empty arrayList if user didn't save any previous categories
+                }
         }
     }
 
-    override fun updateUserCategories(selectedCategoriesList: ArrayList<String>): Completable {
-        return Completable.create { completableEmitter ->
-            localDataSource.getSharedPreferences().updateUserCategories(selectedCategoriesList)
+    override fun getLocalSelectedCategories(): Single<ArrayList<Category>> {
+        return localDataSource.getPublistDataBase().getCategories().flatMap {
+            Single.just(Mapper.mapToCategoryArrayList(it))
+        }
+    }
 
+    override fun updateRemoteSelectedCategories(selectedCategoriesList: ArrayList<Category>): Completable {
+        return Completable.create { completableEmitter ->
             val docId = localDataSource.getSharedPreferences().getUser()?.id
             val batch: WriteBatch = mFirebaseFirestore.batch()
             val collectionReference = mFirebaseFirestore
@@ -59,17 +68,19 @@ class CategoriesRepository @Inject constructor(
             collectionReference.get()
 
                 .addOnSuccessListener { documents ->
-                    //will create myCategories if is not created
-
-                    //Delete existing saved categories
+                    //will create myCategories in firestore if is not created
                     for (document in documents) {
-                        collectionReference.document(document.id).delete()
+                        if (!selectedCategoriesList.contains(document.toObject(Category::class.java)))
+                            collectionReference.document(document.id).delete()  //Delete deselected categories
+
+                        else
+                            selectedCategoriesList.remove(document.toObject(Category::class.java)) //Delete not changed categories from list to be submitted
                     }
 
                     //Add new saved categories
-                    for (categoryId in selectedCategoriesList) {
+                    for (category in selectedCategoriesList) {
                         batch.set(
-                            collectionReference.document(categoryId),
+                            collectionReference.document(category.id!!),
                             emptyMap<String, String>()
                         )
                     }
@@ -85,4 +96,32 @@ class CategoriesRepository @Inject constructor(
         }
 
     }
+
+    override fun clearLocalSelectedCategories() {
+        AsyncTask.execute {
+            localDataSource.getPublistDataBase().deleteCategories()
+        }
+    }
+
+    override fun updateLocalSelectedCategories(selectedCategoriesList: ArrayList<Category>) {
+        AsyncTask.execute {
+            localDataSource.getPublistDataBase()
+                .updateCategories(Mapper.mapToCategoryDbEntityList(selectedCategoriesList))
+        }
+    }
+
+    override fun getCategoryFromId(categoryId: String): Single<Category> {
+        return Single.create { singleEmitter ->
+            mFirebaseFirestore.collection(CATEGORIES_COLLECTION_PATH)
+                .document(categoryId).get()
+                .addOnFailureListener { exception ->
+                    singleEmitter.onError(exception)
+                }.addOnSuccessListener { documentSnapshot ->
+                    val category = documentSnapshot.toObject(Category::class.java)
+                    category?.id = categoryId
+                    singleEmitter.onSuccess(category!!)
+                }
+        }
+    }
+
 }

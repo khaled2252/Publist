@@ -1,15 +1,13 @@
 package co.publist.features.login.data
 
 import android.os.Bundle
-import co.publist.core.data.local.LocalDataSource
-import co.publist.core.data.models.User
-import co.publist.core.platform.BaseRepository
-import co.publist.core.utils.Utils.Constants.EMAIL_FIELD
-import co.publist.core.utils.Utils.Constants.MY_CATEGORIES_COLLECTION_PATH
-import co.publist.core.utils.Utils.Constants.NAME_FIELD
-import co.publist.core.utils.Utils.Constants.PROFILE_PICTURE_URL_FIELD
-import co.publist.core.utils.Utils.Constants.USERS_COLLECTION_PATH
-import co.publist.core.utils.Utils.Constants.USER_ACCOUNTS_COLLECTION_PATH
+import co.publist.core.common.data.local.LocalDataSource
+import co.publist.core.common.data.models.User
+import co.publist.core.utils.Extensions.Constants.EMAIL_FIELD
+import co.publist.core.utils.Extensions.Constants.NAME_FIELD
+import co.publist.core.utils.Extensions.Constants.PROFILE_PICTURE_URL_FIELD
+import co.publist.core.utils.Extensions.Constants.USERS_COLLECTION_PATH
+import co.publist.core.utils.Extensions.Constants.USER_ACCOUNTS_COLLECTION_PATH
 import com.facebook.AccessToken
 import com.facebook.GraphRequest
 import com.google.firebase.auth.FacebookAuthProvider
@@ -27,7 +25,7 @@ class LoginRepository @Inject constructor(
     private val mFirebaseFirestore: FirebaseFirestore,
     private val localDataSource: LocalDataSource
 
-) : BaseRepository(), LoginRepositoryInterface {
+) :  LoginRepositoryInterface {
     override fun fetchUserDocId(email: String): Single<String?> {
         return Single.create { singleEmitter ->
             mFirebaseFirestore.let {
@@ -116,7 +114,6 @@ class LoginRepository @Inject constructor(
                     PROFILE_PICTURE_URL_FIELD to profilePictureUrl
                 )
                 users.add(data).addOnSuccessListener { documentReference ->
-                    users.document(documentReference.id).collection(MY_CATEGORIES_COLLECTION_PATH).add(emptyMap<String,String>())
                     singleEmitter.onSuccess(documentReference.id)
                 }.addOnFailureListener { exception ->
                     singleEmitter.onError(exception)

@@ -3,6 +3,7 @@ package co.publist.core.platform
 
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.MotionEvent
 import android.view.View
 import android.widget.ProgressBar
 import androidx.annotation.CallSuper
@@ -10,10 +11,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import co.publist.R
-import co.publist.core.utils.Utils
+import co.publist.core.utils.Extensions
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import javax.inject.Inject
+
 
 abstract class BaseActivity<MBaseViewModel : BaseViewModel>
     : AppCompatActivity(), HasSupportFragmentInjector {
@@ -86,9 +88,17 @@ abstract class BaseActivity<MBaseViewModel : BaseViewModel>
         return super.onOptionsItemSelected(item)
     }
 
+    //Hide keyboard when clicking anywhere (while keyboard is open)
+    override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+        if (currentFocus != null) {
+            hideKeyboard()
+        }
+        return super.dispatchTouchEvent(ev)
+    }
+
     fun hideKeyboard() {
         if (window.currentFocus != null)
-            Utils.hideSoftKeyboard(this, window.currentFocus!!.windowToken)
+            Extensions.hideSoftKeyboard(this, window.currentFocus!!.windowToken)
     }
 
 }

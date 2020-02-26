@@ -7,7 +7,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import co.publist.R
 import co.publist.core.di.helper.Injectable
-import co.publist.core.utils.Utils
+import co.publist.core.utils.Extensions.hideSoftKeyboard
 
 abstract class BaseFragment<MBaseViewModel : BaseViewModel>
     : Fragment(), Injectable {
@@ -64,6 +64,6 @@ abstract class BaseFragment<MBaseViewModel : BaseViewModel>
 
     fun hideKeyboard() {
         if (activity!!.window.currentFocus != null)
-            Utils.hideSoftKeyboard(context!!, activity!!.window.currentFocus!!.windowToken)
+            hideSoftKeyboard(context!!, activity!!.window.currentFocus!!.windowToken)
     }
 }

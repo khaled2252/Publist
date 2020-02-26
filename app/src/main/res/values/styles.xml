@@ -28,4 +28,26 @@
         <item name="android:windowNoTitle">false</item>
     </style>
 
+    <!-- Create Wish screen -->
+    <style name="AppTheme.CreateWishScreen" >
+        <item name="android:windowSoftInputMode">adjustPan</item>
+    </style>
+
+    <style name="MyBottomSheetDialog" parent="AppTheme">
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowTitleStyle">@null</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowAnimationStyle">@style/DialogAnimation</item>
+        <item name="android:windowSoftInputMode">adjustResize</item>
+        <item name="android:gravity">bottom</item>
+    </style>
+
+    <style name="DialogAnimation">
+        <item name="android:windowEnterAnimation">@anim/slide_up</item>
+        <item name="android:windowExitAnimation">@anim/slide_down</item>
+    </style>
+
 </resources>

@@ -8,11 +8,10 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import co.publist.R
-import co.publist.core.data.models.Category
+import co.publist.core.common.data.models.category.Category
 import co.publist.core.platform.BaseFragment
 import co.publist.core.platform.ViewModelFactory
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
-import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.material.button.MaterialButton
 import kotlinx.android.synthetic.main.fragment_categories.*
 import javax.inject.Inject
@@ -43,18 +42,15 @@ class CategoriesFragment : BaseFragment<CategoriesViewModel>() {
         setObservers()
     }
 
-    private fun setAdapter(selectedCategoriesList : ArrayList<String>) {
-
-        categoriesRecyclerView.layoutManager = FlexboxLayoutManager(this.context)
-
+    private fun setAdapter(selectedCategoriesList : ArrayList<Category>) {
         val options: FirestoreRecyclerOptions<Category> =
             FirestoreRecyclerOptions.Builder<Category>()
                 .setQuery(viewModel.getCategoriesQuery(), Category::class.java)
                 .build()
 
-        val adapter = CategoriesAdapter(options, selectedCategoriesList) { id, button ->
+        val adapter = CategoriesAdapter(options, selectedCategoriesList) { category, button ->
             lastClickedButton = button
-            viewModel.addCategory(id)
+            viewModel.addCategory(category)
         }
 
         adapter.setHasStableIds(true) //To avoid recycling view holders while scrolling thus removing selected colors
@@ -99,8 +95,11 @@ class CategoriesFragment : BaseFragment<CategoriesViewModel>() {
 
         )
 
-        viewModel.reachedMaximumSelection.observe(viewLifecycleOwner, Observer {
+        viewModel.reachedMaximumSelection.observe(viewLifecycleOwner, Observer {isCreatingWish ->
+            if(!isCreatingWish)
             Toast.makeText(this.context, getString(R.string.maximum_categories), Toast.LENGTH_SHORT)
+                .show()
+            else Toast.makeText(this.context, getString(R.string.maximum_categories_create_wish), Toast.LENGTH_SHORT)
                 .show()
         })
     }

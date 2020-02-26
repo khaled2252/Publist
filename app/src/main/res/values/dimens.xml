@@ -5,4 +5,6 @@
     <dimen name="buttonLoginTextSize">17sp</dimen>
     <dimen name="headlineTextSize">28sp</dimen>
     <dimen name="subtitleTextSize">18sp</dimen>
+    <dimen name="buttonIconSize">25dp</dimen>
+    <dimen name="icon_logo_size">100dp</dimen>
 </resources>

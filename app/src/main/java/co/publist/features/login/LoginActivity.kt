@@ -7,9 +7,10 @@ import androidx.lifecycle.Observer
 import co.publist.R
 import co.publist.core.platform.BaseActivity
 import co.publist.core.platform.ViewModelFactory
-import co.publist.core.utils.Utils.Constants.EMAIL_PERMISSION
-import co.publist.core.utils.Utils.Constants.PROFILE_PICTURE_PERMISSION
+import co.publist.core.utils.Extensions.Constants.EMAIL_PERMISSION
+import co.publist.core.utils.Extensions.Constants.PROFILE_PICTURE_PERMISSION
 import co.publist.features.editprofile.EditProfileActivity
+import co.publist.features.home.HomeActivity
 import co.publist.features.intro.IntroActivity
 import com.facebook.CallbackManager
 import com.facebook.FacebookCallback
@@ -60,7 +61,7 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
                 val account = task.getResult(ApiException::class.java)
                 viewModel.googleFirebaseAuth(account!!)
             } catch (e: ApiException) {
-                Timber.e(e,"Google sign in failed")
+                Timber.e(e, "Google sign in failed")
             }
         }
 
@@ -79,7 +80,7 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
         }
 
         buttonGuest.setOnClickListener {
-            startActivity(Intent(this,IntroActivity::class.java))
+            startActivity(Intent(this, IntroActivity::class.java))
         }
     }
 
@@ -99,7 +100,7 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
                     }
 
                     override fun onError(error: FacebookException) {
-                        Timber.d(error,"facebook:onError")
+                        Timber.d(error, "facebook:onError")
                     }
                 })
         })
@@ -108,13 +109,19 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
             mGoogleSignInClient = it
         })
 
-        viewModel.newUserLoggedIn.observe(this, Observer {
-            if (it)
+        viewModel.userLoggedIn.observe(this, Observer { pair ->
+            val isNewUser = pair.first
+            val isMyCategoriesEmpty = pair.second
+            if (isNewUser && isMyCategoriesEmpty)
+            {
                 Toast.makeText(this, getString(R.string.registered_successfully), Toast.LENGTH_SHORT).show()
-            else
+                startActivity(Intent(this, EditProfileActivity::class.java))
+            }
+            else {
                 Toast.makeText(this, getString(R.string.welcome_back), Toast.LENGTH_SHORT).show()
-
-            startActivity(Intent(this,EditProfileActivity::class.java))
+                startActivity(Intent(this, HomeActivity::class.java))
+                finish()
+            }
         })
     }
 

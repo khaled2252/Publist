@@ -2,8 +2,8 @@ package co.publist.core.di.modules;
 
 import android.content.Context
 import co.publist.R
-import co.publist.core.data.local.LocalDataSource
-import co.publist.core.data.local.LocalDataSourceImpl
+import co.publist.core.common.data.local.LocalDataSource
+import co.publist.core.common.data.local.LocalDataSourceImpl
 import com.facebook.CallbackManager
 import com.facebook.internal.CallbackManagerImpl
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -11,6 +11,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -28,6 +29,12 @@ class AppModule {
     @Provides
     fun provideFirebaseFirestore(): FirebaseFirestore {
         return FirebaseFirestore.getInstance()
+    }
+
+    @Singleton
+    @Provides
+    fun provideFirebaseStorage(): FirebaseStorage {
+        return FirebaseStorage.getInstance()
     }
 
     @Singleton

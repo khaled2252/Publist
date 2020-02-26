@@ -22,9 +22,12 @@ import androidx.lifecycle.ViewModelProvider
 import co.publist.core.di.helper.ViewModelKey
 import co.publist.core.platform.ViewModelFactory
 import co.publist.features.categories.CategoriesViewModel
+import co.publist.features.createwish.CreateWishViewModel
 import co.publist.features.editprofile.EditProfileViewModel
+import co.publist.features.home.HomeViewModel
 import co.publist.features.intro.IntroViewModel
 import co.publist.features.splash.SplashViewModel
+import co.publist.features.wishes.WishesViewModel
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap
@@ -54,5 +57,20 @@ abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(EditProfileViewModel::class)
     abstract fun bindEditProfileViewModel(editProfileViewModel: EditProfileViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(HomeViewModel::class)
+    abstract fun bindHomeViewModel(homeViewModel: HomeViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(WishesViewModel::class)
+    abstract fun bindWishesViewModel(wishesViewModel: WishesViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(CreateWishViewModel::class)
+    abstract fun bindCreateWishViewModel(createWishViewModel: CreateWishViewModel): ViewModel
 
 }
