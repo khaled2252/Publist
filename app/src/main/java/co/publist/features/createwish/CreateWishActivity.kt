@@ -3,11 +3,10 @@ package co.publist.features.createwish
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
+import android.graphics.ImageDecoder
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
-import android.os.Environment
 import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
@@ -22,7 +21,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.content.FileProvider.getUriForFile
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ItemTouchHelper.*
@@ -30,15 +28,17 @@ import co.publist.R
 import co.publist.core.platform.BaseActivity
 import co.publist.core.platform.ViewModelFactory
 import co.publist.core.utils.DragManageAdapter
+import co.publist.core.utils.Extensions.Constants.CAMERA
+import co.publist.core.utils.Extensions.Constants.GALLERY
 import co.publist.core.utils.Extensions.getDistanceBetweenViews
+import co.publist.core.utils.Extensions.navigateToCamera
+import co.publist.core.utils.Extensions.navigateToGallery
+import co.publist.core.utils.Extensions.resultUri
+import co.publist.core.utils.Extensions.startCroppingActivity
 import co.publist.features.categories.CategoriesFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.theartofdev.edmodo.cropper.CropImage
-import com.theartofdev.edmodo.cropper.CropImageView
 import kotlinx.android.synthetic.main.activity_create_wish.*
-import java.io.File
-import java.text.SimpleDateFormat
-import java.util.*
 import javax.inject.Inject
 
 
@@ -56,8 +56,6 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
     private lateinit var adapter: ItemsAdapter
     private lateinit var categoriesFragment: CategoriesFragment
     private lateinit var sheetBehavior: BottomSheetBehavior<*>
-    private lateinit var imageFilePath: String
-    private lateinit var photoUri: Uri
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,29 +72,19 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
 
         if (requestCode == GALLERY) {
             if (data != null) {
-                val contentURI = data.data
-                startCropping(contentURI)
+                startCroppingActivity(this,data.data!!)
             }
 
         } else if (requestCode == CAMERA && resultCode == RESULT_OK) {
-            startCropping(photoUri)
+            startCroppingActivity(this,resultUri) //Camera will automatically load image in resultUri (specified in intent)
         }
         else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
-                val bitmap = BitmapFactory.decodeFile(imageFilePath)
-                loadPhotoToImageView(bitmap)
-                viewModel.wishImageUri = photoUri.toString()
+                val resultUri = CropImage.getActivityResult(data).uri
+                loadPhotoUriToImageView(resultUri)
+                viewModel.wishImageUri = resultUri.toString()
             }
         }
-    }
-
-    private fun startCropping(contentURI: Uri?) {
-        CropImage.activity(contentURI)
-            .setGuidelines(CropImageView.Guidelines.ON)
-            .setAspectRatio(2, 1)
-            .setOutputUri(photoUri)
-            .setOutputCompressFormat(Bitmap.CompressFormat.JPEG)
-            .start(this)
     }
 
     override fun onRequestPermissionsResult(
@@ -106,9 +94,9 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
         if (grantResults.isNotEmpty()) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED && permissions[0] == Manifest.permission.CAMERA
             )
-                navigateToCamera()
+                navigateToCamera(this)
             else if (grantResults[0] == PackageManager.PERMISSION_GRANTED && permissions[0] == Manifest.permission.READ_EXTERNAL_STORAGE)
-                navigateToGallery()
+                navigateToGallery(this)
             else {
                 //permission is denied (this is the first time, when "never ask again" is not checked) so ask again explaining the usage of permission
                 // shouldShowRequestPermissionRationale will return true
@@ -166,7 +154,7 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
 
     private fun setAdapter() {
         adapter = ItemsAdapter {
-            viewModel.items = adapter.getlist()
+            viewModel.items = adapter.getList()
             viewModel.validateEntries()
             itemsRecyclerView.scrollToPosition(viewModel.items.size - 1)
         }
@@ -380,12 +368,12 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
             when (which) {
                 0 -> {
                     if (checkAndRequestPermissions(GALLERY)) {
-                        navigateToGallery()
+                        navigateToGallery(this)
                     }
                 }
                 1 -> {
                     if (checkAndRequestPermissions(CAMERA)) {
-                        navigateToCamera()
+                        navigateToCamera(this)
                     }
                 }
             }
@@ -393,53 +381,21 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
         pictureDialog.show()
     }
 
-    private fun createImageFile(): File {
-        val timeStamp =
-            SimpleDateFormat(
-                "yyyyMMdd_HHmmss",
-                Locale.getDefault()
-            ).format(Date())
-        val imageFileName = "IMG_" + timeStamp + "_"
-        val storageDir =
-            getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-        val image = File.createTempFile(
-            imageFileName,  /* prefix */
-            ".jpeg",   /* suffix */
-            storageDir      /* directory */
-        )
-        imageFilePath = image.absolutePath
-        return image
-    }
-
-    private fun navigateToCamera() {
-        val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        val photoFile = createImageFile()
-        photoUri = getUriForFile(this, applicationContext.packageName + ".provider", photoFile)
-        //Need to create a file to let camera store image in it using Extra_output, to get Uri , to Upload , without this it will send bitmap in data.extras
-        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
-        startActivityForResult(cameraIntent, CAMERA)
-    }
-
-    private fun navigateToGallery() {
-        val photoFile = createImageFile()
-        photoUri = getUriForFile(this, applicationContext.packageName + ".provider", photoFile)
-        val galleryIntent = Intent(
-            Intent.ACTION_PICK,
-            MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-        )
-        startActivityForResult(galleryIntent, GALLERY)
-    }
-
-    private fun loadPhotoToImageView(bitmap: Bitmap?) {
+    private fun loadPhotoUriToImageView(uri: Uri) {
+        val bitmap = if(Build.VERSION.SDK_INT < 28) {
+            MediaStore.Images.Media.getBitmap(
+                this.contentResolver,
+                uri
+            )
+        } else {
+            val source = ImageDecoder.createSource(this.contentResolver, uri)
+            ImageDecoder.decodeBitmap(source)
+        }
         photoImageView.setImageBitmap(bitmap)
         imageLayout.visibility = View.VISIBLE
         addPhotoTextView.visibility = View.INVISIBLE
         listTextView.setPadding(0, 130, 0, 0)
     }
 
-    companion object {
-        private const val GALLERY = 1
-        private const val CAMERA = 2
-    }
 }
 

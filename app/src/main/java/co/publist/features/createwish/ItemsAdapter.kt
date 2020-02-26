@@ -45,7 +45,7 @@ class ItemsAdapter (private val listChangedListener: () -> Unit):
         listChangedListener()
     }
 
-    fun getlist(): java.util.ArrayList<String> {
+    fun getList(): java.util.ArrayList<String> {
         return list
     }
 

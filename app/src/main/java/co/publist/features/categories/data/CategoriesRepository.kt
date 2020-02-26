@@ -32,14 +32,20 @@ class CategoriesRepository @Inject constructor(
                 .addOnFailureListener { exception ->
                     singleEmitter.onError(exception)
                 }.addOnSuccessListener { documents ->
-                    mFirebaseFirestore.collection(CATEGORIES_COLLECTION_PATH)
-                        .whereIn(FieldPath.documentId(), Mapper.mapToCategoryArrayList(documents).map{it.id})
-                        .get()
-                        .addOnFailureListener { exception ->
-                            singleEmitter.onError(exception)
-                        }.addOnSuccessListener { querySnapshot ->
-                            singleEmitter.onSuccess(Mapper.mapToCategoryArrayList(querySnapshot))
-                        }
+                    if (!documents.isEmpty) {
+                        mFirebaseFirestore.collection(CATEGORIES_COLLECTION_PATH)
+                            .whereIn(
+                                FieldPath.documentId(),
+                                Mapper.mapToCategoryArrayList(documents).map { it.id })
+                            .get()
+                            .addOnFailureListener { exception ->
+                                singleEmitter.onError(exception)
+                            }.addOnSuccessListener { querySnapshot ->
+                                singleEmitter.onSuccess(Mapper.mapToCategoryArrayList(querySnapshot))
+                            }
+                    }
+                    else
+                        singleEmitter.onSuccess(arrayListOf()) //Emit empty arrayList if user didn't save any previous categories
                 }
         }
     }
@@ -99,20 +105,21 @@ class CategoriesRepository @Inject constructor(
 
     override fun updateLocalSelectedCategories(selectedCategoriesList: ArrayList<Category>) {
         AsyncTask.execute {
-            localDataSource.getPublistDataBase().updateCategories(Mapper.mapToCategoryDbEntityList(selectedCategoriesList))
+            localDataSource.getPublistDataBase()
+                .updateCategories(Mapper.mapToCategoryDbEntityList(selectedCategoriesList))
         }
     }
 
-    override fun getCategoryFromId(categoryId : String): Single<Category> {
+    override fun getCategoryFromId(categoryId: String): Single<Category> {
         return Single.create { singleEmitter ->
-                mFirebaseFirestore.collection(CATEGORIES_COLLECTION_PATH)
+            mFirebaseFirestore.collection(CATEGORIES_COLLECTION_PATH)
                 .document(categoryId).get()
                 .addOnFailureListener { exception ->
                     singleEmitter.onError(exception)
                 }.addOnSuccessListener { documentSnapshot ->
-                        val category= documentSnapshot.toObject(Category::class.java)
-                        category?.id = categoryId
-                        singleEmitter.onSuccess(category!!)
+                    val category = documentSnapshot.toObject(Category::class.java)
+                    category?.id = categoryId
+                    singleEmitter.onSuccess(category!!)
                 }
         }
     }

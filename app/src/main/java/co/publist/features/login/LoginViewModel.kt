@@ -79,7 +79,7 @@ class LoginViewModel @Inject constructor(
         subscribe(loginRepository.fetchUserInformation(documentId), Consumer {
             //Checking remote , because if user didn't save categories it will not be in remote,
             //not checking local , because it will be empty in both cases (saved or not saved),
-            //because new user is logging i.e previous data is cleared after logout
+            //because new user is logging in i.e previous data is cleared after logout
             subscribe(categoriesRepository.fetchUserSelectedCategories(documentId), Consumer { categoryList ->
                 val isMyCategoriesEmpty = categoryList.isEmpty()
                 userLoggedIn.postValue(Pair(isNewUser,isMyCategoriesEmpty))
