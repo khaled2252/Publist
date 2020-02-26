@@ -2,8 +2,8 @@ package co.publist.features.login
 
 import androidx.lifecycle.MutableLiveData
 import co.publist.core.platform.BaseViewModel
-import co.publist.core.utils.Utils.Constants.PLATFORM_FACEBOOK
-import co.publist.core.utils.Utils.Constants.PLATFORM_GOOGLE
+import co.publist.core.utils.Extensions.Constants.PLATFORM_FACEBOOK
+import co.publist.core.utils.Extensions.Constants.PLATFORM_GOOGLE
 import co.publist.features.categories.data.CategoriesRepositoryInterface
 import co.publist.features.login.data.LoginRepositoryInterface
 import co.publist.features.login.data.RegisteringUser

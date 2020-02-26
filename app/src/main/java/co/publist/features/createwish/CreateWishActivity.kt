@@ -29,7 +29,8 @@ import androidx.recyclerview.widget.ItemTouchHelper.*
 import co.publist.R
 import co.publist.core.platform.BaseActivity
 import co.publist.core.platform.ViewModelFactory
-import co.publist.core.utils.Utils.getDistanceBetweenViews
+import co.publist.core.utils.DragManageAdapter
+import co.publist.core.utils.Extensions.getDistanceBetweenViews
 import co.publist.features.categories.CategoriesFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.theartofdev.edmodo.cropper.CropImage
@@ -116,14 +117,14 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
                         permissions[0]
                     )
                 ) {
-                    Toast.makeText(this, "Permission is required to proceed", Toast.LENGTH_SHORT)
+                    Toast.makeText(this, getString(R.string.permission_required), Toast.LENGTH_SHORT)
                         .show()
                 } else {
                     //permission is denied (and never ask again is  checked)
                     //shouldShowRequestPermissionRationale will return false
                     Toast.makeText(
                         this,
-                        "Enable permissions from settings to proceed",
+                        getString(R.string.permission_from_settings),
                         Toast.LENGTH_SHORT
                     ).show()
                 }
@@ -187,10 +188,10 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
 
         viewModel.addingWishLiveData.observe(this, Observer { isCreated ->
             if (isCreated) {
-                Toast.makeText(this, "Posted Successfully!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.post_wish_success), Toast.LENGTH_SHORT).show()
                 finish()
             } else
-                Toast.makeText(this, "You have to make at least 3 items", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.minimum_wish_items), Toast.LENGTH_SHORT).show()
         })
 
     }
@@ -235,7 +236,7 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
                         viewModel.category = category
                         addCategoryTextView.text = category.name
                     } else
-                        addCategoryTextView.text = "Choose Categories"
+                        addCategoryTextView.text = getString(R.string.create_wish_categories_default)
 
                     viewModel.validateEntries()
                 }
@@ -274,7 +275,7 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
                     titleInputLayout.hint = ""
                 }
                 titleEditText.text.isNullOrEmpty() -> {
-                    titleInputLayout.hint = "Type something"
+                    titleInputLayout.hint = getString(R.string.title_hint)
                 }
                 else -> titleInputLayout.hint = ""
             }
@@ -300,7 +301,7 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
                     itemInputLayout.hint = ""
                 }
                 itemEditText.text.isNullOrEmpty() -> {
-                    itemInputLayout.hint = "Add Text"
+                    itemInputLayout.hint = getString(R.string.add_item_hint)
                 }
                 else -> itemInputLayout.hint = ""
             }
@@ -371,8 +372,8 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
     private fun showCameraGalleryDialog() {
         val pictureDialog =
             AlertDialog.Builder(this, android.R.style.Theme_Material_Light_Dialog_NoActionBar)
-        pictureDialog.setTitle("Add a Photo")
-        val pictureDialogItems = arrayOf("Select photo from gallery", "Capture photo from camera")
+        pictureDialog.setTitle(getString(R.string.camera_gallery_dialog_title))
+        val pictureDialogItems = arrayOf(getString(R.string.select_from_gallery), getString(R.string.select_from_camera))
         pictureDialog.setItems(
             pictureDialogItems
         ) { _, which ->
@@ -408,25 +409,6 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
         )
         imageFilePath = image.absolutePath
         return image
-    }
-
-    private fun navigateToCamera() {
-        val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        val photoFile = createImageFile()
-        photoUri = getUriForFile(this, applicationContext.packageName + ".provider", photoFile)
-        //Need to create a file to let camera store image in it using Extra_output, to get Uri , to Upload , without this it will send bitmap in data.extras
-        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
-        startActivityForResult(cameraIntent, CAMERA)
-    }
-
-    private fun navigateToGallery() {
-        val photoFile = createImageFile()
-        photoUri = getUriForFile(this, applicationContext.packageName + ".provider", photoFile)
-        val galleryIntent = Intent(
-            Intent.ACTION_PICK,
-            MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-        )
-        startActivityForResult(galleryIntent, GALLERY)
     }
 
     private fun navigateToCamera() {

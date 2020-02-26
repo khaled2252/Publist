@@ -4,8 +4,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import co.publist.core.common.data.models.wish.Wish
-import co.publist.core.utils.Utils.loadProfilePicture
-import co.publist.core.utils.Utils.loadWishImage
+import co.publist.core.utils.BindingAdapterUtils.loadProfilePicture
+import co.publist.core.utils.BindingAdapterUtils.loadWishImage
 import co.publist.databinding.ItemWishBinding
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
@@ -58,20 +58,24 @@ class WishesAdapter(
 
             //Load wish data
             loadWishImage(binding.wishImageView, wish.wishPhotoURL)
-            val todosAdapter =  TodosAdapter(ArrayList(wish.items!!.values),binding.moreTextView,binding.arrowImageView,todosAdapterArrayList.size){
+            val todosAdapter = TodosAdapter(
+                ArrayList(wish.items!!.values),
+                binding.moreTextView,
+                binding.arrowImageView,
+                todosAdapterArrayList.size
+            ) {
                 //Collapse all other lists except for the current one expanding
-                for(adapterIndex in 0 until todosAdapterArrayList.size)
-                {
-                    if(adapterIndex!=it)
-                    todosAdapterArrayList[adapterIndex].collapseExtraTodosPostLoading()
+                for (adapterIndex in 0 until todosAdapterArrayList.size) {
+                    if (adapterIndex != it)
+                        todosAdapterArrayList[adapterIndex].collapseExtraTodosPostLoading()
                 }
             }
             todosAdapterArrayList.add(todosAdapter)
             todosAdapter.setHasStableIds(true)
             binding.todoListRecyclerView.adapter = todosAdapter
             binding.todoListRecyclerView.post {
-                if(wish.items!!.size>3)
-                todosAdapter.collapseExtraTodosPostLoading()
+                if (wish.items!!.size > 3)
+                    todosAdapter.collapseExtraTodosPostLoading()
             }
 
         }

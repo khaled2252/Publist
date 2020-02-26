@@ -4,7 +4,7 @@ import android.os.Handler
 import androidx.lifecycle.MutableLiveData
 import co.publist.core.common.data.repositories.user.UserRepositoryInterface
 import co.publist.core.platform.BaseViewModel
-import co.publist.core.utils.Utils.Constants.SPLASH_DELAY
+import co.publist.core.utils.Extensions.Constants.SPLASH_DELAY
 import co.publist.features.categories.data.CategoriesRepositoryInterface
 import io.reactivex.functions.Consumer
 import javax.inject.Inject

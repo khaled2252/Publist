@@ -37,4 +37,5 @@
     <string name="camera_gallery_dialog_title">Add a Photo</string>
     <string name="select_from_gallery">Select photo from gallery</string>
     <string name="select_from_camera">Capture photo from camera</string>
+    <string name="logout_dialog_title">Are you sure you want to logout?</string>
 </resources>

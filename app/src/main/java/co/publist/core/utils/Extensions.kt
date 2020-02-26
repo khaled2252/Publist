@@ -5,45 +5,14 @@ import android.content.Context
 import android.os.IBinder
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.ImageView
-import androidx.databinding.BindingAdapter
-import co.publist.R
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
-import com.squareup.picasso.Picasso
 import kotlin.math.abs
 
-
-object Utils {
+object Extensions {
 
     fun hideSoftKeyboard(context: Context, iBinder: IBinder) {
         val inputMethodManager =
             context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.hideSoftInputFromWindow(iBinder, 0)
-    }
-
-    @JvmStatic
-    @BindingAdapter("profilePictureUrl")
-    fun loadProfilePicture(view: ImageView, imageUrl: String?) {
-        Glide.with(view)
-            .load(imageUrl)
-            .placeholder(R.drawable.ic_guest)
-            .apply(RequestOptions.circleCropTransform())
-            .into(view)
-    }
-
-    @JvmStatic
-    @BindingAdapter("wishImageUrl")
-    fun loadWishImage(view: ImageView, imageUrl: String?) {
-        if (!imageUrl.isNullOrEmpty()) {
-            view.visibility = View.VISIBLE
-            Picasso.get()
-                .load(imageUrl)
-                .fit()
-                .error(R.drawable.ph_wish_image)
-                .placeholder(R.drawable.ph_wish_image)
-                .into(view)
-        }
     }
 
     fun getDistanceBetweenViews(
@@ -63,37 +32,6 @@ object Utils {
         return abs(b - t)
     }
 
-    class DragManageAdapter(private val adapter: ItemsAdapter, dragDirs: Int, swipeDirs: Int) : ItemTouchHelper.SimpleCallback(dragDirs,0)
-    {
-
-        override fun onMove(
-            recyclerView: RecyclerView,
-            viewHolder: RecyclerView.ViewHolder,
-            target: RecyclerView.ViewHolder
-        ): Boolean
-        {
-            adapter.moveItem(viewHolder.adapterPosition, target.adapterPosition)
-            return true
-        }
-
-        override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int)
-        {
-
-        }
-
-        override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
-            super.onSelectedChanged(viewHolder, actionState)
-
-            if (actionState == ItemTouchHelper.ACTION_STATE_DRAG) {
-                viewHolder?.itemView?.alpha = 0.5f
-            }
-        }
-        override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
-            super.clearView(recyclerView, viewHolder)
-
-            viewHolder.itemView.alpha = 1.0f
-        }
-    }
 
     object Constants {
         const val DB_NAME = "PublistDb"
