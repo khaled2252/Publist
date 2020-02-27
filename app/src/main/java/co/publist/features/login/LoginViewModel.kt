@@ -81,8 +81,8 @@ class LoginViewModel @Inject constructor(
             //not checking local , because it will be empty in both cases (saved or not saved),
             //because new user is logging in i.e previous data is cleared after logout
             subscribe(categoriesRepository.fetchUserSelectedCategories(documentId), Consumer { categoryList ->
-                val isMyCategoriesEmpty = categoryList.isEmpty()
-                userLoggedIn.postValue(Pair(isNewUser,isMyCategoriesEmpty))
+                categoriesRepository.updateLocalSelectedCategories(categoryList)
+                userLoggedIn.postValue(Pair(isNewUser,categoryList.isEmpty()))
             })
 
         })

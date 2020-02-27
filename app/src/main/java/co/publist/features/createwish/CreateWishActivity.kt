@@ -25,6 +25,7 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ItemTouchHelper.*
 import co.publist.R
+import co.publist.core.common.data.models.Mapper
 import co.publist.core.platform.BaseActivity
 import co.publist.core.platform.ViewModelFactory
 import co.publist.core.utils.DragManageAdapter
@@ -221,7 +222,7 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
                     val category =
                         categoriesFragment.viewModel.selectedCategoriesList.getOrNull(0)
                     if (category != null) {
-                        viewModel.category = category
+                        viewModel.category = Mapper.mapToCategory(category)
                         addCategoryTextView.text = category.name
                     } else
                         addCategoryTextView.text = getString(R.string.create_wish_categories_default)

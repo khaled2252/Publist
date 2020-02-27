@@ -4,6 +4,7 @@ import android.os.AsyncTask
 import co.publist.core.common.data.local.LocalDataSource
 import co.publist.core.common.data.models.Mapper
 import co.publist.core.common.data.models.category.Category
+import co.publist.core.common.data.models.category.CategoryAdapterItem
 import co.publist.core.utils.Extensions.Constants.CATEGORIES_COLLECTION_PATH
 import co.publist.core.utils.Extensions.Constants.MY_CATEGORIES_COLLECTION_PATH
 import co.publist.core.utils.Extensions.Constants.USERS_COLLECTION_PATH
@@ -22,6 +23,23 @@ class CategoriesRepository @Inject constructor(
     CategoriesRepositoryInterface {
     override fun getCategoriesQuery(): CollectionReference {
         return mFirebaseFirestore.collection(CATEGORIES_COLLECTION_PATH)
+    }
+
+    override fun fetchAllCategories(): Single<ArrayList<Category>> {
+        return Single.create { singleEmitter ->
+            mFirebaseFirestore.collection(CATEGORIES_COLLECTION_PATH)
+                .get()
+                .addOnSuccessListener {querySnapshot ->
+                    var categories = ArrayList<Category>()
+                    for (document in querySnapshot)
+                    {
+                        val category = document.toObject(Category::class.java)
+                        category.id = document.id
+                        categories.add(category)
+                    }
+                    singleEmitter.onSuccess(categories)
+                }
+        }
     }
 
     override fun fetchUserSelectedCategories(userId: String): Single<ArrayList<Category>> {
@@ -50,9 +68,9 @@ class CategoriesRepository @Inject constructor(
         }
     }
 
-    override fun getLocalSelectedCategories(): Single<ArrayList<Category>> {
+    override fun getLocalSelectedCategories(): Single<ArrayList<CategoryAdapterItem>> {
         return localDataSource.getPublistDataBase().getCategories().flatMap {
-            Single.just(Mapper.mapToCategoryArrayList(it))
+            Single.just(Mapper.mapToCategoryAdapterItemList(it))
         }
     }
 

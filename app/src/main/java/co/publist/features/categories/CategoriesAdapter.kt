@@ -6,24 +6,21 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import co.publist.R
-import co.publist.core.common.data.models.category.Category
-import com.firebase.ui.firestore.FirestoreRecyclerAdapter
-import com.firebase.ui.firestore.FirestoreRecyclerOptions
-import com.google.android.material.button.MaterialButton
+import co.publist.core.common.data.models.category.CategoryAdapterItem
 import kotlinx.android.synthetic.main.item_category.view.*
 
 
 class CategoriesAdapter(
-    options: FirestoreRecyclerOptions<Category>,
-    val previouslySelectedCategoriesList : ArrayList<Category>,
-    val listener: (documentId : Category, buttonId : MaterialButton) ->Unit
+    var list : ArrayList<CategoryAdapterItem>,
+    val selectingListener: (category: CategoryAdapterItem) ->Unit
 ) :
-    FirestoreRecyclerAdapter<Category, CategoriesAdapter.CategoryViewHolder>(options) {
+    RecyclerView.Adapter<CategoriesAdapter.CategoryViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategoryViewHolder {
         val view =
             LayoutInflater.from(parent.context).inflate(R.layout.item_category, parent, false)
         return CategoryViewHolder(view)
     }
+
     override fun getItemId(position: Int): Long {
         return position.toLong()
     }
@@ -31,37 +28,63 @@ class CategoriesAdapter(
     override fun getItemViewType(position: Int): Int {
         return position
     }
-    override fun onBindViewHolder(holder: CategoryViewHolder, position: Int, category: Category) {
-        holder.bind(category, position)
+
+    override fun getItemCount(): Int {
+        return list.size
+    }
+
+    override fun onBindViewHolder(holder: CategoryViewHolder, position: Int) {
+        holder.bind(list[position])
+    }
+
+    fun updateList(newList : ArrayList<CategoryAdapterItem>)
+    {
+        list = newList
+        notifyDataSetChanged()
     }
 
     inner class CategoryViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun bind(
-            category: Category,
-            position: Int
+            category: CategoryAdapterItem
         ) {
-            category.id = snapshots.getSnapshot(position).id
-            itemView.btnCategoryName.text = category.name
+            itemView.btnCategory.text = category.name
 
-            //Highlight previously selected categories
-            if(previouslySelectedCategoriesList.map{ it.id }.contains(category.id!!))
+            //Highlight selected categories
+            if(category.isSelected)
             {
-                itemView.btnCategoryName.setBackgroundColor(
+                itemView.btnCategory.setBackgroundColor(
                     ContextCompat.getColor(
-                        itemView.btnCategoryName.context,
+                        itemView.btnCategory.context,
                         R.color.outerSpace
                     )
                 )
-                itemView.btnCategoryName.setTextColor(
+                itemView.btnCategory.setTextColor(
                     ContextCompat.getColor(
-                        itemView.btnCategoryName.context,
+                        itemView.btnCategory.context,
                         R.color.gray
                     )
                 )
             }
 
-            itemView.btnCategoryName.setOnClickListener {
-                listener(category,itemView.btnCategoryName)
+            //Default color for non selected categories
+            else
+            {
+                itemView.btnCategory.setBackgroundColor(
+                    ContextCompat.getColor(
+                        itemView.btnCategory.context,
+                        R.color.gray
+                    )
+                )
+                itemView.btnCategory.setTextColor(
+                    ContextCompat.getColor(
+                        itemView.btnCategory.context,
+                        R.color.outerSpace
+                    )
+                )
+            }
+
+            itemView.btnCategory.setOnClickListener {
+                selectingListener(category)
             }
         }
     }

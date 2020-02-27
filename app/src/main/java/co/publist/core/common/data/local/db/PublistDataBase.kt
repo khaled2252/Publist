@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import co.publist.core.common.data.models.category.CategoryDbEntity
 import co.publist.core.utils.Extensions.Constants.DB_NAME
 
@@ -13,6 +14,8 @@ import co.publist.core.utils.Extensions.Constants.DB_NAME
     version = 1,
     exportSchema = false
 )
+@TypeConverters(Converters::class)
+
 abstract class PublistDataBase : RoomDatabase() {
     abstract fun publistDao(): PublistDao
 
