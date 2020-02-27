@@ -10,9 +10,7 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.MotionEvent
 import android.view.View
-import android.view.View.OnTouchListener
 import android.view.ViewTreeObserver
 import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
@@ -73,13 +71,15 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
 
         if (requestCode == GALLERY) {
             if (data != null) {
-                startCroppingActivity(this,data.data!!)
+                startCroppingActivity(this, data.data!!)
             }
 
         } else if (requestCode == CAMERA && resultCode == RESULT_OK) {
-            startCroppingActivity(this,resultUri) //Camera will automatically load image in resultUri (specified in intent)
-        }
-        else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            startCroppingActivity(
+                this,
+                resultUri
+            ) //Camera will automatically load image in resultUri (specified in intent)
+        } else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 val resultUri = CropImage.getActivityResult(data).uri
                 loadPhotoUriToImageView(resultUri)
@@ -106,7 +106,11 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
                         permissions[0]
                     )
                 ) {
-                    Toast.makeText(this, getString(R.string.permission_required), Toast.LENGTH_SHORT)
+                    Toast.makeText(
+                        this,
+                        getString(R.string.permission_required),
+                        Toast.LENGTH_SHORT
+                    )
                         .show()
                 } else {
                     //permission is denied (and never ask again is  checked)
@@ -177,10 +181,15 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
 
         viewModel.addingWishLiveData.observe(this, Observer { isCreated ->
             if (isCreated) {
-                Toast.makeText(this, getString(R.string.post_wish_success), Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.post_wish_success), Toast.LENGTH_SHORT)
+                    .show()
                 finish()
             } else
-                Toast.makeText(this, getString(R.string.minimum_wish_items), Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this,
+                    getString(R.string.minimum_wish_items),
+                    Toast.LENGTH_SHORT
+                ).show()
         })
 
     }
@@ -226,7 +235,8 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
                         addCategoryTextView.text = category.name
                     } else {
                         viewModel.category = null
-                        addCategoryTextView.text =getString(R.string.create_wish_categories_default)
+                        addCategoryTextView.text =
+                            getString(R.string.create_wish_categories_default)
                     }
 
                     viewModel.validateEntries()
@@ -253,9 +263,8 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
         }
 
         itemEditText.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_NEXT) {
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
                 itemDoneOnClick()
-                itemEditText.requestFocus()
             }
             false
         }
@@ -289,30 +298,21 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
         itemEditText.setOnFocusChangeListener { _, hasFocus ->
             when {
                 hasFocus -> {
-                    itemInputLayout.hint = ""
+                    itemTextInputLayout.hint = ""
                 }
                 itemEditText.text.isNullOrEmpty() -> {
-                    itemInputLayout.hint = getString(R.string.add_item_hint)
+                    itemTextInputLayout.hint = getString(R.string.add_item_hint)
                 }
-                else -> itemInputLayout.hint = ""
+                else -> itemTextInputLayout.hint = ""
             }
         }
         itemEditText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(editable: Editable?) {
                 if (editable.isNullOrEmpty())
-                    itemEditText.setCompoundDrawablesWithIntrinsicBounds(
-                        0,
-                        0,
-                        R.drawable.ic_done,
-                        0
-                    )
+                    btnItemDone.setImageResource(R.drawable.ic_done)
                 else {
-                    itemEditText.setCompoundDrawablesWithIntrinsicBounds(
-                        0,
-                        0,
-                        R.drawable.ic_done_active,
-                        0
-                    )
+                    btnItemDone.setImageResource(R.drawable.ic_done_active)
+
                     viewModel.validateEntries()
                 }
             }
@@ -321,27 +321,13 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
             }
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                itemEditText.setCompoundDrawablesWithIntrinsicBounds(
-                    0,
-                    0,
-                    R.drawable.ic_done_active,
-                    0
-                )
-
+                btnItemDone.setImageResource(R.drawable.ic_done_active)
             }
         })
 
-        itemEditText.setOnTouchListener(OnTouchListener { _, event ->
-            val DRAWABLE_RIGHT = 2
-            if (event.action == MotionEvent.ACTION_UP) {
-                if (event.rawX >= itemEditText.right - itemEditText.compoundDrawables[DRAWABLE_RIGHT].bounds.width()
-                ) {
-                    itemDoneOnClick()
-                    return@OnTouchListener false
-                }
-            }
-            false
-        })
+        btnItemDone.setOnClickListener {
+            itemDoneOnClick()
+        }
     }
 
     private fun setUpItemsRecyclerViewMaxHeight() {
@@ -364,7 +350,8 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
         val pictureDialog =
             AlertDialog.Builder(this, android.R.style.Theme_Material_Light_Dialog_NoActionBar)
         pictureDialog.setTitle(getString(R.string.camera_gallery_dialog_title))
-        val pictureDialogItems = arrayOf(getString(R.string.select_from_gallery), getString(R.string.select_from_camera))
+        val pictureDialogItems =
+            arrayOf(getString(R.string.select_from_gallery), getString(R.string.select_from_camera))
         pictureDialog.setItems(
             pictureDialogItems
         ) { _, which ->
@@ -385,7 +372,7 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
     }
 
     private fun loadPhotoUriToImageView(uri: Uri) {
-        val bitmap = if(Build.VERSION.SDK_INT < 28) {
+        val bitmap = if (Build.VERSION.SDK_INT < 28) {
             MediaStore.Images.Media.getBitmap(
                 this.contentResolver,
                 uri

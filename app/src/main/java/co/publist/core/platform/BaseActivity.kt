@@ -6,6 +6,7 @@ import android.os.Handler
 import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
+import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.annotation.CallSuper
@@ -90,9 +91,9 @@ abstract class BaseActivity<MBaseViewModel : BaseViewModel>
         return super.onOptionsItemSelected(item)
     }
 
-    //Hide keyboard when clicking anywhere (while keyboard is open)
+    //Hide keyboard when clicking anywhere outside EditText
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
-        if (currentFocus != null) {
+        if (currentFocus !is EditText) {
             hideKeyboard()
         }
         return super.dispatchTouchEvent(ev)
