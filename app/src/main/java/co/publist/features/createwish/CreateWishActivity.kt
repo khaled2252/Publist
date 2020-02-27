@@ -224,8 +224,10 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
                     if (category != null) {
                         viewModel.category = Mapper.mapToCategory(category)
                         addCategoryTextView.text = category.name
-                    } else
-                        addCategoryTextView.text = getString(R.string.create_wish_categories_default)
+                    } else {
+                        viewModel.category = null
+                        addCategoryTextView.text =getString(R.string.create_wish_categories_default)
+                    }
 
                     viewModel.validateEntries()
                 }
