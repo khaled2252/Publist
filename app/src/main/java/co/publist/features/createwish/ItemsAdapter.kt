@@ -34,7 +34,7 @@ class ItemsAdapter (private val listChangedListener: () -> Unit):
     fun removeItem(position: Int) {
         list.removeAt(position)
         notifyItemRemoved(position)
-        notifyItemRangeChanged(position, list.size)
+        notifyDataSetChanged()
         listChangedListener()
     }
 

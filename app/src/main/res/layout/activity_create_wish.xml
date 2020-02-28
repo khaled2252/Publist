@@ -188,7 +188,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="text"
-                    android:imeOptions="actionDone"
+                    android:imeOptions="actionNext"
+                    android:nextFocusForward="@id/itemEditText"
                     android:maxLines="1"
                     android:textColor="@color/dimGray" />
 
@@ -202,7 +203,7 @@
                 android:layout_marginTop="2dp"
                 android:layout_marginEnd="20dp"
                 android:layout_gravity="center|end"
-                android:layout_marginStart="-100dp"/>
+                />
             </FrameLayout>
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/postButton"

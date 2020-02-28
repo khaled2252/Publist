@@ -263,7 +263,7 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
         }
 
         itemEditText.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
+            if (actionId == EditorInfo.IME_ACTION_NEXT) {
                 itemDoneOnClick()
             }
             false
@@ -342,7 +342,6 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
         if (itemEditText.text!!.isNotEmpty()) {
             adapter.addItem(itemEditText.text.toString())
             itemEditText.text = null
-            hideKeyboard()
         }
     }
 
