@@ -5,9 +5,9 @@ import co.publist.core.common.data.local.LocalDataSource
 import co.publist.core.common.data.models.Mapper
 import co.publist.core.common.data.models.category.Category
 import co.publist.core.common.data.models.category.CategoryAdapterItem
-import co.publist.core.utils.Extensions.Constants.CATEGORIES_COLLECTION_PATH
-import co.publist.core.utils.Extensions.Constants.MY_CATEGORIES_COLLECTION_PATH
-import co.publist.core.utils.Extensions.Constants.USERS_COLLECTION_PATH
+import co.publist.core.utils.Utils.Constants.CATEGORIES_COLLECTION_PATH
+import co.publist.core.utils.Utils.Constants.MY_CATEGORIES_COLLECTION_PATH
+import co.publist.core.utils.Utils.Constants.USERS_COLLECTION_PATH
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FirebaseFirestore

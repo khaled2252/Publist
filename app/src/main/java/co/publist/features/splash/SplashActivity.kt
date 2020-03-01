@@ -9,7 +9,7 @@ import androidx.lifecycle.Observer
 import co.publist.R
 import co.publist.core.platform.BaseActivity
 import co.publist.core.platform.ViewModelFactory
-import co.publist.core.utils.Extensions
+import co.publist.core.utils.Utils
 import co.publist.features.editprofile.EditProfileActivity
 import co.publist.features.home.HomeActivity
 import co.publist.features.login.LoginActivity
@@ -43,7 +43,7 @@ class SplashActivity : BaseActivity<SplashViewModel>() {
                         navigateToHome()
                 } else
                     navigateToLogin()
-            }, Extensions.Constants.SPLASH_DELAY)
+            }, Utils.Constants.SPLASH_DELAY)
         })
     }
 

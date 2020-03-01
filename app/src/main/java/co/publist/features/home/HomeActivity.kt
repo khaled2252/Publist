@@ -10,11 +10,11 @@ import androidx.lifecycle.Observer
 import co.publist.R
 import co.publist.core.platform.BaseActivity
 import co.publist.core.platform.ViewModelFactory
-import co.publist.core.utils.BindingAdapterUtils.loadProfilePicture
+import co.publist.core.utils.DataBindingAdapters.loadProfilePicture
 import co.publist.databinding.ActivityHomeBinding
 import co.publist.features.createwish.CreateWishActivity
-import co.publist.features.editprofile.EditProfileActivity
 import co.publist.features.login.LoginActivity
+import co.publist.features.profile.ProfileActivity
 import kotlinx.android.synthetic.main.activity_home.*
 import kotlinx.android.synthetic.main.app_bar.*
 import javax.inject.Inject
@@ -62,7 +62,7 @@ class HomeActivity : BaseActivity<HomeViewModel>() {
             if (isGuest)
                 finish()
             else
-                startActivity(Intent(this, EditProfileActivity::class.java))
+                startActivity(Intent(this, ProfileActivity::class.java))
         })
 
         viewModel.addWishClickLiveData.observe(this, Observer { isGuest ->

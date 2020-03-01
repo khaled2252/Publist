@@ -14,7 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import co.publist.R
-import co.publist.core.utils.Extensions
+import co.publist.core.utils.Utils
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import javax.inject.Inject
@@ -122,7 +122,7 @@ abstract class BaseActivity<MBaseViewModel : BaseViewModel>
 
     fun hideKeyboard() {
         if (window.currentFocus != null)
-            Extensions.hideSoftKeyboard(this, window.currentFocus!!.windowToken)
+            Utils.hideSoftKeyboard(this, window.currentFocus!!.windowToken)
     }
 
 }

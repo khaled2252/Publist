@@ -4,8 +4,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import co.publist.core.common.data.models.wish.Wish
-import co.publist.core.utils.BindingAdapterUtils.loadProfilePicture
-import co.publist.core.utils.BindingAdapterUtils.loadWishImage
+import co.publist.core.utils.DataBindingAdapters.loadProfilePicture
+import co.publist.core.utils.DataBindingAdapters.loadWishImage
 import co.publist.databinding.ItemWishBinding
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions

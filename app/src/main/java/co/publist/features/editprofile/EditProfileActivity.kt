@@ -9,7 +9,7 @@ import androidx.lifecycle.Observer
 import co.publist.R
 import co.publist.core.platform.BaseActivity
 import co.publist.core.platform.ViewModelFactory
-import co.publist.core.utils.BindingAdapterUtils.loadProfilePicture
+import co.publist.core.utils.DataBindingAdapters.loadProfilePicture
 import co.publist.databinding.ActivityEditProfileBinding
 import co.publist.features.categories.CategoriesFragment
 import co.publist.features.home.HomeActivity

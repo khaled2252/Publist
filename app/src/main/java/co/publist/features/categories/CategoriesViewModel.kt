@@ -5,8 +5,8 @@ import co.publist.core.common.data.models.Mapper
 import co.publist.core.common.data.models.category.Category
 import co.publist.core.common.data.models.category.CategoryAdapterItem
 import co.publist.core.platform.BaseViewModel
-import co.publist.core.utils.Extensions.Constants.MAXIMUM_SELECTED_CATEGORIES
-import co.publist.core.utils.Extensions.Constants.MINIMUM_SELECTED_CATEGORIES
+import co.publist.core.utils.Utils.Constants.MAXIMUM_SELECTED_CATEGORIES
+import co.publist.core.utils.Utils.Constants.MINIMUM_SELECTED_CATEGORIES
 import co.publist.features.categories.data.CategoriesRepositoryInterface
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer

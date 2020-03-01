@@ -7,8 +7,8 @@ import androidx.lifecycle.Observer
 import co.publist.R
 import co.publist.core.platform.BaseActivity
 import co.publist.core.platform.ViewModelFactory
-import co.publist.core.utils.Extensions.Constants.EMAIL_PERMISSION
-import co.publist.core.utils.Extensions.Constants.PROFILE_PICTURE_PERMISSION
+import co.publist.core.utils.Utils.Constants.EMAIL_PERMISSION
+import co.publist.core.utils.Utils.Constants.PROFILE_PICTURE_PERMISSION
 import co.publist.features.editprofile.EditProfileActivity
 import co.publist.features.home.HomeActivity
 import co.publist.features.intro.IntroActivity

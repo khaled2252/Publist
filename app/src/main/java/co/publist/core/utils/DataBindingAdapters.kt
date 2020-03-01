@@ -8,7 +8,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.squareup.picasso.Picasso
 
-object BindingAdapterUtils {
+object DataBindingAdapters {
 
     @JvmStatic
     @BindingAdapter("profilePictureUrl")

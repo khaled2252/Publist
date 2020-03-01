@@ -2,9 +2,9 @@ package co.publist.core.common.data.repositories.wish
 
 import android.net.Uri
 import co.publist.core.common.data.models.wish.Wish
-import co.publist.core.utils.Extensions.Constants.CATEGORY_ID_FIELD
-import co.publist.core.utils.Extensions.Constants.DATE_FIELD
-import co.publist.core.utils.Extensions.Constants.WISHES_COLLECTION_PATH
+import co.publist.core.utils.Utils.Constants.CATEGORY_ID_FIELD
+import co.publist.core.utils.Utils.Constants.DATE_FIELD
+import co.publist.core.utils.Utils.Constants.WISHES_COLLECTION_PATH
 import com.google.android.gms.tasks.Continuation
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.FirebaseFirestore

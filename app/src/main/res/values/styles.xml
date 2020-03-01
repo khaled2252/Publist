@@ -33,6 +33,10 @@
         <item name="android:windowSoftInputMode">adjustPan</item>
     </style>
 
+    <!-- Profile screen -->
+    <style name="AppTheme.ProfileScreen" >
+    </style>
+
     <style name="MyBottomSheetDialog" parent="AppTheme">
         <item name="android:windowFrame">@null</item>
         <item name="android:windowBackground">@android:color/transparent</item>
@@ -50,4 +54,7 @@
         <item name="android:windowExitAnimation">@anim/slide_down</item>
     </style>
 
+    <style name="MyCustomTextAppearance" parent="TextAppearance.Design.Tab">
+        <item name="textAllCaps">false</item>
+    </style>
 </resources>

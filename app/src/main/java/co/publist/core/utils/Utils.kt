@@ -10,14 +10,14 @@ import android.provider.MediaStore
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.core.content.FileProvider
-import co.publist.core.utils.Extensions.Constants.GALLERY
-import co.publist.core.utils.Extensions.Constants.TEMP_IMAGE
+import co.publist.core.utils.Utils.Constants.GALLERY
+import co.publist.core.utils.Utils.Constants.TEMP_IMAGE
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
 import java.io.File
 import kotlin.math.abs
 
-object Extensions {
+object Utils {
 
     fun hideSoftKeyboard(context: Context, iBinder: IBinder) {
         val inputMethodManager =

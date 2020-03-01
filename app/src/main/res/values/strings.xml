@@ -39,4 +39,6 @@
     <string name="select_from_camera">Capture photo from camera</string>
     <string name="logout_dialog_title">Are you sure you want to logout?</string>
     <string name="click_again_to_exit">Click back again to exit</string>
+    <string name="lists">Lists</string>
+    <string name="my_favorites">My Favorites</string>
 </resources>
