@@ -62,8 +62,11 @@ abstract class BaseActivity<MBaseViewModel : BaseViewModel>
     open fun hideLoading() {
         val progressBar = findViewById<ProgressBar>(R.id.progress_circular)
         if (progressBar != null)
+        {   if(progressBar.visibility == View.VISIBLE)
             progressBar.visibility = View.GONE
-    }
+            else
+            progressBar.visibility = View.VISIBLE
+    }}
 
     open fun showLoading() {
         val progressBar = findViewById<ProgressBar>(R.id.progress_circular)
