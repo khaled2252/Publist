@@ -27,6 +27,8 @@ import co.publist.features.home.data.HomeRepository
 import co.publist.features.home.data.HomeRepositoryInterface
 import co.publist.features.login.data.LoginRepository
 import co.publist.features.login.data.LoginRepositoryInterface
+import co.publist.features.profile.mylists.data.MyListsRepository
+import co.publist.features.profile.mylists.data.MyListsRepositoryInterface
 import dagger.Binds
 import dagger.Module
 import javax.inject.Singleton
@@ -54,5 +56,9 @@ abstract class RepositoriesModule {
     @Binds
     @Singleton
     abstract fun bindWishesRepository(wishesRepository: WishesRepository): WishesRepositoryInterface
+
+    @Binds
+    @Singleton
+    abstract fun bindMyListsRepository(myListsRepository: MyListsRepository): MyListsRepositoryInterface
 
 }

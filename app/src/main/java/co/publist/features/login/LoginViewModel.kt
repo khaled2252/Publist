@@ -84,6 +84,8 @@ class LoginViewModel @Inject constructor(
                 categoriesRepository.updateLocalSelectedCategories(categoryList)
                 userLoggedIn.postValue(Pair(isNewUser,categoryList.isEmpty()))
             })
+            //todo fetch myFavorites
+            //todo fetch myLists
 
         })
     }

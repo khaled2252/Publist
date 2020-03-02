@@ -6,13 +6,13 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import co.publist.core.common.data.models.category.CategoryDbEntity
-import co.publist.core.common.data.models.wish.ListDbEntity
 import co.publist.core.common.data.models.wish.MyFavoritesDbEntity
+import co.publist.core.common.data.models.wish.MyListDbEntity
 import co.publist.core.utils.Utils.Constants.DB_NAME
 
 
 @Database(
-    entities = [CategoryDbEntity::class,ListDbEntity::class,MyFavoritesDbEntity::class],
+    entities = [CategoryDbEntity::class,MyListDbEntity::class,MyFavoritesDbEntity::class],
     version = 1,
     exportSchema = false
 )

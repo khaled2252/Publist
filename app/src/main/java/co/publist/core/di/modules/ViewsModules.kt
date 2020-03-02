@@ -7,8 +7,8 @@ import co.publist.features.home.HomeActivity
 import co.publist.features.intro.IntroActivity
 import co.publist.features.login.LoginActivity
 import co.publist.features.profile.ProfileActivity
-import co.publist.features.profile.lists.ListsFragment
 import co.publist.features.profile.myfavorites.MyFavoritesFragment
+import co.publist.features.profile.mylists.MyListsFragment
 import co.publist.features.splash.SplashActivity
 import co.publist.features.wishes.WishesFragment
 import dagger.Module
@@ -49,6 +49,6 @@ abstract class ViewsModules {
     abstract fun contributeMyFavoritesFragment(): MyFavoritesFragment
 
     @ContributesAndroidInjector
-    abstract fun contributeListsFragment(): ListsFragment
+    abstract fun contributeMyListsFragment(): MyListsFragment
 
 }

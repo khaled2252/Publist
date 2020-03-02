@@ -27,8 +27,8 @@ import co.publist.features.editprofile.EditProfileViewModel
 import co.publist.features.home.HomeViewModel
 import co.publist.features.intro.IntroViewModel
 import co.publist.features.profile.ProfileViewModel
-import co.publist.features.profile.lists.ListsViewModel
 import co.publist.features.profile.myfavorites.MyFavoritesViewModel
+import co.publist.features.profile.mylists.MyListsViewModel
 import co.publist.features.splash.SplashViewModel
 import co.publist.features.wishes.WishesViewModel
 import dagger.Binds
@@ -88,7 +88,7 @@ abstract class ViewModelModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey(ListsViewModel::class)
-    abstract fun bindListsViewModel(listsViewModel: ListsViewModel): ViewModel
+    @ViewModelKey(MyListsViewModel::class)
+    abstract fun bindListsViewModel(myListsViewModel: MyListsViewModel): ViewModel
 
 }

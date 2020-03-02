@@ -6,15 +6,15 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import co.publist.core.common.data.models.category.CategoryDbEntity
-import co.publist.core.common.data.models.wish.ListDbEntity
 import co.publist.core.common.data.models.wish.MyFavoritesDbEntity
+import co.publist.core.common.data.models.wish.MyListDbEntity
 import io.reactivex.Single
 
 
 @Dao
 interface PublistDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(items: List<CategoryDbEntity>)
+    fun insertCategoriesList(items: List<CategoryDbEntity>)
 
     @Query("SELECT * FROM Categories")
     fun getCategories(): Single<List<CategoryDbEntity>>
@@ -25,22 +25,29 @@ interface PublistDao {
     @Query("DELETE FROM Categories")
     fun deleteCategories()
 
-    @Query("SELECT * FROM lists")
-    fun getLists(): Single<List<ListDbEntity>>
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertIntoMylists(item : MyListDbEntity)
 
-    @Query("SELECT * FROM lists")
-    fun getListsDataSource(): DataSource.Factory<Int, ListDbEntity>
+    @Query("SELECT * FROM myLists")
+    fun getMyLists(): Single<List<MyListDbEntity>>
 
-    @Query("DELETE FROM lists")
-    fun deleteLists()
+    @Query("SELECT * FROM myLists")
+    fun getMyListsDataSource(): DataSource.Factory<Int, MyListDbEntity>
 
-     @Query("SELECT * FROM myfavorites")
+    @Query("DELETE FROM myLists")
+    fun deleteMyLists()
+
+    @Query("DELETE FROM myLists WHERE wish_id = :wishId")
+    fun deleteFromMyLists(wishId : String)
+
+
+    @Query("SELECT * FROM myFavorites")
     fun getMyFavorites(): Single<List<MyFavoritesDbEntity>>
 
-    @Query("SELECT * FROM myfavorites")
+    @Query("SELECT * FROM myFavorites")
     fun getMyFavoritesDataSource(): DataSource.Factory<Int, MyFavoritesDbEntity>
 
-    @Query("DELETE FROM myfavorites")
+    @Query("DELETE FROM myFavorites")
     fun deleteMyFavorites()
 
 

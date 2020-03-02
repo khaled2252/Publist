@@ -3,6 +3,8 @@ package co.publist.core.common.data.models
 import co.publist.core.common.data.models.category.Category
 import co.publist.core.common.data.models.category.CategoryAdapterItem
 import co.publist.core.common.data.models.category.CategoryDbEntity
+import co.publist.core.common.data.models.wish.MyListDbEntity
+import co.publist.core.common.data.models.wish.Wish
 import com.google.firebase.firestore.QueryDocumentSnapshot
 import com.google.firebase.firestore.QuerySnapshot
 
@@ -75,6 +77,18 @@ object Mapper {
         for (item in list)
             arrayList.add(mapToCategoryAdapterItem(item))
         return arrayList
+    }
+
+    fun mapToWishArrayList(querySnapshot: QuerySnapshot?): java.util.ArrayList<Wish> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    fun mapToWishArrayList(list : List<MyListDbEntity>): java.util.ArrayList<Wish> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    fun mapToListDbEntity(wish: Wish): MyListDbEntity {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
 }

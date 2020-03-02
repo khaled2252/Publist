@@ -1,4 +1,4 @@
-package co.publist.features.profile.lists
+package co.publist.features.profile.mylists
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,14 +9,14 @@ import co.publist.core.platform.BaseFragment
 import co.publist.core.platform.ViewModelFactory
 import javax.inject.Inject
 
-class ListsFragment : BaseFragment<ListsViewModel>() {
+class MyListsFragment : BaseFragment<MyListsViewModel>() {
     @Inject
-    lateinit var viewModel: ListsViewModel
+    lateinit var viewModelMy: MyListsViewModel
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
-    override fun getBaseViewModel() = viewModel
+    override fun getBaseViewModel() = viewModelMy
 
     override fun getBaseViewModelFactory() = viewModelFactory
 
