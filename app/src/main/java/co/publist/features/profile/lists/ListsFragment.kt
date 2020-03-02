@@ -24,7 +24,7 @@ class ListsFragment : BaseFragment<ListsViewModel>() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_lists, container, false)
+        return inflater.inflate(R.layout.fragment_wishes, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

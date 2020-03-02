@@ -1,5 +1,6 @@
 package co.publist.features.profile
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.lifecycle.Observer
 import androidx.viewpager2.widget.ViewPager2
@@ -7,8 +8,7 @@ import co.publist.R
 import co.publist.core.platform.BaseActivity
 import co.publist.core.platform.ViewModelFactory
 import co.publist.core.utils.DataBindingAdapters.loadProfilePicture
-import co.publist.features.profile.lists.ListsFragment
-import co.publist.features.profile.myfavorites.MyFavoritesFragment
+import co.publist.features.editprofile.EditProfileActivity
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.android.synthetic.main.activity_profile.*
 import javax.inject.Inject
@@ -40,11 +40,9 @@ class ProfileActivity : BaseActivity<ProfileViewModel>() {
 
     private fun setPagerAdapter() {
         val profilePagerAdapter = ProfilePagerAdapter(supportFragmentManager, lifecycle)
-        profilePagerAdapter.addFragment(MyFavoritesFragment())
-        profilePagerAdapter.addFragment(ListsFragment())
         profile_pager!!.orientation = ViewPager2.ORIENTATION_HORIZONTAL
         profile_pager!!.adapter = profilePagerAdapter
-        profile_pager!!.isUserInputEnabled = false
+        profile_pager!!.isUserInputEnabled = true // for swiping
         TabLayoutMediator(tab_layout, profile_pager,
             TabLayoutMediator.TabConfigurationStrategy { tab, position ->
                 when (position) {
@@ -58,15 +56,20 @@ class ProfileActivity : BaseActivity<ProfileViewModel>() {
             }).attach()
     }
 
+
     private fun setObservers() {
-        viewModel.userLiveData.observe(this, Observer {user ->
+        viewModel.userLiveData.observe(this, Observer { user ->
             nameTextView.text = user.name
             loadProfilePicture(profilePictureImageView, user.profilePictureUrl)
         })
     }
 
     private fun setListeners() {
-
+        editProfileImageView.setOnClickListener {
+            val intent = Intent(this, EditProfileActivity::class.java)
+            intent.putExtra("isComingFromProfile",true)
+            startActivity(intent)
+        }
     }
 
 }

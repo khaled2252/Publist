@@ -15,6 +15,7 @@ import co.publist.databinding.ActivityHomeBinding
 import co.publist.features.createwish.CreateWishActivity
 import co.publist.features.login.LoginActivity
 import co.publist.features.profile.ProfileActivity
+import co.publist.features.wishes.WishesFragment
 import kotlinx.android.synthetic.main.activity_home.*
 import kotlinx.android.synthetic.main.app_bar.*
 import javax.inject.Inject
@@ -32,12 +33,14 @@ class HomeActivity : BaseActivity<HomeViewModel>() {
 
     override fun getBaseViewModelFactory() = viewModelFactory
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         DataBindingUtil.setContentView<ActivityHomeBinding>(
             this,
             R.layout.activity_home
         ).executePendingBindings()
+        supportFragmentManager.beginTransaction().add(R.id.wishesFragmentContainer, WishesFragment(true)).commit()
         viewModel.onCreated()
         setObservers()
         setListeners()

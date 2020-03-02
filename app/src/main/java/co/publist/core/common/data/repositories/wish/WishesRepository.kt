@@ -4,6 +4,8 @@ import android.net.Uri
 import co.publist.core.common.data.models.wish.Wish
 import co.publist.core.utils.Utils.Constants.CATEGORY_ID_FIELD
 import co.publist.core.utils.Utils.Constants.DATE_FIELD
+import co.publist.core.utils.Utils.Constants.MY_LISTS_COLLECTION_PATH
+import co.publist.core.utils.Utils.Constants.USERS_COLLECTION_PATH
 import co.publist.core.utils.Utils.Constants.WISHES_COLLECTION_PATH
 import com.google.android.gms.tasks.Continuation
 import com.google.android.gms.tasks.Task
@@ -29,6 +31,13 @@ class WishesRepository @Inject constructor(
     override fun getFilteredWishesQuery(categoryList: ArrayList<String?>): Query {
         return mFirebaseFirestore.collection(WISHES_COLLECTION_PATH)
             .whereArrayContainsAny(CATEGORY_ID_FIELD, categoryList)
+            .orderBy(DATE_FIELD, Query.Direction.DESCENDING)
+    }
+
+    override fun getUserListWishesQuery(userId : String): Query {
+        return mFirebaseFirestore.collection(USERS_COLLECTION_PATH)
+            .document(userId)
+            .collection(MY_LISTS_COLLECTION_PATH)
             .orderBy(DATE_FIELD, Query.Direction.DESCENDING)
     }
 

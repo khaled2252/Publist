@@ -15,7 +15,7 @@ import kotlinx.android.synthetic.main.fragment_wishes.*
 import javax.inject.Inject
 
 
-class WishesFragment : BaseFragment<WishesViewModel>() {
+class WishesFragment(private val isPublic : Boolean) : BaseFragment<WishesViewModel>() {
 
     @Inject
     lateinit var viewModel: WishesViewModel
@@ -35,6 +35,7 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        viewModel.onCreated(isPublic)
         setObservers()
     }
 

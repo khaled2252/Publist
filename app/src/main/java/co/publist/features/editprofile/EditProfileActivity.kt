@@ -31,12 +31,15 @@ class EditProfileActivity : BaseActivity<EditProfileViewModel>() {
 
     private lateinit var categoriesFragment: CategoriesFragment
 
+    private var isComingFromProfile : Boolean? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         DataBindingUtil.setContentView<ActivityEditProfileBinding>(
             this,
             R.layout.activity_edit_profile
         ).executePendingBindings()
+        isComingFromProfile = this.intent.getBooleanExtra("isComingFromProfile",false)
         onCreated()
         setObservers()
         setListeners()
@@ -68,11 +71,12 @@ class EditProfileActivity : BaseActivity<EditProfileViewModel>() {
         categoriesFragment.viewModel.saveCategoriesLiveData.observe(this, Observer {
             Toast.makeText(this, getString(R.string.saved_successfully), Toast.LENGTH_SHORT)
                 .show()
-            val intent = Intent(this, HomeActivity::class.java)
-            intent.flags =
-                Intent.FLAG_ACTIVITY_CLEAR_TOP //If coming already from home (get last HomeActivity on top stack)
-            startActivity(intent)
-            finish()
+
+            if(isComingFromProfile!!)
+               finish()
+
+            else //from login or splash
+            startActivity(Intent(this,HomeActivity::class.java))
         })
     }
 
