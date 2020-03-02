@@ -232,7 +232,7 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
                         categoriesFragment.viewModel.selectedCategoriesList.getOrNull(0)
                     if (category != null) {
                         viewModel.category = Mapper.mapToCategory(category)
-                        addCategoryTextView.text = category.name
+                        addCategoryTextView.text = category.name?.capitalize()
                     } else {
                         viewModel.category = null
                         addCategoryTextView.text =

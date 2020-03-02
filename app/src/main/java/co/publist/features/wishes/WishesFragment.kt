@@ -15,7 +15,7 @@ import kotlinx.android.synthetic.main.fragment_wishes.*
 import javax.inject.Inject
 
 
-class WishesFragment(private val isPublic : Boolean) : BaseFragment<WishesViewModel>() {
+class WishesFragment : BaseFragment<WishesViewModel>() {
 
     @Inject
     lateinit var viewModel: WishesViewModel
@@ -35,7 +35,6 @@ class WishesFragment(private val isPublic : Boolean) : BaseFragment<WishesViewMo
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        viewModel.onCreated(isPublic)
         setObservers()
     }
 
@@ -53,7 +52,6 @@ class WishesFragment(private val isPublic : Boolean) : BaseFragment<WishesViewMo
 
         val adapter = WishesAdapter(options)
 
-        adapter.setHasStableIds(true) //To avoid recycling view holders while scrolling thus removing selected colors
         adapter.startListening() //To fetch data from firestore
         wishesRecyclerView.adapter = adapter
     }

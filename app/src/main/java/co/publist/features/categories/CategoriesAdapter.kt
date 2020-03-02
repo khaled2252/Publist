@@ -47,7 +47,7 @@ class CategoriesAdapter(
         fun bind(
             category: CategoryAdapterItem
         ) {
-            itemView.btnCategory.text = category.name
+            itemView.btnCategory.text = category.name?.capitalize()
 
             //Highlight selected categories
             if(category.isSelected)

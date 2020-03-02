@@ -30,8 +30,8 @@
             android:background="@color/white"
             android:textSize="20sp" />
 
-        <FrameLayout
-            android:id="@+id/wishesFragmentContainer"
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/wishesFragment"
             android:name="co.publist.features.wishes.WishesFragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />

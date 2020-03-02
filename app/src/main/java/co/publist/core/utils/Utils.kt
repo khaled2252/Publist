@@ -100,5 +100,8 @@ object Utils {
         const val GALLERY = 1
         const val CAMERA = 2
         const val TEMP_IMAGE = "temp_image"
+        const val PUBLIC = 0
+        const val LISTS = 1
+        const val FAVORITES = 2
     }
 }

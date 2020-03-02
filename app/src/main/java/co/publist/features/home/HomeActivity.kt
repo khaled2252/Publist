@@ -11,6 +11,7 @@ import co.publist.R
 import co.publist.core.platform.BaseActivity
 import co.publist.core.platform.ViewModelFactory
 import co.publist.core.utils.DataBindingAdapters.loadProfilePicture
+import co.publist.core.utils.Utils.Constants.PUBLIC
 import co.publist.databinding.ActivityHomeBinding
 import co.publist.features.createwish.CreateWishActivity
 import co.publist.features.login.LoginActivity
@@ -33,6 +34,7 @@ class HomeActivity : BaseActivity<HomeViewModel>() {
 
     override fun getBaseViewModelFactory() = viewModelFactory
 
+    private lateinit var wishesFragment: WishesFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,7 +42,9 @@ class HomeActivity : BaseActivity<HomeViewModel>() {
             this,
             R.layout.activity_home
         ).executePendingBindings()
-        supportFragmentManager.beginTransaction().add(R.id.wishesFragmentContainer, WishesFragment(true)).commit()
+        wishesFragment =
+            supportFragmentManager.findFragmentById(R.id.wishesFragment) as WishesFragment
+        wishesFragment.viewModel.onCreated(PUBLIC)
         viewModel.onCreated()
         setObservers()
         setListeners()
