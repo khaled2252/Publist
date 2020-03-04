@@ -30,7 +30,7 @@ class CategoriesRepository @Inject constructor(
             mFirebaseFirestore.collection(CATEGORIES_COLLECTION_PATH)
                 .get()
                 .addOnSuccessListener {querySnapshot ->
-                    var categories = ArrayList<Category>()
+                    val categories = ArrayList<Category>()
                     for (document in querySnapshot)
                     {
                         val category = document.toObject(Category::class.java)

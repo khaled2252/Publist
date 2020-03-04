@@ -2,6 +2,7 @@ package co.publist.features.login.data
 
 import co.publist.core.common.data.models.User
 import com.facebook.AccessToken
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import io.reactivex.Completable
 import io.reactivex.Single
 
@@ -22,4 +23,6 @@ interface LoginRepositoryInterface {
     fun authenticateFacebookUserWithFirebase(accessToken: String): Single<String>
     fun setFaceBookGraphRequest(accessToken: AccessToken): Single<RegisteringUser>
     fun fetchUserInformation(userDocId: String): Single<User>
+    fun setUserInformation(user : User)
+    fun googleSignInOneObservable(user : GoogleSignInAccount) : Single<User>
 }

@@ -31,6 +31,27 @@ object Mapper {
         return category
     }
 
+    private fun mapToWish(queryDocumentSnapshot: QueryDocumentSnapshot): Wish {
+        val wish = queryDocumentSnapshot.toObject(Wish::class.java)
+        wish.wishId = queryDocumentSnapshot.id
+        return wish
+    }
+
+    private fun mapToWish(item: MyListDbEntity): Wish {
+        return Wish(
+            wishId = item.wish_id,
+            category = item.category,
+            categoryId = item.category_id,
+            creator = item.creator,
+            date = item.date,
+            favoritesCount = item.favorites_count,
+            items = item.items,
+            itemsId = item.items_id,
+            title = item.title,
+            wishPhotoURL = item.wish_photo_url
+        )
+    }
+
     fun mapToCategory(item: CategoryAdapterItem): Category {
         return Category(
             id = item.id,
@@ -72,23 +93,29 @@ object Mapper {
         return arrayList
     }
 
-    fun mapToCategoryAdapterItemList(list:  ArrayList<Category>): ArrayList<CategoryAdapterItem> {
+    fun mapToCategoryAdapterItemList(list: ArrayList<Category>): ArrayList<CategoryAdapterItem> {
         val arrayList = ArrayList<CategoryAdapterItem>()
         for (item in list)
             arrayList.add(mapToCategoryAdapterItem(item))
         return arrayList
     }
 
-    fun mapToWishArrayList(querySnapshot: QuerySnapshot?): java.util.ArrayList<Wish> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    fun mapToWishArrayList(documents: QuerySnapshot): ArrayList<Wish> {
+        val arrayList = ArrayList<Wish>()
+        for (document in documents)
+            arrayList.add(mapToWish(document))
+        return arrayList
     }
 
-    fun mapToWishArrayList(list : List<MyListDbEntity>): java.util.ArrayList<Wish> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    fun mapToWishArrayList(list: List<MyListDbEntity>): ArrayList<Wish> {
+        val arrayList = ArrayList<Wish>()
+        for (item in list)
+            arrayList.add(mapToWish(item))
+        return arrayList
     }
 
     fun mapToListDbEntity(wish: Wish): MyListDbEntity {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return MyListDbEntity(wish_id = wish.wishId!!, category = wish.category!!, category_id = wish.categoryId!!, creator = wish.creator!!, date = wish.date!!, favorites_count = wish.favoritesCount, items = wish.items!!, items_id = wish.itemsId!!, title = wish.title!!, wish_photo_url = wish.wishPhotoURL!!)
     }
 
 }

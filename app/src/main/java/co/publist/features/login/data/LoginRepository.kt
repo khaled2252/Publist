@@ -3,6 +3,7 @@ package co.publist.features.login.data
 import android.os.Bundle
 import co.publist.core.common.data.local.LocalDataSource
 import co.publist.core.common.data.models.User
+import co.publist.core.utils.Utils
 import co.publist.core.utils.Utils.Constants.EMAIL_FIELD
 import co.publist.core.utils.Utils.Constants.NAME_FIELD
 import co.publist.core.utils.Utils.Constants.PROFILE_PICTURE_URL_FIELD
@@ -10,6 +11,7 @@ import co.publist.core.utils.Utils.Constants.USERS_COLLECTION_PATH
 import co.publist.core.utils.Utils.Constants.USER_ACCOUNTS_COLLECTION_PATH
 import com.facebook.AccessToken
 import com.facebook.GraphRequest
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
@@ -195,11 +197,40 @@ class LoginRepository @Inject constructor(
                     }.addOnSuccessListener { documentSnapshot ->
                         val user = documentSnapshot.toObject(User::class.java)
                         user?.id=userDocId
-                        localDataSource.getSharedPreferences().setUser(user!!)
-                        singleEmitter.onSuccess(user)
+                        singleEmitter.onSuccess(user!!)
                     }
             }
         }
+    }
+
+    override fun setUserInformation(user: User) {
+        localDataSource.getSharedPreferences().setUser(user)
+    }
+lateinit var registeringUser : RegisteringUser
+    override fun googleSignInOneObservable(user: GoogleSignInAccount) : Single<User>
+    {
+        return authenticateGoogleUserWithFirebase(user.idToken!!)
+            .flatMap{uId ->
+                registeringUser = RegisteringUser(
+                    user.email!!,
+                    user.displayName!!,
+                    user.id!!,
+                    user.idToken!!,
+                    user.photoUrl.toString(),
+                    uId, Utils.Constants.PLATFORM_GOOGLE
+                )
+                fetchUserDocId(registeringUser.email!!)
+                    .flatMap {documentId ->
+                        fetchUserInformation(documentId)
+                            .flatMap {user ->
+                            setUserInformation(user)
+                            updateProfilePictureUrl(user.id!!, user.profilePictureUrl!!)
+                            addUidInUserAccounts(user.id!!, uId, registeringUser.platform!!)
+                                Single.just(user)
+                        }
+                    }
+
+            }
     }
 
 }

@@ -76,7 +76,10 @@ class LoginViewModel @Inject constructor(
     }
 
     private fun handleLoggedInUser(documentId: String, isNewUser: Boolean) {
-        subscribe(loginRepository.fetchUserInformation(documentId), Consumer {
+        subscribe(loginRepository.fetchUserInformation(documentId), Consumer {user ->
+            loginRepository.setUserInformation(user) // Set user in shared preferences
+
+            //Fetching selected categories
             //Checking remote , because if user didn't save categories it will not be in remote,
             //not checking local , because it will be empty in both cases (saved or not saved),
             //because new user is logging in i.e previous data is cleared after logout
@@ -84,6 +87,7 @@ class LoginViewModel @Inject constructor(
                 categoriesRepository.updateLocalSelectedCategories(categoryList)
                 userLoggedIn.postValue(Pair(isNewUser,categoryList.isEmpty()))
             })
+
             //todo fetch myFavorites
             //todo fetch myLists
 

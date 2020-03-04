@@ -65,7 +65,7 @@ class CreateWishViewModel @Inject constructor(
 
             val wish = Wish(
                 category = arrayListOf(category),
-                categoryId = arrayListOf(category.id),
+                categoryId = arrayListOf(category.id!!),
                 creator = creator,
                 date = date,
                 items = listMap,
