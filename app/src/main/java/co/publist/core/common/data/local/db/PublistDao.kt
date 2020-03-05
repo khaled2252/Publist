@@ -26,7 +26,10 @@ interface PublistDao {
     fun deleteCategories()
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertIntoMylists(item : MyListDbEntity)
+    fun insertMyLists(items : List<MyListDbEntity>)
+
+    @Insert
+    fun insertIntoMyLists(item : MyListDbEntity)
 
     @Query("SELECT * FROM myLists")
     fun getMyLists(): Single<List<MyListDbEntity>>

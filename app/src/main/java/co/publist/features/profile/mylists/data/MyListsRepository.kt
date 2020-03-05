@@ -60,4 +60,11 @@ class MyListsRepository @Inject constructor(
         }
     }
 
+    override fun addMyListsLocally(list : ArrayList<Wish>) {
+        AsyncTask.execute {
+            localDataSource.getPublistDataBase()
+                .addMyLists(Mapper.mapToMyListDbEntityList(list))
+        }
+    }
+
 }

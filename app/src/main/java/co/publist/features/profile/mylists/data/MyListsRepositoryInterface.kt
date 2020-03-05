@@ -9,4 +9,5 @@ interface MyListsRepositoryInterface {
     fun getLocalMyLists(): Single<ArrayList<Wish>>
     fun addToMyListsRemotely(wish : Wish): Completable
     fun addToMyListsLocally(wish : Wish)
+    fun addMyListsLocally(list: ArrayList<Wish>)
 }

@@ -9,6 +9,7 @@ import co.publist.R
 import co.publist.core.common.data.models.wish.Wish
 import co.publist.core.platform.BaseFragment
 import co.publist.core.platform.ViewModelFactory
+import co.publist.core.utils.Utils.Constants.PUBLIC
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.firebase.firestore.Query
 import kotlinx.android.synthetic.main.fragment_wishes.*
@@ -27,6 +28,8 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
 
     override fun getBaseViewModelFactory() = viewModelFactory
 
+    private var wishesType = -1
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -39,20 +42,46 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
     }
 
     private fun setObservers() {
-        viewModel.wishesQueryLiveData.observe(viewLifecycleOwner , Observer {query ->
+        viewModel.wishesType.observe(viewLifecycleOwner, Observer { type ->
+            wishesType = type
+            setListeners()
+
+        })
+        viewModel.wishesQueryLiveData.observe(viewLifecycleOwner, Observer { query ->
             setAdapter(query)
+            refreshLayout.isRefreshing = false
+        })
+
+        viewModel.wishesListLiveData.observe(viewLifecycleOwner, Observer { list ->
+            setAdapter(list)
         })
     }
 
-    private fun setAdapter(query : Query) {
+    private fun setListeners() {
+        if (wishesType == PUBLIC) {
+            refreshLayout.isEnabled = true
+            refreshLayout.setOnRefreshListener {
+                viewModel.loadData(PUBLIC)
+            }
+        } else
+            refreshLayout.isEnabled = false
+    }
+
+    private fun setAdapter(query: Query) {
         val options: FirestoreRecyclerOptions<Wish> =
             FirestoreRecyclerOptions.Builder<Wish>()
                 .setQuery(query, Wish::class.java)
                 .build()
 
-        val adapter = WishesAdapter(options)
+        val adapter = WishesFirestoreAdapter(options)
 
         adapter.startListening() //To fetch data from firestore
+        wishesRecyclerView.adapter = adapter
+    }
+
+    private fun setAdapter(list: ArrayList<Wish>) {
+
+        val adapter = WishesAdapter(list)
         wishesRecyclerView.adapter = adapter
     }
 

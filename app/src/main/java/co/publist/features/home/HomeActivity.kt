@@ -44,7 +44,7 @@ class HomeActivity : BaseActivity<HomeViewModel>() {
         ).executePendingBindings()
         wishesFragment =
             supportFragmentManager.findFragmentById(R.id.wishesFragment) as WishesFragment
-        wishesFragment.viewModel.onCreated(PUBLIC)
+        wishesFragment.viewModel.loadData(PUBLIC)
         viewModel.onCreated()
         setObservers()
         setListeners()
@@ -102,6 +102,7 @@ class HomeActivity : BaseActivity<HomeViewModel>() {
         addWishTextView.setOnClickListener {
             viewModel.handleAddWish()
         }
+
     }
 
 

@@ -115,7 +115,22 @@ object Mapper {
     }
 
     fun mapToListDbEntity(wish: Wish): MyListDbEntity {
-        return MyListDbEntity(wish_id = wish.wishId!!, category = wish.category!!, category_id = wish.categoryId!!, creator = wish.creator!!, date = wish.date!!, favorites_count = wish.favoritesCount, items = wish.items!!, items_id = wish.itemsId!!, title = wish.title!!, wish_photo_url = wish.wishPhotoURL!!)
+        return MyListDbEntity(
+            wish_id = wish.wishId!!,
+            category = wish.category!!,
+            category_id = wish.categoryId!!,
+            creator = wish.creator!!,
+            date = wish.date!!,
+            favorites_count = wish.favoritesCount,
+            items = wish.items!!,
+            items_id = wish.itemsId!!,
+            title = wish.title!!,
+            wish_photo_url = wish.wishPhotoURL!!
+        )
+    }
+
+    fun mapToMyListDbEntityList(list: ArrayList<Wish>): List<MyListDbEntity> {
+        return list.map { mapToListDbEntity(it) }
     }
 
 }

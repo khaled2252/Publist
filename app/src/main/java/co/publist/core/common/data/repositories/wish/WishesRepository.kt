@@ -1,6 +1,8 @@
 package co.publist.core.common.data.repositories.wish
 
 import android.net.Uri
+import co.publist.core.common.data.local.LocalDataSource
+import co.publist.core.common.data.models.Mapper
 import co.publist.core.common.data.models.wish.Wish
 import co.publist.core.utils.Utils.Constants.CATEGORY_ID_FIELD
 import co.publist.core.utils.Utils.Constants.DATE_FIELD
@@ -21,7 +23,8 @@ import javax.inject.Inject
 
 class WishesRepository @Inject constructor(
     var mFirebaseFirestore: FirebaseFirestore,
-    var mFirebaseStorage: FirebaseStorage
+    var mFirebaseStorage: FirebaseStorage,
+    var localDataSource: LocalDataSource
 ) : WishesRepositoryInterface {
     override fun getAllWishesQuery(): Query {
         return mFirebaseFirestore.collection(WISHES_COLLECTION_PATH)
@@ -34,39 +37,76 @@ class WishesRepository @Inject constructor(
             .orderBy(DATE_FIELD, Query.Direction.DESCENDING)
     }
 
-    override fun getUserListWishesQuery(userId : String): Query {
+    override fun getUserListWishesQuery(): Query {
+        val userId = localDataSource.getSharedPreferences().getUser()?.id
         return mFirebaseFirestore.collection(USERS_COLLECTION_PATH)
-            .document(userId)
+            .document(userId!!)
             .collection(MY_LISTS_COLLECTION_PATH)
             .orderBy(DATE_FIELD, Query.Direction.DESCENDING)
     }
 
-    override fun createWish(wish: Wish): Completable {
+    override fun getMyListWishes(): Single<ArrayList<Wish>> {
+        return localDataSource.getPublistDataBase().getMyLists()
+            .flatMap {
+                Single.just(Mapper.mapToWishArrayList(it))
+            }
+    }
 
-        return Completable.create { completableEmitter ->
+    override fun addWishToWishes(wish: Wish): Single<Wish> {
+
+        return Single.create { singleEmitter ->
             mFirebaseFirestore.collection(WISHES_COLLECTION_PATH).add(wish)
                 .addOnFailureListener {
-                    completableEmitter.onError(it)
-                }.addOnSuccessListener {
-                    mFirebaseFirestore.collection(WISHES_COLLECTION_PATH).document(it.id)
-                        .update("wishId", it.id)
+                    singleEmitter.onError(it)
+                }.addOnSuccessListener { documentReference ->
+                    mFirebaseFirestore.collection(WISHES_COLLECTION_PATH)
+                        .document(documentReference.id)
+                        .update("wishId", documentReference.id)
                         .addOnSuccessListener {
-                            completableEmitter.onComplete()
+                            wish.wishId = documentReference.id
+                            singleEmitter.onSuccess(wish)
                         }
-                        .addOnFailureListener {
+                        .addOnFailureListener { error ->
+                            singleEmitter.onError(error)
                         }
                 }
         }
     }
 
+    override fun addWishToMyLists(wish: Wish): Completable {
+        val userId = localDataSource.getSharedPreferences().getUser()?.id
+        return Completable.create { completableEmitter ->
+            mFirebaseFirestore
+                .collection(USERS_COLLECTION_PATH)
+                .document(userId!!)
+                .collection(MY_LISTS_COLLECTION_PATH)
+                .add(wish)
+                .addOnFailureListener {
+                    completableEmitter.onError(it)
+                }.addOnSuccessListener {
+                    completableEmitter.onComplete()
+                }
+        }
+    }
+
+    override fun createWish(wish: Wish): Completable {
+        return addWishToWishes(wish).flatMapCompletable {
+                addWishToMyLists(it).doOnComplete {
+                    Completable.complete()
+                }
+            }
+
+    }
+
+
     override fun uploadImage(imageUri: String): Single<String> {
         return Single.create { completableEmitter ->
             val reference =
-                mFirebaseStorage.reference.child("WishListCoverPhoto/" + UUID.randomUUID().toString().toUpperCase()+".jpeg")
+                mFirebaseStorage.reference.child("WishListCoverPhoto/" + UUID.randomUUID().toString().toUpperCase() + ".jpeg")
             var metadata = StorageMetadata.Builder()
                 .setContentType("application/octet-stream")
                 .build()
-            val uploadTask = reference.putFile(Uri.parse(imageUri),metadata)
+            val uploadTask = reference.putFile(Uri.parse(imageUri), metadata)
             uploadTask.continueWithTask(Continuation<UploadTask.TaskSnapshot, Task<Uri>> {
                 return@Continuation reference.downloadUrl
             }).addOnCompleteListener { task ->

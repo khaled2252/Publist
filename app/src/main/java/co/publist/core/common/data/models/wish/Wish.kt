@@ -5,7 +5,7 @@ import com.google.firebase.Timestamp
 
 data class Wish(
     var category:ArrayList<Category>? = null,
-    var categoryId: ArrayList<String> ,
+    var categoryId: ArrayList<String>? = null ,
     var date:Timestamp? = null,
     var title:String? = null,
     val creator: Creator? = null,

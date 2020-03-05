@@ -46,7 +46,11 @@ class DataBaseAccess @Inject constructor(context: Context) : DataBaseInterface {
     }
 
     override fun insertIntoMyLists(myList: MyListDbEntity) {
-        return publistDao.insertIntoMylists(myList)
+        return publistDao.insertIntoMyLists(myList)
+    }
+
+    override fun addMyLists(myList: List<MyListDbEntity>) {
+        return publistDao.insertMyLists(myList)
     }
 
     override fun deleteFromMyLists(wishId : String) {
@@ -63,6 +67,7 @@ interface DataBaseInterface {
     fun getMyLists():Single<List<MyListDbEntity>>
     fun getMyListsDataSource(): DataSource.Factory<Int, MyListDbEntity>
     fun insertIntoMyLists(myList: MyListDbEntity)
+    fun addMyLists(myList: List<MyListDbEntity>)
     fun deleteFromMyLists(wishId : String)
 
 }

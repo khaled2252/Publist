@@ -7,6 +7,7 @@ import co.publist.core.utils.Utils.Constants.PLATFORM_GOOGLE
 import co.publist.features.categories.data.CategoriesRepositoryInterface
 import co.publist.features.login.data.LoginRepositoryInterface
 import co.publist.features.login.data.RegisteringUser
+import co.publist.features.profile.mylists.data.MyListsRepositoryInterface
 import com.facebook.AccessToken
 import com.facebook.CallbackManager
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -19,7 +20,8 @@ class LoginViewModel @Inject constructor(
     private val loginRepository: LoginRepositoryInterface,
     private val mGoogleSignInClient: GoogleSignInClient,
     private val mCallbackManager: CallbackManager,
-    private val categoriesRepository: CategoriesRepositoryInterface
+    private val categoriesRepository: CategoriesRepositoryInterface,
+    private val myListsRepository: MyListsRepositoryInterface
 ) :
     BaseViewModel() {
 
@@ -89,8 +91,9 @@ class LoginViewModel @Inject constructor(
             })
 
             //todo fetch myFavorites
-            //todo fetch myLists
-
+            subscribe(myListsRepository.fetchMyLists(), Consumer {list ->
+                    myListsRepository.addMyListsLocally(list)
+            })
         })
     }
 
