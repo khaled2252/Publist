@@ -45,6 +45,18 @@ class WishesRepository @Inject constructor(
             .orderBy(DATE_FIELD, Query.Direction.DESCENDING)
     }
 
+    override fun getAllWishes(): Single<ArrayList<Wish>> {
+        return Single.create { singleEmitter ->
+            mFirebaseFirestore.collection(WISHES_COLLECTION_PATH)
+                .get()
+                .addOnFailureListener {
+                    singleEmitter.onError(it)
+                }.addOnSuccessListener {querySnapshot ->
+                    singleEmitter.onSuccess(Mapper.mapToWishArrayList(querySnapshot))
+                }
+        }
+    }
+
     override fun getMyListWishes(): Single<ArrayList<Wish>> {
         return localDataSource.getPublistDataBase().getMyLists()
             .flatMap {
@@ -52,7 +64,7 @@ class WishesRepository @Inject constructor(
             }
     }
 
-    override fun addWishToWishes(wish: Wish): Single<Wish> {
+    private fun addWishToWishes(wish: Wish): Single<Wish> {
 
         return Single.create { singleEmitter ->
             mFirebaseFirestore.collection(WISHES_COLLECTION_PATH).add(wish)
@@ -73,7 +85,7 @@ class WishesRepository @Inject constructor(
         }
     }
 
-    override fun addWishToMyLists(wish: Wish): Completable {
+    private fun addWishToMyLists(wish: Wish): Completable {
         val userId = localDataSource.getSharedPreferences().getUser()?.id
         return Completable.create { completableEmitter ->
             mFirebaseFirestore

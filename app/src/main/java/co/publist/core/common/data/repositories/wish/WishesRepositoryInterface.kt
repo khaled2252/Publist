@@ -8,9 +8,8 @@ interface WishesRepositoryInterface {
     fun getAllWishesQuery(): Query
     fun getFilteredWishesQuery(categoryList: ArrayList<String?>): Query
     fun getUserListWishesQuery(): Query
+    fun getAllWishes(): Single<ArrayList<Wish>>
     fun getMyListWishes(): Single<ArrayList<Wish>>
-    fun addWishToWishes(wish : Wish): Single<Wish>
-    fun addWishToMyLists(wish : Wish): Completable
     fun createWish(wish: Wish): Completable
     fun uploadImage(imageUri : String) : Single<String>
 }

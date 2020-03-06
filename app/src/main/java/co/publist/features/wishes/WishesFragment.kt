@@ -49,11 +49,11 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
         })
         viewModel.wishesQueryLiveData.observe(viewLifecycleOwner, Observer { query ->
             setAdapter(query)
-            refreshLayout.isRefreshing = false
         })
 
         viewModel.wishesListLiveData.observe(viewLifecycleOwner, Observer { list ->
             setAdapter(list)
+            refreshLayout.isRefreshing = false
         })
     }
 
@@ -75,7 +75,7 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
 
         val adapter = WishesFirestoreAdapter(options)
 
-        adapter.startListening() //To fetch data from firestore
+        adapter.startListening()
         wishesRecyclerView.adapter = adapter
     }
 
