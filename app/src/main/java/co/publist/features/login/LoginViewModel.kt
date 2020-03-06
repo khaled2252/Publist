@@ -88,12 +88,14 @@ class LoginViewModel @Inject constructor(
             subscribe(categoriesRepository.fetchUserSelectedCategories(documentId), Consumer { categoryList ->
                 categoriesRepository.updateLocalSelectedCategories(categoryList)
                 userLoggedIn.postValue(Pair(isNewUser,categoryList.isEmpty()))
+                //todo
+                subscribe(myListsRepository.fetchMyLists(), Consumer {list ->
+                    myListsRepository.addMyListsLocally(list)
+                })
             })
 
             //todo fetch myFavorites
-            subscribe(myListsRepository.fetchMyLists(), Consumer {list ->
-                    myListsRepository.addMyListsLocally(list)
-            })
+
         })
     }
 

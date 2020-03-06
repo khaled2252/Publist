@@ -112,16 +112,29 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
         viewModel.userLoggedIn.observe(this, Observer { pair ->
             val isNewUser = pair.first
             val isMyCategoriesEmpty = pair.second
-            if (isNewUser && isMyCategoriesEmpty)
-            {
-                Toast.makeText(this, getString(R.string.registered_successfully), Toast.LENGTH_SHORT).show()
-                startActivity(Intent(this, EditProfileActivity::class.java))
+            if (isMyCategoriesEmpty) {
+                if(isNewUser)
+                {
+                    Toast.makeText(
+                        this,
+                        getString(R.string.registered_successfully),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    startActivity(Intent(this, EditProfileActivity::class.java))
+                }
+                else{
+                    Toast.makeText(this, getString(R.string.welcome_back), Toast.LENGTH_SHORT)
+                        .show()
+                    startActivity(Intent(this, EditProfileActivity::class.java))
+
+                }
             }
-            else {
+            else{
                 Toast.makeText(this, getString(R.string.welcome_back), Toast.LENGTH_SHORT).show()
                 startActivity(Intent(this, HomeActivity::class.java))
-                finish()
             }
+            finish()
+
         })
     }
 

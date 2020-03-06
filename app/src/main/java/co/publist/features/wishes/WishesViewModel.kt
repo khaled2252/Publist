@@ -1,7 +1,6 @@
 package co.publist.features.wishes
 
 import androidx.lifecycle.MutableLiveData
-import co.publist.core.common.data.models.Mapper
 import co.publist.core.common.data.models.category.CategoryAdapterItem
 import co.publist.core.common.data.models.wish.Wish
 import co.publist.core.common.data.repositories.wish.WishesRepositoryInterface
@@ -44,12 +43,12 @@ class WishesViewModel @Inject constructor(
         list: ArrayList<Wish>,
         categories: ArrayList<CategoryAdapterItem>
     ): ArrayList<Wish> {
+        val filteredList = ArrayList(list)
         for (wish in list) {
-            if (!categories.contains(Mapper.mapToCategoryAdapterItem(wish.category!![0])))
-                list.remove(wish)
+            if (!categories.map {it.id }.contains(wish.categoryId!![0]))
+                filteredList.remove(wish)
         }
-
-        return list
+        return filteredList
     }
 
 }

@@ -72,11 +72,10 @@ class EditProfileActivity : BaseActivity<EditProfileViewModel>() {
             Toast.makeText(this, getString(R.string.saved_successfully), Toast.LENGTH_SHORT)
                 .show()
 
-            if(isComingFromProfile!!)
-               finish()
+            if (!isComingFromProfile!!) //from login or splash
+                startActivity(Intent(this, HomeActivity::class.java))
 
-            else //from login or splash
-            startActivity(Intent(this,HomeActivity::class.java))
+            finish()
         })
     }
 
