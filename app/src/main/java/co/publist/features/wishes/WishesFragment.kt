@@ -47,8 +47,10 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
             setListeners()
 
         })
-        viewModel.wishesQueryLiveData.observe(viewLifecycleOwner, Observer { query ->
-            setAdapter(query)
+        viewModel.wishesQueryLiveData.observe(viewLifecycleOwner, Observer { pair ->
+            val query = pair.first
+            val type = pair.second
+            setAdapter(query,type)
         })
 
         viewModel.wishesListLiveData.observe(viewLifecycleOwner, Observer { list ->
@@ -67,13 +69,15 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
             refreshLayout.isEnabled = false
     }
 
-    private fun setAdapter(query: Query) {
+    private fun setAdapter(query: Query,type : Int) {
         val options: FirestoreRecyclerOptions<Wish> =
             FirestoreRecyclerOptions.Builder<Wish>()
                 .setQuery(query, Wish::class.java)
                 .build()
 
-        val adapter = WishesFirestoreAdapter(options)
+        val adapter = WishesFirestoreAdapter(options,type){wish ->
+            viewModel.modifyFavorite(wish,false)
+        }
 
         adapter.startListening()
         wishesRecyclerView.adapter = adapter
@@ -81,7 +85,9 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
 
     private fun setAdapter(list: ArrayList<Wish>) {
 
-        val adapter = WishesAdapter(list)
+        val adapter = WishesAdapter(list){wish, isFavoriting ->
+            viewModel.modifyFavorite(wish,isFavoriting)
+        }
         wishesRecyclerView.adapter = adapter
     }
 

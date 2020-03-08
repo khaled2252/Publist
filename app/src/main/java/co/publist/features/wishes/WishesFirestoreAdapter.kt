@@ -3,9 +3,11 @@ package co.publist.features.wishes
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import co.publist.R
 import co.publist.core.common.data.models.wish.Wish
 import co.publist.core.utils.DataBindingAdapters.loadProfilePicture
 import co.publist.core.utils.DataBindingAdapters.loadWishImage
+import co.publist.core.utils.Utils.Constants.LISTS
 import co.publist.databinding.ItemWishBinding
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
@@ -15,7 +17,9 @@ import kotlin.collections.ArrayList
 
 
 class WishesFirestoreAdapter(
-    options: FirestoreRecyclerOptions<Wish>
+    options: FirestoreRecyclerOptions<Wish>,
+    val type: Int,
+    val unFavoriteListener : (wish : Wish) -> Unit
 ) :
     FirestoreRecyclerAdapter<Wish, WishesFirestoreAdapter.WishViewHolder>(options) {
     val todosAdapterArrayList = ArrayList<TodosAdapter>()
@@ -43,6 +47,20 @@ class WishesFirestoreAdapter(
         fun bind(
             wish: Wish
         ) {
+            binding.wishActionImageView.apply {
+                if (type == LISTS) {
+                    setImageResource(R.drawable.ic_dots)
+                    setOnClickListener {
+                        //todo open edit wish dialog
+                    }
+                } else {
+                    setImageResource(R.drawable.ic_heart_active)
+                    setOnClickListener {
+                        //todo confirmation dialog if user has completed item
+                        unFavoriteListener(wish)
+                    }
+                }
+            }
             binding.categoryNameTextView.text = wish.category!![0].name
             binding.titleTextView.text = wish.title
 

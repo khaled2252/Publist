@@ -6,6 +6,7 @@ import co.publist.core.common.data.models.Mapper
 import co.publist.core.common.data.models.wish.Wish
 import co.publist.core.utils.Utils.Constants.CATEGORY_ID_FIELD
 import co.publist.core.utils.Utils.Constants.DATE_FIELD
+import co.publist.core.utils.Utils.Constants.MY_FAVORITES_COLLECTION_PATH
 import co.publist.core.utils.Utils.Constants.MY_LISTS_COLLECTION_PATH
 import co.publist.core.utils.Utils.Constants.USERS_COLLECTION_PATH
 import co.publist.core.utils.Utils.Constants.WISHES_COLLECTION_PATH
@@ -44,6 +45,15 @@ class WishesRepository @Inject constructor(
             .collection(MY_LISTS_COLLECTION_PATH)
             .orderBy(DATE_FIELD, Query.Direction.DESCENDING)
     }
+
+    override fun getUserFavoriteWishesQuery(): Query {
+        val userId = localDataSource.getSharedPreferences().getUser()?.id
+        return mFirebaseFirestore.collection(USERS_COLLECTION_PATH)
+            .document(userId!!)
+            .collection(MY_FAVORITES_COLLECTION_PATH)
+            .orderBy(DATE_FIELD, Query.Direction.DESCENDING)
+    }
+
 
     override fun getAllWishes(): Single<ArrayList<Wish>> {
         return Single.create { singleEmitter ->

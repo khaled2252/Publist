@@ -3,6 +3,7 @@ package co.publist.features.wishes
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import co.publist.R
 import co.publist.core.common.data.models.wish.Wish
 import co.publist.core.utils.DataBindingAdapters
 import co.publist.databinding.ItemWishBinding
@@ -10,8 +11,9 @@ import org.ocpsoft.prettytime.PrettyTime
 import java.util.*
 import kotlin.collections.ArrayList
 
-class WishesAdapter (
-   val list: ArrayList<Wish>
+class WishesAdapter(
+    val list: ArrayList<Wish>,
+    val listener: (wish: Wish, isFavoriting: Boolean) -> Unit
 ) :
     RecyclerView.Adapter<WishesAdapter.WishViewHolder>() {
     val todosAdapterArrayList = ArrayList<TodosAdapter>()
@@ -28,12 +30,40 @@ class WishesAdapter (
 
     override fun getItemCount(): Int {
         return list.size
-        }
+    }
+
     inner class WishViewHolder(private val binding: ItemWishBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(
             wish: Wish
         ) {
+            if (wish.isCreator!!)
+                binding.wishActionImageView.apply {
+                    setImageResource(R.drawable.ic_dots)
+                    setOnClickListener {
+                        //todo open edit wish dialog
+                    }
+                }
+            else
+                binding.wishActionImageView.apply {
+                    if (wish.isFavorite!!) {
+                        setImageResource(R.drawable.ic_heart_active)
+                        setOnClickListener {
+                            setImageResource(R.drawable.ic_heart)
+                            wish.isFavorite = false
+                            listener(wish, false) //unFavorite
+                            notifyDataSetChanged()
+                        }
+                    } else {
+                        setOnClickListener {
+                            setImageResource(R.drawable.ic_heart_active)
+                            wish.isFavorite = true
+                            listener(wish, true) //favorite
+                            notifyDataSetChanged()
+                        }
+                    }
+                }
+
             binding.categoryNameTextView.text = wish.category!![0].name
             binding.titleTextView.text = wish.title
 

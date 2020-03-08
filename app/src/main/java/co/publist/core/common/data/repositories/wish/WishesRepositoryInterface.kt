@@ -8,6 +8,7 @@ interface WishesRepositoryInterface {
     fun getAllWishesQuery(): Query
     fun getFilteredWishesQuery(categoryList: ArrayList<String?>): Query
     fun getUserListWishesQuery(): Query
+    fun getUserFavoriteWishesQuery(): Query
     fun getAllWishes(): Single<ArrayList<Wish>>
     fun getMyListWishes(): Single<ArrayList<Wish>>
     fun createWish(wish: Wish): Completable
