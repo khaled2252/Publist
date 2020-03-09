@@ -3,6 +3,7 @@ package co.publist.features.editprofile
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.Gravity
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -10,6 +11,7 @@ import co.publist.R
 import co.publist.core.platform.BaseActivity
 import co.publist.core.platform.ViewModelFactory
 import co.publist.core.utils.DataBindingAdapters.loadProfilePicture
+import co.publist.core.utils.Utils.Constants.MINIMUM_SELECTED_CATEGORIES
 import co.publist.databinding.ActivityEditProfileBinding
 import co.publist.features.categories.CategoriesFragment
 import co.publist.features.home.HomeActivity
@@ -59,13 +61,12 @@ class EditProfileActivity : BaseActivity<EditProfileViewModel>() {
         })
 
         categoriesFragment.viewModel.actionButtonLiveData.observe(this, Observer { viable ->
-            if (!viable)
-                Toast.makeText(
-                    this,
-                    R.string.minimum_categories,
-                    Toast.LENGTH_SHORT
-                ).show()
-
+            if (!viable) {
+                val toast =
+                    Toast.makeText(this, getString(R.string.minimum_categories).format(MINIMUM_SELECTED_CATEGORIES), Toast.LENGTH_SHORT)
+                toast.setGravity(Gravity.BOTTOM, 0, 400)
+                toast.show()
+            }
         })
 
         categoriesFragment.viewModel.saveCategoriesLiveData.observe(this, Observer {

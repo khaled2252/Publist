@@ -13,11 +13,11 @@
     <string name="save">Save</string>
     <string name="edit_profile">Edit Profile</string>
     <string name="minimum_categories_create_wish">You must select a category</string>
-    <string name="minimum_categories">You must select at least 1 category</string>
+    <string name="minimum_categories">You must select at least %1$s category</string>
     <string name="saved_successfully">Saved!</string>
     <string name="registered_successfully">Registered successfully</string>
     <string name="welcome_back">Welcome back!</string>
-    <string name="maximum_categories">You can select at most 5 categories</string>
+    <string name="maximum_categories">You can select at most %1$d categories</string>
     <string name="maximum_categories_create_wish">You can select at most one category</string>
     <string name="go_to_details">Go to details</string>
     <string name="create_wish_categories_default">Choose Categories</string>
@@ -33,7 +33,7 @@
     <string name="permission_required">Permission is required to proceed</string>
     <string name="permission_from_settings">Enable permissions from settings to proceed</string>
     <string name="post_wish_success">Posted Successfully!</string>
-    <string name="minimum_wish_items">You have to make at least 3 items</string>
+    <string name="minimum_wish_items">You have to make at least %1$d items</string>
     <string name="camera_gallery_dialog_title">Add a Photo</string>
     <string name="select_from_gallery">Select photo from gallery</string>
     <string name="select_from_camera">Capture photo from camera</string>
@@ -41,4 +41,11 @@
     <string name="click_again_to_exit">Click back again to exit</string>
     <string name="lists">Lists</string>
     <string name="my_favorites">My Favorites</string>
+    <string name="remove_favorite">Removed from My Favorites</string>
+    <string name="add_favorite">Added to My Favorites</string>
+    <string name="no_favorites">No Favorites found</string>
+    <string name="start_favoriting">Start favoriting</string>
+    <string name="no_lists">No Lists</string>
+    <string name="create_your_first_list">Create your first list</string>
 </resources>
+

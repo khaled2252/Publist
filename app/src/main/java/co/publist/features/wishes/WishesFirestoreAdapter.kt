@@ -19,7 +19,8 @@ import kotlin.collections.ArrayList
 class WishesFirestoreAdapter(
     options: FirestoreRecyclerOptions<Wish>,
     val type: Int,
-    val unFavoriteListener : (wish : Wish) -> Unit
+    val displayPlaceHolder: () -> Unit,
+    val unFavoriteListener: (wish: Wish) -> Unit
 ) :
     FirestoreRecyclerAdapter<Wish, WishesFirestoreAdapter.WishViewHolder>(options) {
     val todosAdapterArrayList = ArrayList<TodosAdapter>()
@@ -28,6 +29,12 @@ class WishesFirestoreAdapter(
         val binding = ItemWishBinding.inflate(inflater)
         binding.executePendingBindings()
         return WishViewHolder(binding)
+    }
+
+    override fun onDataChanged() {
+        if (itemCount == 0)
+            displayPlaceHolder()
+        super.onDataChanged()
     }
 
     override fun getItemId(position: Int): Long {

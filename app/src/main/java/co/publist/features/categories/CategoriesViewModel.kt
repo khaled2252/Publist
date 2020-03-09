@@ -70,7 +70,7 @@ class CategoriesViewModel @Inject constructor(
                             )
                         )
                     })
-        })
+        },showLoading = false)
     }
 
     fun handleActionButton(isUser: Boolean) {

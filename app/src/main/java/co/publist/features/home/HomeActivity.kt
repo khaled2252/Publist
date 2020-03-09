@@ -5,6 +5,7 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import co.publist.R
@@ -50,7 +51,7 @@ class HomeActivity : BaseActivity<HomeViewModel>() {
     }
 
     override fun onStart() {
-        wishesFragment.viewModel.loadData(PUBLIC) // To reload data when coming back from another activity
+        wishesFragment.viewModel.loadData(PUBLIC)  // To reload data when coming back from another activity
         super.onStart()
     }
     override fun onDestroy() {
@@ -80,6 +81,14 @@ class HomeActivity : BaseActivity<HomeViewModel>() {
                 finish()
             else
                 startActivity(Intent(this, CreateWishActivity::class.java))
+        })
+
+        wishesFragment.viewModel.isFavoriteAdded.observe(this, Observer {isFavoriteAdded ->
+            if(isFavoriteAdded)
+                Toast.makeText(this,getString(R.string.add_favorite), Toast.LENGTH_SHORT).show()
+            else
+                Toast.makeText(this,getString(R.string.remove_favorite), Toast.LENGTH_SHORT).show()
+
         })
     }
 

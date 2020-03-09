@@ -141,7 +141,7 @@ object Mapper {
         return arrayList
     }
 
-    private fun mapToWishAdapterItem(item: Wish): WishAdapterItem {
+     fun mapToWishAdapterItem(item: Wish): WishAdapterItem {
         return WishAdapterItem(
             category = item.category,
             categoryId = item.categoryId,

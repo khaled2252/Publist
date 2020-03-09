@@ -27,6 +27,7 @@ class WishesViewModel @Inject constructor(
     val wishesQueryLiveData = MutableLiveData<Pair<Query, Int>>()
     val wishesListLiveData = MutableLiveData<ArrayList<WishAdapterItem>>()
     val wishesType = MutableLiveData<Int>()
+    val isFavoriteAdded = MutableLiveData<Boolean>()
     fun loadData(type: Int) {
         wishesType.postValue(type)
         when (type) {
@@ -57,7 +58,7 @@ class WishesViewModel @Inject constructor(
                         }
                     }, Consumer { list ->
                     wishesListLiveData.postValue(list as ArrayList<WishAdapterItem>?)
-                })
+                },showLoading = false)
             }
             LISTS -> wishesQueryLiveData.postValue(
                 Pair(
@@ -109,7 +110,7 @@ class WishesViewModel @Inject constructor(
         val filteredList = ArrayList(Mapper.mapToWishArrayList(list))
         for (wish in list) {
             if (!categories.map { it.id }.contains(wish.categoryId!![0]))
-                filteredList.removeAt(list.indexOf(wish))
+                filteredList.remove(Mapper.mapToWishAdapterItem(wish))
         }
         return filteredList
     }
@@ -117,10 +118,13 @@ class WishesViewModel @Inject constructor(
     fun modifyFavorite(wish: Wish, isFavoriting: Boolean) {
         if (isFavoriting)
             subscribe(
-                favoritesRepository.addToMyFavoritesRemotely(wish), Action { })
+                favoritesRepository.addToMyFavoritesRemotely(wish), Action {
+                    isFavoriteAdded.postValue(true)
+                },showLoading = false)
         else
             subscribe(
-                favoritesRepository.deleteFromFavoritesRemotely(wish.wishId!!), Action { })
+                favoritesRepository.deleteFromFavoritesRemotely(wish.wishId!!), Action {
+                    isFavoriteAdded.postValue(false)
+                },showLoading = false)
     }
-
 }

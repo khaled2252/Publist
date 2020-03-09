@@ -10,6 +10,7 @@ import co.publist.R
 import co.publist.core.common.data.models.category.CategoryAdapterItem
 import co.publist.core.platform.BaseFragment
 import co.publist.core.platform.ViewModelFactory
+import co.publist.core.utils.Utils.Constants.MAXIMUM_SELECTED_CATEGORIES
 import kotlinx.android.synthetic.main.fragment_categories.*
 import javax.inject.Inject
 
@@ -58,10 +59,14 @@ class CategoriesFragment : BaseFragment<CategoriesViewModel>() {
 
         viewModel.reachedMaximumSelection.observe(viewLifecycleOwner, Observer {isCreatingWish ->
             if(!isCreatingWish)
-            Toast.makeText(this.context, getString(R.string.maximum_categories), Toast.LENGTH_SHORT)
+            Toast.makeText(this.context, getString(R.string.maximum_categories).format(MAXIMUM_SELECTED_CATEGORIES), Toast.LENGTH_SHORT)
                 .show()
             else Toast.makeText(this.context, getString(R.string.maximum_categories_create_wish), Toast.LENGTH_SHORT)
                 .show()
+//            val toast =
+//                Toast.makeText(this.context, getString(R.string.maximum_categories_create_wish), Toast.LENGTH_SHORT)
+//            toast.setGravity(Gravity.BOTTOM, 0, 400)
+//            toast.show()
         })
     }
 

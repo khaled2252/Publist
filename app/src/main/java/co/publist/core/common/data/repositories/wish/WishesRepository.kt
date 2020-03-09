@@ -58,6 +58,7 @@ class WishesRepository @Inject constructor(
     override fun getAllWishes(): Single<ArrayList<Wish>> {
         return Single.create { singleEmitter ->
             mFirebaseFirestore.collection(WISHES_COLLECTION_PATH)
+                .orderBy(DATE_FIELD, Query.Direction.DESCENDING)
                 .get()
                 .addOnFailureListener {
                     singleEmitter.onError(it)

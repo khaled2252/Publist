@@ -8,6 +8,7 @@ import androidx.lifecycle.Observer
 import co.publist.R
 import co.publist.core.platform.BaseActivity
 import co.publist.core.platform.ViewModelFactory
+import co.publist.core.utils.Utils.Constants.MINIMUM_SELECTED_CATEGORIES
 import co.publist.features.categories.CategoriesFragment
 import co.publist.features.home.HomeActivity
 import kotlinx.android.synthetic.main.activity_intro.*
@@ -48,7 +49,7 @@ class IntroActivity : BaseActivity<IntroViewModel>() {
             {
                 Toast.makeText(
                     this,
-                    getString(R.string.minimum_categories),
+                    getString(R.string.minimum_categories).format(MINIMUM_SELECTED_CATEGORIES),
                     Toast.LENGTH_SHORT
                 ).show()
             }

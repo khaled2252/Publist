@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import androidx.lifecycle.Observer
 import co.publist.R
 import co.publist.core.common.data.models.Mapper
@@ -40,6 +41,7 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        refreshLayout.isRefreshing = true
         setObservers()
     }
 
@@ -52,7 +54,7 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
         viewModel.wishesQueryLiveData.observe(viewLifecycleOwner, Observer { pair ->
             val query = pair.first
             val type = pair.second
-            setAdapter(query,type)
+            setAdapter(query, type)
         })
 
         viewModel.wishesListLiveData.observe(viewLifecycleOwner, Observer { list ->
@@ -71,14 +73,17 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
             refreshLayout.isEnabled = false
     }
 
-    private fun setAdapter(query: Query,type : Int) {
+    private fun setAdapter(query: Query, type: Int) {
         val options: FirestoreRecyclerOptions<Wish> =
             FirestoreRecyclerOptions.Builder<Wish>()
                 .setQuery(query, Wish::class.java)
                 .build()
 
-        val adapter = WishesFirestoreAdapter(options,type){wish ->
-            viewModel.modifyFavorite(wish,false)
+        val adapter = WishesFirestoreAdapter(options, type, displayPlaceHolder = {
+            val view = this.parentFragment?.view?.findViewById<LinearLayout>(R.id.placeHolderView)
+            view?.visibility = View.VISIBLE
+        }) { wish ->
+            viewModel.modifyFavorite(wish, false)
         }
 
         adapter.startListening()
@@ -86,11 +91,16 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
     }
 
     private fun setAdapter(list: ArrayList<WishAdapterItem>) {
-
-        val adapter = WishesAdapter(list){ wish, isFavoriting ->
-            viewModel.modifyFavorite(Mapper.mapToWish(wish),isFavoriting)
+        refreshLayout.isRefreshing = false
+        if (list.isNotEmpty()) {
+            val adapter = WishesAdapter(list) { wish, isFavoriting ->
+                viewModel.modifyFavorite(Mapper.mapToWish(wish), isFavoriting)
+            }
+            wishesRecyclerView.adapter = adapter
+        } else {
+            //todo display placeholder
         }
-        wishesRecyclerView.adapter = adapter
+
     }
 
 }

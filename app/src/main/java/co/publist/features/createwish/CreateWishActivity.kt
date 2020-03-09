@@ -29,6 +29,7 @@ import co.publist.core.platform.ViewModelFactory
 import co.publist.core.utils.DragManageAdapter
 import co.publist.core.utils.Utils.Constants.CAMERA
 import co.publist.core.utils.Utils.Constants.GALLERY
+import co.publist.core.utils.Utils.Constants.MINIMUM_WISH_ITEMS
 import co.publist.core.utils.Utils.getDistanceBetweenViews
 import co.publist.core.utils.Utils.navigateToCamera
 import co.publist.core.utils.Utils.navigateToGallery
@@ -187,7 +188,7 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
             } else
                 Toast.makeText(
                     this,
-                    getString(R.string.minimum_wish_items),
+                    getString(R.string.minimum_wish_items).format(MINIMUM_WISH_ITEMS),
                     Toast.LENGTH_SHORT
                 ).show()
         })
