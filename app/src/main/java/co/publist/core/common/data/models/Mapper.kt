@@ -5,6 +5,7 @@ import co.publist.core.common.data.models.category.CategoryAdapterItem
 import co.publist.core.common.data.models.category.CategoryDbEntity
 import co.publist.core.common.data.models.wish.MyListDbEntity
 import co.publist.core.common.data.models.wish.Wish
+import co.publist.core.common.data.models.wish.WishAdapterItem
 import com.google.firebase.firestore.QueryDocumentSnapshot
 import com.google.firebase.firestore.QuerySnapshot
 
@@ -60,11 +61,11 @@ object Mapper {
         )
     }
 
-    fun mapToCategoryAdapterItem(category: Category): CategoryAdapterItem {
+    fun mapToCategoryAdapterItem(item: Category): CategoryAdapterItem {
         return CategoryAdapterItem(
-            id = category.id,
-            localizations = category.localizations,
-            name = category.name
+            id = item.id,
+            localizations = item.localizations,
+            name = item.name
         )
     }
 
@@ -114,23 +115,60 @@ object Mapper {
         return arrayList
     }
 
-    fun mapToListDbEntity(wish: Wish): MyListDbEntity {
+    fun mapToListDbEntity(item: Wish): MyListDbEntity {
         return MyListDbEntity(
-            wish_id = wish.wishId!!,
-            category = wish.category!!,
-            category_id = wish.categoryId!!,
-            creator = wish.creator!!,
-            date = wish.date!!,
-            favorites_count = wish.favoritesCount,
-            items = wish.items!!,
-            items_id = wish.itemsId!!,
-            title = wish.title!!,
-            wish_photo_url = wish.wishPhotoURL!!
+            wish_id = item.wishId!!,
+            category = item.category!!,
+            category_id = item.categoryId!!,
+            creator = item.creator!!,
+            date = item.date!!,
+            favorites_count = item.favoritesCount,
+            items = item.items!!,
+            items_id = item.itemsId!!,
+            title = item.title!!,
+            wish_photo_url = item.wishPhotoURL!!
         )
     }
 
     fun mapToMyListDbEntityList(list: ArrayList<Wish>): List<MyListDbEntity> {
         return list.map { mapToListDbEntity(it) }
+    }
+
+    fun mapToWishArrayList(list: ArrayList<Wish>): ArrayList<WishAdapterItem> {
+        val arrayList = ArrayList<WishAdapterItem>()
+        for (item in list)
+            arrayList.add(mapToWishAdapterItem(item))
+        return arrayList
+    }
+
+    private fun mapToWishAdapterItem(item: Wish): WishAdapterItem {
+        return WishAdapterItem(
+            category = item.category,
+            categoryId = item.categoryId,
+            creator = item.creator,
+            date = item.date,
+            favoritesCount = item.favoritesCount,
+            items = item.items,
+            itemsId = item.itemsId,
+            title = item.title,
+            wishId = item.wishId,
+            wishPhotoURL = item.wishPhotoURL
+        )
+    }
+
+    fun mapToWish(item: WishAdapterItem): Wish {
+        return Wish(
+            category = item.category,
+            categoryId = item.categoryId,
+            creator = item.creator,
+            date = item.date,
+            favoritesCount = item.favoritesCount,
+            items = item.items,
+            itemsId = item.itemsId,
+            title = item.title,
+            wishId = item.wishId,
+            wishPhotoURL = item.wishPhotoURL
+        )
     }
 
 }

@@ -44,12 +44,15 @@ class HomeActivity : BaseActivity<HomeViewModel>() {
         ).executePendingBindings()
         wishesFragment =
             supportFragmentManager.findFragmentById(R.id.wishesFragment) as WishesFragment
-        wishesFragment.viewModel.loadData(PUBLIC)
         viewModel.onCreated()
         setObservers()
         setListeners()
     }
 
+    override fun onStart() {
+        wishesFragment.viewModel.loadData(PUBLIC) // To reload data when coming back from another activity
+        super.onStart()
+    }
     override fun onDestroy() {
         viewModel.clearGuestSelectedCategories()
         super.onDestroy()

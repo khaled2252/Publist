@@ -6,7 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import co.publist.R
+import co.publist.core.common.data.models.Mapper
 import co.publist.core.common.data.models.wish.Wish
+import co.publist.core.common.data.models.wish.WishAdapterItem
 import co.publist.core.platform.BaseFragment
 import co.publist.core.platform.ViewModelFactory
 import co.publist.core.utils.Utils.Constants.PUBLIC
@@ -83,10 +85,10 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
         wishesRecyclerView.adapter = adapter
     }
 
-    private fun setAdapter(list: ArrayList<Wish>) {
+    private fun setAdapter(list: ArrayList<WishAdapterItem>) {
 
-        val adapter = WishesAdapter(list){wish, isFavoriting ->
-            viewModel.modifyFavorite(wish,isFavoriting)
+        val adapter = WishesAdapter(list){ wish, isFavoriting ->
+            viewModel.modifyFavorite(Mapper.mapToWish(wish),isFavoriting)
         }
         wishesRecyclerView.adapter = adapter
     }

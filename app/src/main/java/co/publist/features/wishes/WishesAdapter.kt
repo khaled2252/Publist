@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import co.publist.R
-import co.publist.core.common.data.models.wish.Wish
+import co.publist.core.common.data.models.wish.WishAdapterItem
 import co.publist.core.utils.DataBindingAdapters
 import co.publist.databinding.ItemWishBinding
 import org.ocpsoft.prettytime.PrettyTime
@@ -12,8 +12,8 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class WishesAdapter(
-    val list: ArrayList<Wish>,
-    val listener: (wish: Wish, isFavoriting: Boolean) -> Unit
+    val list: ArrayList<WishAdapterItem>,
+    val listener: (wish: WishAdapterItem, isFavoriting: Boolean) -> Unit
 ) :
     RecyclerView.Adapter<WishesAdapter.WishViewHolder>() {
     val todosAdapterArrayList = ArrayList<TodosAdapter>()
@@ -35,9 +35,9 @@ class WishesAdapter(
     inner class WishViewHolder(private val binding: ItemWishBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(
-            wish: Wish
+            wish: WishAdapterItem
         ) {
-            if (wish.isCreator!!)
+            if (wish.isCreator)
                 binding.wishActionImageView.apply {
                     setImageResource(R.drawable.ic_dots)
                     setOnClickListener {
@@ -46,7 +46,7 @@ class WishesAdapter(
                 }
             else
                 binding.wishActionImageView.apply {
-                    if (wish.isFavorite!!) {
+                    if (wish.isFavorite) {
                         setImageResource(R.drawable.ic_heart_active)
                         setOnClickListener {
                             setImageResource(R.drawable.ic_heart)

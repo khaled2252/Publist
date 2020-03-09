@@ -1,8 +1,10 @@
 package co.publist.features.wishes
 
 import androidx.lifecycle.MutableLiveData
+import co.publist.core.common.data.models.Mapper
 import co.publist.core.common.data.models.category.CategoryAdapterItem
 import co.publist.core.common.data.models.wish.Wish
+import co.publist.core.common.data.models.wish.WishAdapterItem
 import co.publist.core.common.data.repositories.user.UserRepositoryInterface
 import co.publist.core.common.data.repositories.wish.WishesRepositoryInterface
 import co.publist.core.platform.BaseViewModel
@@ -23,7 +25,7 @@ class WishesViewModel @Inject constructor(
     private val userRepository: UserRepositoryInterface
 ) : BaseViewModel() {
     val wishesQueryLiveData = MutableLiveData<Pair<Query, Int>>()
-    val wishesListLiveData = MutableLiveData<ArrayList<Wish>>()
+    val wishesListLiveData = MutableLiveData<ArrayList<WishAdapterItem>>()
     val wishesType = MutableLiveData<Int>()
     fun loadData(type: Int) {
         wishesType.postValue(type)
@@ -54,7 +56,7 @@ class WishesViewModel @Inject constructor(
                             }
                         }
                     }, Consumer { list ->
-                    wishesListLiveData.postValue(list)
+                    wishesListLiveData.postValue(list as ArrayList<WishAdapterItem>?)
                 })
             }
             LISTS -> wishesQueryLiveData.postValue(
@@ -74,9 +76,9 @@ class WishesViewModel @Inject constructor(
     }
 
     private fun filterWishesByCreator(
-        wishes: ArrayList<Wish>,
+        wishes: ArrayList<WishAdapterItem>,
         id: String
-    ): ArrayList<Wish> {
+    ): ArrayList<WishAdapterItem> {
         val filteredWishes = ArrayList(wishes)
         for (wish in filteredWishes)
             if (wish.creator?.id == id)
@@ -85,9 +87,9 @@ class WishesViewModel @Inject constructor(
     }
 
     private fun filterWishesByFavorites(
-        filteredWishes: ArrayList<Wish>,
+        filteredWishes: ArrayList<WishAdapterItem>,
         favoriteList: ArrayList<Wish>
-    ): ArrayList<Wish> {
+    ): ArrayList<WishAdapterItem> {
         val favoriteFilteredList = ArrayList(filteredWishes)
         for (wish in favoriteList) {
             if (filteredWishes.map { it.wishId }.contains(wish.wishId)) {
@@ -103,11 +105,11 @@ class WishesViewModel @Inject constructor(
     private fun filterWishesByCategories(
         list: ArrayList<Wish>,
         categories: ArrayList<CategoryAdapterItem>
-    ): ArrayList<Wish> {
-        val filteredList = ArrayList(list)
+    ): ArrayList<WishAdapterItem> {
+        val filteredList = ArrayList(Mapper.mapToWishArrayList(list))
         for (wish in list) {
             if (!categories.map { it.id }.contains(wish.categoryId!![0]))
-                filteredList.remove(wish)
+                filteredList.removeAt(list.indexOf(wish))
         }
         return filteredList
     }

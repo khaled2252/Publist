@@ -3,7 +3,7 @@ package co.publist.core.common.data.models.wish
 import co.publist.core.common.data.models.category.Category
 import com.google.firebase.Timestamp
 
-data class Wish(
+data class WishAdapterItem(
     var category: ArrayList<Category>? = null,
     var categoryId: ArrayList<String>? = null,
     var date: Timestamp? = null,
@@ -13,6 +13,7 @@ data class Wish(
     var wishPhotoURL: String? = null,
     var items: Map<String, Item>? = null,
     var itemsId: ArrayList<String>? = null,
-    var wishId: String? = null
-
+    var wishId: String? = null,
+    var isCreator: Boolean = false,
+    var isFavorite: Boolean = false
 )
