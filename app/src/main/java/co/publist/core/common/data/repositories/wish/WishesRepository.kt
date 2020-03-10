@@ -114,9 +114,7 @@ class WishesRepository @Inject constructor(
 
     override fun createWish(wish: Wish): Completable {
         return addWishToWishes(wish).flatMapCompletable {
-                addWishToMyLists(it).doOnComplete {
-                    Completable.complete()
-                }
+                addWishToMyLists(it)
             }
 
     }

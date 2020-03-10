@@ -7,12 +7,11 @@ import co.publist.core.utils.Utils.Constants.PLATFORM_GOOGLE
 import co.publist.features.categories.data.CategoriesRepositoryInterface
 import co.publist.features.login.data.LoginRepositoryInterface
 import co.publist.features.login.data.RegisteringUser
-import co.publist.features.profile.mylists.data.MyListsRepositoryInterface
 import com.facebook.AccessToken
 import com.facebook.CallbackManager
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
-import io.reactivex.functions.Action
+import io.reactivex.Single
 import io.reactivex.functions.Consumer
 import javax.inject.Inject
 
@@ -20,16 +19,79 @@ class LoginViewModel @Inject constructor(
     private val loginRepository: LoginRepositoryInterface,
     private val mGoogleSignInClient: GoogleSignInClient,
     private val mCallbackManager: CallbackManager,
-    private val categoriesRepository: CategoriesRepositoryInterface,
-    private val myListsRepository: MyListsRepositoryInterface
+    private val categoriesRepository: CategoriesRepositoryInterface
 ) :
     BaseViewModel() {
 
     val googleSignInClientLiveData = MutableLiveData<GoogleSignInClient>()
     val callbackManagerLiveData = MutableLiveData<CallbackManager>()
-    val userLoggedIn = MutableLiveData<Pair<Boolean,Boolean>>()
+    val userLoggedIn = MutableLiveData<Pair<Boolean, Boolean>>()
 
     private lateinit var registeringUser: RegisteringUser
+
+    private fun registerFlow(registeringUser: RegisteringUser): Single<Pair<Boolean, Boolean>> {
+        return loginRepository.fetchUserDocId(registeringUser.email!!)
+            .flatMap { documentId ->
+                registerUser(registeringUser, documentId)
+            }.flatMap { registeredUser ->
+                val userDocumentId = registeredUser.first
+                val isNewUser = registeredUser.second
+                loginRepository.fetchUserInformation(userDocumentId)
+                    .flatMap { user ->
+                        loginRepository.setUserInformation(user)  // Set user in shared preferences
+                        //Fetching selected categories
+                        //Checking remote , because if user didn't save categories it will not be in remote,
+                        //not checking local , because it will be empty in both cases (saved or not saved),
+                        //because new user is logging in i.e previous data is cleared after logout
+                        categoriesRepository.fetchUserSelectedCategories(userDocumentId)
+                            .flatMap { categoryList ->
+                                categoriesRepository.updateLocalSelectedCategories(
+                                    categoryList
+                                )
+                                Single.just(Pair(isNewUser, categoryList.isEmpty()))
+                            }
+                    }
+            }
+    }
+
+    private fun registerUser(
+        registeringUser: RegisteringUser,
+        documentId: String?
+    ): Single<Pair<String, Boolean>> {
+        if (documentId == "null") {
+            return loginRepository.addNewUser(
+                registeringUser.email!!,
+                registeringUser.name!!,
+                registeringUser.profilePictureUrl!!,
+                registeringUser.uId!!,
+                registeringUser.platform!!
+            ).flatMap { newDocumentId ->
+                loginRepository.addUidInUserAccounts(
+                    newDocumentId,
+                    registeringUser.uId!!,
+                    registeringUser.platform!!
+                )
+                    .toSingle {
+                        Pair(newDocumentId, true)
+                    }
+            }
+
+        } else {
+            return loginRepository.addUidInUserAccounts(
+                documentId!!,
+                registeringUser.uId!!,
+                registeringUser.platform!!
+            )
+                .to {
+                    loginRepository.updateProfilePictureUrl(
+                        documentId,
+                        registeringUser.profilePictureUrl!!
+                    ).toSingle {
+                        Pair(documentId, false)
+                    }
+                }
+        }
+    }
 
     fun postLiveData() {
         googleSignInClientLiveData.postValue(mGoogleSignInClient)
@@ -38,8 +100,7 @@ class LoginViewModel @Inject constructor(
 
     fun googleFirebaseAuth(user: GoogleSignInAccount) {
         subscribe(
-            loginRepository.authenticateGoogleUserWithFirebase(user.idToken!!),
-            Consumer { uId ->
+            loginRepository.authenticateGoogleUserWithFirebase(user.idToken!!).flatMap { uId ->
                 registeringUser = RegisteringUser(
                     user.email!!,
                     user.displayName!!,
@@ -48,104 +109,30 @@ class LoginViewModel @Inject constructor(
                     user.photoUrl.toString(),
                     uId, PLATFORM_GOOGLE
                 )
-                getDocumentId(user.email!!)
+                registerFlow(registeringUser)
+            },
+            Consumer { registeredUser ->
+                val isNewUser = registeredUser.first
+                val isCategoriesEmpty = registeredUser.second
+                userLoggedIn.postValue(Pair(isNewUser, isCategoriesEmpty))
             })
     }
 
     fun facebookFirebaseAuth(accessToken: AccessToken) {
         subscribe(
-            loginRepository.authenticateFacebookUserWithFirebase(accessToken.token),
-            Consumer { uId ->
-                setFaceBookGraphRequest(accessToken, uId)
+            loginRepository.authenticateFacebookUserWithFirebase(accessToken.token).flatMap { uId ->
+                loginRepository.setFaceBookGraphRequest(accessToken)
+                    .flatMap { registeringUser ->
+                        registeringUser.uId = uId
+                        registeringUser.platform = PLATFORM_FACEBOOK
+                        registerFlow(registeringUser)
+                    }
+            },
+            Consumer { registeredUser ->
+                val isNewUser = registeredUser.first
+                val isCategoriesEmpty = registeredUser.second
+                userLoggedIn.postValue(Pair(isNewUser, isCategoriesEmpty))
             })
     }
 
-    private fun getDocumentId(email: String) {
-        subscribe(loginRepository.fetchUserDocId(email), Consumer { documentId ->
-            registerUser(registeringUser, documentId)
-        })
-    }
-
-    private fun updateProfilePicture(documentId: String, profilePictureUrl: String) {
-        subscribe(loginRepository.updateProfilePictureUrl(documentId, profilePictureUrl), Action {
-        })
-    }
-
-    private fun addUidInUserAccounts(documentId: String, uId: String, platform: String) {
-        subscribe(loginRepository.addUidInUserAccounts(documentId, uId, platform), Action {
-            handleLoggedInUser(documentId, false)
-        })
-    }
-
-    private fun handleLoggedInUser(documentId: String, isNewUser: Boolean) {
-        subscribe(loginRepository.fetchUserInformation(documentId), Consumer {user ->
-            loginRepository.setUserInformation(user) // Set user in shared preferences
-
-            //Fetching selected categories
-            //Checking remote , because if user didn't save categories it will not be in remote,
-            //not checking local , because it will be empty in both cases (saved or not saved),
-            //because new user is logging in i.e previous data is cleared after logout
-            subscribe(categoriesRepository.fetchUserSelectedCategories(documentId), Consumer { categoryList ->
-                categoriesRepository.updateLocalSelectedCategories(categoryList)
-                userLoggedIn.postValue(Pair(isNewUser,categoryList.isEmpty()))
-                //todo
-                subscribe(myListsRepository.fetchMyLists(), Consumer {list ->
-                    myListsRepository.addMyListsLocally(list)
-                })
-            })
-
-            //todo fetch myFavorites
-
-        })
-    }
-
-    private fun addNewUser(
-        email: String,
-        name: String,
-        pictureUrl: String,
-        uid: String,
-        platform: String
-    ) {
-        subscribe(
-            loginRepository.addNewUser(email, name, pictureUrl, uid, platform),
-            Consumer { documentId ->
-                addNewUserAccount(documentId, uid, platform)
-            })
-    }
-
-    private fun addNewUserAccount(documentId: String, uId: String, platform: String) {
-        subscribe(loginRepository.addNewUserAccount(documentId, uId, platform), Action {
-            handleLoggedInUser(documentId, true)
-        })
-    }
-
-    private fun registerUser(
-        registeringUser: RegisteringUser,
-        documentId: String?
-    ) {
-        if (documentId == "null") {
-            addNewUser(
-                registeringUser.email!!,
-                registeringUser.name!!,
-                registeringUser.profilePictureUrl!!,
-                registeringUser.uId!!,
-                registeringUser.platform!!
-            )
-
-        } else {
-            updateProfilePicture(documentId!!, registeringUser.profilePictureUrl!!)
-            addUidInUserAccounts(documentId, registeringUser.uId!!, registeringUser.platform!!)
-        }
-    }
-
-    private fun setFaceBookGraphRequest(accessToken: AccessToken, uId: String) {
-        subscribe(
-            loginRepository.setFaceBookGraphRequest(accessToken),
-            Consumer {
-                registeringUser = it
-                registeringUser.uId = uId
-                registeringUser.platform = PLATFORM_FACEBOOK
-                getDocumentId(it.email!!)
-            })
-    }
 }
