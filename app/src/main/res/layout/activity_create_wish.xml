@@ -17,6 +17,36 @@
             android:layout_height="match_parent"
             tools:context=".features.createwish.CreateWishActivity">
 
+            <com.google.android.material.appbar.AppBarLayout
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:elevation="0dp">
+            <androidx.appcompat.widget.Toolbar
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/backArrowImageView"
+                    android:layout_width="10dp"
+                    android:layout_height="18dp"
+                    android:src="@drawable/ic_back"
+                    android:layout_marginStart="34dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:fontFamily="@font/sfprodisplaybold"
+                    android:text="@string/new_wish_list"
+                    android:textColor="@color/dimGray"
+                    android:textSize="20sp" />
+            </androidx.appcompat.widget.Toolbar>
+            </com.google.android.material.appbar.AppBarLayout>
 
             <TextView
                 android:id="@+id/addCategoryTextView"
@@ -33,7 +63,7 @@
                 android:textSize="20sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
             <View
                 android:id="@+id/dashed_line"

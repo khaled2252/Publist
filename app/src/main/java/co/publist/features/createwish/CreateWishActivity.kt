@@ -196,6 +196,9 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
     }
 
     private fun setListeners() {
+        backArrowImageView.setOnClickListener {
+            onBackPressed()
+        }
 
         activityCreateWishLayout.viewTreeObserver.addOnGlobalLayoutListener(object :
             ViewTreeObserver.OnGlobalLayoutListener {
@@ -205,6 +208,7 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
             }
 
         })
+
         postButton.setOnClickListener {
             viewModel.postWish()
         }

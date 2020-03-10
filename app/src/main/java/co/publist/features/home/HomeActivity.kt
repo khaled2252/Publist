@@ -19,7 +19,6 @@ import co.publist.features.login.LoginActivity
 import co.publist.features.profile.ProfileActivity
 import co.publist.features.wishes.WishesFragment
 import kotlinx.android.synthetic.main.activity_home.*
-import kotlinx.android.synthetic.main.app_bar.*
 import javax.inject.Inject
 
 

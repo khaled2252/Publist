@@ -47,5 +47,7 @@
     <string name="start_favoriting">Start favoriting</string>
     <string name="no_lists">No Lists</string>
     <string name="create_your_first_list">Create your first list</string>
+    <string name="new_wish_list">New Wish List</string>
+    <string name="profile">Profile</string>
 </resources>
 
