@@ -1,6 +1,7 @@
 package co.publist.features.createwish
 
 import androidx.lifecycle.MutableLiveData
+import co.publist.core.common.data.models.Mapper
 import co.publist.core.common.data.models.category.Category
 import co.publist.core.common.data.models.wish.Creator
 import co.publist.core.common.data.models.wish.Item
@@ -44,6 +45,7 @@ class CreateWishViewModel @Inject constructor(
 
     private fun createWish(category: Category, title: String, items: ArrayList<String>) {
 
+            val categoryWish = Mapper.mapToCategoryWish(category)
             val user = userRepository.getUser()
             val creator = Creator(
                 user!!.id!!,
@@ -64,7 +66,7 @@ class CreateWishViewModel @Inject constructor(
             }
 
             val wish = Wish(
-                category = arrayListOf(category),
+                category = arrayListOf(categoryWish),
                 categoryId = arrayListOf(category.id!!),
                 creator = creator,
                 date = date,

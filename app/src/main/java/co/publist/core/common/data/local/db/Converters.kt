@@ -3,6 +3,7 @@ package co.publist.core.common.data.local.db
 import androidx.room.TypeConverter
 import co.publist.core.common.data.models.category.Category
 import co.publist.core.common.data.models.category.Localization
+import co.publist.core.common.data.models.wish.CategoryWish
 import co.publist.core.common.data.models.wish.Creator
 import co.publist.core.common.data.models.wish.Item
 import com.google.firebase.Timestamp
@@ -25,6 +26,12 @@ class Converters {
     }
 
     @TypeConverter
+    fun toCategoryWish(json: String): CategoryWish {
+        val type = object : TypeToken<CategoryWish>(){}.type
+        return Gson().fromJson(json, type)
+    }
+
+    @TypeConverter
     fun toDate(json: String): Timestamp {
         val type = object : TypeToken<Timestamp>(){}.type
         return Gson().fromJson(json, type)
@@ -37,9 +44,9 @@ class Converters {
     }
 
     @TypeConverter
-    fun toCategoryArrayList(value: String?): ArrayList<Category?>? {
+    fun toCategoryArrayList(value: String?): ArrayList<CategoryWish?>? {
         val listType: Type =
-            object : TypeToken<ArrayList<Category>?>() {}.type
+            object : TypeToken<ArrayList<CategoryWish>?>() {}.type
         return Gson().fromJson(value, listType)
     }
 
@@ -64,8 +71,8 @@ class Converters {
     }
 
     @TypeConverter
-    fun toJson(category: Category): String {
-        val type = object: TypeToken<Category>(){}.type
+    fun toJson(category: CategoryWish): String {
+        val type = object: TypeToken<CategoryWish>(){}.type
         return Gson().toJson(category, type)
     }
 

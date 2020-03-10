@@ -3,6 +3,7 @@ package co.publist.core.common.data.models
 import co.publist.core.common.data.models.category.Category
 import co.publist.core.common.data.models.category.CategoryAdapterItem
 import co.publist.core.common.data.models.category.CategoryDbEntity
+import co.publist.core.common.data.models.wish.CategoryWish
 import co.publist.core.common.data.models.wish.MyListDbEntity
 import co.publist.core.common.data.models.wish.Wish
 import co.publist.core.common.data.models.wish.WishAdapterItem
@@ -171,4 +172,11 @@ object Mapper {
         )
     }
 
+    fun mapToCategoryWish(item : Category) : CategoryWish {
+        return CategoryWish(
+            id = item.id,
+            lang = "en",
+            name = item.name
+        )
+    }
 }

@@ -1,10 +1,9 @@
 package co.publist.core.common.data.models.wish
 
-import co.publist.core.common.data.models.category.Category
 import com.google.firebase.Timestamp
 
 data class WishAdapterItem(
-    var category: ArrayList<Category>? = null,
+    var category: ArrayList<CategoryWish>? = null,
     var categoryId: ArrayList<String>? = null,
     var date: Timestamp? = null,
     var title: String? = null,

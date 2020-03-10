@@ -8,23 +8,17 @@ import co.publist.features.categories.data.CategoriesRepositoryInterface
 import co.publist.features.login.data.LoginRepositoryInterface
 import co.publist.features.login.data.RegisteringUser
 import com.facebook.AccessToken
-import com.facebook.CallbackManager
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import io.reactivex.Single
 import io.reactivex.functions.Consumer
 import javax.inject.Inject
 
 class LoginViewModel @Inject constructor(
     private val loginRepository: LoginRepositoryInterface,
-    private val mGoogleSignInClient: GoogleSignInClient,
-    private val mCallbackManager: CallbackManager,
     private val categoriesRepository: CategoriesRepositoryInterface
 ) :
     BaseViewModel() {
 
-    val googleSignInClientLiveData = MutableLiveData<GoogleSignInClient>()
-    val callbackManagerLiveData = MutableLiveData<CallbackManager>()
     val userLoggedIn = MutableLiveData<Pair<Boolean, Boolean>>()
 
     private lateinit var registeringUser: RegisteringUser
@@ -91,11 +85,6 @@ class LoginViewModel @Inject constructor(
                     }
                 }
         }
-    }
-
-    fun postLiveData() {
-        googleSignInClientLiveData.postValue(mGoogleSignInClient)
-        callbackManagerLiveData.postValue(mCallbackManager)
     }
 
     fun googleFirebaseAuth(user: GoogleSignInAccount) {

@@ -32,28 +32,25 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
+    @Inject
+    lateinit var mGoogleSignInClient: GoogleSignInClient
+
+    @Inject
+    lateinit var mCallbackManager: CallbackManager
+
     override fun getBaseViewModel() = viewModel
 
     override fun getBaseViewModelFactory() = viewModelFactory
-
-    private var mCallbackManager: CallbackManager? = null
-    private var mGoogleSignInClient: GoogleSignInClient? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
         setObservers()
-        viewModel.postLiveData()
         setListeners()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        mCallbackManager?.let {
-            it.onActivityResult(requestCode, resultCode, data)
-            super.onActivityResult(requestCode, resultCode, data)
-        }
-
         if (requestCode == RC_SIGN_IN) {
             val task = GoogleSignIn.getSignedInAccountFromIntent(data)
             try {
@@ -63,8 +60,10 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
             } catch (e: ApiException) {
                 Timber.e(e, "Google sign in failed")
             }
-        }
+        } else
+            mCallbackManager.onActivityResult(requestCode, resultCode, data)
 
+        super.onActivityResult(requestCode, resultCode, data)
     }
 
     private fun setListeners() {
@@ -73,7 +72,7 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
         }
 
         buttonGoogle.setOnClickListener {
-            mGoogleSignInClient?.let {
+            mGoogleSignInClient.let {
                 val signInIntent = it.signInIntent
                 startActivityForResult(signInIntent, RC_SIGN_IN)
             }
@@ -82,54 +81,44 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
         buttonGuest.setOnClickListener {
             startActivity(Intent(this, IntroActivity::class.java))
         }
+
+        facebookLoginButton.setPermissions(EMAIL_PERMISSION, PROFILE_PICTURE_PERMISSION)
+        facebookLoginButton.registerCallback(
+            mCallbackManager,
+            object : FacebookCallback<LoginResult> {
+                override fun onSuccess(loginResult: LoginResult) {
+                    viewModel.facebookFirebaseAuth(loginResult.accessToken)
+                }
+
+                override fun onCancel() {
+                    Timber.d("facebook:onCancel")
+                }
+
+                override fun onError(error: FacebookException) {
+                    Timber.d(error, "facebook:onError")
+                }
+            })
     }
 
     private fun setObservers() {
-        viewModel.callbackManagerLiveData.observe(this, Observer {
-            mCallbackManager = it
-            facebookLoginButton.setPermissions(EMAIL_PERMISSION, PROFILE_PICTURE_PERMISSION)
-            facebookLoginButton.registerCallback(
-                mCallbackManager,
-                object : FacebookCallback<LoginResult> {
-                    override fun onSuccess(loginResult: LoginResult) {
-                        viewModel.facebookFirebaseAuth(loginResult.accessToken)
-                    }
-
-                    override fun onCancel() {
-                        Timber.d("facebook:onCancel")
-                    }
-
-                    override fun onError(error: FacebookException) {
-                        Timber.d(error, "facebook:onError")
-                    }
-                })
-        })
-
-        viewModel.googleSignInClientLiveData.observe(this, Observer {
-            mGoogleSignInClient = it
-        })
-
         viewModel.userLoggedIn.observe(this, Observer { pair ->
             val isNewUser = pair.first
             val isMyCategoriesEmpty = pair.second
             if (isMyCategoriesEmpty) {
-                if(isNewUser)
-                {
+                if (isNewUser) {
                     Toast.makeText(
                         this,
                         getString(R.string.registered_successfully),
                         Toast.LENGTH_SHORT
                     ).show()
                     startActivity(Intent(this, EditProfileActivity::class.java))
-                }
-                else{
+                } else {
                     Toast.makeText(this, getString(R.string.welcome_back), Toast.LENGTH_SHORT)
                         .show()
                     startActivity(Intent(this, EditProfileActivity::class.java))
 
                 }
-            }
-            else{
+            } else {
                 Toast.makeText(this, getString(R.string.welcome_back), Toast.LENGTH_SHORT).show()
                 startActivity(Intent(this, HomeActivity::class.java))
             }
