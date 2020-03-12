@@ -102,14 +102,14 @@ object Mapper {
         return arrayList
     }
 
-    fun mapToWishArrayList(documents: QuerySnapshot): ArrayList<Wish> {
+    fun mapToWishAdapterItemArrayList(documents: QuerySnapshot): ArrayList<Wish> {
         val arrayList = ArrayList<Wish>()
         for (document in documents)
             arrayList.add(mapToWish(document))
         return arrayList
     }
 
-    fun mapToWishArrayList(list: List<MyListDbEntity>): ArrayList<Wish> {
+    fun mapToWishAdapterItemArrayList(list: List<MyListDbEntity>): ArrayList<Wish> {
         val arrayList = ArrayList<Wish>()
         for (item in list)
             arrayList.add(mapToWish(item))
@@ -135,7 +135,7 @@ object Mapper {
         return list.map { mapToListDbEntity(it) }
     }
 
-    fun mapToWishArrayList(list: ArrayList<Wish>): ArrayList<WishAdapterItem> {
+    fun mapToWishAdapterItemArrayList(list: ArrayList<Wish>): ArrayList<WishAdapterItem> {
         val arrayList = ArrayList<WishAdapterItem>()
         for (item in list)
             arrayList.add(mapToWishAdapterItem(item))

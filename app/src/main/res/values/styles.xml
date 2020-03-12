@@ -25,7 +25,6 @@
 
     <!-- Edit Profile screen -->
     <style name="AppTheme.EditProfileScreen" >
-        <item name="android:windowNoTitle">false</item>
     </style>
 
     <!-- Create Wish screen -->

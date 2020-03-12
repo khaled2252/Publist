@@ -24,14 +24,14 @@ class MyListsRepository @Inject constructor(
                 .collection(MY_LISTS_COLLECTION_PATH)
                 .get()
                 .addOnSuccessListener { querySnapshot ->
-                    singleEmitter.onSuccess(Mapper.mapToWishArrayList(querySnapshot))
+                    singleEmitter.onSuccess(Mapper.mapToWishAdapterItemArrayList(querySnapshot))
                 }
         }
     }
 
     override fun getLocalMyLists(): Single<ArrayList<Wish>> {
         return localDataSource.getPublistDataBase().getMyLists().flatMap {
-            Single.just(Mapper.mapToWishArrayList(it))
+            Single.just(Mapper.mapToWishAdapterItemArrayList(it))
         }
     }
 

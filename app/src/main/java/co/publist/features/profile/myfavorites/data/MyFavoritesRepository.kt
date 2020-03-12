@@ -25,7 +25,7 @@ class MyFavoritesRepository @Inject constructor(
                 .addOnFailureListener {
                     singleEmitter.onError(it)
                 }.addOnSuccessListener { querySnapshot ->
-                    singleEmitter.onSuccess(Mapper.mapToWishArrayList(querySnapshot))
+                    singleEmitter.onSuccess(Mapper.mapToWishAdapterItemArrayList(querySnapshot))
                 }
         }
     }

@@ -36,28 +36,35 @@ class WishesViewModel @Inject constructor(
                     .flatMap { categories ->
                         val wishesSingleObservable = wishesRepository.getAllWishes()
                         if (categories.isNullOrEmpty())
-                            wishesSingleObservable //UnfilteredWishes for guest mode
+                            wishesSingleObservable.flatMap {list ->
+                                Single.just(Mapper.mapToWishAdapterItemArrayList(list)) //UnfilteredWishes for guest mode
+                            }
                         else {
                             wishesSingleObservable.flatMap { list ->
+                                var filteredWishes =
+                                    filterWishesByCategories(list, categories)
+
+                                if(userRepository.getUser() == null)
+                                    Single.just(filteredWishes) //FilteredWishes for guest mode
+                                else {
                                 favoritesRepository.getUserFavoriteWishes()
                                     .flatMap { favoriteList ->
-                                        var filteredWishes =
-                                            filterWishesByCategories(list, categories)
-                                        filteredWishes = filterWishesByFavorites(
-                                            filteredWishes,
-                                            favoriteList
-                                        )
-
-                                        filteredWishes = filterWishesByCreator(
-                                            filteredWishes,
-                                            userRepository.getUser()?.id!!
-                                        )
-                                        Single.just(filteredWishes)
+                                            filteredWishes = filterWishesByFavorites(
+                                                filteredWishes,
+                                                favoriteList
+                                            )
+888
+                                            filteredWishes = filterWishesByCreator(
+                                                filteredWishes,
+                                                userRepository.getUser()?.id!!
+                                            )
+                                            Single.just(filteredWishes)
+                                        }
                                     }
                             }
                         }
                     }, Consumer { list ->
-                    wishesListLiveData.postValue(list as ArrayList<WishAdapterItem>?)
+                    wishesListLiveData.postValue(list)
                 },showLoading = false)
             }
             LISTS -> wishesQueryLiveData.postValue(
@@ -107,7 +114,7 @@ class WishesViewModel @Inject constructor(
         list: ArrayList<Wish>,
         categories: ArrayList<CategoryAdapterItem>
     ): ArrayList<WishAdapterItem> {
-        val filteredList = ArrayList(Mapper.mapToWishArrayList(list))
+        val filteredList = ArrayList(Mapper.mapToWishAdapterItemArrayList(list))
         for (wish in list) {
             if (!categories.map { it.id }.contains(wish.categoryId!![0]))
                 filteredList.remove(Mapper.mapToWishAdapterItem(wish))

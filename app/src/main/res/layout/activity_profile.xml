@@ -70,7 +70,7 @@
             android:layout_marginEnd="@dimen/horizontalDefaultMargin"
             android:fontFamily="@font/sfprodisplaybold"
             android:gravity="center"
-            android:textColor="@color/dimGray"
+            android:textColor="@android:color/black"
             android:textSize="16sp"
             app:layout_constraintBottom_toTopOf="@id/tab_layout"
             app:layout_constraintEnd_toEndOf="parent"

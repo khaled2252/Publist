@@ -81,6 +81,10 @@ class EditProfileActivity : BaseActivity<EditProfileViewModel>() {
     }
 
     private fun setListeners() {
+        backArrowImageView.setOnClickListener {
+            onBackPressed()
+        }
+
         buttonSave.setOnClickListener {
             categoriesFragment.viewModel.handleActionButton(true)
         }

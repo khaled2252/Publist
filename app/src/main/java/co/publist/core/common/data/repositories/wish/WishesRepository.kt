@@ -63,7 +63,7 @@ class WishesRepository @Inject constructor(
                 .addOnFailureListener {
                     singleEmitter.onError(it)
                 }.addOnSuccessListener {querySnapshot ->
-                    singleEmitter.onSuccess(Mapper.mapToWishArrayList(querySnapshot))
+                    singleEmitter.onSuccess(Mapper.mapToWishAdapterItemArrayList(querySnapshot))
                 }
         }
     }
@@ -71,7 +71,7 @@ class WishesRepository @Inject constructor(
     override fun getMyListWishes(): Single<ArrayList<Wish>> {
         return localDataSource.getPublistDataBase().getMyLists()
             .flatMap {
-                Single.just(Mapper.mapToWishArrayList(it))
+                Single.just(Mapper.mapToWishAdapterItemArrayList(it))
             }
     }
 
