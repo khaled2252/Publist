@@ -79,12 +79,17 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
                 .setQuery(query, Wish::class.java)
                 .build()
 
-        val adapter = WishesFirestoreAdapter(options, type, displayPlaceHolder = {
-            val view = this.parentFragment?.view?.findViewById<LinearLayout>(R.id.placeHolderView)
-            view?.visibility = View.VISIBLE
-        }) { wish ->
-            viewModel.modifyFavorite(wish, false)
-        }
+        val adapter =
+            WishesFirestoreAdapter(options, type, displayPlaceHolder = { displayPlaceHolder ->
+                val view =
+                    this.parentFragment?.view?.findViewById<LinearLayout>(R.id.placeHolderView)
+                if (displayPlaceHolder)
+                    view?.visibility = View.VISIBLE
+                else
+                    view?.visibility = View.GONE
+            }) { wish ->
+                viewModel.modifyFavorite(wish, false)
+            }
 
         adapter.startListening()
         wishesRecyclerView.adapter = adapter

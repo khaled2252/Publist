@@ -19,7 +19,7 @@ import kotlin.collections.ArrayList
 class WishesFirestoreAdapter(
     options: FirestoreRecyclerOptions<Wish>,
     val type: Int,
-    val displayPlaceHolder: () -> Unit,
+    val displayPlaceHolder: (Boolean) -> Unit,
     val unFavoriteListener: (wish: Wish) -> Unit
 ) :
     FirestoreRecyclerAdapter<Wish, WishesFirestoreAdapter.WishViewHolder>(options) {
@@ -33,7 +33,10 @@ class WishesFirestoreAdapter(
 
     override fun onDataChanged() {
         if (itemCount == 0)
-            displayPlaceHolder()
+            displayPlaceHolder(true)
+        else
+            displayPlaceHolder(false)
+
         super.onDataChanged()
     }
 
