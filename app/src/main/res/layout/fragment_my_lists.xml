@@ -5,50 +5,57 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <LinearLayout
-        android:id="@+id/placeHolderView"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:visibility="gone">
+        android:layout_height="match_parent">
 
-        <ImageView
-            android:layout_width="167dp"
-            android:layout_height="103dp"
-            android:src="@drawable/bg_empty_list" />
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/wishesFragment"
+            android:name="co.publist.features.wishes.WishesFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="29dp"
-            android:fontFamily="@font/sfprodisplaysemibold"
-            android:text="@string/no_lists"
-            android:textColor="@color/outerSpace"
-            android:textSize="20sp" />
+        <LinearLayout
+            android:id="@+id/placeHolderView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/sfprodisplayregular"
-            android:text="@string/create_your_first_list"
-            android:textColor="@color/dimGray"
-            android:textSize="18sp" />
+            <ImageView
+                android:layout_width="167dp"
+                android:layout_height="103dp"
+                android:src="@drawable/bg_empty_list" />
 
-        <ImageView
-            android:layout_width="62dp"
-            android:layout_height="62dp"
-            android:layout_marginTop="27dp"
-            android:src="@drawable/btn_add_list" />
-    </LinearLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="29dp"
+                android:fontFamily="@font/sfprodisplaysemibold"
+                android:text="@string/no_lists"
+                android:textColor="@color/outerSpace"
+                android:textSize="20sp" />
 
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/wishesFragment"
-        android:name="co.publist.features.wishes.WishesFragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/sfprodisplayregular"
+                android:text="@string/create_your_first_list"
+                android:textColor="@color/dimGray"
+                android:textSize="18sp" />
+
+            <ImageView
+                android:id="@+id/addListBtn"
+                android:layout_width="62dp"
+                android:layout_height="62dp"
+                android:layout_marginTop="27dp"
+                android:src="@drawable/btn_add_list" />
+        </LinearLayout>
+    </FrameLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
