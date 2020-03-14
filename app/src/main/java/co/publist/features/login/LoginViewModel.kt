@@ -37,7 +37,7 @@ class LoginViewModel @Inject constructor(
                         //Checking remote , because if user didn't save categories it will not be in remote,
                         //not checking local , because it will be empty in both cases (saved or not saved),
                         //because new user is logging in i.e previous data is cleared after logout
-                        categoriesRepository.fetchUserSelectedCategories(userDocumentId)
+                        categoriesRepository.fetchUserSelectedCategories()
                             .flatMap { categoryList ->
                                 categoriesRepository.updateLocalSelectedCategories(
                                     categoryList

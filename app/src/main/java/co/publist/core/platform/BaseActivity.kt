@@ -1,12 +1,15 @@
 package co.publist.core.platform
 
 
+import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
+import android.view.WindowManager
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.annotation.CallSuper
@@ -63,12 +66,26 @@ abstract class BaseActivity<MBaseViewModel : BaseViewModel>
         val progressBar = findViewById<ProgressBar>(R.id.progress_circular)
         if (progressBar != null)
             progressBar.visibility = View.GONE
+
+        val progressBarHolder = findViewById<FrameLayout>(R.id.progressBarHolder)
+        if (progressBarHolder != null)
+            progressBarHolder.visibility = View.GONE
+
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+        window.statusBarColor = resources.getColor(R.color.sunsetOrange)
     }
 
     open fun showLoading() {
         val progressBar = findViewById<ProgressBar>(R.id.progress_circular)
         if (progressBar != null)
             progressBar.visibility = View.VISIBLE
+
+        val progressBarHolder = findViewById<FrameLayout>(R.id.progressBarHolder)
+        if (progressBarHolder != null)
+            progressBarHolder.visibility = View.VISIBLE
+
+        window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+        window.statusBarColor = Color.TRANSPARENT
     }
 
 //    override fun attachBaseContext(newBase: Context) {
@@ -111,8 +128,7 @@ abstract class BaseActivity<MBaseViewModel : BaseViewModel>
             Toast.makeText(this, getString(R.string.click_again_to_exit), Toast.LENGTH_SHORT).show()
 
             Handler().postDelayed({ doubleBackToExitPressedOnce = false }, 2000)
-        }
-        else
+        } else
             super.onBackPressed()
     }
 

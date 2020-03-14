@@ -40,7 +40,7 @@ class IntroActivity : BaseActivity<IntroViewModel>() {
     private fun onCreated() {
         categoriesFragment =
             supportFragmentManager.findFragmentById(R.id.categoriesFragment) as CategoriesFragment
-        categoriesFragment.viewModel.getSelectedCategories()
+        categoriesFragment.viewModel.getCategories()
     }
 
     private fun setObservers(){

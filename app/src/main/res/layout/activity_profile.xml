@@ -23,12 +23,17 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <ImageView
-                android:id="@+id/backArrowImageView"
-                android:layout_width="10dp"
-                android:layout_height="18dp"
-                android:src="@drawable/ic_back"
-                android:layout_marginStart="34dp"/>
+            <LinearLayout
+                android:id="@+id/backArrowImageViewLayout"
+                android:layout_width="50dp"
+                android:layout_height="40dp"
+                android:gravity="center">
+                <ImageView
+                    android:layout_width="10dp"
+                    android:layout_height="18dp"
+                    android:src="@drawable/ic_back"
+                    />
+            </LinearLayout>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -39,14 +44,19 @@
                 android:textColor="@color/dimGray"
                 android:textSize="16sp" />
 
+            <LinearLayout
+                android:id="@+id/editProfileImageViewLayout"
+                android:layout_width="50dp"
+                android:layout_height="40dp"
+                android:layout_gravity="top|end"
+                android:layout_marginEnd="20dp"
+                android:gravity="center">
             <ImageView
-                android:id="@+id/editProfileImageView"
                 android:layout_width="17dp"
                 android:layout_height="17dp"
-                android:layout_gravity="top|end"
-                android:layout_marginTop="30dp"
-                android:layout_marginEnd="30dp"
                 android:src="@drawable/ic_edit" />
+            </LinearLayout>
+
         </androidx.appcompat.widget.Toolbar>
 
         <ImageView

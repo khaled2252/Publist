@@ -155,7 +155,7 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
             supportFragmentManager.findFragmentById(R.id.categoriesFragment) as CategoriesFragment
         sheetBehavior = BottomSheetBehavior.from(categoriesFragmentBottomSheet)
         categoriesFragment.viewModel.isCreatingWish = true
-        categoriesFragment.viewModel.getSelectedCategories()
+        categoriesFragment.viewModel.getCategories()
     }
 
     private fun setAdapter() {
@@ -196,7 +196,7 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
     }
 
     private fun setListeners() {
-        backArrowImageView.setOnClickListener {
+        backArrowImageViewLayout.setOnClickListener {
             onBackPressed()
         }
 

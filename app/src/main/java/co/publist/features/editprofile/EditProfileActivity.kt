@@ -4,6 +4,7 @@ package co.publist.features.editprofile
 import android.content.Intent
 import android.os.Bundle
 import android.view.Gravity
+import android.view.View
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -42,6 +43,9 @@ class EditProfileActivity : BaseActivity<EditProfileViewModel>() {
             R.layout.activity_edit_profile
         ).executePendingBindings()
         isComingFromProfile = this.intent.getBooleanExtra("isComingFromProfile",false)
+        if(!isComingFromProfile!!)
+            backArrowImageViewLayout.visibility = View.GONE
+
         onCreated()
         setObservers()
         setListeners()
@@ -50,7 +54,7 @@ class EditProfileActivity : BaseActivity<EditProfileViewModel>() {
     private fun onCreated() {
         categoriesFragment =
             supportFragmentManager.findFragmentById(R.id.categoriesFragment) as CategoriesFragment
-        categoriesFragment.viewModel.getSelectedCategories()
+        categoriesFragment.viewModel.getCategories()
         viewModel.onCreated()
     }
 
@@ -81,7 +85,7 @@ class EditProfileActivity : BaseActivity<EditProfileViewModel>() {
     }
 
     private fun setListeners() {
-        backArrowImageView.setOnClickListener {
+        backArrowImageViewLayout.setOnClickListener {
             onBackPressed()
         }
 

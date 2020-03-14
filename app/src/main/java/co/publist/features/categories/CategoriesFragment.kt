@@ -38,6 +38,7 @@ class CategoriesFragment : BaseFragment<CategoriesViewModel>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         setObservers()
+        setAdapter(arrayListOf())
     }
 
     private fun setAdapter(categoriesList : ArrayList<CategoryAdapterItem>) {
@@ -49,15 +50,11 @@ class CategoriesFragment : BaseFragment<CategoriesViewModel>() {
     }
 
     private fun setObservers() {
-        viewModel.initialCategoriesList.observe(viewLifecycleOwner, Observer { list ->
-            setAdapter(list)
-        })
-
-        viewModel.updatedCategoryList.observe(viewLifecycleOwner, Observer { newList ->
+        viewModel.categoriesListLiveData.observe(viewLifecycleOwner, Observer { newList ->
             adapter.updateList(newList)
         })
 
-        viewModel.reachedMaximumSelection.observe(viewLifecycleOwner, Observer {isCreatingWish ->
+        viewModel.reachedMaximumSelectionLiveData.observe(viewLifecycleOwner, Observer { isCreatingWish ->
             if(!isCreatingWish)
             Toast.makeText(this.context, getString(R.string.maximum_categories).format(MAXIMUM_SELECTED_CATEGORIES), Toast.LENGTH_SHORT)
                 .show()

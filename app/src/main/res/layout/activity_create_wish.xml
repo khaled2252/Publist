@@ -30,12 +30,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
+                <LinearLayout
+                    android:id="@+id/backArrowImageViewLayout"
+                    android:layout_width="50dp"
+                    android:layout_height="40dp"
+                    android:gravity="center">
                 <ImageView
-                    android:id="@+id/backArrowImageView"
                     android:layout_width="10dp"
                     android:layout_height="18dp"
                     android:src="@drawable/ic_back"
-                    android:layout_marginStart="34dp"/>
+                    />
+                </LinearLayout>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -230,8 +235,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_done"
-                android:layout_marginTop="2dp"
-                android:layout_marginEnd="20dp"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:paddingTop="2dp"
                 android:layout_gravity="center|end"
                 />
             </FrameLayout>
@@ -304,6 +310,16 @@
             android:text="@string/choose_category_done"
             app:cornerRadius="10dp" />
     </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/progressBarHolder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="0.35"
+        android:animateLayoutChanges="true"
+        android:background="@color/dimGray"
+        android:visibility="gone">
+    </FrameLayout>
 
     <ProgressBar
         android:id="@+id/progress_circular"

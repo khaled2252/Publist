@@ -22,12 +22,17 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <ImageView
-                android:id="@+id/backArrowImageView"
-                android:layout_width="10dp"
-                android:layout_height="18dp"
-                android:src="@drawable/ic_back"
-                android:layout_marginStart="34dp"/>
+            <LinearLayout
+                android:id="@+id/backArrowImageViewLayout"
+                android:layout_width="50dp"
+                android:layout_height="40dp"
+                android:gravity="center">
+                <ImageView
+                    android:layout_width="10dp"
+                    android:layout_height="18dp"
+                    android:src="@drawable/ic_back"
+                    />
+            </LinearLayout>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -112,6 +117,7 @@
             android:layout_height="wrap_content"
             android:indeterminate="true"
             android:visibility="gone"
+            android:backgroundTint="@color/sunsetOrange"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

@@ -65,11 +65,11 @@ class ProfileActivity : BaseActivity<ProfileViewModel>() {
     }
 
     private fun setListeners() {
-       backArrowImageView.setOnClickListener {
+       backArrowImageViewLayout.setOnClickListener {
             onBackPressed()
         }
 
-        editProfileImageView.setOnClickListener {
+        editProfileImageViewLayout.setOnClickListener {
             val intent = Intent(this, EditProfileActivity::class.java)
             intent.putExtra("isComingFromProfile",true)
             startActivity(intent)

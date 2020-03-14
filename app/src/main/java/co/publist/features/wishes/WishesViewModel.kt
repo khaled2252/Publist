@@ -53,7 +53,6 @@ class WishesViewModel @Inject constructor(
                                                 filteredWishes,
                                                 favoriteList
                                             )
-888
                                             filteredWishes = filterWishesByCreator(
                                                 filteredWishes,
                                                 userRepository.getUser()?.id!!
