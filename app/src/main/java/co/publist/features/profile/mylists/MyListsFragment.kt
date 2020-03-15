@@ -1,5 +1,6 @@
 package co.publist.features.profile.mylists
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,7 +9,9 @@ import co.publist.R
 import co.publist.core.platform.BaseFragment
 import co.publist.core.platform.ViewModelFactory
 import co.publist.core.utils.Utils.Constants.LISTS
+import co.publist.features.createwish.CreateWishActivity
 import co.publist.features.wishes.WishesFragment
+import kotlinx.android.synthetic.main.fragment_my_lists.*
 import javax.inject.Inject
 
 class MyListsFragment : BaseFragment<MyListsViewModel>() {
@@ -35,10 +38,12 @@ class MyListsFragment : BaseFragment<MyListsViewModel>() {
         wishesFragment =
             childFragmentManager.findFragmentById(R.id.wishesFragment) as WishesFragment
         wishesFragment.viewModel.loadData(LISTS)
-        setObservers()
+        setListeners()
     }
 
-    private fun setObservers() {
-
+    private fun setListeners() {
+        addListBtn.setOnClickListener {
+            startActivity(Intent(this.context, CreateWishActivity::class.java))
+        }
     }
 }

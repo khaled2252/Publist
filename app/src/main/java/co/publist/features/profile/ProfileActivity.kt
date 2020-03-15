@@ -43,6 +43,7 @@ class ProfileActivity : BaseActivity<ProfileViewModel>() {
         profile_pager!!.orientation = ViewPager2.ORIENTATION_HORIZONTAL
         profile_pager!!.adapter = profilePagerAdapter
         profile_pager!!.isUserInputEnabled = true // for swiping
+        profile_pager!!.offscreenPageLimit = 2 // to pre-load pages? to avoid loading pages when swiped (slow animation)
         TabLayoutMediator(tab_layout, profile_pager,
             TabLayoutMediator.TabConfigurationStrategy { tab, position ->
                 when (position) {
