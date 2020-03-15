@@ -20,7 +20,8 @@ class WishesFirestoreAdapter(
     options: FirestoreRecyclerOptions<Wish>,
     val type: Int,
     val displayPlaceHolder: (Boolean) -> Unit,
-    val unFavoriteListener: (wish: Wish) -> Unit
+    val unFavoriteListener: (wish: Wish) -> Unit,
+    val detailsListener: (wish: Wish) -> Unit
 ) :
     FirestoreRecyclerAdapter<Wish, WishesFirestoreAdapter.WishViewHolder>(options) {
     val todosAdapterArrayList = ArrayList<TodosAdapter>()
@@ -61,7 +62,7 @@ class WishesFirestoreAdapter(
                 if (type == LISTS) {
                     setImageResource(R.drawable.ic_dots)
                     setOnClickListener {
-                        //todo open edit wish dialog
+                        detailsListener(wish)
                     }
                 } else {
                     setImageResource(R.drawable.ic_heart_active)

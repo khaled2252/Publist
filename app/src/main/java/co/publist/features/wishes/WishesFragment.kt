@@ -13,6 +13,7 @@ import co.publist.core.common.data.models.wish.WishAdapterItem
 import co.publist.core.platform.BaseFragment
 import co.publist.core.platform.ViewModelFactory
 import co.publist.core.utils.Utils.Constants.PUBLIC
+import co.publist.features.profile.ProfileActivity
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.firebase.firestore.Query
 import kotlinx.android.synthetic.main.fragment_wishes.*
@@ -87,9 +88,11 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
                     view?.visibility = View.VISIBLE
                 else
                     view?.visibility = View.GONE
-            }) { wish ->
+            } ,detailsListener = {wish ->
+                (activity as ProfileActivity).showEditWishDialog(wish)
+            },unFavoriteListener =  { wish ->
                 viewModel.modifyFavorite(wish, false)
-            }
+            })
 
         adapter.startListening()
         wishesRecyclerView.adapter = adapter

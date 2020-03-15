@@ -70,8 +70,10 @@
                 android:id="@+id/wishActionImageView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:layout_marginEnd="15dp"
+                android:paddingTop="20dp"
+                android:paddingEnd="15dp"
+                android:paddingStart="15dp"
+                android:paddingBottom="20dp"
                 android:src="@drawable/ic_heart"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />

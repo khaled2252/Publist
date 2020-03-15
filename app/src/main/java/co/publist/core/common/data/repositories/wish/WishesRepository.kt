@@ -62,7 +62,7 @@ class WishesRepository @Inject constructor(
                 .get()
                 .addOnFailureListener {
                     singleEmitter.onError(it)
-                }.addOnSuccessListener {querySnapshot ->
+                }.addOnSuccessListener { querySnapshot ->
                     singleEmitter.onSuccess(Mapper.mapToWishAdapterItemArrayList(querySnapshot))
                 }
         }
@@ -103,7 +103,8 @@ class WishesRepository @Inject constructor(
                 .collection(USERS_COLLECTION_PATH)
                 .document(userId!!)
                 .collection(MY_LISTS_COLLECTION_PATH)
-                .add(wish)
+                .document(wish.wishId!!)
+                .set(wish)
                 .addOnFailureListener {
                     completableEmitter.onError(it)
                 }.addOnSuccessListener {
@@ -114,8 +115,8 @@ class WishesRepository @Inject constructor(
 
     override fun createWish(wish: Wish): Completable {
         return addWishToWishes(wish).flatMapCompletable {
-                addWishToMyLists(it)
-            }
+            addWishToMyLists(it)
+        }
 
     }
 
@@ -137,6 +138,39 @@ class WishesRepository @Inject constructor(
                 completableEmitter.onError(it)
             }
 
+        }
+    }
+
+    override fun deleteWishFromMyLists(selectedWish: Wish): Completable {
+        return Completable.create { completableEmitter ->
+            val userId = localDataSource.getSharedPreferences().getUser()?.id
+            mFirebaseFirestore
+                .collection(USERS_COLLECTION_PATH)
+                .document(userId!!)
+                .collection(MY_LISTS_COLLECTION_PATH)
+                .document(selectedWish.wishId!!)
+                .delete()
+                .addOnFailureListener {
+                    completableEmitter.onError(it)
+                }
+                .addOnSuccessListener {
+                    completableEmitter.onComplete()
+                }
+        }
+    }
+
+    override fun deleteWishFromWishes(selectedWish: Wish): Completable {
+        return Completable.create { completableEmitter ->
+            mFirebaseFirestore
+                .collection(WISHES_COLLECTION_PATH)
+                .document(selectedWish.wishId!!)
+                .delete()
+                .addOnFailureListener {
+                    completableEmitter.onError(it)
+                }
+                .addOnSuccessListener {
+                    completableEmitter.onComplete()
+                }
         }
     }
 }

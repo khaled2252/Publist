@@ -1,61 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/activityMyListsLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:fitsSystemWindows="true">
 
-    <FrameLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <androidx.fragment.app.FragmentContainerView
-            android:id="@+id/wishesFragment"
-            android:name="co.publist.features.wishes.WishesFragment"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:layout_height="match_parent">
 
-        <LinearLayout
-            android:id="@+id/placeHolderView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:visibility="gone">
+            <androidx.fragment.app.FragmentContainerView
+                android:id="@+id/wishesFragment"
+                android:name="co.publist.features.wishes.WishesFragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_anchor="@+id/constraintLayout"
+                app:layout_anchorGravity="center"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-            <ImageView
-                android:layout_width="167dp"
-                android:layout_height="103dp"
-                android:src="@drawable/bg_empty_list" />
+            <LinearLayout
+                android:id="@+id/placeHolderView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:visibility="gone">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="29dp"
-                android:fontFamily="@font/sfprodisplaysemibold"
-                android:text="@string/no_lists"
-                android:textColor="@color/outerSpace"
-                android:textSize="20sp" />
+                <ImageView
+                    android:layout_width="167dp"
+                    android:layout_height="103dp"
+                    android:src="@drawable/bg_empty_list" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/sfprodisplayregular"
-                android:text="@string/create_your_first_list"
-                android:textColor="@color/dimGray"
-                android:textSize="18sp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="29dp"
+                    android:fontFamily="@font/sfprodisplaysemibold"
+                    android:text="@string/no_lists"
+                    android:textColor="@color/outerSpace"
+                    android:textSize="20sp" />
 
-            <ImageView
-                android:id="@+id/addListBtn"
-                android:layout_width="62dp"
-                android:layout_height="62dp"
-                android:layout_marginTop="27dp"
-                android:src="@drawable/btn_add_list" />
-        </LinearLayout>
-    </FrameLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/sfprodisplayregular"
+                    android:text="@string/create_your_first_list"
+                    android:textColor="@color/dimGray"
+                    android:textSize="18sp" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+                <ImageView
+                    android:id="@+id/addListBtn"
+                    android:layout_width="62dp"
+                    android:layout_height="62dp"
+                    android:layout_marginTop="27dp"
+                    android:src="@drawable/btn_add_list" />
+            </LinearLayout>
+            <View
+                android:id="@+id/blurredBgView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#999D9D9D"
+                android:visibility="gone" />
+        </FrameLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
