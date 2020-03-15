@@ -1,4 +1,4 @@
-package co.publist.features.profile.myfavorites
+package co.publist.features.myfavorites
 
 import co.publist.core.platform.BaseViewModel
 import javax.inject.Inject

@@ -11,7 +11,7 @@ import co.publist.core.platform.BaseViewModel
 import co.publist.core.utils.Utils.Constants.LISTS
 import co.publist.core.utils.Utils.Constants.PUBLIC
 import co.publist.features.categories.data.CategoriesRepositoryInterface
-import co.publist.features.profile.myfavorites.data.MyFavoritesRepositoryInterface
+import co.publist.features.myfavorites.data.MyFavoritesRepositoryInterface
 import com.google.firebase.firestore.Query
 import io.reactivex.Single
 import io.reactivex.functions.Action

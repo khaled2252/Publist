@@ -1,4 +1,4 @@
-package co.publist.features.profile.myfavorites.data
+package co.publist.features.myfavorites.data
 
 import co.publist.core.common.data.local.LocalDataSource
 import co.publist.core.common.data.models.Mapper

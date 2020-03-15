@@ -4,8 +4,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import co.publist.features.profile.myfavorites.MyFavoritesFragment
-import co.publist.features.profile.mylists.MyListsFragment
+import co.publist.features.myfavorites.MyFavoritesFragment
+import co.publist.features.mylists.MyListsFragment
 
 class ProfilePagerAdapter(manager: FragmentManager, lifecycle: Lifecycle) :
     FragmentStateAdapter(manager, lifecycle) {

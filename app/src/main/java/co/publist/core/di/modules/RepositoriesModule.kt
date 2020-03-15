@@ -27,10 +27,10 @@ import co.publist.features.home.data.HomeRepository
 import co.publist.features.home.data.HomeRepositoryInterface
 import co.publist.features.login.data.LoginRepository
 import co.publist.features.login.data.LoginRepositoryInterface
-import co.publist.features.profile.myfavorites.data.MyFavoritesRepository
-import co.publist.features.profile.myfavorites.data.MyFavoritesRepositoryInterface
-import co.publist.features.profile.mylists.data.MyListsRepository
-import co.publist.features.profile.mylists.data.MyListsRepositoryInterface
+import co.publist.features.myfavorites.data.MyFavoritesRepository
+import co.publist.features.myfavorites.data.MyFavoritesRepositoryInterface
+import co.publist.features.mylists.data.MyListsRepository
+import co.publist.features.mylists.data.MyListsRepositoryInterface
 import dagger.Binds
 import dagger.Module
 import javax.inject.Singleton

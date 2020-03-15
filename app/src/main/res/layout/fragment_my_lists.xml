@@ -1,61 +1,113 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/activityMyListsLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:fitsSystemWindows="true">
 
-    <FrameLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.fragment.app.FragmentContainerView
+                android:id="@+id/wishesFragment"
+                android:name="co.publist.features.wishes.WishesFragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <LinearLayout
+                android:id="@+id/placeHolderView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="167dp"
+                    android:layout_height="103dp"
+                    android:src="@drawable/bg_empty_list" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="29dp"
+                    android:fontFamily="@font/sfprodisplaysemibold"
+                    android:text="@string/no_lists"
+                    android:textColor="@color/outerSpace"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/sfprodisplayregular"
+                    android:text="@string/create_your_first_list"
+                    android:textColor="@color/dimGray"
+                    android:textSize="18sp" />
+
+                <ImageView
+                    android:id="@+id/addListBtn"
+                    android:layout_width="62dp"
+                    android:layout_height="62dp"
+                    android:layout_marginTop="27dp"
+                    android:src="@drawable/btn_add_list" />
+            </LinearLayout>
+        </FrameLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <LinearLayout
+        android:id="@+id/editWishBottomSheet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_rounded"
+        android:backgroundTint="@color/white"
+        android:clipToPadding="true"
+        android:orientation="vertical"
+        android:paddingBottom="30dp"
+        app:behavior_hideable="true"
+        app:behavior_peekHeight="0dp"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="25dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
+            android:fontFamily="@font/sfprodisplaybold"
+            android:text="@string/create_wish_categories_default"
+            android:textColor="@color/liver"
+            android:textSize="16sp">
+
+        </TextView>
 
         <androidx.fragment.app.FragmentContainerView
-            android:id="@+id/wishesFragment"
-            android:name="co.publist.features.wishes.WishesFragment"
+            android:id="@+id/categoriesFragment"
+            android:name="co.publist.features.categories.CategoriesFragment"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp" />
 
-        <LinearLayout
-            android:id="@+id/placeHolderView"
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/categoryDoneButton"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:visibility="gone">
-
-            <ImageView
-                android:layout_width="167dp"
-                android:layout_height="103dp"
-                android:src="@drawable/bg_empty_list" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="29dp"
-                android:fontFamily="@font/sfprodisplaysemibold"
-                android:text="@string/no_lists"
-                android:textColor="@color/outerSpace"
-                android:textSize="20sp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/sfprodisplayregular"
-                android:text="@string/create_your_first_list"
-                android:textColor="@color/dimGray"
-                android:textSize="18sp" />
-
-            <ImageView
-                android:id="@+id/addListBtn"
-                android:layout_width="62dp"
-                android:layout_height="62dp"
-                android:layout_marginTop="27dp"
-                android:src="@drawable/btn_add_list" />
-        </LinearLayout>
-    </FrameLayout>
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+            android:layout_height="70dp"
+            android:layout_margin="10dp"
+            android:background="@color/sunsetOrange"
+            android:fontFamily="@font/sfprodisplaybold"
+            android:text="@string/choose_category_done"
+            app:cornerRadius="10dp" />
+    </LinearLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

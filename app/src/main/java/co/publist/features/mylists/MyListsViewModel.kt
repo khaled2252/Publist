@@ -1,4 +1,4 @@
-package co.publist.features.profile.mylists
+package co.publist.features.mylists
 
 import co.publist.core.platform.BaseViewModel
 import javax.inject.Inject

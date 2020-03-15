@@ -1,4 +1,4 @@
-package co.publist.features.profile.mylists.data
+package co.publist.features.mylists.data
 
 import co.publist.core.common.data.models.wish.Wish
 import io.reactivex.Completable
