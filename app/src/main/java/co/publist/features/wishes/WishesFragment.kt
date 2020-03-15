@@ -13,6 +13,7 @@ import co.publist.core.common.data.models.wish.WishAdapterItem
 import co.publist.core.platform.BaseFragment
 import co.publist.core.platform.ViewModelFactory
 import co.publist.core.utils.Utils.Constants.PUBLIC
+import co.publist.features.home.HomeActivity
 import co.publist.features.profile.ProfileActivity
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.firebase.firestore.Query
@@ -101,9 +102,11 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
     private fun setAdapter(list: ArrayList<WishAdapterItem>) {
         refreshLayout.isRefreshing = false
         if (list.isNotEmpty()) {
-            val adapter = WishesAdapter(list) { wish, isFavoriting ->
+            val adapter = WishesAdapter(list,detailsListener = {wish ->
+                (activity as HomeActivity).showEditWishDialog(Mapper.mapToWish(wish))
+            },unFavoriteListener = { wish, isFavoriting ->
                 viewModel.modifyFavorite(Mapper.mapToWish(wish), isFavoriting)
-            }
+            })
             wishesRecyclerView.adapter = adapter
         } else {
             //todo display placeholder

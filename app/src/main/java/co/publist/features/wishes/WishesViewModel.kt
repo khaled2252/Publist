@@ -28,6 +28,9 @@ class WishesViewModel @Inject constructor(
     val wishesListLiveData = MutableLiveData<ArrayList<WishAdapterItem>>()
     val wishesType = MutableLiveData<Int>()
     val isFavoriteAdded = MutableLiveData<Boolean>()
+    val wishDetailsLiveData = MutableLiveData<Boolean>()
+    val wishDeletedLiveData = MutableLiveData<Boolean>()
+    lateinit var selectedWish : Wish
     fun loadData(type: Int) {
         wishesType.postValue(type)
         when (type) {
@@ -132,5 +135,15 @@ class WishesViewModel @Inject constructor(
                 favoritesRepository.deleteFromFavoritesRemotely(wish.wishId!!), Action {
                     isFavoriteAdded.postValue(false)
                 },showLoading = false)
+    }
+
+
+    fun deleteSelectedWish() {
+        subscribe(wishesRepository.deleteWishFromMyLists(selectedWish).doOnComplete {
+            wishesRepository.deleteWishFromWishes(selectedWish)
+        }, Action {
+            wishDeletedLiveData.postValue(true)
+        })
+
     }
 }

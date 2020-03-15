@@ -5,10 +5,12 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import co.publist.R
+import co.publist.core.common.data.models.wish.Wish
 import co.publist.core.platform.BaseActivity
 import co.publist.core.platform.ViewModelFactory
 import co.publist.core.utils.DataBindingAdapters.loadProfilePicture
@@ -18,7 +20,9 @@ import co.publist.features.createwish.CreateWishActivity
 import co.publist.features.login.LoginActivity
 import co.publist.features.profile.ProfileActivity
 import co.publist.features.wishes.WishesFragment
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.android.synthetic.main.activity_home.*
+import kotlinx.android.synthetic.main.edit_wish_bottom_sheet.*
 import javax.inject.Inject
 
 
@@ -35,6 +39,7 @@ class HomeActivity : BaseActivity<HomeViewModel>() {
     override fun getBaseViewModelFactory() = viewModelFactory
 
     private lateinit var wishesFragment: WishesFragment
+    private lateinit var sheetBehavior: BottomSheetBehavior<*>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,6 +49,8 @@ class HomeActivity : BaseActivity<HomeViewModel>() {
         ).executePendingBindings()
         wishesFragment =
             supportFragmentManager.findFragmentById(R.id.wishesFragment) as WishesFragment
+        sheetBehavior = BottomSheetBehavior.from(editWishBottomSheet)
+
         viewModel.onCreated()
         setObservers()
         setListeners()
@@ -89,6 +96,10 @@ class HomeActivity : BaseActivity<HomeViewModel>() {
                 Toast.makeText(this,getString(R.string.remove_favorite), Toast.LENGTH_SHORT).show()
 
         })
+
+        wishesFragment.viewModel.wishDeletedLiveData.observe(this, Observer {
+            Toast.makeText(this, getString(R.string.delete_wish), Toast.LENGTH_SHORT).show()
+        })
     }
 
     private fun setListeners() {
@@ -114,7 +125,52 @@ class HomeActivity : BaseActivity<HomeViewModel>() {
             viewModel.handleAddWish()
         }
 
+        sheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                blurredBgView.visibility = View.VISIBLE
+                //Change alpha on sliding
+                blurredBgView.alpha = slideOffset
+                window?.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+            }
+
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                    blurredBgView.visibility = View.GONE
+                    window?.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+                }
+            }
+        })
+
+        blurredBgView.setOnClickListener {
+            sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+        }
+
+        editWishTextView.setOnClickListener {
+
+        }
+
+        deleteWishTextView.setOnClickListener {
+            showDeleteDialog()
+        }
+
     }
 
+    private fun showDeleteDialog() {
+        val deleteDialog =
+            AlertDialog.Builder(this)
+        deleteDialog.setTitle("Are you sure you want to delete this wish?")
+        deleteDialog.setPositiveButton("YES") { _, _ ->
+            wishesFragment.viewModel.deleteSelectedWish()
+            sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED)
+        }
+        deleteDialog.setNegativeButton("No") { _, _ ->
+        }
+        deleteDialog.show()
+    }
+
+    fun showEditWishDialog(wish: Wish) {
+        wishesFragment.viewModel.selectedWish = wish
+        sheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+    }
 
 }

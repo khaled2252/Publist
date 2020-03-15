@@ -13,7 +13,8 @@ import kotlin.collections.ArrayList
 
 class WishesAdapter(
     val list: ArrayList<WishAdapterItem>,
-    val listener: (wish: WishAdapterItem, isFavoriting: Boolean) -> Unit
+    val unFavoriteListener: (wish: WishAdapterItem, isFavoriting: Boolean) -> Unit,
+    val detailsListener: (wish: WishAdapterItem) -> Unit
 ) :
     RecyclerView.Adapter<WishesAdapter.WishViewHolder>() {
     val todosAdapterArrayList = ArrayList<TodosAdapter>()
@@ -41,7 +42,7 @@ class WishesAdapter(
                 binding.wishActionImageView.apply {
                     setImageResource(R.drawable.ic_dots)
                     setOnClickListener {
-                        //todo open edit wish dialog
+                        detailsListener(wish)
                     }
                 }
             else
@@ -51,14 +52,14 @@ class WishesAdapter(
                         setOnClickListener {
                             setImageResource(R.drawable.ic_heart)
                             wish.isFavorite = false
-                            listener(wish, false) //unFavorite
+                            unFavoriteListener(wish, false) //unFavorite
                             notifyDataSetChanged()
                         }
                     } else {
                         setOnClickListener {
                             setImageResource(R.drawable.ic_heart_active)
                             wish.isFavorite = true
-                            listener(wish, true) //favorite
+                            unFavoriteListener(wish, true) //favorite
                             notifyDataSetChanged()
                         }
                     }

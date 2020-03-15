@@ -7,7 +7,13 @@
             name="imageUrl"
             type="String" />
     </data>
-
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true">
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -84,4 +90,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </LinearLayout>
+        <View
+            android:id="@+id/blurredBgView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#999D9D9D"
+            android:visibility="gone" />
+    </FrameLayout>
+        <include
+            android:id="@+id/editWishBottomSheet"
+            layout="@layout/edit_wish_bottom_sheet" />
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>
