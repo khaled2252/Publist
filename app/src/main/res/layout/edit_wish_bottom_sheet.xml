@@ -8,13 +8,14 @@
     android:orientation="vertical"
     app:behavior_hideable="true"
     app:behavior_peekHeight="0dp"
+    android:fitsSystemWindows="true"
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
     <TextView
         android:id="@+id/editWishTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="39dp"
+        android:layout_marginStart="45dp"
         android:drawableStart="@drawable/ic_editor_layer_list"
         android:drawablePadding="21dp"
         android:fontFamily="@font/sfprodisplaysemibold"
@@ -27,8 +28,8 @@
         android:id="@+id/dashed_line"
         android:layout_width="match_parent"
         android:layout_height="4dp"
-        android:layout_marginTop="8dp"
         android:layout_marginStart="31dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="31dp"
         android:background="@drawable/dashed_line"
         android:layerType="software" />
@@ -37,13 +38,13 @@
         android:id="@+id/deleteWishTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="39dp"
+        android:layout_marginStart="45dp"
         android:layout_marginTop="8dp"
+        android:layout_marginBottom="20dp"
         android:drawableStart="@drawable/ic_trash_layer_list"
         android:drawablePadding="21dp"
         android:fontFamily="@font/sfprodisplaysemibold"
         android:paddingVertical="20dp"
-        android:layout_marginBottom="20dp"
         android:text="@string/delete"
         android:textColor="@color/dimGray"
         android:textSize="18sp" />
