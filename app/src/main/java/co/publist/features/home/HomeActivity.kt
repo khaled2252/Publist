@@ -98,6 +98,7 @@ class HomeActivity : BaseActivity<HomeViewModel>() {
         })
 
         wishesFragment.viewModel.wishDeletedLiveData.observe(this, Observer {
+            wishesFragment.viewModel.loadData(PUBLIC)
             Toast.makeText(this, getString(R.string.delete_wish), Toast.LENGTH_SHORT).show()
         })
     }
