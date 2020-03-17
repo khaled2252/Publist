@@ -16,6 +16,8 @@ class ProfileViewModel @Inject constructor(
     ) : BaseViewModel() {
     var userLiveData = MutableLiveData<User>()
     val wishDeletedLiveData = MutableLiveData<Boolean>()
+    val editWishLiveData = MutableLiveData<Wish>()
+
     lateinit var selectedWish : Wish
 
     init {
@@ -29,5 +31,9 @@ class ProfileViewModel @Inject constructor(
             wishDeletedLiveData.postValue(true)
         })
 
+    }
+
+    fun editSelectedWish() {
+        editWishLiveData.postValue(selectedWish)
     }
 }

@@ -3,6 +3,7 @@ package co.publist.core.common.data.models
 import co.publist.core.common.data.models.category.Category
 import co.publist.core.common.data.models.category.CategoryAdapterItem
 import co.publist.core.common.data.models.category.CategoryDbEntity
+import co.publist.core.common.data.models.category.Localization
 import co.publist.core.common.data.models.wish.CategoryWish
 import co.publist.core.common.data.models.wish.MyListDbEntity
 import co.publist.core.common.data.models.wish.Wish
@@ -66,6 +67,14 @@ object Mapper {
         return CategoryAdapterItem(
             id = item.id,
             localizations = item.localizations,
+            name = item.name
+        )
+    }
+
+    fun mapToCategoryAdapterItem(item: CategoryWish): CategoryAdapterItem {
+        return CategoryAdapterItem(
+            id = item.id,
+            localizations = Localization(null,item.name),
             name = item.name
         )
     }

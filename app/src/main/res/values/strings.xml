@@ -52,5 +52,6 @@
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
     <string name="delete_wish">Your wish has been deleted successfully !</string>
+    <string name="edit_wish">Edit Wish</string>
 </resources>
 

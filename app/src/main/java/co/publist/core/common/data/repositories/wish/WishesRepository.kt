@@ -120,12 +120,35 @@ class WishesRepository @Inject constructor(
 
     }
 
+    override fun updateWish(wish: Wish): Completable {
+        val userId = localDataSource.getSharedPreferences().getUser()?.id
+        return Completable.create { completableEmitter ->
+            mFirebaseFirestore
+                .collection(USERS_COLLECTION_PATH)
+                .document(userId!!)
+                .collection(MY_LISTS_COLLECTION_PATH)
+                .document(wish.wishId!!)
+                .set(wish)
+                .addOnFailureListener {
+                    completableEmitter.onError(it)
+                }.addOnSuccessListener {
+                    mFirebaseFirestore.collection(WISHES_COLLECTION_PATH)
+                        .document(wish.wishId!!)
+                        .set(wish)
+                        .addOnSuccessListener {
+                            completableEmitter.onComplete()
+                        }
+                        .addOnFailureListener { error ->
+                            completableEmitter.onError(error)
+                        }
+                }
+        }    }
 
     override fun uploadImage(imageUri: String): Single<String> {
         return Single.create { completableEmitter ->
             val reference =
                 mFirebaseStorage.reference.child("WishListCoverPhoto/" + UUID.randomUUID().toString().toUpperCase() + ".jpeg")
-            var metadata = StorageMetadata.Builder()
+            val metadata = StorageMetadata.Builder()
                 .setContentType("application/octet-stream")
                 .build()
             val uploadTask = reference.putFile(Uri.parse(imageUri), metadata)

@@ -28,8 +28,8 @@ class WishesViewModel @Inject constructor(
     val wishesListLiveData = MutableLiveData<ArrayList<WishAdapterItem>>()
     val wishesType = MutableLiveData<Int>()
     val isFavoriteAdded = MutableLiveData<Boolean>()
-    val wishDetailsLiveData = MutableLiveData<Boolean>()
     val wishDeletedLiveData = MutableLiveData<Boolean>()
+    val editWishLiveData = MutableLiveData<Wish>()
     lateinit var selectedWish : Wish
     fun loadData(type: Int) {
         wishesType.postValue(type)
@@ -145,5 +145,9 @@ class WishesViewModel @Inject constructor(
             wishDeletedLiveData.postValue(true)
         })
 
+    }
+
+    fun editSelectedWish() {
+        editWishLiveData.postValue(selectedWish)
     }
 }

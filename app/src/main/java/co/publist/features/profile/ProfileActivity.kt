@@ -13,6 +13,7 @@ import co.publist.core.common.data.models.wish.Wish
 import co.publist.core.platform.BaseActivity
 import co.publist.core.platform.ViewModelFactory
 import co.publist.core.utils.DataBindingAdapters.loadProfilePicture
+import co.publist.features.createwish.CreateWishActivity
 import co.publist.features.editprofile.EditProfileActivity
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.tabs.TabLayoutMediator
@@ -79,6 +80,13 @@ class ProfileActivity : BaseActivity<ProfileViewModel>() {
         viewModel.wishDeletedLiveData.observe(this, Observer {
             Toast.makeText(this, getString(R.string.delete_wish), Toast.LENGTH_SHORT).show()
         })
+
+        viewModel.editWishLiveData.observe(this, Observer {wish ->
+            val intent = Intent(this, CreateWishActivity::class.java)
+            intent.putExtra("editedWish",wish)
+            startActivity(intent)
+            sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+        })
     }
 
     private fun setListeners() {
@@ -113,7 +121,7 @@ class ProfileActivity : BaseActivity<ProfileViewModel>() {
         }
 
         editWishTextView.setOnClickListener {
-
+            viewModel.editSelectedWish()
         }
 
         deleteWishTextView.setOnClickListener {

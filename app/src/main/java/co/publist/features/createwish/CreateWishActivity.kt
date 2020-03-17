@@ -24,8 +24,10 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ItemTouchHelper.*
 import co.publist.R
 import co.publist.core.common.data.models.Mapper
+import co.publist.core.common.data.models.wish.Wish
 import co.publist.core.platform.BaseActivity
 import co.publist.core.platform.ViewModelFactory
+import co.publist.core.utils.DataBindingAdapters
 import co.publist.core.utils.DragManageAdapter
 import co.publist.core.utils.Utils.Constants.CAMERA
 import co.publist.core.utils.Utils.Constants.GALLERY
@@ -56,6 +58,7 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
     private lateinit var adapter: ItemsAdapter
     private lateinit var categoriesFragment: CategoriesFragment
     private lateinit var sheetBehavior: BottomSheetBehavior<*>
+    private var editedWish: Wish? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -151,11 +154,25 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
     }
 
     private fun onCreated() {
+        editedWish = intent.getParcelableExtra("editedWish") as? Wish
         categoriesFragment =
             supportFragmentManager.findFragmentById(R.id.categoriesFragment) as CategoriesFragment
         sheetBehavior = BottomSheetBehavior.from(categoriesFragmentBottomSheet)
         categoriesFragment.viewModel.isCreatingWish = true
-        categoriesFragment.viewModel.getCategories()
+
+        if (editedWish != null) {
+            titleTextView.text = getString(R.string.edit_wish)
+            addCategoryTextView.text = editedWish?.category!![0].name?.capitalize()
+            categoriesFragment.viewModel.getCategories(editedWish?.category!![0])
+            titleEditText.setText(editedWish?.title)
+            titleInputLayout.hint = ""
+            if(!editedWish?.wishPhotoURL.isNullOrEmpty())
+                loadPhotoUrlToImageView(editedWish?.wishPhotoURL!!)
+            postButton.text = getString(R.string.save)
+            viewModel.populateWishData(editedWish!!)
+        } else
+            categoriesFragment.viewModel.getCategories()
+
     }
 
     private fun setAdapter() {
@@ -165,6 +182,7 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
             itemsRecyclerView.scrollToPosition(viewModel.items.size - 1)
         }
         itemsRecyclerView.adapter = adapter
+
 
         // Setup ItemTouchHelper
         val callback = DragManageAdapter(
@@ -205,6 +223,10 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
             override fun onGlobalLayout() {
                 activityCreateWishLayout.viewTreeObserver.removeOnGlobalLayoutListener(this)
                 setUpItemsRecyclerViewMaxHeight()
+                if (editedWish != null) {
+                    val oldList = ArrayList(editedWish!!.items!!.values.map { it.name!! })
+                    adapter.populateOldList(oldList)
+                }
             }
 
         })
@@ -236,7 +258,8 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
                     val category =
                         categoriesFragment.viewModel.selectedCategoriesList.getOrNull(0)
                     if (category != null) {
-                        viewModel.category = Mapper.mapToCategory(category)
+                        val mappedCategory = Mapper.mapToCategory(category)
+                        viewModel.category = Mapper.mapToCategoryWish(mappedCategory)
                         addCategoryTextView.text = category.name?.capitalize()
                     } else {
                         viewModel.category = null
@@ -258,6 +281,7 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
         }
 
         deletePhotoImageView.setOnClickListener {
+            viewModel.wishImageUri = ""
             imageLayout.visibility = View.GONE
             addPhotoTextView.visibility = View.VISIBLE
             listTextView.setPadding(0, 0, 0, 0)
@@ -386,6 +410,13 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
             ImageDecoder.decodeBitmap(source)
         }
         photoImageView.setImageBitmap(bitmap)
+        imageLayout.visibility = View.VISIBLE
+        addPhotoTextView.visibility = View.INVISIBLE
+        listTextView.setPadding(0, 130, 0, 0)
+    }
+
+    private fun loadPhotoUrlToImageView(url: String) {
+        DataBindingAdapters.loadWishImage(photoImageView, url)
         imageLayout.visibility = View.VISIBLE
         addPhotoTextView.visibility = View.INVISIBLE
         listTextView.setPadding(0, 130, 0, 0)

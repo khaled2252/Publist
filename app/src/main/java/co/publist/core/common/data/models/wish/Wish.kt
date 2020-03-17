@@ -1,7 +1,9 @@
 package co.publist.core.common.data.models.wish
 
+import android.os.Parcelable
 import com.google.firebase.Timestamp
-
+import kotlinx.android.parcel.Parcelize
+@Parcelize
 data class Wish(
     var category: ArrayList<CategoryWish>? = null,
     var categoryId: ArrayList<String>? = null,
@@ -14,5 +16,4 @@ data class Wish(
     var itemsId: ArrayList<String>? = null,
     var wishId: String? = null,
     var seenCount : Int? = null
-
-)
+) : Parcelable

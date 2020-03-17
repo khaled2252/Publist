@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import co.publist.core.common.data.models.Mapper
 import co.publist.core.common.data.models.category.Category
 import co.publist.core.common.data.models.category.CategoryAdapterItem
+import co.publist.core.common.data.models.wish.CategoryWish
 import co.publist.core.platform.BaseViewModel
 import co.publist.core.utils.Utils.Constants.MAXIMUM_SELECTED_CATEGORIES
 import co.publist.core.utils.Utils.Constants.MINIMUM_SELECTED_CATEGORIES
@@ -53,15 +54,25 @@ class CategoriesViewModel @Inject constructor(
         }
     }
 
-    fun getCategories() {
+    fun getCategories(vararg editedWishCategory: CategoryWish) {
         //fixme if fetchAllCategories() is called first then getLocalSelectedCategories() in flatMap , the latter doesn't get called maybe because of backPressure?
         subscribe(categoriesRepository.getLocalSelectedCategories()
             .flatMap { selectedCategories ->
                 categoriesRepository.fetchAllCategories()
                     .flatMap { allCategories ->
-                        if (isCreatingWish)
-                            Single.just(Mapper.mapToCategoryAdapterItemList(allCategories))
-                        else {
+                        if (isCreatingWish) {
+                            val categoryAdapterItemList =
+                                Mapper.mapToCategoryAdapterItemList(allCategories)
+                            if (editedWishCategory.isNotEmpty()) {
+                                val selectedCategory = Mapper.mapToCategoryAdapterItem(editedWishCategory[0])
+                                selectedCategory.isSelected = true
+                                selectedCategoriesList.add(selectedCategory)
+                                val index =
+                                    categoryAdapterItemList.indexOfFirst { it.id == editedWishCategory[0].id }
+                                categoryAdapterItemList[index].isSelected = true
+                            }
+                            Single.just(categoryAdapterItemList)
+                        } else {
                             selectedCategoriesList = selectedCategories
                             Single.just(
                                 applyPreviouslySelectedCategories(

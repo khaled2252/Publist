@@ -100,7 +100,16 @@ class HomeActivity : BaseActivity<HomeViewModel>() {
         wishesFragment.viewModel.wishDeletedLiveData.observe(this, Observer {
             wishesFragment.viewModel.loadData(PUBLIC)
             Toast.makeText(this, getString(R.string.delete_wish), Toast.LENGTH_SHORT).show()
+            sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         })
+
+        wishesFragment.viewModel.editWishLiveData.observe(this, Observer {wish ->
+            val intent = Intent(this,CreateWishActivity::class.java)
+            intent.putExtra("editedWish",wish)
+            startActivity(intent)
+            sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+        })
+
     }
 
     private fun setListeners() {
@@ -147,7 +156,7 @@ class HomeActivity : BaseActivity<HomeViewModel>() {
         }
 
         editWishTextView.setOnClickListener {
-
+            wishesFragment.viewModel.editSelectedWish()
         }
 
         deleteWishTextView.setOnClickListener {
