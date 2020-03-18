@@ -25,10 +25,9 @@ class CreateWishViewModel @Inject constructor(
     var title = ""
     var wishImageUri = ""
     var items = ArrayList<String>()
-    var oldItemIdList = ArrayList<String>()
-    var oldListMap = mutableMapOf<String, Item>()
-    var oldWishId = ""
-    lateinit var oldTimeStamp: Timestamp
+    private var oldListMap = emptyMap<String, Item>()
+    private var oldWishId = ""
+    private lateinit var oldTimeStamp: Timestamp
 
 
     fun validateEntries() {
@@ -61,9 +60,12 @@ class CreateWishViewModel @Inject constructor(
         for (itemPosition in 0 until items.size) {
 
             //getting old items from wish that is being edited
-            val oldItem = oldListMap.values.find { it.name == items[itemPosition] }
-            if (oldItem != null) {
-                newListMap[oldItemIdList[itemPosition]] = oldItem
+            val oldItemValue = oldListMap.values.find { it.name == items[itemPosition] }
+            if (oldItemValue != null) {
+                val oldItemKey = oldListMap.filterValues { it == oldItemValue }.keys.first()
+                newItemIdList.add(oldItemKey)
+                oldItemValue.orderId = itemPosition
+                newListMap[oldItemKey] = oldItemValue
                 continue
             }
 
@@ -75,16 +77,13 @@ class CreateWishViewModel @Inject constructor(
             )
             newListMap[id] = item
         }
-        val orderedNewListMap = newListMap.toList().sortedBy {
-             it.second.orderId
-         }.toMap()
 
         val wish = Wish(
             category = arrayListOf(categoryWish),
             categoryId = arrayListOf(category.id!!),
             creator = creator,
             date = date,
-            items = orderedNewListMap,
+            items = newListMap,
             itemsId = newItemIdList,
             title = title
         )
@@ -123,9 +122,10 @@ class CreateWishViewModel @Inject constructor(
         if (!editedWish.wishPhotoURL.isNullOrEmpty())
             wishImageUri = editedWish.wishPhotoURL!!
 
-        items = ArrayList(editedWish.items!!.values.map { it.name!! })
-        oldItemIdList = ArrayList(editedWish.items!!.keys)
-        oldListMap = editedWish.items as MutableMap<String, Item>
+        oldListMap = (editedWish.items as MutableMap<String, Item>).toList().sortedBy {
+            it.second.orderId
+        }.toMap()
+        items = ArrayList(oldListMap.values.map { it.name!! })
         oldWishId = editedWish.wishId!!
         oldTimeStamp = editedWish.date!!
         validateEntries()

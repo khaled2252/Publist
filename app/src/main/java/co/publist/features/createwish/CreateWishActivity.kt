@@ -176,8 +176,8 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
     }
 
     private fun setAdapter() {
-        adapter = ItemsAdapter {
-            viewModel.items = adapter.getList()
+        adapter = ItemsAdapter {items ->
+            viewModel.items = items
             viewModel.validateEntries()
             itemsRecyclerView.scrollToPosition(viewModel.items.size - 1)
         }
@@ -224,7 +224,9 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
                 activityCreateWishLayout.viewTreeObserver.removeOnGlobalLayoutListener(this)
                 setUpItemsRecyclerViewMaxHeight()
                 if (editedWish != null) {
-                    val oldList = ArrayList(editedWish!!.items!!.values.map { it.name!! })
+                    val oldList = ArrayList(editedWish!!.items!!.entries
+                        .sortedBy {it.value.orderId} // Sort map entries by order id
+                        .map { it.value.name!! }) // get list of names of values(items)
                     adapter.populateOldList(oldList)
                 }
             }
