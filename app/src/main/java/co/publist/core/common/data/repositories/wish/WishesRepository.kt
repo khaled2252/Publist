@@ -144,10 +144,11 @@ class WishesRepository @Inject constructor(
                 }
         }    }
 
-    override fun uploadImage(imageUri: String): Single<String> {
+    override fun uploadImage(imageUri: String): Single<Pair<String,String>> {
         return Single.create { completableEmitter ->
+            val photoName = UUID.randomUUID().toString().toUpperCase()+".jpeg"
             val reference =
-                mFirebaseStorage.reference.child("WishListCoverPhoto/" + UUID.randomUUID().toString().toUpperCase() + ".jpeg")
+                mFirebaseStorage.reference.child("WishListCoverPhoto/$photoName")
             val metadata = StorageMetadata.Builder()
                 .setContentType("application/octet-stream")
                 .build()
@@ -156,7 +157,7 @@ class WishesRepository @Inject constructor(
                 return@Continuation reference.downloadUrl
             }).addOnCompleteListener { task ->
                 val downloadUri = task.result
-                completableEmitter.onSuccess(downloadUri.toString())
+                completableEmitter.onSuccess(Pair(downloadUri.toString(),photoName))
             }.addOnFailureListener {
                 completableEmitter.onError(it)
             }

@@ -51,7 +51,8 @@ object Mapper {
             items = item.items,
             itemsId = item.items_id,
             title = item.title,
-            wishPhotoURL = item.wish_photo_url
+            wishPhotoURL = item.wish_photo_url,
+            photoName = item.photo_name
         )
     }
 
@@ -136,7 +137,8 @@ object Mapper {
             items = item.items!!,
             items_id = item.itemsId!!,
             title = item.title!!,
-            wish_photo_url = item.wishPhotoURL!!
+            wish_photo_url = item.wishPhotoURL!!,
+            photo_name = item.photoName!!
         )
     }
 
@@ -162,7 +164,8 @@ object Mapper {
             itemsId = item.itemsId,
             title = item.title,
             wishId = item.wishId,
-            wishPhotoURL = item.wishPhotoURL
+            wishPhotoURL = item.wishPhotoURL,
+            photoName = item.photoName
         )
     }
 
@@ -177,7 +180,8 @@ object Mapper {
             itemsId = item.itemsId,
             title = item.title,
             wishId = item.wishId,
-            wishPhotoURL = item.wishPhotoURL
+            wishPhotoURL = item.wishPhotoURL,
+            photoName = item.photoName
         )
     }
 

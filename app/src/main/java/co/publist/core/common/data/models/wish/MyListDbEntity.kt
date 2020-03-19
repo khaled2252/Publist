@@ -15,6 +15,7 @@ data class MyListDbEntity(
     @field:SerializedName("creator") val creator: Creator,
     @field:SerializedName("favoritesCount") val favorites_count: Int,
     @field:SerializedName("wishPhotoUrl") val wish_photo_url: String,
+    @field:SerializedName("wishPhotoUrl") val photo_name: String,
     @field:SerializedName("items") val items: Map<String, Item>,
     @field:SerializedName("itemsId") val items_id: ArrayList<String>
 

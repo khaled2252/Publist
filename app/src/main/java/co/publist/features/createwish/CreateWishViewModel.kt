@@ -25,8 +25,11 @@ class CreateWishViewModel @Inject constructor(
     var title = ""
     var wishImageUri = ""
     var items = ArrayList<String>()
+
     private var oldListMap = emptyMap<String, Item>()
     private var oldWishId = ""
+    private var oldPhotoName : String? = null
+    private var oldWishImageUrl : String? = null
     private lateinit var oldTimeStamp: Timestamp
 
 
@@ -89,8 +92,11 @@ class CreateWishViewModel @Inject constructor(
         )
 
         if (wishImageUri.isNotEmpty()) {
-            subscribe(wishesRepository.uploadImage(wishImageUri).flatMapCompletable { wishImageUrl ->
+            subscribe(wishesRepository.uploadImage(wishImageUri).flatMapCompletable { result ->
+                val wishImageUrl = result.first
+                val photoName = result.second
                 wish.wishPhotoURL = wishImageUrl
+                wish.photoName = photoName
                 if (oldListMap.isNotEmpty()) {
                     wish.wishId = oldWishId
                     wish.date = oldTimeStamp
@@ -104,6 +110,8 @@ class CreateWishViewModel @Inject constructor(
             if (oldListMap.isNotEmpty()) {
                 wish.wishId = oldWishId
                 wish.date = oldTimeStamp
+                wish.wishPhotoURL = oldWishImageUrl
+                wish.photoName = oldPhotoName
                 subscribe(wishesRepository.updateWish(wish), Action {
                     addingWishLiveData.postValue(true)
                 })
@@ -118,16 +126,14 @@ class CreateWishViewModel @Inject constructor(
     fun populateWishData(editedWish: Wish) {
         category = editedWish.category?.get(0)
         title = editedWish.title!!
-
-        if (!editedWish.wishPhotoURL.isNullOrEmpty())
-            wishImageUri = editedWish.wishPhotoURL!!
-
         oldListMap = (editedWish.items as MutableMap<String, Item>).toList().sortedBy {
             it.second.orderId
         }.toMap()
         items = ArrayList(oldListMap.values.map { it.name!! })
         oldWishId = editedWish.wishId!!
         oldTimeStamp = editedWish.date!!
+        oldPhotoName = editedWish.photoName
+        oldWishImageUrl = editedWish.wishPhotoURL
         validateEntries()
     }
 

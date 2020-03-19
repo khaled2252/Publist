@@ -12,6 +12,8 @@ import android.view.inputmethod.InputMethodManager
 import androidx.core.content.FileProvider
 import co.publist.core.utils.Utils.Constants.GALLERY
 import co.publist.core.utils.Utils.Constants.TEMP_IMAGE
+import co.publist.core.utils.Utils.Constants.WISH_IMAGE_FIXED_HEIGHT
+import co.publist.core.utils.Utils.Constants.WISH_IMAGE_FIXED_WIDTH
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
 import java.io.File
@@ -47,6 +49,8 @@ object Utils {
         CropImage.activity(imageUri)
             .setGuidelines(CropImageView.Guidelines.ON)
             .setAspectRatio(2, 1)
+            .setMaxCropResultSize(WISH_IMAGE_FIXED_WIDTH, WISH_IMAGE_FIXED_HEIGHT)
+            .setOutputCompressQuality(40)
             .setOutputCompressFormat(Bitmap.CompressFormat.JPEG)
             .start(activity)
     }
@@ -102,5 +106,7 @@ object Utils {
         const val PUBLIC = 0
         const val LISTS = 1
         const val FAVORITES = 2
+        const val WISH_IMAGE_FIXED_WIDTH = 2400
+        const val WISH_IMAGE_FIXED_HEIGHT = 1200
     }
 }
