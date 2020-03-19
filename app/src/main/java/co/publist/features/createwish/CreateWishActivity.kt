@@ -164,8 +164,8 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
             titleTextView.text = getString(R.string.edit_wish)
             addCategoryTextView.text = editedWish?.category!![0].name?.capitalize()
             categoriesFragment.viewModel.getCategories(editedWish?.category!![0])
-            titleEditText.setText(editedWish?.title)
             titleInputLayout.hint = ""
+            titleEditText.setText(editedWish?.title)
             if(!editedWish?.wishPhotoURL.isNullOrEmpty())
                 loadPhotoUrlToImageView(editedWish?.wishPhotoURL!!)
             postButton.text = getString(R.string.save)

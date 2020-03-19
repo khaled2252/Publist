@@ -58,6 +58,7 @@ class HomeActivity : BaseActivity<HomeViewModel>() {
 
     override fun onStart() {
         wishesFragment.viewModel.loadData(PUBLIC)  // To reload data when coming back from another activity
+        sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         super.onStart()
     }
     override fun onDestroy() {
@@ -107,7 +108,7 @@ class HomeActivity : BaseActivity<HomeViewModel>() {
             val intent = Intent(this,CreateWishActivity::class.java)
             intent.putExtra("editedWish",wish)
             startActivity(intent)
-            sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+
         })
 
     }
@@ -160,9 +161,13 @@ class HomeActivity : BaseActivity<HomeViewModel>() {
         }
 
         deleteWishTextView.setOnClickListener {
+            sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
             showDeleteDialog()
         }
 
+        editWishBottomSheet.setOnClickListener {
+            //Do nothing when clicking on empty space to avoid triggering blurredBg thus collapsing bottomsheet
+        }
     }
 
     private fun showDeleteDialog() {
@@ -171,7 +176,6 @@ class HomeActivity : BaseActivity<HomeViewModel>() {
         deleteDialog.setTitle("Are you sure you want to delete this wish?")
         deleteDialog.setPositiveButton("YES") { _, _ ->
             wishesFragment.viewModel.deleteSelectedWish()
-            sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED)
         }
         deleteDialog.setNegativeButton("No") { _, _ ->
         }

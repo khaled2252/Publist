@@ -236,10 +236,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_done"
-                android:paddingStart="20dp"
-                android:paddingEnd="20dp"
-                android:paddingTop="2dp"
-                android:layout_gravity="center|end"
+                android:padding="20dp"
+                android:layout_gravity="end"
                 />
             </FrameLayout>
             <com.google.android.material.button.MaterialButton

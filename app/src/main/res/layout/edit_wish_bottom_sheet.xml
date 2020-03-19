@@ -11,6 +11,7 @@
     android:fitsSystemWindows="true"
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
+<!--    negative top margin is added because coordinator layout (parent) adds space-->
     <TextView
         android:id="@+id/editWishTextView"
         android:layout_width="match_parent"
@@ -19,7 +20,9 @@
         android:drawableStart="@drawable/ic_editor_layer_list"
         android:drawablePadding="21dp"
         android:fontFamily="@font/sfprodisplaysemibold"
+        android:paddingTop="20dp"
         android:paddingBottom="20dp"
+        android:layout_marginTop="-10dp"
         android:text="@string/edit"
         android:textColor="@color/dimGray"
         android:textSize="18sp" />
