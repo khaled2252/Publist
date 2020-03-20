@@ -162,7 +162,9 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
 
         if (editedWish != null) {
             titleTextView.text = getString(R.string.edit_wish)
-            addCategoryTextView.text = editedWish?.category!![0].name?.capitalize()
+            addCategoryTextView.text = ""
+            categoryChip.visibility = View.VISIBLE
+            categoryChip.text = editedWish?.category!![0].name?.capitalize()
             categoriesFragment.viewModel.getCategories(editedWish?.category!![0])
             titleInputLayout.hint = ""
             titleEditText.setText(editedWish?.title)
@@ -262,9 +264,12 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
                     if (category != null) {
                         val mappedCategory = Mapper.mapToCategory(category)
                         viewModel.category = Mapper.mapToCategoryWish(mappedCategory)
-                        addCategoryTextView.text = category.name?.capitalize()
+                        addCategoryTextView.text = ""
+                        categoryChip.visibility = View.VISIBLE
+                        categoryChip.text = category.name?.capitalize()
                     } else {
                         viewModel.category = null
+                        categoryChip.visibility = View.GONE
                         addCategoryTextView.text =
                             getString(R.string.create_wish_categories_default)
                     }
@@ -274,12 +279,22 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
 
             }
         })
+
         addCategoryTextView.setOnClickListener {
             if (sheetBehavior.state != BottomSheetBehavior.STATE_EXPANDED) {
                 sheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
             } else {
                 sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED)
             }
+        }
+
+        categoryChip.setOnCloseIconClickListener {
+            categoriesFragment.viewModel.removeWishCategory()
+            viewModel.category = null
+            viewModel.validateEntries()
+            categoryChip.visibility = View.GONE
+            addCategoryTextView.text =
+                getString(R.string.create_wish_categories_default)
         }
 
         deletePhotoImageView.setOnClickListener {

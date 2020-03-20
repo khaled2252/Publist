@@ -140,4 +140,12 @@ class CategoriesViewModel @Inject constructor(
         saveCategoriesLiveData.postValue(true)
     }
 
+    fun removeWishCategory() {
+        categoriesListLiveData.value?.find {
+            it == selectedCategoriesList[0]
+        }?.isSelected = false
+        selectedCategoriesList.clear()
+        categoriesListLiveData.postValue(categoriesListLiveData.value)
+    }
+
 }

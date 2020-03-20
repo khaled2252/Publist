@@ -137,7 +137,7 @@ class ProfileActivity : BaseActivity<ProfileViewModel>() {
             viewModel.deleteSelectedWish()
             sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED)
         }
-        deleteDialog.setNegativeButton("No") { _, _ ->
+        deleteDialog.setNegativeButton("Cancel") { _, _ ->
         }
         deleteDialog.show()
     }

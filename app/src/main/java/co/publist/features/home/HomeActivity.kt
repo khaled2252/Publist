@@ -177,7 +177,7 @@ class HomeActivity : BaseActivity<HomeViewModel>() {
         deleteDialog.setPositiveButton("YES") { _, _ ->
             wishesFragment.viewModel.deleteSelectedWish()
         }
-        deleteDialog.setNegativeButton("No") { _, _ ->
+        deleteDialog.setNegativeButton("Cancel") { _, _ ->
         }
         deleteDialog.show()
     }
