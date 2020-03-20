@@ -111,10 +111,10 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
                     )
                 ) {
                     Toast.makeText(
-                        this,
-                        getString(R.string.permission_required),
-                        Toast.LENGTH_SHORT
-                    )
+                            this,
+                            getString(R.string.permission_required),
+                            Toast.LENGTH_SHORT
+                        )
                         .show()
                 } else {
                     //permission is denied (and never ask again is  checked)
@@ -168,8 +168,13 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
             categoriesFragment.viewModel.getCategories(editedWish?.category!![0])
             titleInputLayout.hint = ""
             titleEditText.setText(editedWish?.title)
-            if(!editedWish?.wishPhotoURL.isNullOrEmpty())
-                loadPhotoUrlToImageView(editedWish?.wishPhotoURL!!)
+
+            if (!editedWish?.wishPhotoURL.isNullOrEmpty())
+            {
+                DataBindingAdapters.loadWishImage(photoImageView,editedWish?.wishPhotoURL!!)
+                updateImageLayout()
+            }
+
             postButton.text = getString(R.string.save)
             viewModel.populateWishData(editedWish!!)
         } else
@@ -178,7 +183,7 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
     }
 
     private fun setAdapter() {
-        adapter = ItemsAdapter {items ->
+        adapter = ItemsAdapter { items ->
             viewModel.items = items
             viewModel.validateEntries()
             itemsRecyclerView.scrollToPosition(viewModel.items.size - 1)
@@ -227,7 +232,7 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
                 setUpItemsRecyclerViewMaxHeight()
                 if (editedWish != null) {
                     val oldList = ArrayList(editedWish!!.items!!.entries
-                        .sortedBy {it.value.orderId} // Sort map entries by order id
+                        .sortedBy { it.value.orderId } // Sort map entries by order id
                         .map { it.value.name!! }) // get list of names of values(items)
                     adapter.populateOldList(oldList)
                 }
@@ -299,12 +304,16 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
 
         deletePhotoImageView.setOnClickListener {
             viewModel.wishImageUri = ""
-            imageLayout.visibility = View.GONE
+            deletePhotoImageView.setImageResource(R.drawable.ic_attachment)
+
             addPhotoTextView.visibility = View.VISIBLE
-            listTextView.setPadding(0, 0, 0, 0)
+            photoImageView.visibility = View.INVISIBLE
+
+            deletePhotoImageView.isClickable = false
+            addPhotoLayout.isClickable = true
         }
 
-        addPhotoTextView.setOnClickListener {
+        addPhotoLayout.setOnClickListener {
             showCameraGalleryDialog()
         }
 
@@ -380,7 +389,7 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
         val distance = getDistanceBetweenViews(postButton, itemEditText)
         val params = itemsRecyclerView.layoutParams as ConstraintLayout.LayoutParams
         params.matchConstraintMaxHeight =
-            distance - (2 * itemEditText.measuredHeight + postButton.measuredHeight)
+            distance - (2 * itemEditText.measuredHeight + (0.5 * postButton.measuredHeight).toInt())
         itemsRecyclerView.layoutParams = params
     }
 
@@ -427,16 +436,17 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
             ImageDecoder.decodeBitmap(source)
         }
         photoImageView.setImageBitmap(bitmap)
-        imageLayout.visibility = View.VISIBLE
-        addPhotoTextView.visibility = View.INVISIBLE
-        listTextView.setPadding(0, 130, 0, 0)
+        updateImageLayout()
     }
 
-    private fun loadPhotoUrlToImageView(url: String) {
-        DataBindingAdapters.loadWishImage(photoImageView, url)
-        imageLayout.visibility = View.VISIBLE
+    private fun updateImageLayout() {
+        deletePhotoImageView.setImageResource(R.drawable.ic_cross)
+
+        photoImageView.visibility = View.VISIBLE
         addPhotoTextView.visibility = View.INVISIBLE
-        listTextView.setPadding(0, 130, 0, 0)
+
+        deletePhotoImageView.isClickable = true
+        addPhotoLayout.isClickable = false
     }
 
 }

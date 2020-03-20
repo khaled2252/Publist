@@ -118,7 +118,7 @@
                 android:id="@+id/titleInputLayout"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"    
+                android:layout_height="wrap_content"
                 android:layout_marginStart="30dp"
                 android:layout_marginEnd="30dp"
                 android:hint="@string/title_hint"
@@ -134,37 +134,37 @@
                     style="@style/Theme.AppCompat.Light"
                     android:layout_width="match_parent"
                     android:layout_height="100dp"
+                    android:fontFamily="@font/sfprodisplaymedium"
                     android:gravity="top|start"
                     android:textColor="@color/dimGray" />
             </com.google.android.material.textfield.TextInputLayout>
 
-
-            <TextView
-                android:id="@+id/addPhotoTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="40dp"
-                android:layout_marginTop="20dp"
-                android:drawableStart="@drawable/ic_attachment_black_24dp"
-                android:drawablePadding="5dp"
-                android:fontFamily="@font/sfprodisplaymedium"
-                android:text="@string/add_photo_optional"
-                android:textColor="@color/dark_grey"
-                android:textSize="16sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/titleInputLayout" />
-
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/imageLayout"
+                android:id="@+id/addPhotoLayout"
                 android:layout_width="match_parent"
                 android:layout_height="80dp"
                 android:layout_marginStart="30dp"
-                android:layout_marginTop="40dp"
+                android:layout_marginTop="10dp"
                 android:layout_marginEnd="30dp"
                 android:background="@drawable/border"
-                android:visibility="gone"
+                android:visibility="visible"
                 app:layout_constraintBottom_toTopOf="@id/listTextView"
                 app:layout_constraintTop_toBottomOf="@id/titleInputLayout">
+
+                <TextView
+                    android:id="@+id/addPhotoTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="17dp"
+                    android:drawablePadding="5dp"
+                    android:fontFamily="@font/sfprodisplaymedium"
+                    android:text="@string/add_photo_optional"
+                    android:textColor="@color/dark_grey"
+                    android:textSize="16sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
 
                 <ImageView
                     android:id="@+id/photoImageView"
@@ -174,20 +174,23 @@
                     android:layout_marginTop="10dp"
                     android:layout_marginBottom="10dp"
                     android:scaleType="fitXY"
-                    app:layout_constraintBottom_toBottomOf="@id/imageLayout"
-                    app:layout_constraintStart_toStartOf="@id/imageLayout"
-                    app:layout_constraintTop_toTopOf="@id/imageLayout" />
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="@id/addPhotoLayout"
+                    app:layout_constraintStart_toStartOf="@id/addPhotoLayout"
+                    app:layout_constraintTop_toTopOf="@id/addPhotoLayout" />
 
                 <ImageView
                     android:id="@+id/deletePhotoImageView"
-                    android:layout_width="15dp"
-                    android:layout_height="15dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginEnd="15dp"
-                    android:src="@drawable/ic_cross"
-                    app:layout_constraintBottom_toBottomOf="@id/imageLayout"
-                    app:layout_constraintEnd_toEndOf="@id/imageLayout"
-                    app:layout_constraintTop_toTopOf="@id/imageLayout" />
+                    android:clickable="false"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/ic_attachment"
+                    app:layout_constraintBottom_toBottomOf="@id/addPhotoLayout"
+                    app:layout_constraintEnd_toEndOf="@id/addPhotoLayout"
+                    app:layout_constraintTop_toTopOf="@id/addPhotoLayout" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <TextView
@@ -195,19 +198,19 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="40dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="22dp"
                 android:fontFamily="@font/sfprodisplaysemibold"
                 android:text="@string/wish_list_title"
                 android:textColor="@color/dimGray"
                 android:textSize="20sp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/addPhotoTextView" />
+                app:layout_constraintTop_toBottomOf="@id/addPhotoLayout" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/itemsRecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="10dp"
                 android:layout_marginBottom="5dp"
                 android:orientation="vertical"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
