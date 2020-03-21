@@ -124,6 +124,7 @@ class ProfileActivity : BaseActivity<ProfileViewModel>() {
         }
 
         deleteWishTextView.setOnClickListener {
+            sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
             showDeleteDialog()
         }
     }

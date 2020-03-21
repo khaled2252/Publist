@@ -175,6 +175,7 @@ class HomeActivity : BaseActivity<HomeViewModel>() {
         deleteDialog.setTitle("Are you sure you want to delete this wish?")
         deleteDialog.setPositiveButton("YES") { _, _ ->
             wishesFragment.viewModel.deleteSelectedWish()
+            sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED)
         }
         deleteDialog.setNegativeButton("Cancel") { _, _ ->
         }
