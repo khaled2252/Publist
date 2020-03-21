@@ -25,11 +25,11 @@ class ProfileViewModel @Inject constructor(
     }
 
     fun deleteSelectedWish() {
-        subscribe(wishesRepository.deleteWishFromMyLists(selectedWish).doOnComplete {
-            wishesRepository.deleteWishFromWishes(selectedWish)
-        }, Action {
-            wishDeletedLiveData.postValue(true)
-        })
+        //Merge operator runs both calls in parallel (independent calls)
+        subscribe(wishesRepository.deleteWishFromWishes(selectedWish).mergeWith(wishesRepository.deleteWishFromMyLists(selectedWish))
+            , Action {
+                wishDeletedLiveData.postValue(true)
+            })
 
     }
 

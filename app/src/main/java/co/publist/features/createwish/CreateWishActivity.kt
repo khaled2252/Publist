@@ -12,7 +12,6 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.view.ViewTreeObserver
-import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -257,13 +256,13 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
                 blurredBgView.visibility = View.VISIBLE
                 //Change alpha on sliding
                 blurredBgView.alpha = slideOffset
-                window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+//                window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
             }
 
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
                     blurredBgView.visibility = View.GONE
-                    window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+//                    window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
                     val category =
                         categoriesFragment.viewModel.selectedCategoriesList.getOrNull(0)
                     if (category != null) {

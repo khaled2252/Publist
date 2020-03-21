@@ -1,13 +1,11 @@
 package co.publist.core.platform
 
 
-import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
-import android.view.WindowManager
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.ProgressBar
@@ -70,9 +68,6 @@ abstract class BaseActivity<MBaseViewModel : BaseViewModel>
         val progressBarHolder = findViewById<FrameLayout>(R.id.progressBarHolder)
         if (progressBarHolder != null)
             progressBarHolder.visibility = View.GONE
-
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-        window.statusBarColor = resources.getColor(R.color.sunsetOrange)
     }
 
     open fun showLoading() {
@@ -83,9 +78,6 @@ abstract class BaseActivity<MBaseViewModel : BaseViewModel>
         val progressBarHolder = findViewById<FrameLayout>(R.id.progressBarHolder)
         if (progressBarHolder != null)
             progressBarHolder.visibility = View.VISIBLE
-
-        window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-        window.statusBarColor = Color.TRANSPARENT
     }
 
 //    override fun attachBaseContext(newBase: Context) {

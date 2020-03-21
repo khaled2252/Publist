@@ -4,7 +4,6 @@ package co.publist.features.home
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
@@ -141,13 +140,13 @@ class HomeActivity : BaseActivity<HomeViewModel>() {
                 blurredBgView.visibility = View.VISIBLE
                 //Change alpha on sliding
                 blurredBgView.alpha = slideOffset
-                window?.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+//                window?.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
             }
 
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
                     blurredBgView.visibility = View.GONE
-                    window?.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+//                    window?.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
                 }
             }
         })
