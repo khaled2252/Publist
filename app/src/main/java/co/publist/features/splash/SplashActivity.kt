@@ -3,11 +3,13 @@ package co.publist.features.splash
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
 import android.widget.Toast
 import androidx.lifecycle.Observer
 import co.publist.R
 import co.publist.core.platform.BaseActivity
 import co.publist.core.platform.ViewModelFactory
+import co.publist.core.utils.Utils
 import co.publist.features.editprofile.EditProfileActivity
 import co.publist.features.home.HomeActivity
 import co.publist.features.login.LoginActivity
@@ -31,15 +33,17 @@ class SplashActivity : BaseActivity<SplashViewModel>() {
         setContentView(R.layout.activity_splash)
         viewModel.onCreated()
         viewModel.userLoggedIn.observe(this, Observer { pair ->
-            val isNewUser = pair.first
-            val isMyCategoriesEmpty = pair.second
-            if (!isNewUser) {
-                if (isMyCategoriesEmpty)
-                    navigateEditProfile()
-                else
-                    navigateToHome()
-            } else
-                navigateToLogin()
+            Handler().postDelayed({
+                val isNewUser = pair.first
+                val isMyCategoriesEmpty = pair.second
+                if (!isNewUser) {
+                    if (isMyCategoriesEmpty)
+                        navigateEditProfile()
+                    else
+                        navigateToHome()
+                } else
+                    navigateToLogin()
+            }, Utils.Constants.SPLASH_DELAY)
         })
     }
 

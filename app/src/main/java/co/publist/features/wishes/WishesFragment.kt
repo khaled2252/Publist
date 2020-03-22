@@ -4,11 +4,17 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import androidx.lifecycle.Observer
 import co.publist.R
+import co.publist.core.common.data.models.Mapper
 import co.publist.core.common.data.models.wish.Wish
+import co.publist.core.common.data.models.wish.WishAdapterItem
 import co.publist.core.platform.BaseFragment
 import co.publist.core.platform.ViewModelFactory
+import co.publist.core.utils.Utils.Constants.PUBLIC
+import co.publist.features.home.HomeActivity
+import co.publist.features.profile.ProfileActivity
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.firebase.firestore.Query
 import kotlinx.android.synthetic.main.fragment_wishes.*
@@ -27,6 +33,8 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
 
     override fun getBaseViewModelFactory() = viewModelFactory
 
+    private var wishesType = -1
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -35,26 +43,75 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        refreshLayout.isRefreshing = true
         setObservers()
     }
 
     private fun setObservers() {
-        viewModel.wishesQueryLiveData.observe(viewLifecycleOwner , Observer {query ->
-            setAdapter(query)
+        viewModel.wishesType.observe(viewLifecycleOwner, Observer { type ->
+            wishesType = type
+            setListeners()
+
+        })
+        viewModel.wishesQueryLiveData.observe(viewLifecycleOwner, Observer { pair ->
+            val query = pair.first
+            val type = pair.second
+            setAdapter(query, type)
+        })
+
+        viewModel.wishesListLiveData.observe(viewLifecycleOwner, Observer { list ->
+            setAdapter(list)
+            refreshLayout.isRefreshing = false
         })
     }
 
-    private fun setAdapter(query : Query) {
+    private fun setListeners() {
+        if (wishesType == PUBLIC) {
+            refreshLayout.isEnabled = true
+            refreshLayout.setOnRefreshListener {
+                viewModel.loadData(PUBLIC)
+            }
+        } else
+            refreshLayout.isEnabled = false
+    }
+
+    private fun setAdapter(query: Query, type: Int) {
         val options: FirestoreRecyclerOptions<Wish> =
             FirestoreRecyclerOptions.Builder<Wish>()
                 .setQuery(query, Wish::class.java)
                 .build()
 
-        val adapter = WishesAdapter(options)
+        val adapter =
+            WishesFirestoreAdapter(options, type, displayPlaceHolder = { displayPlaceHolder ->
+                val view =
+                    this.parentFragment?.view?.findViewById<LinearLayout>(R.id.placeHolderView)
+                if (displayPlaceHolder)
+                    view?.visibility = View.VISIBLE
+                else
+                    view?.visibility = View.GONE
+            } ,detailsListener = {wish ->
+                (activity as ProfileActivity).showEditWishDialog(wish)
+            },unFavoriteListener =  { wish ->
+                viewModel.modifyFavorite(wish, false)
+            })
 
-        adapter.setHasStableIds(true) //To avoid recycling view holders while scrolling thus removing selected colors
-        adapter.startListening() //To fetch data from firestore
+        adapter.startListening()
         wishesRecyclerView.adapter = adapter
+    }
+
+    private fun setAdapter(list: ArrayList<WishAdapterItem>) {
+        refreshLayout.isRefreshing = false
+        if (list.isNotEmpty()) {
+            val adapter = WishesAdapter(list,detailsListener = {wish ->
+                (activity as HomeActivity).showEditWishDialog(Mapper.mapToWish(wish))
+            },unFavoriteListener = { wish, isFavoriting ->
+                viewModel.modifyFavorite(Mapper.mapToWish(wish), isFavoriting)
+            })
+            wishesRecyclerView.adapter = adapter
+        } else {
+            //todo display placeholder
+        }
+
     }
 
 }

@@ -3,6 +3,7 @@ package co.publist.core.common.data.local.db
 import android.content.Context
 import androidx.paging.DataSource
 import co.publist.core.common.data.models.category.CategoryDbEntity
+import co.publist.core.common.data.models.wish.MyListDbEntity
 import io.reactivex.Single
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
@@ -20,7 +21,7 @@ class DataBaseAccess @Inject constructor(context: Context) : DataBaseInterface {
 
     override fun updateCategories(categoriesList: List<CategoryDbEntity>) {
         publistDao.deleteCategories()
-        publistDao.insert(categoriesList)
+        publistDao.insertCategoriesList(categoriesList)
     }
 
     override fun getCategories(): Single<List<CategoryDbEntity>>
@@ -36,6 +37,26 @@ class DataBaseAccess @Inject constructor(context: Context) : DataBaseInterface {
         return publistDao.deleteCategories()
     }
 
+    override fun getMyLists(): Single<List<MyListDbEntity>> {
+        return publistDao.getMyLists()
+    }
+
+    override fun getMyListsDataSource(): DataSource.Factory<Int, MyListDbEntity> {
+        return publistDao.getMyListsDataSource()
+    }
+
+    override fun insertIntoMyLists(myList: MyListDbEntity) {
+        return publistDao.insertIntoMyLists(myList)
+    }
+
+    override fun addMyLists(myList: List<MyListDbEntity>) {
+        return publistDao.insertMyLists(myList)
+    }
+
+    override fun deleteFromMyLists(wishId : String) {
+        return publistDao.deleteFromMyLists(wishId)
+    }
+
 }
 
 interface DataBaseInterface {
@@ -43,5 +64,10 @@ interface DataBaseInterface {
     fun getCategoriesDataSource(): DataSource.Factory<Int, CategoryDbEntity>
     fun updateCategories(categoriesList: List<CategoryDbEntity>)
     fun deleteCategories()
+    fun getMyLists():Single<List<MyListDbEntity>>
+    fun getMyListsDataSource(): DataSource.Factory<Int, MyListDbEntity>
+    fun insertIntoMyLists(myList: MyListDbEntity)
+    fun addMyLists(myList: List<MyListDbEntity>)
+    fun deleteFromMyLists(wishId : String)
 
 }

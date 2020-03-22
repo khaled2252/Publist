@@ -7,6 +7,13 @@ import io.reactivex.Single
 interface WishesRepositoryInterface {
     fun getAllWishesQuery(): Query
     fun getFilteredWishesQuery(categoryList: ArrayList<String?>): Query
-    fun createWish(wish : Wish): Completable
-    fun uploadImage(imageUri : String) : Single<String>
+    fun getUserListWishesQuery(): Query
+    fun getUserFavoriteWishesQuery(): Query
+    fun getAllWishes(): Single<ArrayList<Wish>>
+    fun getMyListWishes(): Single<ArrayList<Wish>>
+    fun createWish(wish: Wish): Completable
+    fun updateWish(wish: Wish): Completable
+    fun uploadImage(imageUri : String) : Single<Pair<String,String>>
+    fun deleteWishFromMyLists(selectedWish: Wish) : Completable
+    fun deleteWishFromWishes(selectedWish: Wish) : Completable
 }

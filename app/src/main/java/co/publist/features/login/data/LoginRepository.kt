@@ -3,11 +3,11 @@ package co.publist.features.login.data
 import android.os.Bundle
 import co.publist.core.common.data.local.LocalDataSource
 import co.publist.core.common.data.models.User
-import co.publist.core.utils.Extensions.Constants.EMAIL_FIELD
-import co.publist.core.utils.Extensions.Constants.NAME_FIELD
-import co.publist.core.utils.Extensions.Constants.PROFILE_PICTURE_URL_FIELD
-import co.publist.core.utils.Extensions.Constants.USERS_COLLECTION_PATH
-import co.publist.core.utils.Extensions.Constants.USER_ACCOUNTS_COLLECTION_PATH
+import co.publist.core.utils.Utils.Constants.EMAIL_FIELD
+import co.publist.core.utils.Utils.Constants.NAME_FIELD
+import co.publist.core.utils.Utils.Constants.PROFILE_PICTURE_URL_FIELD
+import co.publist.core.utils.Utils.Constants.USERS_COLLECTION_PATH
+import co.publist.core.utils.Utils.Constants.USER_ACCOUNTS_COLLECTION_PATH
 import com.facebook.AccessToken
 import com.facebook.GraphRequest
 import com.google.firebase.auth.FacebookAuthProvider
@@ -25,7 +25,7 @@ class LoginRepository @Inject constructor(
     private val mFirebaseFirestore: FirebaseFirestore,
     private val localDataSource: LocalDataSource
 
-) :  LoginRepositoryInterface {
+) : LoginRepositoryInterface {
     override fun fetchUserDocId(email: String): Single<String?> {
         return Single.create { singleEmitter ->
             mFirebaseFirestore.let {
@@ -78,22 +78,6 @@ class LoginRepository @Inject constructor(
                     }.addOnFailureListener { exception ->
                         completableEmitter.onError(exception)
                     }
-            }
-        }
-    }
-
-    override fun addNewUserAccount(docId: String, uId: String, platform: String): Completable {
-        return Completable.create { completableEmitter ->
-            mFirebaseFirestore.let {
-                val userAccounts: CollectionReference = it.collection(USER_ACCOUNTS_COLLECTION_PATH)
-                val userAccount = hashMapOf(
-                    platform to uId
-                )
-                userAccounts.document(docId).set(userAccount).addOnSuccessListener {
-                    completableEmitter.onComplete()
-                }.addOnFailureListener { exception ->
-                    completableEmitter.onError(exception)
-                }
             }
         }
     }
@@ -194,12 +178,15 @@ class LoginRepository @Inject constructor(
                         singleEmitter.onError(exception)
                     }.addOnSuccessListener { documentSnapshot ->
                         val user = documentSnapshot.toObject(User::class.java)
-                        user?.id=userDocId
-                        localDataSource.getSharedPreferences().setUser(user!!)
-                        singleEmitter.onSuccess(user)
+                        user?.id = userDocId
+                        singleEmitter.onSuccess(user!!)
                     }
             }
         }
+    }
+
+    override fun setUserInformation(user: User) {
+        localDataSource.getSharedPreferences().setUser(user)
     }
 
 }

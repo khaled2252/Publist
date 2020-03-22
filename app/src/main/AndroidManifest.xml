@@ -55,6 +55,13 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.CreateWishScreen" />
 
+        <activity
+            android:name=".features.profile.ProfileActivity"
+            android:launchMode = "singleTop"
+            android:label="Profile"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.ProfileScreen" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"

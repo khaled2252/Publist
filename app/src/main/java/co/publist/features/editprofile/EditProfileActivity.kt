@@ -3,13 +3,17 @@ package co.publist.features.editprofile
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.Gravity
+import android.view.View
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import co.publist.R
 import co.publist.core.platform.BaseActivity
 import co.publist.core.platform.ViewModelFactory
-import co.publist.core.utils.BindingAdapterUtils.loadProfilePicture
+import co.publist.core.utils.DataBindingAdapters.loadProfilePicture
+import co.publist.core.utils.Utils.Constants.COMING_FROM_PROFILE_INTENT
+import co.publist.core.utils.Utils.Constants.MINIMUM_SELECTED_CATEGORIES
 import co.publist.databinding.ActivityEditProfileBinding
 import co.publist.features.categories.CategoriesFragment
 import co.publist.features.home.HomeActivity
@@ -31,12 +35,18 @@ class EditProfileActivity : BaseActivity<EditProfileViewModel>() {
 
     private lateinit var categoriesFragment: CategoriesFragment
 
+    private var isComingFromProfile : Boolean? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         DataBindingUtil.setContentView<ActivityEditProfileBinding>(
             this,
             R.layout.activity_edit_profile
         ).executePendingBindings()
+        isComingFromProfile = this.intent.getBooleanExtra(COMING_FROM_PROFILE_INTENT,false)
+        if(!isComingFromProfile!!)
+            backArrowImageViewLayout.visibility = View.GONE
+
         onCreated()
         setObservers()
         setListeners()
@@ -45,7 +55,7 @@ class EditProfileActivity : BaseActivity<EditProfileViewModel>() {
     private fun onCreated() {
         categoriesFragment =
             supportFragmentManager.findFragmentById(R.id.categoriesFragment) as CategoriesFragment
-        categoriesFragment.viewModel.getSelectedCategories()
+        categoriesFragment.viewModel.getCategories()
         viewModel.onCreated()
     }
 
@@ -56,27 +66,30 @@ class EditProfileActivity : BaseActivity<EditProfileViewModel>() {
         })
 
         categoriesFragment.viewModel.actionButtonLiveData.observe(this, Observer { viable ->
-            if (!viable)
-                Toast.makeText(
-                    this,
-                    R.string.minimum_categories,
-                    Toast.LENGTH_SHORT
-                ).show()
-
+            if (!viable) {
+                val toast =
+                    Toast.makeText(this, getString(R.string.minimum_categories).format(MINIMUM_SELECTED_CATEGORIES), Toast.LENGTH_SHORT)
+                toast.setGravity(Gravity.BOTTOM, 0, 400)
+                toast.show()
+            }
         })
 
         categoriesFragment.viewModel.saveCategoriesLiveData.observe(this, Observer {
             Toast.makeText(this, getString(R.string.saved_successfully), Toast.LENGTH_SHORT)
                 .show()
-            val intent = Intent(this, HomeActivity::class.java)
-            intent.flags =
-                Intent.FLAG_ACTIVITY_CLEAR_TOP //If coming already from home (get last HomeActivity on top stack)
-            startActivity(intent)
+
+            if (!isComingFromProfile!!) //from login or splash
+                startActivity(Intent(this, HomeActivity::class.java))
+
             finish()
         })
     }
 
     private fun setListeners() {
+        backArrowImageViewLayout.setOnClickListener {
+            onBackPressed()
+        }
+
         buttonSave.setOnClickListener {
             categoriesFragment.viewModel.handleActionButton(true)
         }

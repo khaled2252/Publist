@@ -4,9 +4,10 @@ import android.os.AsyncTask
 import co.publist.core.common.data.local.LocalDataSource
 import co.publist.core.common.data.models.Mapper
 import co.publist.core.common.data.models.category.Category
-import co.publist.core.utils.Extensions.Constants.CATEGORIES_COLLECTION_PATH
-import co.publist.core.utils.Extensions.Constants.MY_CATEGORIES_COLLECTION_PATH
-import co.publist.core.utils.Extensions.Constants.USERS_COLLECTION_PATH
+import co.publist.core.common.data.models.category.CategoryAdapterItem
+import co.publist.core.utils.Utils.Constants.CATEGORIES_COLLECTION_PATH
+import co.publist.core.utils.Utils.Constants.MY_CATEGORIES_COLLECTION_PATH
+import co.publist.core.utils.Utils.Constants.USERS_COLLECTION_PATH
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FirebaseFirestore
@@ -24,10 +25,28 @@ class CategoriesRepository @Inject constructor(
         return mFirebaseFirestore.collection(CATEGORIES_COLLECTION_PATH)
     }
 
-    override fun fetchUserSelectedCategories(userId: String): Single<ArrayList<Category>> {
+    override fun fetchAllCategories(): Single<ArrayList<Category>> {
+        return Single.create { singleEmitter ->
+            mFirebaseFirestore.collection(CATEGORIES_COLLECTION_PATH)
+                .get()
+                .addOnSuccessListener {querySnapshot ->
+                    val categories = ArrayList<Category>()
+                    for (document in querySnapshot)
+                    {
+                        val category = document.toObject(Category::class.java)
+                        category.id = document.id
+                        categories.add(category)
+                    }
+                    singleEmitter.onSuccess(categories)
+                }
+        }
+    }
+
+    override fun fetchUserSelectedCategories(): Single<ArrayList<Category>> {
+        val userId = localDataSource.getSharedPreferences().getUser()?.id
         return Single.create { singleEmitter ->
             mFirebaseFirestore.collection(USERS_COLLECTION_PATH)
-                .document(userId)
+                .document(userId!!)
                 .collection(MY_CATEGORIES_COLLECTION_PATH).get()
                 .addOnFailureListener { exception ->
                     singleEmitter.onError(exception)
@@ -50,9 +69,9 @@ class CategoriesRepository @Inject constructor(
         }
     }
 
-    override fun getLocalSelectedCategories(): Single<ArrayList<Category>> {
+    override fun getLocalSelectedCategories(): Single<ArrayList<CategoryAdapterItem>> {
         return localDataSource.getPublistDataBase().getCategories().flatMap {
-            Single.just(Mapper.mapToCategoryArrayList(it))
+                Single.just(Mapper.mapToCategoryAdapterItemList(it))
         }
     }
 

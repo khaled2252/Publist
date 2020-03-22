@@ -1,10 +1,8 @@
 package co.publist.features.splash
 
-import android.os.Handler
 import androidx.lifecycle.MutableLiveData
 import co.publist.core.common.data.repositories.user.UserRepositoryInterface
 import co.publist.core.platform.BaseViewModel
-import co.publist.core.utils.Extensions.Constants.SPLASH_DELAY
 import co.publist.features.categories.data.CategoriesRepositoryInterface
 import io.reactivex.functions.Consumer
 import javax.inject.Inject
@@ -28,9 +26,7 @@ class SplashViewModel @Inject constructor(private val userRepository: UserReposi
             if(it.isNullOrEmpty())
                 isMyCategoriesEmpty = true
 
-            Handler().postDelayed({
-                userLoggedIn.postValue(Pair(isNewUser, isMyCategoriesEmpty))
-            }, SPLASH_DELAY)
+            userLoggedIn.postValue(Pair(isNewUser, isMyCategoriesEmpty))
         })
 
     }

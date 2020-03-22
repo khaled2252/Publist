@@ -10,9 +10,9 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 
-class ItemsAdapter (private val listChangedListener: () -> Unit):
+class ItemsAdapter (private val listChangedListener: (ArrayList<String>) -> Unit):
     RecyclerView.Adapter<ItemsAdapter.ItemViewHolder>() {
-    private val list = ArrayList<String>()
+    private var list = ArrayList<String>()
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
         val itemView = LayoutInflater.from(parent.context).inflate(R.layout.item_create_wish, parent, false)
         return ItemViewHolder(itemView)
@@ -29,24 +29,25 @@ class ItemsAdapter (private val listChangedListener: () -> Unit):
             }
         }
         notifyItemMoved(fromPosition, toPosition)
+        listChangedListener(list)
     }
 
     fun removeItem(position: Int) {
         list.removeAt(position)
         notifyItemRemoved(position)
-        notifyItemRangeChanged(position, list.size)
-        listChangedListener()
+        notifyDataSetChanged()
+        listChangedListener(list)
     }
 
-    fun addItem(item : String)
-    {
+    fun addItem(item: String) {
         list.add(item)
         notifyDataSetChanged()
-        listChangedListener()
+        listChangedListener(list)
     }
 
-    fun getList(): java.util.ArrayList<String> {
-        return list
+    fun populateOldList(oldList : ArrayList<String>){
+        list = oldList
+        notifyDataSetChanged()
     }
 
     override fun getItemCount(): Int {
@@ -54,13 +55,13 @@ class ItemsAdapter (private val listChangedListener: () -> Unit):
     }
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
-        holder.bind(list[position],position)
+        holder.bind(list[position], position)
     }
 
     inner class ItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun bind(
             todo: String
-        ,position: Int
+            , position: Int
         ) {
             itemView.textView.text = todo
             itemView.deleteItemImageView.setOnClickListener {

@@ -10,11 +10,8 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.MotionEvent
 import android.view.View
-import android.view.View.OnTouchListener
 import android.view.ViewTreeObserver
-import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -25,16 +22,21 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ItemTouchHelper.*
 import co.publist.R
+import co.publist.core.common.data.models.Mapper
+import co.publist.core.common.data.models.wish.Wish
 import co.publist.core.platform.BaseActivity
 import co.publist.core.platform.ViewModelFactory
+import co.publist.core.utils.DataBindingAdapters
 import co.publist.core.utils.DragManageAdapter
-import co.publist.core.utils.Extensions.Constants.CAMERA
-import co.publist.core.utils.Extensions.Constants.GALLERY
-import co.publist.core.utils.Extensions.getDistanceBetweenViews
-import co.publist.core.utils.Extensions.navigateToCamera
-import co.publist.core.utils.Extensions.navigateToGallery
-import co.publist.core.utils.Extensions.resultUri
-import co.publist.core.utils.Extensions.startCroppingActivity
+import co.publist.core.utils.Utils.Constants.CAMERA
+import co.publist.core.utils.Utils.Constants.EDIT_WISH_INTENT
+import co.publist.core.utils.Utils.Constants.GALLERY
+import co.publist.core.utils.Utils.Constants.MINIMUM_WISH_ITEMS
+import co.publist.core.utils.Utils.getDistanceBetweenViews
+import co.publist.core.utils.Utils.navigateToCamera
+import co.publist.core.utils.Utils.navigateToGallery
+import co.publist.core.utils.Utils.resultUri
+import co.publist.core.utils.Utils.startCroppingActivity
 import co.publist.features.categories.CategoriesFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.theartofdev.edmodo.cropper.CropImage
@@ -56,6 +58,7 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
     private lateinit var adapter: ItemsAdapter
     private lateinit var categoriesFragment: CategoriesFragment
     private lateinit var sheetBehavior: BottomSheetBehavior<*>
+    private var editedWish: Wish? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,13 +75,15 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
 
         if (requestCode == GALLERY) {
             if (data != null) {
-                startCroppingActivity(this,data.data!!)
+                startCroppingActivity(this, data.data!!)
             }
 
         } else if (requestCode == CAMERA && resultCode == RESULT_OK) {
-            startCroppingActivity(this,resultUri) //Camera will automatically load image in resultUri (specified in intent)
-        }
-        else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            startCroppingActivity(
+                this,
+                resultUri
+            ) //Camera will automatically load image in resultUri (specified in intent)
+        } else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 val resultUri = CropImage.getActivityResult(data).uri
                 loadPhotoUriToImageView(resultUri)
@@ -105,7 +110,11 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
                         permissions[0]
                     )
                 ) {
-                    Toast.makeText(this, getString(R.string.permission_required), Toast.LENGTH_SHORT)
+                    Toast.makeText(
+                            this,
+                            getString(R.string.permission_required),
+                            Toast.LENGTH_SHORT
+                        )
                         .show()
                 } else {
                     //permission is denied (and never ask again is  checked)
@@ -145,20 +154,42 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
     }
 
     private fun onCreated() {
+        editedWish = intent.getParcelableExtra(EDIT_WISH_INTENT) as? Wish
         categoriesFragment =
             supportFragmentManager.findFragmentById(R.id.categoriesFragment) as CategoriesFragment
         sheetBehavior = BottomSheetBehavior.from(categoriesFragmentBottomSheet)
         categoriesFragment.viewModel.isCreatingWish = true
-        categoriesFragment.viewModel.getSelectedCategories()
+
+        if (editedWish != null) {
+            titleTextView.text = getString(R.string.edit_wish)
+            addCategoryTextView.text = ""
+            categoryChip.visibility = View.VISIBLE
+            categoryChip.text = editedWish?.category!![0].name?.capitalize()
+            categoriesFragment.viewModel.getCategories(editedWish?.category!![0])
+            titleInputLayout.hint = ""
+            titleEditText.setText(editedWish?.title)
+
+            if (!editedWish?.wishPhotoURL.isNullOrEmpty())
+            {
+                DataBindingAdapters.loadWishImage(photoImageView,editedWish?.wishPhotoURL!!)
+                updateImageLayout()
+            }
+
+            postButton.text = getString(R.string.save)
+            viewModel.populateWishData(editedWish!!)
+        } else
+            categoriesFragment.viewModel.getCategories()
+
     }
 
     private fun setAdapter() {
-        adapter = ItemsAdapter {
-            viewModel.items = adapter.getList()
+        adapter = ItemsAdapter { items ->
+            viewModel.items = items
             viewModel.validateEntries()
             itemsRecyclerView.scrollToPosition(viewModel.items.size - 1)
         }
         itemsRecyclerView.adapter = adapter
+
 
         // Setup ItemTouchHelper
         val callback = DragManageAdapter(
@@ -176,24 +207,39 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
 
         viewModel.addingWishLiveData.observe(this, Observer { isCreated ->
             if (isCreated) {
-                Toast.makeText(this, getString(R.string.post_wish_success), Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.post_wish_success), Toast.LENGTH_SHORT)
+                    .show()
                 finish()
             } else
-                Toast.makeText(this, getString(R.string.minimum_wish_items), Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this,
+                    getString(R.string.minimum_wish_items).format(MINIMUM_WISH_ITEMS),
+                    Toast.LENGTH_SHORT
+                ).show()
         })
 
     }
 
     private fun setListeners() {
+        backArrowImageViewLayout.setOnClickListener {
+            onBackPressed()
+        }
 
         activityCreateWishLayout.viewTreeObserver.addOnGlobalLayoutListener(object :
             ViewTreeObserver.OnGlobalLayoutListener {
             override fun onGlobalLayout() {
                 activityCreateWishLayout.viewTreeObserver.removeOnGlobalLayoutListener(this)
                 setUpItemsRecyclerViewMaxHeight()
+                if (editedWish != null) {
+                    val oldList = ArrayList(editedWish!!.items!!.entries
+                        .sortedBy { it.value.orderId } // Sort map entries by order id
+                        .map { it.value.name!! }) // get list of names of values(items)
+                    adapter.populateOldList(oldList)
+                }
             }
 
         })
+
         postButton.setOnClickListener {
             viewModel.postWish()
         }
@@ -211,26 +257,34 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
                 blurredBgView.visibility = View.VISIBLE
                 //Change alpha on sliding
                 blurredBgView.alpha = slideOffset
-                window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+//                window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
             }
 
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
                     blurredBgView.visibility = View.GONE
-                    window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+//                    window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
                     val category =
                         categoriesFragment.viewModel.selectedCategoriesList.getOrNull(0)
                     if (category != null) {
-                        viewModel.category = category
-                        addCategoryTextView.text = category.name
-                    } else
-                        addCategoryTextView.text = getString(R.string.create_wish_categories_default)
+                        val mappedCategory = Mapper.mapToCategory(category)
+                        viewModel.category = Mapper.mapToCategoryWish(mappedCategory)
+                        addCategoryTextView.text = ""
+                        categoryChip.visibility = View.VISIBLE
+                        categoryChip.text = category.name?.capitalize()
+                    } else {
+                        viewModel.category = null
+                        categoryChip.visibility = View.GONE
+                        addCategoryTextView.text =
+                            getString(R.string.create_wish_categories_default)
+                    }
 
                     viewModel.validateEntries()
                 }
 
             }
         })
+
         addCategoryTextView.setOnClickListener {
             if (sheetBehavior.state != BottomSheetBehavior.STATE_EXPANDED) {
                 sheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
@@ -239,20 +293,36 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
             }
         }
 
-        deletePhotoImageView.setOnClickListener {
-            imageLayout.visibility = View.GONE
-            addPhotoTextView.visibility = View.VISIBLE
-            listTextView.setPadding(0, 0, 0, 0)
+        categoryChip.setOnCloseIconClickListener {
+            categoriesFragment.viewModel.removeWishCategory()
+            viewModel.category = null
+            viewModel.validateEntries()
+            categoryChip.visibility = View.GONE
+            addCategoryTextView.text =
+                getString(R.string.create_wish_categories_default)
         }
 
-        addPhotoTextView.setOnClickListener {
+        deletePhotoImageView.setOnClickListener {
+            if(editedWish != null)
+                viewModel.deletedOldPhoto = true
+
+            viewModel.wishImageUri = ""
+            deletePhotoImageView.setImageResource(R.drawable.ic_attachment)
+
+            addPhotoTextView.visibility = View.VISIBLE
+            photoImageView.visibility = View.INVISIBLE
+
+            deletePhotoImageView.isEnabled = false
+            addPhotoLayout.isEnabled = true
+        }
+
+        addPhotoLayout.setOnClickListener {
             showCameraGalleryDialog()
         }
 
         itemEditText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_NEXT) {
                 itemDoneOnClick()
-                itemEditText.requestFocus()
             }
             false
         }
@@ -286,30 +356,21 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
         itemEditText.setOnFocusChangeListener { _, hasFocus ->
             when {
                 hasFocus -> {
-                    itemInputLayout.hint = ""
+                    itemTextInputLayout.hint = ""
                 }
                 itemEditText.text.isNullOrEmpty() -> {
-                    itemInputLayout.hint = getString(R.string.add_item_hint)
+                    itemTextInputLayout.hint = getString(R.string.add_item_hint)
                 }
-                else -> itemInputLayout.hint = ""
+                else -> itemTextInputLayout.hint = ""
             }
         }
         itemEditText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(editable: Editable?) {
                 if (editable.isNullOrEmpty())
-                    itemEditText.setCompoundDrawablesWithIntrinsicBounds(
-                        0,
-                        0,
-                        R.drawable.ic_done,
-                        0
-                    )
+                    btnItemDone.setImageResource(R.drawable.ic_done)
                 else {
-                    itemEditText.setCompoundDrawablesWithIntrinsicBounds(
-                        0,
-                        0,
-                        R.drawable.ic_done_active,
-                        0
-                    )
+                    btnItemDone.setImageResource(R.drawable.ic_done_active)
+
                     viewModel.validateEntries()
                 }
             }
@@ -318,34 +379,20 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
             }
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                itemEditText.setCompoundDrawablesWithIntrinsicBounds(
-                    0,
-                    0,
-                    R.drawable.ic_done_active,
-                    0
-                )
-
+                btnItemDone.setImageResource(R.drawable.ic_done_active)
             }
         })
 
-        itemEditText.setOnTouchListener(OnTouchListener { _, event ->
-            val DRAWABLE_RIGHT = 2
-            if (event.action == MotionEvent.ACTION_UP) {
-                if (event.rawX >= itemEditText.right - itemEditText.compoundDrawables[DRAWABLE_RIGHT].bounds.width()
-                ) {
-                    itemDoneOnClick()
-                    return@OnTouchListener false
-                }
-            }
-            false
-        })
+        btnItemDone.setOnClickListener {
+            itemDoneOnClick()
+        }
     }
 
     private fun setUpItemsRecyclerViewMaxHeight() {
         val distance = getDistanceBetweenViews(postButton, itemEditText)
         val params = itemsRecyclerView.layoutParams as ConstraintLayout.LayoutParams
         params.matchConstraintMaxHeight =
-            distance - (2 * itemEditText.measuredHeight + postButton.measuredHeight)
+            distance - (2 * itemEditText.measuredHeight + (0.5 * postButton.measuredHeight).toInt())
         itemsRecyclerView.layoutParams = params
     }
 
@@ -353,7 +400,6 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
         if (itemEditText.text!!.isNotEmpty()) {
             adapter.addItem(itemEditText.text.toString())
             itemEditText.text = null
-            hideKeyboard()
         }
     }
 
@@ -361,7 +407,8 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
         val pictureDialog =
             AlertDialog.Builder(this, android.R.style.Theme_Material_Light_Dialog_NoActionBar)
         pictureDialog.setTitle(getString(R.string.camera_gallery_dialog_title))
-        val pictureDialogItems = arrayOf(getString(R.string.select_from_gallery), getString(R.string.select_from_camera))
+        val pictureDialogItems =
+            arrayOf(getString(R.string.select_from_gallery), getString(R.string.select_from_camera))
         pictureDialog.setItems(
             pictureDialogItems
         ) { _, which ->
@@ -382,7 +429,7 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
     }
 
     private fun loadPhotoUriToImageView(uri: Uri) {
-        val bitmap = if(Build.VERSION.SDK_INT < 28) {
+        val bitmap = if (Build.VERSION.SDK_INT < 28) {
             MediaStore.Images.Media.getBitmap(
                 this.contentResolver,
                 uri
@@ -392,9 +439,17 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
             ImageDecoder.decodeBitmap(source)
         }
         photoImageView.setImageBitmap(bitmap)
-        imageLayout.visibility = View.VISIBLE
+        updateImageLayout()
+    }
+
+    private fun updateImageLayout() {
+        deletePhotoImageView.setImageResource(R.drawable.ic_cross)
+
+        photoImageView.visibility = View.VISIBLE
         addPhotoTextView.visibility = View.INVISIBLE
-        listTextView.setPadding(0, 130, 0, 0)
+
+        deletePhotoImageView.isEnabled = true
+        addPhotoLayout.isEnabled = false
     }
 
 }

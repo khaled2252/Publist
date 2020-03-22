@@ -17,23 +17,80 @@
             android:layout_height="match_parent"
             tools:context=".features.createwish.CreateWishActivity">
 
-
-            <TextView
-                android:id="@+id/addCategoryTextView"
+            <com.google.android.material.appbar.AppBarLayout
+                android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:drawableEnd="@drawable/ic_plus"
-                android:fontFamily="@font/sfprodisplaysemibold"
-                android:paddingStart="40dp"
-                android:paddingTop="15dp"
-                android:paddingEnd="30dp"
-                android:paddingBottom="15dp"
-                android:text="@string/create_wish_categories_default"
-                android:textColor="@color/dimGray"
-                android:textSize="20sp"
+                android:background="@color/white"
+                app:elevation="0dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent">
+
+                <androidx.appcompat.widget.Toolbar
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:id="@+id/backArrowImageViewLayout"
+                        android:layout_width="50dp"
+                        android:layout_height="40dp"
+                        android:gravity="center">
+
+                        <ImageView
+                            android:layout_width="10dp"
+                            android:layout_height="18dp"
+                            android:src="@drawable/ic_back" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/titleTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:fontFamily="@font/sfprodisplaybold"
+                        android:text="@string/new_wish_list"
+                        android:textColor="@color/dimGray"
+                        android:textSize="20sp" />
+                </androidx.appcompat.widget.Toolbar>
+            </com.google.android.material.appbar.AppBarLayout>
+
+            <FrameLayout
+                android:id="@+id/addCategoryLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/toolbar">
+
+                <TextView
+                    android:id="@+id/addCategoryTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:drawableEnd="@drawable/ic_plus"
+                    android:fontFamily="@font/sfprodisplaysemibold"
+                    android:paddingStart="40dp"
+                    android:paddingTop="15dp"
+                    android:paddingEnd="30dp"
+                    android:paddingBottom="15dp"
+                    android:text="@string/create_wish_categories_default"
+                    android:textColor="@color/dimGray"
+                    android:textSize="20sp" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/categoryChip"
+                    style="@style/Widget.MaterialComponents.Chip.Entry"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center|start"
+                    android:layout_marginStart="40dp"
+                    android:clickable="false"
+                    android:fontFamily="@font/sfprodisplaysemibold"
+                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+                    android:textColor="@color/dimGray"
+                    android:visibility="gone"
+                    app:checkedIconEnabled="false" />
+            </FrameLayout>
 
             <View
                 android:id="@+id/dashed_line"
@@ -42,7 +99,7 @@
                 android:background="@color/platinum"
 
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/addCategoryTextView" />
+                app:layout_constraintTop_toBottomOf="@id/addCategoryLayout" />
 
             <TextView
                 android:id="@+id/textView3"
@@ -76,61 +133,64 @@
                     android:id="@+id/titleEditText"
                     style="@style/Theme.AppCompat.Light"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingBottom="75dp"
+                    android:layout_height="100dp"
+                    android:fontFamily="@font/sfprodisplaymedium"
+                    android:gravity="top|start"
                     android:textColor="@color/dimGray" />
             </com.google.android.material.textfield.TextInputLayout>
 
-
-            <TextView
-                android:id="@+id/addPhotoTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="40dp"
-                android:layout_marginTop="20dp"
-                android:drawableStart="@drawable/ic_attachment_black_24dp"
-                android:drawablePadding="5dp"
-                android:fontFamily="@font/sfprodisplaymedium"
-                android:text="@string/add_photo_optional"
-                android:textColor="@color/dark_grey"
-                android:textSize="16sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/titleInputLayout" />
-
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/imageLayout"
+                android:id="@+id/addPhotoLayout"
                 android:layout_width="match_parent"
                 android:layout_height="80dp"
                 android:layout_marginStart="30dp"
-                android:layout_marginTop="40dp"
+                android:layout_marginTop="10dp"
                 android:layout_marginEnd="30dp"
                 android:background="@drawable/border"
-                android:visibility="gone"
+                android:visibility="visible"
                 app:layout_constraintBottom_toTopOf="@id/listTextView"
                 app:layout_constraintTop_toBottomOf="@id/titleInputLayout">
+
+                <TextView
+                    android:id="@+id/addPhotoTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="17dp"
+                    android:drawablePadding="5dp"
+                    android:fontFamily="@font/sfprodisplaymedium"
+                    android:text="@string/add_photo_optional"
+                    android:textColor="@color/dark_grey"
+                    android:textSize="16sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
 
                 <ImageView
                     android:id="@+id/photoImageView"
                     android:layout_width="120dp"
                     android:layout_height="60dp"
-                    app:layout_constraintTop_toTopOf="@id/imageLayout"
-                    app:layout_constraintBottom_toBottomOf="@id/imageLayout"
-                    app:layout_constraintStart_toStartOf="@id/imageLayout"
                     android:layout_marginStart="15dp"
                     android:layout_marginTop="10dp"
                     android:layout_marginBottom="10dp"
-                    android:scaleType="fitXY" />
+                    android:scaleType="fitXY"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="@id/addPhotoLayout"
+                    app:layout_constraintStart_toStartOf="@id/addPhotoLayout"
+                    app:layout_constraintTop_toTopOf="@id/addPhotoLayout" />
 
                 <ImageView
                     android:id="@+id/deletePhotoImageView"
-                    android:layout_width="15dp"
-                    android:layout_height="15dp"
-                    app:layout_constraintTop_toTopOf="@id/imageLayout"
-                    app:layout_constraintEnd_toEndOf="@id/imageLayout"
-                    app:layout_constraintBottom_toBottomOf="@id/imageLayout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginEnd="15dp"
-                    android:src="@drawable/ic_cross" />
+                    android:clickable="false"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/ic_attachment"
+                    app:layout_constraintBottom_toBottomOf="@id/addPhotoLayout"
+                    app:layout_constraintEnd_toEndOf="@id/addPhotoLayout"
+                    app:layout_constraintTop_toTopOf="@id/addPhotoLayout" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <TextView
@@ -138,19 +198,19 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="40dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="22dp"
                 android:fontFamily="@font/sfprodisplaysemibold"
                 android:text="@string/wish_list_title"
                 android:textColor="@color/dimGray"
                 android:textSize="20sp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/addPhotoTextView" />
+                app:layout_constraintTop_toBottomOf="@id/addPhotoLayout" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/itemsRecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="10dp"
                 android:layout_marginBottom="5dp"
                 android:orientation="vertical"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
@@ -161,31 +221,47 @@
                 tools:itemCount="3"
                 tools:listitem="@layout/item_create_wish" />
 
-            <com.google.android.material.textfield.TextInputLayout
+            <FrameLayout
                 android:id="@+id/itemInputLayout"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="30dp"
                 android:layout_marginEnd="30dp"
-                android:hint="@string/add_item_hint"
-                app:boxBackgroundColor="@color/white"
-                app:boxStrokeColor="@color/text_input_layout_stroke_color"
-                app:boxStrokeWidth="1dp"
-                app:hintAnimationEnabled="false"
-                app:hintTextColor="@color/gray"
                 app:layout_constraintTop_toBottomOf="@id/itemsRecyclerView">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/itemEditText"
-                    style="@style/Theme.AppCompat.Light"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/itemTextInputLayout"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:drawableEnd="@drawable/ic_done"
-                    android:inputType="text"
-                    android:maxLines="1"
-                    android:textColor="@color/dimGray" />
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:hint="@string/add_item_hint"
+                    app:boxBackgroundColor="@color/white"
+                    app:boxStrokeColor="@color/text_input_layout_stroke_color"
+                    app:boxStrokeWidth="1dp"
+                    app:hintAnimationEnabled="false"
+                    app:hintTextColor="@color/gray">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/itemEditText"
+                        style="@style/Theme.AppCompat.Light"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:imeOptions="actionNext"
+                        android:inputType="text"
+                        android:maxLines="1"
+                        android:nextFocusForward="@id/itemEditText"
+                        android:textColor="@color/dimGray" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <ImageView
+                    android:id="@+id/btnItemDone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:padding="20dp"
+                    android:src="@drawable/ic_done" />
+            </FrameLayout>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/postButton"
@@ -256,6 +332,15 @@
             android:text="@string/choose_category_done"
             app:cornerRadius="10dp" />
     </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/progressBarHolder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="0.35"
+        android:animateLayoutChanges="true"
+        android:background="@color/dimGray"
+        android:visibility="gone"></FrameLayout>
 
     <ProgressBar
         android:id="@+id/progress_circular"

@@ -10,14 +10,16 @@ import android.provider.MediaStore
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.core.content.FileProvider
-import co.publist.core.utils.Extensions.Constants.GALLERY
-import co.publist.core.utils.Extensions.Constants.TEMP_IMAGE
+import co.publist.core.utils.Utils.Constants.GALLERY
+import co.publist.core.utils.Utils.Constants.TEMP_IMAGE
+import co.publist.core.utils.Utils.Constants.WISH_IMAGE_FIXED_HEIGHT
+import co.publist.core.utils.Utils.Constants.WISH_IMAGE_FIXED_WIDTH
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
 import java.io.File
 import kotlin.math.abs
 
-object Extensions {
+object Utils {
 
     fun hideSoftKeyboard(context: Context, iBinder: IBinder) {
         val inputMethodManager =
@@ -47,6 +49,8 @@ object Extensions {
         CropImage.activity(imageUri)
             .setGuidelines(CropImageView.Guidelines.ON)
             .setAspectRatio(2, 1)
+            .setMaxCropResultSize(WISH_IMAGE_FIXED_WIDTH, WISH_IMAGE_FIXED_HEIGHT)
+            .setOutputCompressQuality(40)
             .setOutputCompressFormat(Bitmap.CompressFormat.JPEG)
             .start(activity)
     }
@@ -77,8 +81,9 @@ object Extensions {
         const val DB_NAME = "PublistDb"
         const val SPLASH_DELAY: Long = 2000
         const val MINIMUM_SELECTED_CATEGORIES = 1
-        const val MAXIMUM_SELECTED_CATEGORIES = 5
+        const val MAXIMUM_SELECTED_CATEGORIES = 9
         const val MAX_VISIBLE_TODOS = 3
+        const val MINIMUM_WISH_ITEMS = 3
         const val PLATFORM_GOOGLE = "google"
         const val PLATFORM_FACEBOOK = "facebook"
         const val EMAIL_PERMISSION = "email"
@@ -95,10 +100,15 @@ object Extensions {
         const val NAME_FIELD = "name"
         const val DATE_FIELD = "date"
         const val CATEGORY_ID_FIELD = "categoryId"
-        const val FIND_ACTION = "find"
-        const val SAVE_ACTION = "save"
         const val GALLERY = 1
         const val CAMERA = 2
         const val TEMP_IMAGE = "temp_image"
+        const val PUBLIC = 0
+        const val LISTS = 1
+        const val FAVORITES = 2
+        const val WISH_IMAGE_FIXED_WIDTH = 2400
+        const val WISH_IMAGE_FIXED_HEIGHT = 1200
+        const val EDIT_WISH_INTENT = "editedWish"
+        const val COMING_FROM_PROFILE_INTENT = "isComingFromProfile"
     }
 }

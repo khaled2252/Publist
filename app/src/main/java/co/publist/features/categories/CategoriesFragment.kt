@@ -5,14 +5,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import co.publist.R
-import co.publist.core.common.data.models.category.Category
+import co.publist.core.common.data.models.category.CategoryAdapterItem
 import co.publist.core.platform.BaseFragment
 import co.publist.core.platform.ViewModelFactory
-import com.firebase.ui.firestore.FirestoreRecyclerOptions
-import com.google.android.material.button.MaterialButton
+import co.publist.core.utils.Utils.Constants.MAXIMUM_SELECTED_CATEGORIES
 import kotlinx.android.synthetic.main.fragment_categories.*
 import javax.inject.Inject
 
@@ -36,71 +34,36 @@ class CategoriesFragment : BaseFragment<CategoriesViewModel>() {
         return inflater.inflate(R.layout.fragment_categories, container, false)
     }
 
-    private lateinit var lastClickedButton: MaterialButton
+    private lateinit var adapter : CategoriesAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         setObservers()
+        setAdapter(arrayListOf())
     }
 
-    private fun setAdapter(selectedCategoriesList : ArrayList<Category>) {
-        val options: FirestoreRecyclerOptions<Category> =
-            FirestoreRecyclerOptions.Builder<Category>()
-                .setQuery(viewModel.getCategoriesQuery(), Category::class.java)
-                .build()
+    private fun setAdapter(categoriesList : ArrayList<CategoryAdapterItem>) {
+        adapter = CategoriesAdapter(categoriesList) { CategoryAdapterItem ->
+            viewModel.addCategory(CategoryAdapterItem)
 
-        val adapter = CategoriesAdapter(options, selectedCategoriesList) { category, button ->
-            lastClickedButton = button
-            viewModel.addCategory(category)
         }
-
-        adapter.setHasStableIds(true) //To avoid recycling view holders while scrolling thus removing selected colors
-        adapter.startListening() //To fetch data from firestore
         categoriesRecyclerView.adapter = adapter
     }
 
     private fun setObservers() {
-        viewModel.previouslySelectedCategoriesList.observe(viewLifecycleOwner, Observer {list ->
-            setAdapter(list)
+        viewModel.categoriesListLiveData.observe(viewLifecycleOwner, Observer { newList ->
+            adapter.updateList(newList)
         })
 
-        viewModel.selectedCategory.observe(viewLifecycleOwner, Observer { isAdding ->
-            if (isAdding) {
-                lastClickedButton.setBackgroundColor(
-                    ContextCompat.getColor(
-                        lastClickedButton.context,
-                        R.color.outerSpace
-                    )
-                )
-                lastClickedButton.setTextColor(
-                    ContextCompat.getColor(
-                        lastClickedButton.context,
-                        R.color.gray
-                    )
-                )
-            } else {
-                lastClickedButton.setBackgroundColor(
-                    ContextCompat.getColor(
-                        lastClickedButton.context,
-                        R.color.gray
-                    )
-                )
-                lastClickedButton.setTextColor(
-                    ContextCompat.getColor(
-                        lastClickedButton.context,
-                        R.color.outerSpace
-                    )
-                )
-            }
-        }
-
-        )
-
-        viewModel.reachedMaximumSelection.observe(viewLifecycleOwner, Observer {isCreatingWish ->
+        viewModel.reachedMaximumSelectionLiveData.observe(viewLifecycleOwner, Observer { isCreatingWish ->
             if(!isCreatingWish)
-            Toast.makeText(this.context, getString(R.string.maximum_categories), Toast.LENGTH_SHORT)
+            Toast.makeText(this.context, getString(R.string.maximum_categories).format(MAXIMUM_SELECTED_CATEGORIES), Toast.LENGTH_SHORT)
                 .show()
             else Toast.makeText(this.context, getString(R.string.maximum_categories_create_wish), Toast.LENGTH_SHORT)
                 .show()
+//            val toast =
+//                Toast.makeText(this.context, getString(R.string.maximum_categories_create_wish), Toast.LENGTH_SHORT)
+//            toast.setGravity(Gravity.BOTTOM, 0, 400)
+//            toast.show()
         })
     }
 

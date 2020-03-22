@@ -3,21 +3,20 @@ package co.publist.features.wishes
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import co.publist.core.common.data.models.wish.Wish
-import co.publist.core.utils.BindingAdapterUtils.loadProfilePicture
-import co.publist.core.utils.BindingAdapterUtils.loadWishImage
+import co.publist.R
+import co.publist.core.common.data.models.wish.WishAdapterItem
+import co.publist.core.utils.DataBindingAdapters
 import co.publist.databinding.ItemWishBinding
-import com.firebase.ui.firestore.FirestoreRecyclerAdapter
-import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import org.ocpsoft.prettytime.PrettyTime
 import java.util.*
 import kotlin.collections.ArrayList
 
-
 class WishesAdapter(
-    options: FirestoreRecyclerOptions<Wish>
+    val list: ArrayList<WishAdapterItem>,
+    val unFavoriteListener: (wish: WishAdapterItem, isFavoriting: Boolean) -> Unit,
+    val detailsListener: (wish: WishAdapterItem) -> Unit
 ) :
-    FirestoreRecyclerAdapter<Wish, WishesAdapter.WishViewHolder>(options) {
+    RecyclerView.Adapter<WishesAdapter.WishViewHolder>() {
     val todosAdapterArrayList = ArrayList<TodosAdapter>()
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WishViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -26,23 +25,46 @@ class WishesAdapter(
         return WishViewHolder(binding)
     }
 
-    override fun getItemId(position: Int): Long {
-        return position.toLong()
+    override fun onBindViewHolder(holder: WishViewHolder, position: Int) {
+        holder.bind(list[position])
     }
 
-    override fun getItemViewType(position: Int): Int {
-        return position
-    }
-
-    override fun onBindViewHolder(holder: WishViewHolder, position: Int, wish: Wish) {
-        holder.bind(wish)
+    override fun getItemCount(): Int {
+        return list.size
     }
 
     inner class WishViewHolder(private val binding: ItemWishBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(
-            wish: Wish
+            wish: WishAdapterItem
         ) {
+            if (wish.isCreator)
+                binding.wishActionImageView.apply {
+                    setImageResource(R.drawable.ic_dots)
+                    setOnClickListener {
+                        detailsListener(wish)
+                    }
+                }
+            else
+                binding.wishActionImageView.apply {
+                    if (wish.isFavorite) {
+                        setImageResource(R.drawable.ic_heart_active)
+                        setOnClickListener {
+                            setImageResource(R.drawable.ic_heart)
+                            wish.isFavorite = false
+                            unFavoriteListener(wish, false) //unFavorite
+                            notifyDataSetChanged()
+                        }
+                    } else {
+                        setOnClickListener {
+                            setImageResource(R.drawable.ic_heart_active)
+                            wish.isFavorite = true
+                            unFavoriteListener(wish, true) //favorite
+                            notifyDataSetChanged()
+                        }
+                    }
+                }
+
             binding.categoryNameTextView.text = wish.category!![0].name
             binding.titleTextView.text = wish.title
 
@@ -53,11 +75,14 @@ class WishesAdapter(
             binding.timeTextView.text = timeAgo
 
             //Load creator data
-            loadProfilePicture(binding.profilePictureImageView, wish.creator?.imagePath)
+            DataBindingAdapters.loadProfilePicture(
+                binding.profilePictureImageView,
+                wish.creator?.imagePath
+            )
             binding.userNameTextView.text = wish.creator?.name
 
             //Load wish data
-            loadWishImage(binding.wishImageView, wish.wishPhotoURL)
+            DataBindingAdapters.loadWishImage(binding.wishImageView, wish.wishPhotoURL)
             val todosAdapter = TodosAdapter(
                 ArrayList(wish.items!!.values),
                 binding.moreTextView,
@@ -79,5 +104,6 @@ class WishesAdapter(
             }
 
         }
+
     }
 }

@@ -8,7 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import co.publist.R
 import co.publist.core.common.data.models.wish.Item
-import co.publist.core.utils.Extensions.Constants.MAX_VISIBLE_TODOS
+import co.publist.core.utils.Utils.Constants.MAX_VISIBLE_TODOS
 import kotlinx.android.synthetic.main.item_todo.view.*
 
 
@@ -31,14 +31,6 @@ class TodosAdapter(
         val view =
             LayoutInflater.from(parent.context).inflate(R.layout.item_todo, parent, false)
         return TodoViewHolder(view)
-    }
-
-    override fun getItemId(position: Int): Long {
-        return position.toLong()
-    }
-
-    override fun getItemViewType(position: Int): Int {
-        return position
     }
 
     override fun getItemCount(): Int {
