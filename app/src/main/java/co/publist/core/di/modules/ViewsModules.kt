@@ -7,8 +7,8 @@ import co.publist.features.home.HomeActivity
 import co.publist.features.intro.IntroActivity
 import co.publist.features.login.LoginActivity
 import co.publist.features.profile.ProfileActivity
-import co.publist.features.profile.myfavorites.MyFavoritesFragment
-import co.publist.features.profile.mylists.MyListsFragment
+import co.publist.features.myfavorites.MyFavoritesFragment
+import co.publist.features.mylists.MyListsFragment
 import co.publist.features.splash.SplashActivity
 import co.publist.features.wishes.WishesFragment
 import dagger.Module
