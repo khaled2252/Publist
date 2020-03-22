@@ -13,6 +13,7 @@ import co.publist.core.common.data.models.wish.Wish
 import co.publist.core.platform.BaseActivity
 import co.publist.core.platform.ViewModelFactory
 import co.publist.core.utils.DataBindingAdapters.loadProfilePicture
+import co.publist.core.utils.Utils.Constants.EDIT_WISH_INTENT
 import co.publist.core.utils.Utils.Constants.PUBLIC
 import co.publist.databinding.ActivityHomeBinding
 import co.publist.features.createwish.CreateWishActivity
@@ -105,7 +106,7 @@ class HomeActivity : BaseActivity<HomeViewModel>() {
 
         wishesFragment.viewModel.editWishLiveData.observe(this, Observer {wish ->
             val intent = Intent(this,CreateWishActivity::class.java)
-            intent.putExtra("editedWish",wish)
+            intent.putExtra(EDIT_WISH_INTENT,wish)
             startActivity(intent)
 
         })
@@ -117,12 +118,12 @@ class HomeActivity : BaseActivity<HomeViewModel>() {
             val builder = AlertDialog.Builder(this)
 
             builder.setMessage(getString(R.string.logout_dialog_title))
-            builder.setNeutralButton("YES") { _, _ ->
+            builder.setPositiveButton(getString(R.string.yes)) { _, _ ->
                 viewModel.handleLogout()
                 finish()
                 startActivity(Intent(this, LoginActivity::class.java))
             }
-            builder.setPositiveButton("No") { _, _ ->
+            builder.setNegativeButton(getString(R.string.cancel)) { _, _ ->
             }
             builder.create().show()
         }
@@ -172,12 +173,12 @@ class HomeActivity : BaseActivity<HomeViewModel>() {
     private fun showDeleteDialog() {
         val deleteDialog =
             AlertDialog.Builder(this)
-        deleteDialog.setTitle("Are you sure you want to delete this wish?")
-        deleteDialog.setPositiveButton("YES") { _, _ ->
+        deleteDialog.setTitle(getString(R.string.delete_dialog_title))
+        deleteDialog.setPositiveButton(getString(R.string.yes)) { _, _ ->
             wishesFragment.viewModel.deleteSelectedWish()
             sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED)
         }
-        deleteDialog.setNegativeButton("Cancel") { _, _ ->
+        deleteDialog.setNegativeButton(getString(R.string.cancel)) { _, _ ->
         }
         deleteDialog.show()
     }

@@ -12,6 +12,8 @@ import co.publist.core.common.data.models.wish.Wish
 import co.publist.core.platform.BaseActivity
 import co.publist.core.platform.ViewModelFactory
 import co.publist.core.utils.DataBindingAdapters.loadProfilePicture
+import co.publist.core.utils.Utils.Constants.COMING_FROM_PROFILE_INTENT
+import co.publist.core.utils.Utils.Constants.EDIT_WISH_INTENT
 import co.publist.features.createwish.CreateWishActivity
 import co.publist.features.editprofile.EditProfileActivity
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -82,7 +84,7 @@ class ProfileActivity : BaseActivity<ProfileViewModel>() {
 
         viewModel.editWishLiveData.observe(this, Observer {wish ->
             val intent = Intent(this, CreateWishActivity::class.java)
-            intent.putExtra("editedWish",wish)
+            intent.putExtra(EDIT_WISH_INTENT,wish)
             startActivity(intent)
             sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         })
@@ -95,7 +97,7 @@ class ProfileActivity : BaseActivity<ProfileViewModel>() {
 
         editProfileImageViewLayout.setOnClickListener {
             val intent = Intent(this, EditProfileActivity::class.java)
-            intent.putExtra("isComingFromProfile", true)
+            intent.putExtra(COMING_FROM_PROFILE_INTENT, true)
             startActivity(intent)
         }
 
@@ -132,12 +134,12 @@ class ProfileActivity : BaseActivity<ProfileViewModel>() {
     private fun showDeleteDialog() {
         val deleteDialog =
             AlertDialog.Builder(this)
-        deleteDialog.setTitle("Are you sure you want to delete this wish?")
-        deleteDialog.setPositiveButton("YES") { _, _ ->
+        deleteDialog.setTitle(getString(R.string.delete_dialog_title))
+        deleteDialog.setPositiveButton(getString(R.string.yes)) { _, _ ->
             viewModel.deleteSelectedWish()
             sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED)
         }
-        deleteDialog.setNegativeButton("Cancel") { _, _ ->
+        deleteDialog.setNegativeButton(getString(R.string.cancel)) { _, _ ->
         }
         deleteDialog.show()
     }

@@ -12,6 +12,7 @@ import co.publist.R
 import co.publist.core.platform.BaseActivity
 import co.publist.core.platform.ViewModelFactory
 import co.publist.core.utils.DataBindingAdapters.loadProfilePicture
+import co.publist.core.utils.Utils.Constants.COMING_FROM_PROFILE_INTENT
 import co.publist.core.utils.Utils.Constants.MINIMUM_SELECTED_CATEGORIES
 import co.publist.databinding.ActivityEditProfileBinding
 import co.publist.features.categories.CategoriesFragment
@@ -42,7 +43,7 @@ class EditProfileActivity : BaseActivity<EditProfileViewModel>() {
             this,
             R.layout.activity_edit_profile
         ).executePendingBindings()
-        isComingFromProfile = this.intent.getBooleanExtra("isComingFromProfile",false)
+        isComingFromProfile = this.intent.getBooleanExtra(COMING_FROM_PROFILE_INTENT,false)
         if(!isComingFromProfile!!)
             backArrowImageViewLayout.visibility = View.GONE
 

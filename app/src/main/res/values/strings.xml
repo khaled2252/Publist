@@ -53,5 +53,8 @@
     <string name="delete">Delete</string>
     <string name="delete_wish">Your wish has been deleted successfully !</string>
     <string name="edit_wish">Edit Wish</string>
+    <string name="delete_dialog_title">Are you sure you want to delete this wish?</string>
+    <string name="yes">Yes</string>
+    <string name="cancel">Cancel</string>
 </resources>
 

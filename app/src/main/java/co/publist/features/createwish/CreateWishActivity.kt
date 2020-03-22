@@ -29,6 +29,7 @@ import co.publist.core.platform.ViewModelFactory
 import co.publist.core.utils.DataBindingAdapters
 import co.publist.core.utils.DragManageAdapter
 import co.publist.core.utils.Utils.Constants.CAMERA
+import co.publist.core.utils.Utils.Constants.EDIT_WISH_INTENT
 import co.publist.core.utils.Utils.Constants.GALLERY
 import co.publist.core.utils.Utils.Constants.MINIMUM_WISH_ITEMS
 import co.publist.core.utils.Utils.getDistanceBetweenViews
@@ -153,7 +154,7 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
     }
 
     private fun onCreated() {
-        editedWish = intent.getParcelableExtra("editedWish") as? Wish
+        editedWish = intent.getParcelableExtra(EDIT_WISH_INTENT) as? Wish
         categoriesFragment =
             supportFragmentManager.findFragmentById(R.id.categoriesFragment) as CategoriesFragment
         sheetBehavior = BottomSheetBehavior.from(categoriesFragmentBottomSheet)

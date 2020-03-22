@@ -108,5 +108,7 @@ object Utils {
         const val FAVORITES = 2
         const val WISH_IMAGE_FIXED_WIDTH = 2400
         const val WISH_IMAGE_FIXED_HEIGHT = 1200
+        const val EDIT_WISH_INTENT = "editedWish"
+        const val COMING_FROM_PROFILE_INTENT = "isComingFromProfile"
     }
 }
