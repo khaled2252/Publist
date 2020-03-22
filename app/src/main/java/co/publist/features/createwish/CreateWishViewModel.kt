@@ -26,10 +26,12 @@ class CreateWishViewModel @Inject constructor(
     var wishImageUri = ""
     var items = ArrayList<String>()
 
+    var deletedOldPhoto = false
+    private var isEditing = false
     private var oldListMap = emptyMap<String, Item>()
     private var oldWishId = ""
-    private var oldPhotoName : String? = null
-    private var oldWishImageUrl : String? = null
+    private var oldPhotoName: String? = null
+    private var oldWishImageUrl: String? = null
     private lateinit var oldTimeStamp: Timestamp
 
 
@@ -91,39 +93,53 @@ class CreateWishViewModel @Inject constructor(
             title = title
         )
 
-        if (wishImageUri.isNotEmpty()) {
-            subscribe(wishesRepository.uploadImage(wishImageUri).flatMapCompletable { result ->
-                val wishImageUrl = result.first
-                val photoName = result.second
-                wish.wishPhotoURL = wishImageUrl
-                wish.photoName = photoName
-                if (oldListMap.isNotEmpty()) {
+        if (isEditing) {
+            if (wishImageUri.isNotEmpty()) // user uploaded a new image
+            {
+                subscribe(wishesRepository.uploadImage(wishImageUri).flatMapCompletable { result ->
+                    val wishImageUrl = result.first
+                    val photoName = result.second
+                    wish.wishPhotoURL = wishImageUrl
+                    wish.photoName = photoName
                     wish.wishId = oldWishId
                     wish.date = oldTimeStamp
                     wishesRepository.updateWish(wish)
-                } else
-                    wishesRepository.createWish(wish)
-            }, Action {
-                addingWishLiveData.postValue(true)
-            })
-        } else {
-            if (oldListMap.isNotEmpty()) {
+                }, Action {
+                    addingWishLiveData.postValue(true)
+                })
+            } else  {
+                if (!deletedOldPhoto){ // get old image if user didn't delete it
+                    wish.wishPhotoURL = oldWishImageUrl
+                    wish.photoName = oldPhotoName
+                }
                 wish.wishId = oldWishId
                 wish.date = oldTimeStamp
-                wish.wishPhotoURL = oldWishImageUrl
-                wish.photoName = oldPhotoName
                 subscribe(wishesRepository.updateWish(wish), Action {
                     addingWishLiveData.postValue(true)
                 })
-            } else
+
+            }
+        } else { // Creating a new wish
+            if (wishImageUri.isNotEmpty()) {
+                subscribe(wishesRepository.uploadImage(wishImageUri).flatMapCompletable { result ->
+                    val wishImageUrl = result.first
+                    val photoName = result.second
+                    wish.wishPhotoURL = wishImageUrl
+                    wish.photoName = photoName
+                    wishesRepository.createWish(wish)
+                }, Action {
+                    addingWishLiveData.postValue(true)
+                })
+            } else {
                 subscribe(wishesRepository.createWish(wish), Action {
                     addingWishLiveData.postValue(true)
                 })
-
+            }
         }
     }
 
     fun populateWishData(editedWish: Wish) {
+        isEditing = true
         category = editedWish.category?.get(0)
         title = editedWish.title!!
         oldListMap = (editedWish.items as MutableMap<String, Item>).toList().sortedBy {

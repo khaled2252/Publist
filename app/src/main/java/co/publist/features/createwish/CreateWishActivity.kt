@@ -302,14 +302,17 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
         }
 
         deletePhotoImageView.setOnClickListener {
+            if(editedWish != null)
+                viewModel.deletedOldPhoto = true
+
             viewModel.wishImageUri = ""
             deletePhotoImageView.setImageResource(R.drawable.ic_attachment)
 
             addPhotoTextView.visibility = View.VISIBLE
             photoImageView.visibility = View.INVISIBLE
 
-            deletePhotoImageView.isClickable = false
-            addPhotoLayout.isClickable = true
+            deletePhotoImageView.isEnabled = false
+            addPhotoLayout.isEnabled = true
         }
 
         addPhotoLayout.setOnClickListener {
@@ -444,8 +447,8 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
         photoImageView.visibility = View.VISIBLE
         addPhotoTextView.visibility = View.INVISIBLE
 
-        deletePhotoImageView.isClickable = true
-        addPhotoLayout.isClickable = false
+        deletePhotoImageView.isEnabled = true
+        addPhotoLayout.isEnabled = false
     }
 
 }
