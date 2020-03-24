@@ -8,6 +8,9 @@ import android.net.Uri
 import android.os.IBinder
 import android.provider.MediaStore
 import android.view.View
+import android.view.animation.Animation
+import android.view.animation.LinearInterpolator
+import android.view.animation.RotateAnimation
 import android.view.inputmethod.InputMethodManager
 import androidx.core.content.FileProvider
 import co.publist.core.utils.Utils.Constants.GALLERY
@@ -77,6 +80,18 @@ object Utils {
         activity.startActivityForResult(cameraIntent, Constants.CAMERA)
     }
 
+    fun get90DegreesAnimation() : RotateAnimation
+    {
+        val anim = RotateAnimation(
+            0f, -90f, Animation.RELATIVE_TO_SELF,
+            0.5f, Animation.RELATIVE_TO_SELF, 0.5f
+        )
+        anim.interpolator = LinearInterpolator()
+        anim.duration = 500
+        anim.isFillEnabled = true
+        anim.fillAfter = true
+        return anim
+    }
     object Constants {
         const val DB_NAME = "PublistDb"
         const val SPLASH_DELAY: Long = 2000

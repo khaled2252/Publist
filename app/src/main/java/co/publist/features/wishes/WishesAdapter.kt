@@ -85,27 +85,20 @@ class WishesAdapter(
             DataBindingAdapters.loadWishImage(binding.wishImageView, wish.wishPhotoURL)
             val wishItemsAdapter = WishItemsAdapter(
                 ArrayList(wish.items!!.values.sortedBy { it.orderId }),
-                binding.moreTextView,
+                binding.seeMoreTextView,
                 binding.arrowImageView,
                 wishItemsAdapterArrayList.size
                 , expandListener = { wishItemsAdapterIndex ->
                     //Collapse all other lists except for the current one expanding
                     for (adapterIndex in 0 until wishItemsAdapterArrayList.size) {
-                        if (adapterIndex != wishItemsAdapterIndex && wishItemsAdapterArrayList[adapterIndex].isExpanded) {
-                            wishItemsAdapterArrayList[adapterIndex].collapseExtraWishItems()
-                            wishItemsAdapterArrayList[adapterIndex].collapseUi()
-                        }
+                        if (adapterIndex != wishItemsAdapterIndex && wishItemsAdapterArrayList[adapterIndex].isExpanded)
+                            wishItemsAdapterArrayList[adapterIndex].collapseList()
                     }
 
                 })
             wishItemsAdapterArrayList.add(wishItemsAdapter)
             wishItemsAdapter.setHasStableIds(true)
             binding.wishItemsRecyclerView.adapter = wishItemsAdapter
-            binding.wishItemsRecyclerView.post {
-                if (wish.items!!.size > 3)
-                    wishItemsAdapter.collapseExtraWishItems()
-            }
-
         }
 
     }

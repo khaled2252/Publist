@@ -118,26 +118,31 @@
                 android:id="@+id/wishItemsRecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="15dp"
                 android:orientation="vertical"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                app:layout_constraintBottom_toTopOf="@+id/moreTextView"
+                app:layout_constraintBottom_toTopOf="@+id/seeMoreLayout"
                 app:layout_constraintTop_toBottomOf="@id/wishImageView"
                 tools:itemCount="3"
                 tools:listitem="@layout/item_wish_item" />
 
-            <TextView
-                android:id="@+id/moreTextView"
+            <LinearLayout
+                android:id="@+id/seeMoreLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="15dp"
-                android:drawablePadding="10dp"
-                android:fontFamily="@font/sfprodisplaysemibold"
-                android:textColor="@color/sunsetOrange"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:padding="15dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/wishItemsRecyclerView"
+                >
+            <TextView
+                android:id="@+id/seeMoreTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/sfprodisplaysemibold"
+                android:textColor="@color/sunsetOrange"
                 tools:text="3 More Check Points" />
 
             <ImageView
@@ -145,11 +150,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@id/moreTextView"
-                app:layout_constraintTop_toBottomOf="@id/wishItemsRecyclerView"
                 android:src="@drawable/ic_down" />
-
+            </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
 </layout>

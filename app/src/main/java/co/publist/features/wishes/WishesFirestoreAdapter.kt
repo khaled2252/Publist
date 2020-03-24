@@ -89,22 +89,22 @@ class WishesFirestoreAdapter(
             loadWishImage(binding.wishImageView, wish.wishPhotoURL)
             val todosAdapter = WishItemsAdapter(
                 ArrayList(wish.items!!.values),
-                binding.moreTextView,
+                binding.seeMoreTextView,
                 binding.arrowImageView,
                 wishItemsAdapterArrayList.size
             ) {
                 //Collapse all other lists except for the current one expanding
                 for (adapterIndex in 0 until wishItemsAdapterArrayList.size) {
-                    if (adapterIndex != it)
-                        wishItemsAdapterArrayList[adapterIndex].collapseExtraWishItems()
+//                    if (adapterIndex != it)
+//                        wishItemsAdapterArrayList[adapterIndex].collapseExtraWishItems()
                 }
             }
             wishItemsAdapterArrayList.add(todosAdapter)
             todosAdapter.setHasStableIds(true)
             binding.wishItemsRecyclerView.adapter = todosAdapter
             binding.wishItemsRecyclerView.post {
-                if (wish.items!!.size > 3)
-                    todosAdapter.collapseExtraWishItems()
+//                if (wish.items!!.size > 3)
+//                    todosAdapter.collapseExtraWishItems()
             }
 
         }
