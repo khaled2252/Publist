@@ -24,7 +24,7 @@ class WishesFirestoreAdapter(
     val detailsListener: (wish: Wish) -> Unit
 ) :
     FirestoreRecyclerAdapter<Wish, WishesFirestoreAdapter.WishViewHolder>(options) {
-    val todosAdapterArrayList = ArrayList<TodosAdapter>()
+    val wishItemsAdapterArrayList = ArrayList<WishItemsAdapter>()
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WishViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = ItemWishBinding.inflate(inflater)
@@ -87,24 +87,24 @@ class WishesFirestoreAdapter(
 
             //Load wish data
             loadWishImage(binding.wishImageView, wish.wishPhotoURL)
-            val todosAdapter = TodosAdapter(
+            val todosAdapter = WishItemsAdapter(
                 ArrayList(wish.items!!.values),
                 binding.moreTextView,
                 binding.arrowImageView,
-                todosAdapterArrayList.size
+                wishItemsAdapterArrayList.size
             ) {
                 //Collapse all other lists except for the current one expanding
-                for (adapterIndex in 0 until todosAdapterArrayList.size) {
+                for (adapterIndex in 0 until wishItemsAdapterArrayList.size) {
                     if (adapterIndex != it)
-                        todosAdapterArrayList[adapterIndex].collapseExtraTodosPostLoading()
+                        wishItemsAdapterArrayList[adapterIndex].collapseExtraWishItems()
                 }
             }
-            todosAdapterArrayList.add(todosAdapter)
+            wishItemsAdapterArrayList.add(todosAdapter)
             todosAdapter.setHasStableIds(true)
-            binding.todoListRecyclerView.adapter = todosAdapter
-            binding.todoListRecyclerView.post {
+            binding.wishItemsRecyclerView.adapter = todosAdapter
+            binding.wishItemsRecyclerView.post {
                 if (wish.items!!.size > 3)
-                    todosAdapter.collapseExtraTodosPostLoading()
+                    todosAdapter.collapseExtraWishItems()
             }
 
         }

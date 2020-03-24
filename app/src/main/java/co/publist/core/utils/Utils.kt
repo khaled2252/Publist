@@ -82,7 +82,7 @@ object Utils {
         const val SPLASH_DELAY: Long = 2000
         const val MINIMUM_SELECTED_CATEGORIES = 1
         const val MAXIMUM_SELECTED_CATEGORIES = 9
-        const val MAX_VISIBLE_TODOS = 3
+        const val MAX_VISIBLE_WISH_ITEMS = 3
         const val MINIMUM_WISH_ITEMS = 3
         const val PLATFORM_GOOGLE = "google"
         const val PLATFORM_FACEBOOK = "facebook"

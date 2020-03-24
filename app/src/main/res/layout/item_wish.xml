@@ -74,7 +74,7 @@
                 android:paddingEnd="15dp"
                 android:paddingStart="15dp"
                 android:paddingBottom="20dp"
-                android:src="@drawable/ic_heart"
+                android:src="@drawable/ic_icon_heart"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -108,14 +108,14 @@
                 android:layout_marginTop="15dp"
                 android:scaleType="fitXY"
                 android:visibility="gone"
-                app:layout_constraintBottom_toTopOf="@id/todoListRecyclerView"
+                app:layout_constraintBottom_toTopOf="@id/wishItemsRecyclerView"
                 app:layout_constraintTop_toBottomOf="@id/profilePictureImageView"
                 app:wishImageUrl="@{imageUrl}"
                 tools:src="@drawable/image_test"
                 tools:visibility="visible" />
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/todoListRecyclerView"
+                android:id="@+id/wishItemsRecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="15dp"
@@ -124,7 +124,7 @@
                 app:layout_constraintBottom_toTopOf="@+id/moreTextView"
                 app:layout_constraintTop_toBottomOf="@id/wishImageView"
                 tools:itemCount="3"
-                tools:listitem="@layout/item_todo" />
+                tools:listitem="@layout/item_wish_item" />
 
             <TextView
                 android:id="@+id/moreTextView"
@@ -137,7 +137,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/todoListRecyclerView"
+                app:layout_constraintTop_toBottomOf="@id/wishItemsRecyclerView"
                 tools:text="3 More Check Points" />
 
             <ImageView
@@ -147,7 +147,7 @@
                 android:layout_marginStart="5dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/moreTextView"
-                app:layout_constraintTop_toBottomOf="@id/todoListRecyclerView"
+                app:layout_constraintTop_toBottomOf="@id/wishItemsRecyclerView"
                 android:src="@drawable/ic_down" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

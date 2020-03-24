@@ -17,7 +17,7 @@ class WishesAdapter(
     val detailsListener: (wish: WishAdapterItem) -> Unit
 ) :
     RecyclerView.Adapter<WishesAdapter.WishViewHolder>() {
-    val todosAdapterArrayList = ArrayList<TodosAdapter>()
+    val wishItemsAdapterArrayList = ArrayList<WishItemsAdapter>()
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WishViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = ItemWishBinding.inflate(inflater)
@@ -83,24 +83,27 @@ class WishesAdapter(
 
             //Load wish data
             DataBindingAdapters.loadWishImage(binding.wishImageView, wish.wishPhotoURL)
-            val todosAdapter = TodosAdapter(
-                ArrayList(wish.items!!.values),
+            val wishItemsAdapter = WishItemsAdapter(
+                ArrayList(wish.items!!.values.sortedBy { it.orderId }),
                 binding.moreTextView,
                 binding.arrowImageView,
-                todosAdapterArrayList.size
-            ) {
-                //Collapse all other lists except for the current one expanding
-                for (adapterIndex in 0 until todosAdapterArrayList.size) {
-                    if (adapterIndex != it)
-                        todosAdapterArrayList[adapterIndex].collapseExtraTodosPostLoading()
-                }
-            }
-            todosAdapterArrayList.add(todosAdapter)
-            todosAdapter.setHasStableIds(true)
-            binding.todoListRecyclerView.adapter = todosAdapter
-            binding.todoListRecyclerView.post {
+                wishItemsAdapterArrayList.size
+                , expandListener = { wishItemsAdapterIndex ->
+                    //Collapse all other lists except for the current one expanding
+                    for (adapterIndex in 0 until wishItemsAdapterArrayList.size) {
+                        if (adapterIndex != wishItemsAdapterIndex && wishItemsAdapterArrayList[adapterIndex].isExpanded) {
+                            wishItemsAdapterArrayList[adapterIndex].collapseExtraWishItems()
+                            wishItemsAdapterArrayList[adapterIndex].collapseUi()
+                        }
+                    }
+
+                })
+            wishItemsAdapterArrayList.add(wishItemsAdapter)
+            wishItemsAdapter.setHasStableIds(true)
+            binding.wishItemsRecyclerView.adapter = wishItemsAdapter
+            binding.wishItemsRecyclerView.post {
                 if (wish.items!!.size > 3)
-                    todosAdapter.collapseExtraTodosPostLoading()
+                    wishItemsAdapter.collapseExtraWishItems()
             }
 
         }
