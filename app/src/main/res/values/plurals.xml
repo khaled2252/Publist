@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="see_more_text">
+        <item quantity="one">%1$d More Check Point</item>
+        <item quantity="other">%1$d More Check Points</item>
+    </plurals>
+</resources>

@@ -166,7 +166,7 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
             categoryChip.visibility = View.VISIBLE
             categoryChip.text = editedWish?.category!![0].name?.capitalize()
             categoriesFragment.viewModel.getCategories(editedWish?.category!![0])
-            titleInputLayout.hint = ""
+            titleHintTextView.visibility = View.GONE
             titleEditText.setText(editedWish?.title)
 
             if (!editedWish?.wishPhotoURL.isNullOrEmpty())
@@ -330,12 +330,12 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
         titleEditText.setOnFocusChangeListener { _, hasFocus ->
             when {
                 hasFocus -> {
-                    titleInputLayout.hint = ""
+                    titleHintTextView.visibility = View.GONE
                 }
                 titleEditText.text.isNullOrEmpty() -> {
-                    titleInputLayout.hint = getString(R.string.title_hint)
+                    titleHintTextView.visibility = View.VISIBLE
                 }
-                else -> titleInputLayout.hint = ""
+                else -> titleHintTextView.visibility = View.GONE
             }
 
         }

@@ -51,10 +51,8 @@ class WishItemsAdapter(
             item: Item
         ) {
             itemView.wishItemTextView.text = item.name
-            val likeString = "+ ${item.viewedCount.toString()} Views"
-            val completeString = "+ ${item.completeCount.toString()} Completed"
-            itemView.likeViewsTextView.text = likeString
-            itemView.completedThisTextView.text = completeString
+            itemView.likeViewsTextView.text = seeMoreTextView.context.getString(R.string.views,item.viewedCount)
+            itemView.completedThisTextView.text = seeMoreTextView.context.getString(R.string.completed,item.viewedCount)
         }
     }
 
@@ -63,7 +61,7 @@ class WishItemsAdapter(
             seeMoreTextView.visibility = View.GONE
             arrowImageView.visibility = View.GONE
         } else {
-            renderSeeMoreUi()
+            applySeeMoreText()
             (seeMoreTextView.parent as LinearLayout).setOnClickListener {
                 if (!isExpanded) {
                     expandList()
@@ -76,26 +74,21 @@ class WishItemsAdapter(
     }
 
     private fun expandList() {
-        seeMoreTextView.text = seeMoreTextView.context.getString(R.string.go_to_details)
-        arrowImageView.startAnimation(get90DegreesAnimation())
         isExpanded = true
         notifyDataSetChanged()
+        arrowImageView.startAnimation(get90DegreesAnimation())
+        seeMoreTextView.text = seeMoreTextView.context.getString(R.string.go_to_details)
     }
 
     fun collapseList() {
         isExpanded = false
         notifyDataSetChanged()
         arrowImageView.clearAnimation()
-        renderSeeMoreUi()
+        applySeeMoreText()
     }
 
-    private fun renderSeeMoreUi() {
+    private fun applySeeMoreText() {
         val extraWishItemsNumber = (itemList.size) - MAX_VISIBLE_WISH_ITEMS
-        val seeMoreStringOne = "$extraWishItemsNumber More Check Point"
-        val seeMoreStringMany = "$extraWishItemsNumber More Check Points"
-        if (extraWishItemsNumber == 1)
-            seeMoreTextView.text = seeMoreStringOne
-        else
-            seeMoreTextView.text = seeMoreStringMany
+            seeMoreTextView.text = seeMoreTextView.context.resources.getQuantityString(R.plurals.see_more_text,extraWishItemsNumber,extraWishItemsNumber)
     }
 }

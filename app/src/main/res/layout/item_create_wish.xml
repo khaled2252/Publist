@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingTop="10dp"
-    android:paddingBottom="10dp">
+    android:paddingBottom="10dp"
+    android:layout_marginEnd="50dp">
 
 
     <ImageView
@@ -14,9 +15,9 @@
         android:layout_height="13dp"
         android:layout_marginStart="40dp"
         android:layout_marginEnd="50dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:srcCompat="@drawable/ic_cross" />
 
     <TextView
@@ -27,9 +28,12 @@
         android:fontFamily="@font/sfprodisplaysemibold"
         android:textColor="@color/outerSpace"
         android:textSize="16sp"
+        android:paddingEnd="50dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0"
         app:layout_constraintStart_toEndOf="@+id/deleteItemImageView"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
         tools:text="Item" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

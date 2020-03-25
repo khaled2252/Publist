@@ -25,7 +25,7 @@
     <string name="title_hint">Type something</string>
     <string name="add_photo_optional">Add Photo (optional)</string>
     <string name="wish_list_title">List</string>
-    <string name="add_item_hint">Add Text</string>
+    <string name="add_item_hint">\u0020\u0020Add Text</string>
     <string name="create_wish_post">Post</string>
     <string name="choose_category_done">Done</string>
     <string name="what_is_your_wish_list">What is your wish list ?</string>
@@ -56,5 +56,8 @@
     <string name="delete_dialog_title">Are you sure you want to delete this wish?</string>
     <string name="yes">Yes</string>
     <string name="cancel">Cancel</string>
+    <string name="views">+ %1$d Views</string>
+    <string name="completed">+ %1$d Completed</string>
+
 </resources>
 

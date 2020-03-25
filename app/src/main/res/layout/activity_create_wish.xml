@@ -38,9 +38,9 @@
                         android:gravity="center">
 
                         <ImageView
-                            android:layout_width="10dp"
-                            android:layout_height="18dp"
-                            android:src="@drawable/ic_back" />
+                            android:layout_width="30dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_left_arrow" />
                     </LinearLayout>
 
                     <TextView
@@ -114,30 +114,54 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/dashed_line" />
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/titleInputLayout"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/titleLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="30dp"
-                android:layout_marginEnd="30dp"
-                android:hint="@string/title_hint"
-                app:boxBackgroundColor="@color/white"
-                app:boxStrokeColor="@color/text_input_layout_stroke_color"
-                app:boxStrokeWidth="1dp"
-                app:hintAnimationEnabled="false"
-                app:hintTextColor="@color/gray"
                 app:layout_constraintTop_toBottomOf="@+id/textView3">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/titleEditText"
-                    style="@style/Theme.AppCompat.Light"
+                <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="100dp"
-                    android:fontFamily="@font/sfprodisplaymedium"
-                    android:gravity="top|start"
-                    android:textColor="@color/dimGray" />
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/titleInputLayout"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="30dp"
+                        android:layout_marginEnd="30dp"
+                        app:boxBackgroundColor="@color/white"
+                        app:boxStrokeColor="@color/text_input_layout_stroke_color"
+                        app:boxStrokeWidth="1dp"
+                        app:hintEnabled="false">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/titleEditText"
+                            style="@style/Theme.AppCompat.Light"
+                            android:layout_width="match_parent"
+                            android:layout_height="100dp"
+                            android:gravity="top|start"
+                            android:fontFamily="@font/sfprodisplaymedium"
+                            android:textSize="20sp"
+                            android:lineSpacingMultiplier="0.8"
+                            android:textColor="@color/dimGray" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <TextView
+                        android:id="@+id/titleHintTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="45dp"
+                        android:layout_marginTop="18dp"
+                        android:text="@string/title_hint"
+                        android:textColor="@color/dimGray"
+                        android:textSize="14.5sp"
+                         />
+                </FrameLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/addPhotoLayout"
@@ -149,18 +173,16 @@
                 android:background="@drawable/border"
                 android:visibility="visible"
                 app:layout_constraintBottom_toTopOf="@id/listTextView"
-                app:layout_constraintTop_toBottomOf="@id/titleInputLayout">
+                app:layout_constraintTop_toBottomOf="@id/titleLayout">
 
                 <TextView
                     android:id="@+id/addPhotoTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="17dp"
-                    android:drawablePadding="5dp"
-                    android:fontFamily="@font/sfprodisplaymedium"
                     android:text="@string/add_photo_optional"
-                    android:textColor="@color/dark_grey"
-                    android:textSize="16sp"
+                    android:textColor="@color/dimGray"
+                    android:textSize="14.5sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -249,6 +271,7 @@
                         android:imeOptions="actionNext"
                         android:inputType="text"
                         android:maxLines="1"
+                        android:paddingEnd="50dp"
                         android:nextFocusForward="@id/itemEditText"
                         android:textColor="@color/dimGray" />
 
