@@ -10,6 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         >
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/wishesRecyclerView"
@@ -17,7 +18,6 @@
         android:layout_height="wrap_content"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         android:orientation="vertical"
-
         tools:listitem="@layout/item_wish" />
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 

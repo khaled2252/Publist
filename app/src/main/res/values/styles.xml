@@ -34,7 +34,10 @@
 
     <!-- Profile screen -->
     <style name="AppTheme.ProfileScreen" >
-        <item name="android:statusBarColor">@color/white</item>
+    </style>
+
+    <!-- Wish Details screen -->
+    <style name="AppTheme.WishDetailsScreen" >
     </style>
 
     <style name="MyBottomSheetDialog" parent="AppTheme">

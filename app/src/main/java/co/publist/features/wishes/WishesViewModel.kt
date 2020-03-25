@@ -8,6 +8,7 @@ import co.publist.core.common.data.models.wish.WishAdapterItem
 import co.publist.core.common.data.repositories.user.UserRepositoryInterface
 import co.publist.core.common.data.repositories.wish.WishesRepositoryInterface
 import co.publist.core.platform.BaseViewModel
+import co.publist.core.utils.Utils.Constants.FAVORITES
 import co.publist.core.utils.Utils.Constants.LISTS
 import co.publist.core.utils.Utils.Constants.PUBLIC
 import co.publist.features.categories.data.CategoriesRepositoryInterface
@@ -75,12 +76,26 @@ class WishesViewModel @Inject constructor(
                     type
                 )
             )
-            else -> wishesQueryLiveData.postValue(
+            FAVORITES -> wishesQueryLiveData.postValue(
                 Pair(
                     wishesRepository.getUserFavoriteWishesQuery(),
                     type
                 )
             )
+
+            else -> {
+                    subscribe(favoritesRepository.getUserFavoriteWishes().flatMap {favoritesList ->
+                        wishesRepository.getSpecificWish(selectedWish.wishId!!).flatMap {wish ->
+                            var oneElementList = arrayListOf(Mapper.mapToWishAdapterItem(wish))
+                            oneElementList = filterWishesByCreator(oneElementList,userRepository.getUser()?.id!!)
+                            oneElementList =  filterWishesByFavorites(oneElementList,favoritesList)
+                            Single.just(oneElementList)
+                        }
+                    }, Consumer {oneElementList ->
+                        wishesListLiveData.postValue(oneElementList)
+                    })
+            }
+
         }
 
     }

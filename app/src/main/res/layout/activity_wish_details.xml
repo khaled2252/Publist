@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/platinum"
+                android:orientation="vertical">
+
+                <com.google.android.material.appbar.AppBarLayout
+                    android:id="@+id/toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white">
+
+                    <androidx.appcompat.widget.Toolbar
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/white"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <LinearLayout
+                            android:id="@+id/backArrowImageViewLayout"
+                            android:layout_width="50dp"
+                            android:layout_height="40dp"
+                            android:gravity="center">
+
+                            <ImageView
+                                android:layout_width="30dp"
+                                android:layout_height="20dp"
+                                android:src="@drawable/ic_left_arrow" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:fontFamily="@font/sfprodisplaybold"
+                            android:text="@string/wish_details"
+                            android:textColor="@color/dimGray"
+                            android:textSize="16sp" />
+
+                    </androidx.appcompat.widget.Toolbar>
+                </com.google.android.material.appbar.AppBarLayout>
+
+                <androidx.fragment.app.FragmentContainerView
+                    android:id="@+id/wishesFragment"
+                    android:name="co.publist.features.wishes.WishesFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    />
+
+            </LinearLayout>
+
+            <View
+                android:id="@+id/blurredBgView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#999D9D9D"
+                android:visibility="gone" />
+        </FrameLayout>
+
+        <include
+            android:id="@+id/editWishBottomSheet"
+            layout="@layout/edit_wish_bottom_sheet" />
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+</layout>

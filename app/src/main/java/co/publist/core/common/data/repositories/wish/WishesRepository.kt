@@ -54,6 +54,19 @@ class WishesRepository @Inject constructor(
             .orderBy(DATE_FIELD, Query.Direction.DESCENDING)
     }
 
+    override fun getSpecificWish(wishId: String): Single<Wish>  {
+        return Single.create { singleEmitter ->
+            mFirebaseFirestore.collection(WISHES_COLLECTION_PATH)
+                .document(wishId)
+                .get()
+                .addOnFailureListener {
+                    singleEmitter.onError(it)
+                }.addOnSuccessListener { wish ->
+                    singleEmitter.onSuccess(wish.toObject(Wish::class.java)!!)
+                }
+        }
+    }
+
 
     override fun getAllWishes(): Single<ArrayList<Wish>> {
         return Single.create { singleEmitter ->

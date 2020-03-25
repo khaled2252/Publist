@@ -1,4 +1,4 @@
-package co.publist.features.profile
+package co.publist.features.wishdetails
 
 import android.content.Intent
 import android.os.Bundle
@@ -6,27 +6,25 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Observer
-import androidx.viewpager2.widget.ViewPager2
 import co.publist.R
 import co.publist.core.common.data.models.wish.Wish
 import co.publist.core.platform.BaseActivity
 import co.publist.core.platform.ViewModelFactory
-import co.publist.core.utils.DataBindingAdapters.loadProfilePicture
-import co.publist.core.utils.Utils.Constants.COMING_FROM_PROFILE_INTENT
-import co.publist.core.utils.Utils.Constants.EDIT_WISH_INTENT
+import co.publist.core.utils.Utils
+import co.publist.core.utils.Utils.Constants.DETAILS
+import co.publist.core.utils.Utils.Constants.WISH_DETAILS_INTENT
 import co.publist.features.createwish.CreateWishActivity
-import co.publist.features.editprofile.EditProfileActivity
+import co.publist.features.wishes.WishesFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.tabs.TabLayoutMediator
-import kotlinx.android.synthetic.main.activity_profile.*
+import kotlinx.android.synthetic.main.activity_wish_details.*
 import kotlinx.android.synthetic.main.edit_wish_bottom_sheet.*
 import javax.inject.Inject
 
 
-class ProfileActivity : BaseActivity<ProfileViewModel>() {
+class WishDetailsActivity : BaseActivity<WishDetailsViewModel>() {
 
     @Inject
-    lateinit var viewModel: ProfileViewModel
+    lateinit var viewModel: WishDetailsViewModel
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
@@ -35,69 +33,54 @@ class ProfileActivity : BaseActivity<ProfileViewModel>() {
 
     override fun getBaseViewModelFactory() = viewModelFactory
 
+    private lateinit var wishesFragment: WishesFragment
     private lateinit var sheetBehavior: BottomSheetBehavior<*>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_profile)
+        setContentView(R.layout.activity_wish_details)
         onCreated()
         setObservers()
         setListeners()
     }
 
-    private fun onCreated() {
-        setPagerAdapter()
-        sheetBehavior = BottomSheetBehavior.from(editWishBottomSheet)
-    }
-
-    private fun setPagerAdapter() {
-        val profilePagerAdapter = ProfilePagerAdapter(supportFragmentManager, lifecycle)
-        profile_pager!!.orientation = ViewPager2.ORIENTATION_HORIZONTAL
-        profile_pager!!.adapter = profilePagerAdapter
-        profile_pager!!.isUserInputEnabled = true // for swiping
-        profile_pager!!.offscreenPageLimit =
-            2 // to pre-load pages? to avoid loading pages when swiped (slow animation)
-        TabLayoutMediator(tab_layout, profile_pager,
-            TabLayoutMediator.TabConfigurationStrategy { tab, position ->
-                when (position) {
-                    0 -> {
-                        tab.text = getText(R.string.my_favorites)
-                    }
-                    1 -> {
-                        tab.text = getText(R.string.lists)
-                    }
-                }
-            }).attach()
-    }
-
-
     private fun setObservers() {
-        viewModel.userLiveData.observe(this, Observer { user ->
-            nameTextView.text = user.name
-            loadProfilePicture(profilePictureImageView, user.profilePictureUrl)
-        })
-
-        viewModel.wishDeletedLiveData.observe(this, Observer {
+        wishesFragment.viewModel.wishDeletedLiveData.observe(this, Observer {
             Toast.makeText(this, getString(R.string.delete_wish), Toast.LENGTH_SHORT).show()
+            finish()
         })
 
-        viewModel.editWishLiveData.observe(this, Observer {wish ->
+        wishesFragment.viewModel.editWishLiveData.observe(this, Observer {wish ->
             val intent = Intent(this, CreateWishActivity::class.java)
-            intent.putExtra(EDIT_WISH_INTENT,wish)
+            intent.putExtra(Utils.Constants.EDIT_WISH_INTENT,wish)
             startActivity(intent)
             sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         })
+
+        wishesFragment.viewModel.isFavoriteAdded.observe(this, Observer {isFavoriteAdded ->
+            if(isFavoriteAdded)
+                Toast.makeText(this,getString(R.string.add_favorite), Toast.LENGTH_SHORT).show()
+            else
+                Toast.makeText(this,getString(R.string.remove_favorite), Toast.LENGTH_SHORT).show()
+
+        })
+
+    }
+    override fun onStart() {
+        wishesFragment.viewModel.loadData(DETAILS)  // To reload data when coming back from another activity
+        sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+        super.onStart()
+    }
+    private fun onCreated() {
+        wishesFragment =
+            supportFragmentManager.findFragmentById(R.id.wishesFragment) as WishesFragment
+        sheetBehavior = BottomSheetBehavior.from(editWishBottomSheet)
+        wishesFragment.viewModel.selectedWish = intent.getParcelableExtra(WISH_DETAILS_INTENT)!!
     }
 
     private fun setListeners() {
         backArrowImageViewLayout.setOnClickListener {
             onBackPressed()
-        }
-
-        editProfileImageViewLayout.setOnClickListener {
-            val intent = Intent(this, EditProfileActivity::class.java)
-            intent.putExtra(COMING_FROM_PROFILE_INTENT, true)
-            startActivity(intent)
         }
 
         sheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
@@ -121,12 +104,16 @@ class ProfileActivity : BaseActivity<ProfileViewModel>() {
         }
 
         editWishTextView.setOnClickListener {
-            viewModel.editSelectedWish()
+            wishesFragment.viewModel.editSelectedWish()
         }
 
         deleteWishTextView.setOnClickListener {
             sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
             showDeleteDialog()
+        }
+
+        editWishBottomSheet.setOnClickListener {
+            //Do nothing when clicking on empty space to avoid triggering blurredBg thus collapsing bottomsheet
         }
     }
 
@@ -135,7 +122,7 @@ class ProfileActivity : BaseActivity<ProfileViewModel>() {
             AlertDialog.Builder(this)
         deleteDialog.setTitle(getString(R.string.delete_dialog_title))
         deleteDialog.setPositiveButton(getString(R.string.yes)) { _, _ ->
-            viewModel.deleteSelectedWish()
+            wishesFragment.viewModel.deleteSelectedWish()
             sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED)
         }
         deleteDialog.setNegativeButton(getString(R.string.cancel)) { _, _ ->
@@ -144,7 +131,8 @@ class ProfileActivity : BaseActivity<ProfileViewModel>() {
     }
 
     fun showEditWishDialog(wish: Wish) {
-        viewModel.selectedWish = wish
+        wishesFragment.viewModel.selectedWish = wish
         sheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
     }
+
 }

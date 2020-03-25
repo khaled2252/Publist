@@ -1,18 +1,25 @@
 package co.publist.features.wishes
 
+import android.content.Intent
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import co.publist.R
+import co.publist.core.common.data.models.Mapper
 import co.publist.core.common.data.models.wish.WishAdapterItem
 import co.publist.core.utils.DataBindingAdapters
+import co.publist.core.utils.Utils.Constants.DETAILS
+import co.publist.core.utils.Utils.Constants.WISH_DETAILS_INTENT
 import co.publist.databinding.ItemWishBinding
+import co.publist.features.wishdetails.WishDetailsActivity
 import org.ocpsoft.prettytime.PrettyTime
 import java.util.*
 import kotlin.collections.ArrayList
 
 class WishesAdapter(
     val list: ArrayList<WishAdapterItem>,
+    val wishesType: Int,
     val unFavoriteListener: (wish: WishAdapterItem, isFavoriting: Boolean) -> Unit,
     val detailsListener: (wish: WishAdapterItem) -> Unit
 ) :
@@ -38,6 +45,16 @@ class WishesAdapter(
         fun bind(
             wish: WishAdapterItem
         ) {
+            if(wishesType == DETAILS)
+                binding.seeMoreLayout.visibility = View.GONE
+               else {
+                binding.root.setOnClickListener {
+                    val intent = Intent(it.context, WishDetailsActivity::class.java)
+                    intent.putExtra(WISH_DETAILS_INTENT, Mapper.mapToWish(wish))
+                    it.context.startActivity(intent)
+                }
+            }
+
             if (wish.isCreator)
                 binding.wishActionImageView.apply {
                     setImageResource(R.drawable.ic_dots)
@@ -65,7 +82,7 @@ class WishesAdapter(
                     }
                 }
 
-            binding.categoryNameTextView.text = wish.category!![0].name
+            binding.categoryNameTextView.text = wish.category!![0].name?.capitalize()
             binding.titleTextView.text = wish.title
 
             //Load ago time
@@ -84,7 +101,8 @@ class WishesAdapter(
             //Load wish data
             DataBindingAdapters.loadWishImage(binding.wishImageView, wish.wishPhotoURL)
             val wishItemsAdapter = WishItemsAdapter(
-                ArrayList(wish.items!!.values.sortedBy { it.orderId }),
+                wish,
+                wishesType,
                 binding.seeMoreTextView,
                 binding.arrowImageView,
                 wishItemsAdapterArrayList.size

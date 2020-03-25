@@ -62,6 +62,13 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.ProfileScreen" />
 
+        <activity
+            android:name=".features.wishdetails.WishDetailsActivity"
+            android:launchMode = "singleTop"
+            android:label="Wish details"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.WishDetailsScreen" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"

@@ -115,15 +115,18 @@ object Utils {
         const val NAME_FIELD = "name"
         const val DATE_FIELD = "date"
         const val CATEGORY_ID_FIELD = "categoryId"
+        const val WISH_ID_FIELD = "wishId"
         const val GALLERY = 1
         const val CAMERA = 2
         const val TEMP_IMAGE = "temp_image"
         const val PUBLIC = 0
         const val LISTS = 1
         const val FAVORITES = 2
+        const val DETAILS = 3
         const val WISH_IMAGE_FIXED_WIDTH = 2400
         const val WISH_IMAGE_FIXED_HEIGHT = 1200
         const val EDIT_WISH_INTENT = "editedWish"
         const val COMING_FROM_PROFILE_INTENT = "isComingFromProfile"
+        const val WISH_DETAILS_INTENT = "detailsIntent"
     }
 }

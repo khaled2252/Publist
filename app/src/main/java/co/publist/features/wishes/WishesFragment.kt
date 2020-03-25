@@ -15,6 +15,7 @@ import co.publist.core.platform.ViewModelFactory
 import co.publist.core.utils.Utils.Constants.PUBLIC
 import co.publist.features.home.HomeActivity
 import co.publist.features.profile.ProfileActivity
+import co.publist.features.wishdetails.WishDetailsActivity
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.firebase.firestore.Query
 import kotlinx.android.synthetic.main.fragment_wishes.*
@@ -89,9 +90,9 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
                     view?.visibility = View.VISIBLE
                 else
                     view?.visibility = View.GONE
-            } ,detailsListener = {wish ->
+            }, detailsListener = { wish ->
                 (activity as ProfileActivity).showEditWishDialog(wish)
-            },unFavoriteListener =  { wish ->
+            }, unFavoriteListener = { wish ->
                 viewModel.modifyFavorite(wish, false)
             })
 
@@ -102,9 +103,12 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
     private fun setAdapter(list: ArrayList<WishAdapterItem>) {
         refreshLayout.isRefreshing = false
         if (list.isNotEmpty()) {
-            val adapter = WishesAdapter(list,detailsListener = {wish ->
-                (activity as HomeActivity).showEditWishDialog(Mapper.mapToWish(wish))
-            },unFavoriteListener = { wish, isFavoriting ->
+            val adapter = WishesAdapter(list, wishesType = wishesType, detailsListener = { wish ->
+                if (activity is HomeActivity)
+                    (activity as HomeActivity).showEditWishDialog(Mapper.mapToWish(wish))
+                else
+                    (activity as WishDetailsActivity).showEditWishDialog(Mapper.mapToWish(wish))
+            }, unFavoriteListener = { wish, isFavoriting ->
                 viewModel.modifyFavorite(Mapper.mapToWish(wish), isFavoriting)
             })
             wishesRecyclerView.adapter = adapter

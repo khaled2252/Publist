@@ -1,14 +1,20 @@
 package co.publist.features.wishes
 
+import android.content.Intent
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import co.publist.R
+import co.publist.core.common.data.models.Mapper
 import co.publist.core.common.data.models.wish.Wish
 import co.publist.core.utils.DataBindingAdapters.loadProfilePicture
 import co.publist.core.utils.DataBindingAdapters.loadWishImage
+import co.publist.core.utils.Utils.Constants.DETAILS
 import co.publist.core.utils.Utils.Constants.LISTS
+import co.publist.core.utils.Utils.Constants.WISH_DETAILS_INTENT
 import co.publist.databinding.ItemWishBinding
+import co.publist.features.wishdetails.WishDetailsActivity
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import org.ocpsoft.prettytime.PrettyTime
@@ -18,7 +24,7 @@ import kotlin.collections.ArrayList
 
 class WishesFirestoreAdapter(
     options: FirestoreRecyclerOptions<Wish>,
-    val type: Int,
+    val wishesType: Int,
     val displayPlaceHolder: (Boolean) -> Unit,
     val unFavoriteListener: (wish: Wish) -> Unit,
     val detailsListener: (wish: Wish) -> Unit
@@ -58,8 +64,18 @@ class WishesFirestoreAdapter(
         fun bind(
             wish: Wish
         ) {
+            if(wishesType == DETAILS)
+                binding.seeMoreLayout.visibility = View.GONE
+            else {
+                binding.root.setOnClickListener {
+                    val intent = Intent(it.context, WishDetailsActivity::class.java)
+                    intent.putExtra(WISH_DETAILS_INTENT, wish)
+                    it.context.startActivity(intent)
+                }
+            }
+
             binding.wishActionImageView.apply {
-                if (type == LISTS) {
+                if (wishesType == LISTS) {
                     setImageResource(R.drawable.ic_dots)
                     setOnClickListener {
                         detailsListener(wish)
@@ -72,7 +88,8 @@ class WishesFirestoreAdapter(
                     }
                 }
             }
-            binding.categoryNameTextView.text = wish.category!![0].name
+
+            binding.categoryNameTextView.text = wish.category!![0].name?.capitalize()
             binding.titleTextView.text = wish.title
 
             //Load ago time
@@ -88,7 +105,8 @@ class WishesFirestoreAdapter(
             //Load wish data
             loadWishImage(binding.wishImageView, wish.wishPhotoURL)
             val wishItemsAdapter = WishItemsAdapter(
-                ArrayList(wish.items!!.values.sortedBy { it.orderId }),
+                Mapper.mapToWishAdapterItem(wish),
+                LISTS,
                 binding.seeMoreTextView,
                 binding.arrowImageView,
                 wishItemsAdapterArrayList.size
