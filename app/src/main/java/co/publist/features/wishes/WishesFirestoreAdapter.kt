@@ -87,26 +87,23 @@ class WishesFirestoreAdapter(
 
             //Load wish data
             loadWishImage(binding.wishImageView, wish.wishPhotoURL)
-            val todosAdapter = WishItemsAdapter(
-                ArrayList(wish.items!!.values),
+            val wishItemsAdapter = WishItemsAdapter(
+                ArrayList(wish.items!!.values.sortedBy { it.orderId }),
                 binding.seeMoreTextView,
                 binding.arrowImageView,
                 wishItemsAdapterArrayList.size
-            ) {
-                //Collapse all other lists except for the current one expanding
-                for (adapterIndex in 0 until wishItemsAdapterArrayList.size) {
-//                    if (adapterIndex != it)
-//                        wishItemsAdapterArrayList[adapterIndex].collapseExtraWishItems()
-                }
-            }
-            wishItemsAdapterArrayList.add(todosAdapter)
-            todosAdapter.setHasStableIds(true)
-            binding.wishItemsRecyclerView.adapter = todosAdapter
-            binding.wishItemsRecyclerView.post {
-//                if (wish.items!!.size > 3)
-//                    todosAdapter.collapseExtraWishItems()
-            }
+                , expandListener = { wishItemsAdapterIndex ->
+                    //Collapse all other lists except for the current one expanding
+                    for (adapterIndex in 0 until wishItemsAdapterArrayList.size) {
+                        if (adapterIndex != wishItemsAdapterIndex && wishItemsAdapterArrayList[adapterIndex].isExpanded)
+                            wishItemsAdapterArrayList[adapterIndex].collapseList()
+                    }
 
+                })
+            wishItemsAdapterArrayList.add(wishItemsAdapter)
+            wishItemsAdapter.setHasStableIds(true)
+            binding.wishItemsRecyclerView.adapter = wishItemsAdapter
         }
+
     }
 }
