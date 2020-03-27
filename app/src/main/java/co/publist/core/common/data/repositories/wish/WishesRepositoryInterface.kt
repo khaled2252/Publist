@@ -17,4 +17,10 @@ interface WishesRepositoryInterface {
     fun uploadImage(imageUri : String) : Single<Pair<String,String>>
     fun deleteWishFromMyLists(selectedWish: Wish) : Completable
     fun deleteWishFromWishes(selectedWish: Wish) : Completable
+    fun getDoneItemsInMyLists() : Single<ArrayList<String>>
+    fun getDoneItemsInMyFavorites() : Single<ArrayList<String>>
+    fun checkItemDoneInProfile(itemId: String, wishId : String,collectionToBeEdited : String, isDone: Boolean): Completable
+    fun incrementCompleteCountInWishes(itemId: String , wishId : String, isDone: Boolean): Single<Int>
+    fun addUserIdInTopCompletedUsersIdSubCollection(itemId : String , wishId : String,isAdding : Boolean): Completable
+    fun addUserIdInTopCompletedUsersIdField(itemId : String, wishId : String,isAdding : Boolean): Completable
 }

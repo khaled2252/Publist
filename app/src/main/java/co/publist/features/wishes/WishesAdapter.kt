@@ -20,8 +20,9 @@ import kotlin.collections.ArrayList
 class WishesAdapter(
     val list: ArrayList<WishAdapterItem>,
     val wishesType: Int,
-    val unFavoriteListener: (wish: WishAdapterItem, isFavoriting: Boolean) -> Unit,
-    val detailsListener: (wish: WishAdapterItem) -> Unit
+    val favoriteListener: (wish: WishAdapterItem, isFavoriting: Boolean) -> Unit,
+    val detailsListener: (wish: WishAdapterItem) -> Unit,
+    val completeListener: (itemId: String, wish: WishAdapterItem, isDone: Boolean) -> Unit
 ) :
     RecyclerView.Adapter<WishesAdapter.WishViewHolder>() {
     val wishItemsAdapterArrayList = ArrayList<WishItemsAdapter>()
@@ -45,9 +46,9 @@ class WishesAdapter(
         fun bind(
             wish: WishAdapterItem
         ) {
-            if(wishesType == DETAILS)
+            if (wishesType == DETAILS)
                 binding.seeMoreLayout.visibility = View.GONE
-               else {
+            else {
                 binding.root.setOnClickListener {
                     val intent = Intent(it.context, WishDetailsActivity::class.java)
                     intent.putExtra(WISH_DETAILS_INTENT, Mapper.mapToWish(wish))
@@ -67,17 +68,21 @@ class WishesAdapter(
                     if (wish.isFavorite) {
                         setImageResource(R.drawable.ic_heart_active)
                         setOnClickListener {
+                            //Update Ui then remotely
                             setImageResource(R.drawable.ic_heart)
                             wish.isFavorite = false
-                            unFavoriteListener(wish, false) //unFavorite
                             notifyDataSetChanged()
+
+                            favoriteListener(wish, false)
                         }
                     } else {
                         setOnClickListener {
+                            //Update Ui then remotely
                             setImageResource(R.drawable.ic_heart_active)
                             wish.isFavorite = true
-                            unFavoriteListener(wish, true) //favorite
                             notifyDataSetChanged()
+
+                            favoriteListener(wish, true)
                         }
                     }
                 }
@@ -113,6 +118,10 @@ class WishesAdapter(
                             wishItemsAdapterArrayList[adapterIndex].collapseList()
                     }
 
+                }, completeListener = { itemId, isDone ->
+                    if(!wish.isCreator && !wish.isFavorite)
+                        favoriteListener(wish, true)
+                    completeListener(itemId, wish, isDone)
                 })
             wishItemsAdapterArrayList.add(wishItemsAdapter)
             wishItemsAdapter.setHasStableIds(true)

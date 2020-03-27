@@ -117,7 +117,7 @@ class WishesFirestoreAdapter(
                             wishItemsAdapterArrayList[adapterIndex].collapseList()
                     }
 
-                })
+                },completeListener = {_,_ ->})
             wishItemsAdapterArrayList.add(wishItemsAdapter)
             wishItemsAdapter.setHasStableIds(true)
             binding.wishItemsRecyclerView.adapter = wishItemsAdapter

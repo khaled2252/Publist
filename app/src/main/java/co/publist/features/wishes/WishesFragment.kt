@@ -108,8 +108,10 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
                     (activity as HomeActivity).showEditWishDialog(Mapper.mapToWish(wish))
                 else
                     (activity as WishDetailsActivity).showEditWishDialog(Mapper.mapToWish(wish))
-            }, unFavoriteListener = { wish, isFavoriting ->
+            }, favoriteListener = { wish, isFavoriting ->
                 viewModel.modifyFavorite(Mapper.mapToWish(wish), isFavoriting)
+            },completeListener = {itemId , wish , isDone ->
+                viewModel.completeItem(itemId,wish,isDone)
             })
             wishesRecyclerView.adapter = adapter
         } else {

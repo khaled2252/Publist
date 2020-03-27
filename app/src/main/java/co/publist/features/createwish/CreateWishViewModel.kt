@@ -74,7 +74,7 @@ class CreateWishViewModel @Inject constructor(
                 continue
             }
 
-            val id = UUID.randomUUID().toString().toUpperCase()
+            val id = UUID.randomUUID().toString().toUpperCase(Locale.getDefault())
             newItemIdList.add(id)
             val item = Item(
                 name = items[itemPosition],

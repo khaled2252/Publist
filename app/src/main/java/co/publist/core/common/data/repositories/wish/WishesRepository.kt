@@ -5,18 +5,24 @@ import co.publist.core.common.data.local.LocalDataSource
 import co.publist.core.common.data.models.Mapper
 import co.publist.core.common.data.models.wish.Wish
 import co.publist.core.utils.Utils.Constants.CATEGORY_ID_FIELD
+import co.publist.core.utils.Utils.Constants.COMPLETED_USERS_IDS_COLLECTION_PATH
+import co.publist.core.utils.Utils.Constants.COMPLETE_COUNT_FIELD
 import co.publist.core.utils.Utils.Constants.DATE_FIELD
+import co.publist.core.utils.Utils.Constants.IS_DONE_FIELD
+import co.publist.core.utils.Utils.Constants.ITEMS_FIELD
+import co.publist.core.utils.Utils.Constants.ITEMS_ID_SUB_COLLECTION_PATH
 import co.publist.core.utils.Utils.Constants.MY_FAVORITES_COLLECTION_PATH
 import co.publist.core.utils.Utils.Constants.MY_LISTS_COLLECTION_PATH
+import co.publist.core.utils.Utils.Constants.TOP_COMPLETED_USER_IDS_FIELD
 import co.publist.core.utils.Utils.Constants.USERS_COLLECTION_PATH
+import co.publist.core.utils.Utils.Constants.USER_ID_FIELD
 import co.publist.core.utils.Utils.Constants.WISHES_COLLECTION_PATH
-import com.google.android.gms.tasks.Continuation
-import com.google.android.gms.tasks.Task
+import co.publist.core.utils.Utils.Constants.WISH_ID_FIELD
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageMetadata
-import com.google.firebase.storage.UploadTask
 import io.reactivex.Completable
 import io.reactivex.Single
 import java.util.*
@@ -27,6 +33,8 @@ class WishesRepository @Inject constructor(
     var mFirebaseStorage: FirebaseStorage,
     var localDataSource: LocalDataSource
 ) : WishesRepositoryInterface {
+    private val userId = localDataSource.getSharedPreferences().getUser()?.id
+
     override fun getAllWishesQuery(): Query {
         return mFirebaseFirestore.collection(WISHES_COLLECTION_PATH)
             .orderBy(DATE_FIELD, Query.Direction.DESCENDING)//Latest first
@@ -39,7 +47,6 @@ class WishesRepository @Inject constructor(
     }
 
     override fun getUserListWishesQuery(): Query {
-        val userId = localDataSource.getSharedPreferences().getUser()?.id
         return mFirebaseFirestore.collection(USERS_COLLECTION_PATH)
             .document(userId!!)
             .collection(MY_LISTS_COLLECTION_PATH)
@@ -47,14 +54,13 @@ class WishesRepository @Inject constructor(
     }
 
     override fun getUserFavoriteWishesQuery(): Query {
-        val userId = localDataSource.getSharedPreferences().getUser()?.id
         return mFirebaseFirestore.collection(USERS_COLLECTION_PATH)
             .document(userId!!)
             .collection(MY_FAVORITES_COLLECTION_PATH)
             .orderBy(DATE_FIELD, Query.Direction.DESCENDING)
     }
 
-    override fun getSpecificWish(wishId: String): Single<Wish>  {
+    override fun getSpecificWish(wishId: String): Single<Wish> {
         return Single.create { singleEmitter ->
             mFirebaseFirestore.collection(WISHES_COLLECTION_PATH)
                 .document(wishId)
@@ -97,7 +103,7 @@ class WishesRepository @Inject constructor(
                 }.addOnSuccessListener { documentReference ->
                     mFirebaseFirestore.collection(WISHES_COLLECTION_PATH)
                         .document(documentReference.id)
-                        .update("wishId", documentReference.id)
+                        .update(WISH_ID_FIELD, documentReference.id)
                         .addOnSuccessListener {
                             wish.wishId = documentReference.id
                             singleEmitter.onSuccess(wish)
@@ -110,7 +116,6 @@ class WishesRepository @Inject constructor(
     }
 
     private fun addWishToMyLists(wish: Wish): Completable {
-        val userId = localDataSource.getSharedPreferences().getUser()?.id
         return Completable.create { completableEmitter ->
             mFirebaseFirestore
                 .collection(USERS_COLLECTION_PATH)
@@ -134,7 +139,6 @@ class WishesRepository @Inject constructor(
     }
 
     override fun updateWish(wish: Wish): Completable {
-        val userId = localDataSource.getSharedPreferences().getUser()?.id
         return Completable.create { completableEmitter ->
             mFirebaseFirestore
                 .collection(USERS_COLLECTION_PATH)
@@ -155,22 +159,23 @@ class WishesRepository @Inject constructor(
                             completableEmitter.onError(error)
                         }
                 }
-        }    }
+        }
+    }
 
-    override fun uploadImage(imageUri: String): Single<Pair<String,String>> {
+    override fun uploadImage(imageUri: String): Single<Pair<String, String>> {
         return Single.create { completableEmitter ->
-            val photoName = UUID.randomUUID().toString().toUpperCase()+".jpeg"
+            val photoName = UUID.randomUUID().toString().toUpperCase(Locale.getDefault()) + ".jpeg"
             val reference =
                 mFirebaseStorage.reference.child("WishListCoverPhoto/$photoName")
             val metadata = StorageMetadata.Builder()
                 .setContentType("application/octet-stream")
                 .build()
             val uploadTask = reference.putFile(Uri.parse(imageUri), metadata)
-            uploadTask.continueWithTask(Continuation<UploadTask.TaskSnapshot, Task<Uri>> {
-                return@Continuation reference.downloadUrl
-            }).addOnCompleteListener { task ->
+            uploadTask.continueWithTask {
+                reference.downloadUrl
+            }.addOnCompleteListener { task ->
                 val downloadUri = task.result
-                completableEmitter.onSuccess(Pair(downloadUri.toString(),photoName))
+                completableEmitter.onSuccess(Pair(downloadUri.toString(), photoName))
             }.addOnFailureListener {
                 completableEmitter.onError(it)
             }
@@ -180,7 +185,6 @@ class WishesRepository @Inject constructor(
 
     override fun deleteWishFromMyLists(selectedWish: Wish): Completable {
         return Completable.create { completableEmitter ->
-            val userId = localDataSource.getSharedPreferences().getUser()?.id
             mFirebaseFirestore
                 .collection(USERS_COLLECTION_PATH)
                 .document(userId!!)
@@ -208,6 +212,171 @@ class WishesRepository @Inject constructor(
                 .addOnSuccessListener {
                     completableEmitter.onComplete()
                 }
+        }
+    }
+
+    override fun getDoneItemsInMyLists(): Single<ArrayList<String>> {
+        return Single.create { singleEmitter ->
+            mFirebaseFirestore.collection(USERS_COLLECTION_PATH)
+                .document(userId!!)
+                .collection(MY_LISTS_COLLECTION_PATH)
+                .get()
+                .addOnFailureListener {
+                    singleEmitter.onError(it)
+                }.addOnSuccessListener { querySnapshot ->
+                    val wishList = Mapper.mapToWishAdapterItemArrayList(querySnapshot)
+                    val doneItems = arrayListOf<String>()
+                    for (wish in wishList) {
+                        for (item in wish.items!!) {
+                            if (item.value.done!!)
+                                doneItems.add(item.key)
+                        }
+                    }
+                    singleEmitter.onSuccess(doneItems)
+                }
+        }
+    }
+
+    override fun getDoneItemsInMyFavorites(): Single<ArrayList<String>> {
+        return Single.create { singleEmitter ->
+            mFirebaseFirestore.collection(USERS_COLLECTION_PATH)
+                .document(userId!!)
+                .collection(MY_FAVORITES_COLLECTION_PATH)
+                .get()
+                .addOnFailureListener {
+                    singleEmitter.onError(it)
+                }.addOnSuccessListener { querySnapshot ->
+                    val wishList = Mapper.mapToWishAdapterItemArrayList(querySnapshot)
+                    val doneItems = arrayListOf<String>()
+                    for (wish in wishList) {
+                        for (item in wish.items!!) {
+                            if (item.value.done!!)
+                                doneItems.add(item.key)
+                        }
+                    }
+                    singleEmitter.onSuccess(doneItems)
+                }
+        }
+    }
+
+    override fun checkItemDoneInProfile(
+        itemId: String,
+        wishId: String,
+        collectionToBeEdited: String,
+        isDone: Boolean
+    ): Completable {
+        return Completable.create { completableEmitter ->
+            mFirebaseFirestore
+                .collection(USERS_COLLECTION_PATH)
+                .document(userId!!)
+                .collection(collectionToBeEdited)
+                .document(wishId)
+                .update("$ITEMS_FIELD.$itemId.$IS_DONE_FIELD", isDone)
+                .addOnFailureListener {
+                    completableEmitter.onError(it)
+                }
+                .addOnSuccessListener {
+                    completableEmitter.onComplete()
+                }
+        }
+    }
+
+    override fun incrementCompleteCountInWishes(
+        itemId: String,
+        wishId: String,
+        isDone: Boolean
+    ): Single<Int> {
+        return Single.create { singleEmitter ->
+            val wishRef =
+                mFirebaseFirestore
+                    .collection(WISHES_COLLECTION_PATH)
+                    .document(wishId)
+            val incrementAmount = if (isDone) 1 else -1
+            wishRef
+                .update(
+                    "$ITEMS_FIELD.$itemId.$COMPLETE_COUNT_FIELD",
+                    FieldValue.increment(incrementAmount.toDouble())
+                )
+                .addOnFailureListener {
+                    singleEmitter.onError(it)
+                }
+                .addOnSuccessListener {
+                    wishRef
+                        .get()
+                        .addOnSuccessListener {
+                            singleEmitter.onSuccess(
+                                it.get("$ITEMS_FIELD.$itemId.$COMPLETE_COUNT_FIELD").toString()
+                                    .toDouble().toInt()
+                            )
+                        }
+                        .addOnFailureListener {
+                            singleEmitter.onError(it)
+                        }
+
+                }
+        }
+    }
+
+    override fun addUserIdInTopCompletedUsersIdSubCollection(
+        itemId: String,
+        wishId: String,
+        isAdding: Boolean
+    ): Completable {
+        return Completable.create { completableEmitter ->
+            val ref = mFirebaseFirestore
+                .collection(WISHES_COLLECTION_PATH)
+                .document(wishId)
+                .collection(ITEMS_ID_SUB_COLLECTION_PATH)
+                .document(itemId)
+                .collection(COMPLETED_USERS_IDS_COLLECTION_PATH)
+
+            if (isAdding)
+                ref.document(userId!!)
+                    .set(hashMapOf(USER_ID_FIELD to userId))
+                    .addOnFailureListener {
+                        completableEmitter.onError(it)
+                    }
+                    .addOnSuccessListener {
+                        completableEmitter.onComplete()
+                    }
+            else
+                ref.document(userId!!)
+                    .delete()
+                    .addOnFailureListener {
+                        completableEmitter.onError(it)
+                    }
+                    .addOnSuccessListener {
+                        completableEmitter.onComplete()
+                    }
+        }
+    }
+
+    override fun addUserIdInTopCompletedUsersIdField(
+        itemId: String,
+        wishId: String,
+        isAdding: Boolean
+    ): Completable {
+        return Completable.create { completableEmitter ->
+            val ref = mFirebaseFirestore
+                .collection(WISHES_COLLECTION_PATH)
+                .document(wishId)
+
+            if (isAdding)
+                ref.update("$ITEMS_FIELD.$itemId.$TOP_COMPLETED_USER_IDS_FIELD", FieldValue.arrayUnion(userId))
+                    .addOnFailureListener {
+                        completableEmitter.onError(it)
+                    }
+                    .addOnSuccessListener {
+                        completableEmitter.onComplete()
+                    }
+            else
+                ref.update("$ITEMS_FIELD.$itemId.$TOP_COMPLETED_USER_IDS_FIELD", FieldValue.arrayRemove(userId))
+                    .addOnFailureListener {
+                        completableEmitter.onError(it)
+                    }
+                    .addOnSuccessListener {
+                        completableEmitter.onComplete()
+                    }
         }
     }
 }

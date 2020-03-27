@@ -10,7 +10,10 @@ import co.publist.core.common.data.repositories.wish.WishesRepositoryInterface
 import co.publist.core.platform.BaseViewModel
 import co.publist.core.utils.Utils.Constants.FAVORITES
 import co.publist.core.utils.Utils.Constants.LISTS
+import co.publist.core.utils.Utils.Constants.MY_FAVORITES_COLLECTION_PATH
+import co.publist.core.utils.Utils.Constants.MY_LISTS_COLLECTION_PATH
 import co.publist.core.utils.Utils.Constants.PUBLIC
+import co.publist.core.utils.Utils.Constants.TOP_COMPLETED_USERS_MINIMUM_COUNT
 import co.publist.features.categories.data.CategoriesRepositoryInterface
 import co.publist.features.myfavorites.data.MyFavoritesRepositoryInterface
 import com.google.firebase.firestore.Query
@@ -31,7 +34,7 @@ class WishesViewModel @Inject constructor(
     val isFavoriteAdded = MutableLiveData<Boolean>()
     val wishDeletedLiveData = MutableLiveData<Boolean>()
     val editWishLiveData = MutableLiveData<Wish>()
-    lateinit var selectedWish : Wish
+    lateinit var selectedWish: Wish
     fun loadData(type: Int) {
         wishesType.postValue(type)
         when (type) {
@@ -40,7 +43,7 @@ class WishesViewModel @Inject constructor(
                     .flatMap { categories ->
                         val wishesSingleObservable = wishesRepository.getAllWishes()
                         if (categories.isNullOrEmpty())
-                            wishesSingleObservable.flatMap {list ->
+                            wishesSingleObservable.flatMap { list ->
                                 Single.just(Mapper.mapToWishAdapterItemArrayList(list)) //UnfilteredWishes for guest mode
                             }
                         else {
@@ -48,27 +51,37 @@ class WishesViewModel @Inject constructor(
                                 var filteredWishes =
                                     filterWishesByCategories(list, categories)
 
-                                if(userRepository.getUser() == null)
+                                if (userRepository.getUser() == null)
                                     Single.just(filteredWishes) //FilteredWishes for guest mode
                                 else {
-                                favoritesRepository.getUserFavoriteWishes()
-                                    .flatMap { favoriteList ->
-                                            filteredWishes = filterWishesByFavorites(
-                                                filteredWishes,
-                                                favoriteList
-                                            )
-                                            filteredWishes = filterWishesByCreator(
-                                                filteredWishes,
-                                                userRepository.getUser()?.id!!
-                                            )
-                                            Single.just(filteredWishes)
+                                    favoritesRepository.getUserFavoriteWishes()
+                                        .flatMap { favoriteList ->
+                                            wishesRepository.getDoneItemsInMyFavorites()
+                                                .flatMap { doneItemsInFavoritesArrayList ->
+                                                    filteredWishes = filterWishesByFavorites(
+                                                        filteredWishes,
+                                                        favoriteList,
+                                                        doneItemsInFavoritesArrayList
+                                                    )
+                                                    wishesRepository.getDoneItemsInMyLists()
+                                                        .flatMap { doneItemsInMyListsArrayList ->
+                                                            filteredWishes = filterWishesByCreator(
+                                                                filteredWishes,
+                                                                userRepository.getUser()?.id!!,
+                                                                doneItemsInMyListsArrayList
+                                                            )
+                                                            Single.just(filteredWishes)
+                                                        }
+
+                                                }
                                         }
-                                    }
+                                }
                             }
                         }
                     }, Consumer { list ->
                     wishesListLiveData.postValue(list)
-                },showLoading = false)
+                }, showLoading = false
+                )
             }
             LISTS -> wishesQueryLiveData.postValue(
                 Pair(
@@ -84,16 +97,33 @@ class WishesViewModel @Inject constructor(
             )
 
             else -> {
-                    subscribe(favoritesRepository.getUserFavoriteWishes().flatMap {favoritesList ->
-                        wishesRepository.getSpecificWish(selectedWish.wishId!!).flatMap {wish ->
-                            var oneElementList = arrayListOf(Mapper.mapToWishAdapterItem(wish))
-                            oneElementList = filterWishesByCreator(oneElementList,userRepository.getUser()?.id!!)
-                            oneElementList =  filterWishesByFavorites(oneElementList,favoritesList)
-                            Single.just(oneElementList)
-                        }
-                    }, Consumer {oneElementList ->
-                        wishesListLiveData.postValue(oneElementList)
-                    })
+                subscribe(favoritesRepository.getUserFavoriteWishes().flatMap { favoritesList ->
+                    wishesRepository.getSpecificWish(selectedWish.wishId!!).flatMap { wish ->
+                        wishesRepository.getDoneItemsInMyLists()
+                            .flatMap { doneItemsInMyListsArrayList ->
+                                var oneElementList = arrayListOf(Mapper.mapToWishAdapterItem(wish))
+                                oneElementList =
+                                    filterWishesByCreator(
+                                        oneElementList,
+                                        userRepository.getUser()?.id!!,
+                                        doneItemsInMyListsArrayList
+                                    )
+                                wishesRepository.getDoneItemsInMyFavorites()
+                                    .flatMap { doneItemsInMyFavoritesArrayList ->
+                                        oneElementList = filterWishesByFavorites(
+                                            oneElementList,
+                                            favoritesList,
+                                            doneItemsInMyFavoritesArrayList
+                                        )
+                                        Single.just(oneElementList)
+                                    }
+
+                            }
+
+                    }
+                }, Consumer { oneElementList ->
+                    wishesListLiveData.postValue(oneElementList)
+                })
             }
 
         }
@@ -102,18 +132,25 @@ class WishesViewModel @Inject constructor(
 
     private fun filterWishesByCreator(
         wishes: ArrayList<WishAdapterItem>,
-        id: String
+        id: String,
+        doneItemsArrayList: ArrayList<String>
     ): ArrayList<WishAdapterItem> {
         val filteredWishes = ArrayList(wishes)
         for (wish in filteredWishes)
-            if (wish.creator?.id == id)
+            if (wish.creator?.id == id) {
                 wish.isCreator = true
+                for (itemIndex in 0 until doneItemsArrayList.size) {
+                    if (wish.itemsId!!.contains(doneItemsArrayList[itemIndex]))
+                        wish.items?.get(doneItemsArrayList[itemIndex])?.done = true
+                }
+            }
         return filteredWishes
     }
 
     private fun filterWishesByFavorites(
         filteredWishes: ArrayList<WishAdapterItem>,
-        favoriteList: ArrayList<Wish>
+        favoriteList: ArrayList<Wish>,
+        doneItemsArrayList: ArrayList<String>
     ): ArrayList<WishAdapterItem> {
         val favoriteFilteredList = ArrayList(filteredWishes)
         for (wish in favoriteList) {
@@ -122,6 +159,11 @@ class WishesViewModel @Inject constructor(
                     it.wishId == wish.wishId
                 }
                 favoriteFilteredList[index].isFavorite = true
+                for (itemIndex in 0 until doneItemsArrayList.size) {
+                    if (favoriteFilteredList[index].itemsId!!.contains(doneItemsArrayList[itemIndex]))
+                        favoriteFilteredList[index].items?.get(doneItemsArrayList[itemIndex])?.done =
+                            true
+                }
             }
         }
         return favoriteFilteredList
@@ -144,25 +186,63 @@ class WishesViewModel @Inject constructor(
             subscribe(
                 favoritesRepository.addToMyFavoritesRemotely(wish), Action {
                     isFavoriteAdded.postValue(true)
-                },showLoading = false)
+                }, showLoading = false
+            )
         else
             subscribe(
                 favoritesRepository.deleteFromFavoritesRemotely(wish.wishId!!), Action {
                     isFavoriteAdded.postValue(false)
-                },showLoading = false)
+                }, showLoading = false
+            )
     }
 
 
     fun deleteSelectedWish() {
         //Merge operator runs both calls in parallel (independent calls)
-        subscribe(wishesRepository.deleteWishFromWishes(selectedWish).mergeWith(wishesRepository.deleteWishFromMyLists(selectedWish))
-        , Action {
-            wishDeletedLiveData.postValue(true)
-        })
+        subscribe(wishesRepository.deleteWishFromWishes(selectedWish)
+            .mergeWith(wishesRepository.deleteWishFromMyLists(selectedWish))
+            , Action {
+                wishDeletedLiveData.postValue(true)
+            })
 
     }
 
     fun editSelectedWish() {
         editWishLiveData.postValue(selectedWish)
+    }
+
+    fun completeItem(itemId: String, wish: WishAdapterItem, isDone: Boolean) {
+        val collectionTobeEdited =
+            if (wish.isCreator) MY_LISTS_COLLECTION_PATH else MY_FAVORITES_COLLECTION_PATH
+        subscribe(wishesRepository.checkItemDoneInProfile(
+            itemId,
+            wish.wishId!!,
+            collectionTobeEdited,
+            isDone
+        )
+            .andThen(wishesRepository.incrementCompleteCountInWishes(itemId, wish.wishId!!,isDone))
+            .flatMapCompletable { completeCount ->
+                if (completeCount < TOP_COMPLETED_USERS_MINIMUM_COUNT)
+                    wishesRepository.addUserIdInTopCompletedUsersIdSubCollection(
+                        itemId,
+                        wish.wishId!!,
+                        isDone
+                    )
+                        .mergeWith(
+                            wishesRepository.addUserIdInTopCompletedUsersIdField(
+                                itemId, wish.wishId!!,
+                                isDone
+                            )
+                        )
+                else
+                    wishesRepository.addUserIdInTopCompletedUsersIdSubCollection(
+                        itemId,
+                        wish.wishId!!,
+                        isDone
+                    )
+            }
+            , Action {
+            })
+
     }
 }

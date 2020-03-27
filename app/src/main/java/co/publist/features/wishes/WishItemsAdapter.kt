@@ -1,6 +1,7 @@
 package co.publist.features.wishes
 
 import android.content.Intent
+import android.graphics.Paint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,11 +28,12 @@ class WishItemsAdapter(
     private val seeMoreTextView: TextView,
     private val arrowImageView: ImageView,
     private val adapterIndex: Int,
-    val expandListener: (Int) -> Unit
+    val expandListener: (adapterIndex: Int) -> Unit,
+    val completeListener: (itemId: String, isDone: Boolean) -> Unit
 ) :
     RecyclerView.Adapter<WishItemsAdapter.WishItemViewHolder>() {
     var isExpanded = false
-    private var itemList : ArrayList<Item> = ArrayList(wish.items!!.values.sortedBy { it.orderId })
+    private var itemList: ArrayList<Item> = ArrayList(wish.items!!.values.sortedBy { it.orderId })
 
     init {
         if (wishesType != DETAILS)
@@ -56,21 +58,45 @@ class WishItemsAdapter(
     }
 
     override fun onBindViewHolder(holder: WishItemViewHolder, position: Int) {
-        if(!isExpanded && position==itemList.size-1) //To hide last dashed line if items are not expandable
+        if (!isExpanded && position == itemList.size - 1) //To hide last dashed line if items are not expandable
             holder.itemView.dashed_line.visibility = View.GONE
 
-        holder.bind(itemList[position])
+        holder.bind(itemList[position], position)
     }
 
     inner class WishItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun bind(
-            item: Item
+            item: Item,
+            position: Int
         ) {
+
             itemView.wishItemTextView.text = item.name
+            if (item.done!!) {
+                itemView.wishItemTextView.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG
+                itemView.completeButton.isChecked = true
+            }
             itemView.likeViewsTextView.text =
                 seeMoreTextView.context.getString(R.string.views, item.viewedCount)
             itemView.completedThisTextView.text =
-                seeMoreTextView.context.getString(R.string.completed, item.viewedCount)
+                seeMoreTextView.context.getString(R.string.completed, item.completeCount)
+
+            itemView.completeButton.setOnCheckedChangeListener { _, isChecked ->
+                //Update Ui then remotely
+                if (isChecked)
+                {
+                    itemView.wishItemTextView.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG
+                    item.completeCount= item.completeCount?.inc()
+                }
+                else
+                {
+                    itemView.wishItemTextView.paintFlags = Paint.ANTI_ALIAS_FLAG
+                    item.completeCount= item.completeCount?.dec()
+                }
+                itemView.completedThisTextView.text = itemView.context.getString(R.string.completed, item.completeCount)
+                notifyDataSetChanged()
+
+                completeListener(wish.itemsId!![position], isChecked)
+            }
         }
     }
 
