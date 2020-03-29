@@ -4,6 +4,8 @@ import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
 import co.publist.R
 import co.publist.core.common.data.models.Mapper
@@ -68,21 +70,11 @@ class WishesAdapter(
                     if (wish.isFavorite) {
                         setImageResource(R.drawable.ic_heart_active)
                         setOnClickListener {
-                            //Update Ui then remotely
-                            setImageResource(R.drawable.ic_heart)
-                            wish.isFavorite = false
-                            notifyDataSetChanged()
-
-                            favoriteListener(wish, false)
+                            favoriteWish(wish , false)
                         }
                     } else {
                         setOnClickListener {
-                            //Update Ui then remotely
-                            setImageResource(R.drawable.ic_heart_active)
-                            wish.isFavorite = true
-                            notifyDataSetChanged()
-
-                            favoriteListener(wish, true)
+                            favoriteWish(wish , true)
                         }
                     }
                 }
@@ -119,8 +111,10 @@ class WishesAdapter(
                     }
 
                 }, completeListener = { itemId, isDone ->
-                    if(!wish.isCreator && !wish.isFavorite)
-                        favoriteListener(wish, true)
+
+                    //completed item's wish is added to favorites according to business
+                    if(!wish.isCreator && !wish.isFavorite && isDone)
+                        binding.wishActionImageView.favoriteWish(wish,true)
                     completeListener(itemId, wish, isDone)
                 })
             wishItemsAdapterArrayList.add(wishItemsAdapter)
@@ -128,5 +122,46 @@ class WishesAdapter(
             binding.wishItemsRecyclerView.adapter = wishItemsAdapter
         }
 
+        private fun ImageView.favoriteWish(wish: WishAdapterItem , isFavoriting: Boolean) {
+            //Update Ui then remotely
+            if (isFavoriting)
+            {setImageResource(R.drawable.ic_heart_active)
+                wish.isFavorite = isFavoriting
+                favoriteListener(wish, isFavoriting)
+                notifyDataSetChanged()
+                }
+            else {
+                if(wish.items?.values?.any {it.done==true}!!)
+                {
+                    val builder = AlertDialog.Builder(this.context!!)
+
+                    builder.setTitle(context.getString(R.string.remove_wish_title))
+                    builder.setMessage(context.getString(R.string.remove_wish_message))
+                    builder.setPositiveButton(this.context.getString(R.string.yes)) { _, _ ->
+                        setImageResource(R.drawable.ic_heart)
+                        wish.isFavorite = isFavoriting
+                        favoriteListener(wish, isFavoriting)
+                        for (item in wish.items!!.values)
+                        {
+                            item.done = false
+                            item.completeCount = 0
+                        }
+                        notifyDataSetChanged()
+                    }
+                    builder.setNegativeButton(this.context.getString(R.string.cancel)) { _, _ ->
+                    }
+                    builder.create().show()
+                }
+                else
+                {
+                    setImageResource(R.drawable.ic_heart)
+                    wish.isFavorite = isFavoriting
+                    favoriteListener(wish, isFavoriting)
+                    notifyDataSetChanged()
+                }
+
+            }
+
+        }
     }
 }

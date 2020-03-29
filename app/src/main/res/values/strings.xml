@@ -59,6 +59,8 @@
     <string name="views">+ %1$d Views</string>
     <string name="completed">+ %1$d Completed</string>
     <string name="wish_details">Wish details</string>
+    <string name="remove_wish_title">Remove Wish from My Favorites</string>
+    <string name="remove_wish_message">You already have checked items in this wish , are you sure?</string>
 
 </resources>
 

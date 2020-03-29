@@ -189,12 +189,21 @@ class WishesViewModel @Inject constructor(
                 }, showLoading = false
             )
         else
+        {
+            val doneItems = arrayListOf<String>()
+            for(itemIndex in wish.items!!.values.indices)
+                if(wish.items!!.values.elementAt(itemIndex).done!!)
+                    doneItems.add(wish.itemsId!![itemIndex])
             subscribe(
-                favoritesRepository.deleteFromFavoritesRemotely(wish.wishId!!), Action {
+                favoritesRepository.deleteFromFavoritesRemotely(wish.wishId!!).mergeWith(
+                    wishesRepository.decrementCompleteCountInDoneItems(wish.wishId!!,doneItems))
+                    .mergeWith(wishesRepository.removeUserIdFromTopCompletedItems(doneItems,
+                        wish.wishId!!))
+                , Action {
                     isFavoriteAdded.postValue(false)
                 }, showLoading = false
             )
-    }
+    }}
 
 
     fun deleteSelectedWish() {
@@ -212,6 +221,7 @@ class WishesViewModel @Inject constructor(
     }
 
     fun completeItem(itemId: String, wish: WishAdapterItem, isDone: Boolean) {
+        if (wish.creator?.id == userRepository.getUser()?.id) wish.isCreator = true
         val collectionTobeEdited =
             if (wish.isCreator) MY_LISTS_COLLECTION_PATH else MY_FAVORITES_COLLECTION_PATH
         subscribe(wishesRepository.checkItemDoneInProfile(
@@ -242,7 +252,7 @@ class WishesViewModel @Inject constructor(
                     )
             }
             , Action {
-            })
+            },showLoading = false)
 
     }
 }

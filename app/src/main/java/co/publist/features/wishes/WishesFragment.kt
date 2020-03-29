@@ -94,6 +94,8 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
                 (activity as ProfileActivity).showEditWishDialog(wish)
             }, unFavoriteListener = { wish ->
                 viewModel.modifyFavorite(wish, false)
+            },completeListener = {itemId , wish , isDone ->
+                viewModel.completeItem(itemId,Mapper.mapToWishAdapterItem(wish),isDone)
             })
 
         adapter.startListening()

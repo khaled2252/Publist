@@ -4,6 +4,7 @@ import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
 import co.publist.R
 import co.publist.core.common.data.models.Mapper
@@ -27,7 +28,8 @@ class WishesFirestoreAdapter(
     val wishesType: Int,
     val displayPlaceHolder: (Boolean) -> Unit,
     val unFavoriteListener: (wish: Wish) -> Unit,
-    val detailsListener: (wish: Wish) -> Unit
+    val detailsListener: (wish: Wish) -> Unit,
+    val completeListener: (itemId: String, wish: Wish, isDone: Boolean) -> Unit
 ) :
     FirestoreRecyclerAdapter<Wish, WishesFirestoreAdapter.WishViewHolder>(options) {
     val wishItemsAdapterArrayList = ArrayList<WishItemsAdapter>()
@@ -83,8 +85,23 @@ class WishesFirestoreAdapter(
                 } else {
                     setImageResource(R.drawable.ic_heart_active)
                     setOnClickListener {
-                        //todo confirmation dialog if user has completed item
-                        unFavoriteListener(wish)
+                        if(wish.items?.values?.any {it.done==true}!!)
+                        {
+                            val builder = AlertDialog.Builder(this.context!!)
+
+                            builder.setTitle(context.getString(R.string.remove_wish_title))
+                            builder.setMessage(context.getString(R.string.remove_wish_message))
+                            builder.setPositiveButton(this.context.getString(R.string.yes)) { _, _ ->
+
+                                unFavoriteListener(wish)
+
+                            }
+                            builder.setNegativeButton(this.context.getString(R.string.cancel)) { _, _ ->
+                            }
+                            builder.create().show()
+                        }
+                        else
+                            unFavoriteListener(wish)
                     }
                 }
             }
@@ -116,8 +133,9 @@ class WishesFirestoreAdapter(
                         if (adapterIndex != wishItemsAdapterIndex && wishItemsAdapterArrayList[adapterIndex].isExpanded)
                             wishItemsAdapterArrayList[adapterIndex].collapseList()
                     }
-
-                },completeListener = {_,_ ->})
+                },completeListener = { itemId, isDone ->
+                    completeListener(itemId, wish, isDone)
+                })
             wishItemsAdapterArrayList.add(wishItemsAdapter)
             wishItemsAdapter.setHasStableIds(true)
             binding.wishItemsRecyclerView.adapter = wishItemsAdapter

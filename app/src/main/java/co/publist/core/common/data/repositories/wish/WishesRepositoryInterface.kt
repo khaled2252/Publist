@@ -23,4 +23,6 @@ interface WishesRepositoryInterface {
     fun incrementCompleteCountInWishes(itemId: String , wishId : String, isDone: Boolean): Single<Int>
     fun addUserIdInTopCompletedUsersIdSubCollection(itemId : String , wishId : String,isAdding : Boolean): Completable
     fun addUserIdInTopCompletedUsersIdField(itemId : String, wishId : String,isAdding : Boolean): Completable
+    fun decrementCompleteCountInDoneItems(wishId : String , doneItems: ArrayList<String>) : Completable
+    fun removeUserIdFromTopCompletedItems(doneItems: ArrayList<String>, wishId: String): Completable
 }

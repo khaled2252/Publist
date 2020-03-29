@@ -82,17 +82,15 @@ class WishItemsAdapter(
 
             itemView.completeButton.setOnCheckedChangeListener { _, isChecked ->
                 //Update Ui then remotely
-                if (isChecked)
-                {
+                if (isChecked) {
+                    item.done = true
                     itemView.wishItemTextView.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG
-                    item.completeCount= item.completeCount?.inc()
-                }
-                else
-                {
+                    item.completeCount = item.completeCount?.inc()
+                } else {
+                    item.done = false
                     itemView.wishItemTextView.paintFlags = Paint.ANTI_ALIAS_FLAG
-                    item.completeCount= item.completeCount?.dec()
+                    item.completeCount = item.completeCount?.dec()
                 }
-                itemView.completedThisTextView.text = itemView.context.getString(R.string.completed, item.completeCount)
                 notifyDataSetChanged()
 
                 completeListener(wish.itemsId!![position], isChecked)

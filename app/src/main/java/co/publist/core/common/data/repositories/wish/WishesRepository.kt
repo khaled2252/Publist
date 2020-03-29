@@ -21,6 +21,7 @@ import co.publist.core.utils.Utils.Constants.WISH_ID_FIELD
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.WriteBatch
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageMetadata
 import io.reactivex.Completable
@@ -362,7 +363,10 @@ class WishesRepository @Inject constructor(
                 .document(wishId)
 
             if (isAdding)
-                ref.update("$ITEMS_FIELD.$itemId.$TOP_COMPLETED_USER_IDS_FIELD", FieldValue.arrayUnion(userId))
+                ref.update(
+                    "$ITEMS_FIELD.$itemId.$TOP_COMPLETED_USER_IDS_FIELD",
+                    FieldValue.arrayUnion(userId)
+                )
                     .addOnFailureListener {
                         completableEmitter.onError(it)
                     }
@@ -370,7 +374,10 @@ class WishesRepository @Inject constructor(
                         completableEmitter.onComplete()
                     }
             else
-                ref.update("$ITEMS_FIELD.$itemId.$TOP_COMPLETED_USER_IDS_FIELD", FieldValue.arrayRemove(userId))
+                ref.update(
+                    "$ITEMS_FIELD.$itemId.$TOP_COMPLETED_USER_IDS_FIELD",
+                    FieldValue.arrayRemove(userId)
+                )
                     .addOnFailureListener {
                         completableEmitter.onError(it)
                     }
@@ -379,4 +386,67 @@ class WishesRepository @Inject constructor(
                     }
         }
     }
+
+    override fun decrementCompleteCountInDoneItems(
+        wishId: String,
+        doneItems: ArrayList<String>
+    ): Completable {
+        return Completable.create { completableEmitter ->
+            val batch: WriteBatch = mFirebaseFirestore.batch()
+            val wishRef =
+                mFirebaseFirestore
+                    .collection(WISHES_COLLECTION_PATH)
+                    .document(wishId)
+
+            for (doneItem in doneItems)
+                batch.update(
+                    wishRef,
+                    "$ITEMS_FIELD.$doneItem.$COMPLETE_COUNT_FIELD",
+                    FieldValue.increment(-1)
+                )
+            batch.commit()
+                .addOnFailureListener {
+                    completableEmitter.onError(it)
+                }
+                .addOnSuccessListener {
+                            completableEmitter.onComplete()
+                }
+        }
+    }
+
+    override fun removeUserIdFromTopCompletedItems(
+        doneItems: ArrayList<String>,
+        wishId: String
+    ): Completable {
+        return Completable.create { completableEmitter ->
+            val batch: WriteBatch = mFirebaseFirestore.batch()
+            val wishRef =
+                mFirebaseFirestore
+                    .collection(WISHES_COLLECTION_PATH)
+                    .document(wishId)
+
+            for (doneItem in doneItems)
+                batch.update(
+                    wishRef,
+                    "$ITEMS_FIELD.$doneItem.$TOP_COMPLETED_USER_IDS_FIELD",
+                    FieldValue.arrayRemove(userId)
+                )
+
+            for (doneItem in doneItems)
+                batch.delete(
+                    wishRef
+                        .collection(ITEMS_ID_SUB_COLLECTION_PATH)
+                        .document(doneItem)
+                        .collection(COMPLETED_USERS_IDS_COLLECTION_PATH)
+                        .document(userId!!)
+                )
+
+            batch.commit()
+                .addOnFailureListener {
+                    completableEmitter.onError(it)
+                }
+                .addOnSuccessListener {
+                    completableEmitter.onComplete()
+                }
+        }    }
 }
