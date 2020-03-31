@@ -13,7 +13,7 @@ import co.publist.core.utils.Utils.Constants.LISTS
 import co.publist.core.utils.Utils.Constants.MY_FAVORITES_COLLECTION_PATH
 import co.publist.core.utils.Utils.Constants.MY_LISTS_COLLECTION_PATH
 import co.publist.core.utils.Utils.Constants.PUBLIC
-import co.publist.core.utils.Utils.Constants.TOP_COMPLETED_USERS_MINIMUM_COUNT
+import co.publist.core.utils.Utils.Constants.TOP_USERS_THRESHOLD
 import co.publist.features.categories.data.CategoriesRepositoryInterface
 import co.publist.features.myfavorites.data.MyFavoritesRepositoryInterface
 import com.google.firebase.firestore.Query
@@ -34,6 +34,7 @@ class WishesViewModel @Inject constructor(
     val isFavoriteAdded = MutableLiveData<Boolean>()
     val wishDeletedLiveData = MutableLiveData<Boolean>()
     val editWishLiveData = MutableLiveData<Wish>()
+    val likedItemsLiveData = MutableLiveData<ArrayList<String>>()
     lateinit var selectedWish: Wish
     fun loadData(type: Int) {
         wishesType.postValue(type)
@@ -70,7 +71,15 @@ class WishesViewModel @Inject constructor(
                                                                 userRepository.getUser()?.id!!,
                                                                 doneItemsInMyListsArrayList
                                                             )
-                                                            Single.just(filteredWishes)
+                                                            wishesRepository.getUserLikedItems()
+                                                                .flatMap { likedItemsList ->
+                                                                    filteredWishes =
+                                                                        applyUserLikedItems(
+                                                                            filteredWishes,
+                                                                            likedItemsList
+                                                                        )
+                                                                    Single.just(filteredWishes)
+                                                                }
                                                         }
 
                                                 }
@@ -115,7 +124,14 @@ class WishesViewModel @Inject constructor(
                                             favoritesList,
                                             doneItemsInMyFavoritesArrayList
                                         )
-                                        Single.just(oneElementList)
+                                        wishesRepository.getUserLikedItems()
+                                            .flatMap { likedItemsList ->
+                                                oneElementList = applyUserLikedItems(
+                                                    oneElementList,
+                                                    likedItemsList
+                                                )
+                                                Single.just(oneElementList)
+                                            }
                                     }
 
                             }
@@ -128,6 +144,19 @@ class WishesViewModel @Inject constructor(
 
         }
 
+    }
+
+    private fun applyUserLikedItems(
+        filteredWishes: ArrayList<WishAdapterItem>,
+        likedItemsList: ArrayList<String>
+    ): ArrayList<WishAdapterItem> {
+        val wishes = ArrayList(filteredWishes)
+        for (wish in filteredWishes)
+            for (itemMap in wish.items!!)
+                if (likedItemsList.contains(itemMap.key))
+                    itemMap.value.isLiked = true
+
+        return wishes
     }
 
     private fun filterWishesByCreator(
@@ -188,22 +217,27 @@ class WishesViewModel @Inject constructor(
                     isFavoriteAdded.postValue(true)
                 }, showLoading = false
             )
-        else
-        {
+        else {
             val doneItems = arrayListOf<String>()
-            for(itemIndex in wish.items!!.values.indices)
-                if(wish.items!!.values.elementAt(itemIndex).done!!)
+            for (itemIndex in wish.items!!.values.indices)
+                if (wish.items!!.values.elementAt(itemIndex).done!!)
                     doneItems.add(wish.itemsId!![itemIndex])
             subscribe(
                 favoritesRepository.deleteFromFavoritesRemotely(wish.wishId!!).mergeWith(
-                    wishesRepository.decrementCompleteCountInDoneItems(wish.wishId!!,doneItems))
-                    .mergeWith(wishesRepository.removeUserIdFromTopCompletedItems(doneItems,
-                        wish.wishId!!))
+                    wishesRepository.decrementCompleteCountInDoneItems(wish.wishId!!, doneItems)
+                )
+                    .mergeWith(
+                        wishesRepository.removeUserIdFromTopCompletedItems(
+                            doneItems,
+                            wish.wishId!!
+                        )
+                    )
                 , Action {
                     isFavoriteAdded.postValue(false)
                 }, showLoading = false
             )
-    }}
+        }
+    }
 
 
     fun deleteSelectedWish() {
@@ -230,9 +264,15 @@ class WishesViewModel @Inject constructor(
             collectionTobeEdited,
             isDone
         )
-            .andThen(wishesRepository.incrementCompleteCountInWishes(itemId, wish.wishId!!,isDone))
+            .andThen(
+                wishesRepository.incrementCompleteCountInWishes(
+                    itemId,
+                    wish.wishId!!,
+                    isDone
+                )
+            )
             .flatMapCompletable { completeCount ->
-                if (completeCount < TOP_COMPLETED_USERS_MINIMUM_COUNT)
+                if (completeCount < TOP_USERS_THRESHOLD)
                     wishesRepository.addUserIdInTopCompletedUsersIdSubCollection(
                         itemId,
                         wish.wishId!!,
@@ -252,7 +292,48 @@ class WishesViewModel @Inject constructor(
                     )
             }
             , Action {
-            },showLoading = false)
+            }, showLoading = false
+        )
 
+    }
+
+    fun likeItem(itemId: String, wish: WishAdapterItem, isLiked: Boolean) {
+        subscribe(wishesRepository.addItemToUserViewedItems(itemId,isLiked)
+            .andThen(
+                wishesRepository.incrementViewedCountInWishes(
+                    itemId,
+                    wish.wishId!!,
+                    isLiked
+                )
+            )
+            .flatMapCompletable { likeCount ->
+                if (likeCount < TOP_USERS_THRESHOLD)
+                    wishesRepository.addUserIdInTopViewedUsersIdSubCollection(
+                        itemId,
+                        wish.wishId!!,
+                        isLiked
+                    )
+                        .mergeWith(
+                            wishesRepository.addUserIdInTopViewedUsersIdField(
+                                itemId, wish.wishId!!,
+                                isLiked
+                            )
+                        )
+                else
+                    wishesRepository.addUserIdInTopViewedUsersIdSubCollection(
+                        itemId,
+                        wish.wishId!!,
+                        isLiked
+                    )
+            }
+            , Action {
+            }, showLoading = false
+        )
+    }
+
+    fun getLikedItems() {
+        subscribe(wishesRepository.getUserLikedItems(), Consumer { likedItemsList ->
+            likedItemsLiveData.postValue(likedItemsList)
+        })
     }
 }

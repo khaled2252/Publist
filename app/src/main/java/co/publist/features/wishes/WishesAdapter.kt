@@ -24,7 +24,8 @@ class WishesAdapter(
     val wishesType: Int,
     val favoriteListener: (wish: WishAdapterItem, isFavoriting: Boolean) -> Unit,
     val detailsListener: (wish: WishAdapterItem) -> Unit,
-    val completeListener: (itemId: String, wish: WishAdapterItem, isDone: Boolean) -> Unit
+    val completeListener: (itemId: String, wish: WishAdapterItem, isDone: Boolean) -> Unit,
+    val likeListener: (itemId: String, wish: WishAdapterItem, isLiked: Boolean) -> Unit
 ) :
     RecyclerView.Adapter<WishesAdapter.WishViewHolder>() {
     val wishItemsAdapterArrayList = ArrayList<WishItemsAdapter>()
@@ -116,6 +117,8 @@ class WishesAdapter(
                     if(!wish.isCreator && !wish.isFavorite && isDone)
                         binding.wishActionImageView.favoriteWish(wish,true)
                     completeListener(itemId, wish, isDone)
+                },likeListener = {itemId, isLiked ->
+                    likeListener(itemId,wish,isLiked)
                 })
             wishItemsAdapterArrayList.add(wishItemsAdapter)
             wishItemsAdapter.setHasStableIds(true)

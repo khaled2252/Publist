@@ -9,5 +9,6 @@ data class Item(
     var viewedCount: Int? = 0,
     var topCompletedUsersId: ArrayList<String>? = null,
     var topViewedUsersId: ArrayList<String>? = null,
-    var done : Boolean? = false
+    var done : Boolean? = false,
+    var isLiked : Boolean? = false
 ) : Serializable

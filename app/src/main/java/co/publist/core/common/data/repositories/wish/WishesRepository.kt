@@ -8,14 +8,19 @@ import co.publist.core.utils.Utils.Constants.CATEGORY_ID_FIELD
 import co.publist.core.utils.Utils.Constants.COMPLETED_USERS_IDS_COLLECTION_PATH
 import co.publist.core.utils.Utils.Constants.COMPLETE_COUNT_FIELD
 import co.publist.core.utils.Utils.Constants.DATE_FIELD
+import co.publist.core.utils.Utils.Constants.ID_FIELD
 import co.publist.core.utils.Utils.Constants.IS_DONE_FIELD
 import co.publist.core.utils.Utils.Constants.ITEMS_FIELD
 import co.publist.core.utils.Utils.Constants.ITEMS_ID_SUB_COLLECTION_PATH
+import co.publist.core.utils.Utils.Constants.LIKED_USERS_IDS_COLLECTION_PATH
+import co.publist.core.utils.Utils.Constants.LIKE_COUNT_FIELD
 import co.publist.core.utils.Utils.Constants.MY_FAVORITES_COLLECTION_PATH
 import co.publist.core.utils.Utils.Constants.MY_LISTS_COLLECTION_PATH
 import co.publist.core.utils.Utils.Constants.TOP_COMPLETED_USER_IDS_FIELD
+import co.publist.core.utils.Utils.Constants.TOP_VIEWED_USER_IDS_FIELD
 import co.publist.core.utils.Utils.Constants.USERS_COLLECTION_PATH
 import co.publist.core.utils.Utils.Constants.USER_ID_FIELD
+import co.publist.core.utils.Utils.Constants.USER_VIEWED_ITEMS_COLLECTION_PATH
 import co.publist.core.utils.Utils.Constants.WISHES_COLLECTION_PATH
 import co.publist.core.utils.Utils.Constants.WISH_ID_FIELD
 import com.google.firebase.firestore.FieldValue
@@ -409,7 +414,7 @@ class WishesRepository @Inject constructor(
                     completableEmitter.onError(it)
                 }
                 .addOnSuccessListener {
-                            completableEmitter.onComplete()
+                    completableEmitter.onComplete()
                 }
         }
     }
@@ -448,5 +453,158 @@ class WishesRepository @Inject constructor(
                 .addOnSuccessListener {
                     completableEmitter.onComplete()
                 }
-        }    }
+        }
+    }
+
+    override fun addItemToUserViewedItems(itemId: String, isLiked: Boolean): Completable {
+        return Completable.create { completableEmitter ->
+            val ref = mFirebaseFirestore
+                .collection(USERS_COLLECTION_PATH)
+                .document(userId!!)
+                .collection(USER_VIEWED_ITEMS_COLLECTION_PATH)
+                .document(itemId)
+            if (isLiked)
+                ref
+                    .set(hashMapOf(ID_FIELD to itemId))
+                    .addOnFailureListener {
+                        completableEmitter.onError(it)
+                    }
+                    .addOnSuccessListener {
+                        completableEmitter.onComplete()
+                    }
+            else
+                ref
+                    .delete()
+                    .addOnFailureListener {
+                    completableEmitter.onError(it)
+                }
+                    .addOnSuccessListener {
+                        completableEmitter.onComplete()
+                    }
+        }
+    }
+
+
+    override fun incrementViewedCountInWishes(
+        itemId: String,
+        wishId: String,
+        isLiked: Boolean
+    ): Single<Int> {
+        return Single.create { singleEmitter ->
+            val wishRef =
+                mFirebaseFirestore
+                    .collection(WISHES_COLLECTION_PATH)
+                    .document(wishId)
+            val incrementAmount = if (isLiked) 1 else -1
+            wishRef
+                .update(
+                    "$ITEMS_FIELD.$itemId.$LIKE_COUNT_FIELD",
+                    FieldValue.increment(incrementAmount.toDouble())
+                )
+                .addOnFailureListener {
+                    singleEmitter.onError(it)
+                }
+                .addOnSuccessListener {
+                    wishRef
+                        .get()
+                        .addOnSuccessListener {
+                            singleEmitter.onSuccess(
+                                it.get("$ITEMS_FIELD.$itemId.$LIKE_COUNT_FIELD").toString()
+                                    .toDouble().toInt()
+                            )
+                        }
+                        .addOnFailureListener {
+                            singleEmitter.onError(it)
+                        }
+
+                }
+        }
+    }
+
+    override fun addUserIdInTopViewedUsersIdSubCollection(
+        itemId: String,
+        wishId: String,
+        isAdding: Boolean
+    ): Completable {
+        return Completable.create { completableEmitter ->
+            val ref = mFirebaseFirestore
+                .collection(WISHES_COLLECTION_PATH)
+                .document(wishId)
+                .collection(ITEMS_ID_SUB_COLLECTION_PATH)
+                .document(itemId)
+                .collection(LIKED_USERS_IDS_COLLECTION_PATH)
+
+            if (isAdding)
+                ref.document(userId!!)
+                    .set(hashMapOf(USER_ID_FIELD to userId))
+                    .addOnFailureListener {
+                        completableEmitter.onError(it)
+                    }
+                    .addOnSuccessListener {
+                        completableEmitter.onComplete()
+                    }
+            else
+                ref.document(userId!!)
+                    .delete()
+                    .addOnFailureListener {
+                        completableEmitter.onError(it)
+                    }
+                    .addOnSuccessListener {
+                        completableEmitter.onComplete()
+                    }
+        }
+    }
+
+    override fun addUserIdInTopViewedUsersIdField(
+        itemId: String,
+        wishId: String,
+        isAdding: Boolean
+    ): Completable {
+        return Completable.create { completableEmitter ->
+            val ref = mFirebaseFirestore
+                .collection(WISHES_COLLECTION_PATH)
+                .document(wishId)
+
+            if (isAdding)
+                ref.update(
+                    "$ITEMS_FIELD.$itemId.$TOP_VIEWED_USER_IDS_FIELD",
+                    FieldValue.arrayUnion(userId)
+                )
+                    .addOnFailureListener {
+                        completableEmitter.onError(it)
+                    }
+                    .addOnSuccessListener {
+                        completableEmitter.onComplete()
+                    }
+            else
+                ref.update(
+                    "$ITEMS_FIELD.$itemId.$TOP_VIEWED_USER_IDS_FIELD",
+                    FieldValue.arrayRemove(userId)
+                )
+                    .addOnFailureListener {
+                        completableEmitter.onError(it)
+                    }
+                    .addOnSuccessListener {
+                        completableEmitter.onComplete()
+                    }
+        }
+    }
+
+    override fun getUserLikedItems(): Single<ArrayList<String>> {
+        val viewedItemsArrayList = arrayListOf<String>()
+        return Single.create { singleEmitter ->
+            mFirebaseFirestore.collection(USERS_COLLECTION_PATH)
+                .document(userId!!)
+                .collection(USER_VIEWED_ITEMS_COLLECTION_PATH)
+                .get()
+                .addOnFailureListener {
+                    singleEmitter.onError(it)
+                }.addOnSuccessListener { querySnapshot ->
+                    for (document in querySnapshot.documents)
+                        viewedItemsArrayList.add(document.id)
+                    singleEmitter.onSuccess(viewedItemsArrayList)
+                }
+        }
+    }
+
 }

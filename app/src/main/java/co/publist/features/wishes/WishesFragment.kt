@@ -35,6 +35,7 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
     override fun getBaseViewModelFactory() = viewModelFactory
 
     private var wishesType = -1
+    lateinit var wishesQuery : Query
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -55,11 +56,14 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
 
         })
         viewModel.wishesQueryLiveData.observe(viewLifecycleOwner, Observer { pair ->
-            val query = pair.first
-            val type = pair.second
-            setAdapter(query, type)
+            wishesQuery = pair.first
+            wishesType = pair.second
+            viewModel.getLikedItems()
         })
 
+        viewModel.likedItemsLiveData.observe(viewLifecycleOwner, Observer {likedItemsList ->
+            setAdapter(wishesQuery, wishesType ,likedItemsList)
+        })
         viewModel.wishesListLiveData.observe(viewLifecycleOwner, Observer { list ->
             setAdapter(list)
             refreshLayout.isRefreshing = false
@@ -76,14 +80,14 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
             refreshLayout.isEnabled = false
     }
 
-    private fun setAdapter(query: Query, type: Int) {
+    private fun setAdapter(query: Query, type: Int , likedItemsList : ArrayList<String>) {
         val options: FirestoreRecyclerOptions<Wish> =
             FirestoreRecyclerOptions.Builder<Wish>()
                 .setQuery(query, Wish::class.java)
                 .build()
 
         val adapter =
-            WishesFirestoreAdapter(options, type, displayPlaceHolder = { displayPlaceHolder ->
+            WishesFirestoreAdapter(options, type,likedItemsList, displayPlaceHolder = { displayPlaceHolder ->
                 val view =
                     this.parentFragment?.view?.findViewById<LinearLayout>(R.id.placeHolderView)
                 if (displayPlaceHolder)
@@ -96,6 +100,8 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
                 viewModel.modifyFavorite(wish, false)
             },completeListener = {itemId , wish , isDone ->
                 viewModel.completeItem(itemId,Mapper.mapToWishAdapterItem(wish),isDone)
+            },likeListener = {itemId, wish, isLiked ->
+                viewModel.likeItem(itemId,Mapper.mapToWishAdapterItem(wish),isLiked)
             })
 
         adapter.startListening()
@@ -114,6 +120,8 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
                 viewModel.modifyFavorite(Mapper.mapToWish(wish), isFavoriting)
             },completeListener = {itemId , wish , isDone ->
                 viewModel.completeItem(itemId,wish,isDone)
+            },likeListener = {itemId, wish, isLiked ->
+                viewModel.likeItem(itemId,wish,isLiked)
             })
             wishesRecyclerView.adapter = adapter
         } else {

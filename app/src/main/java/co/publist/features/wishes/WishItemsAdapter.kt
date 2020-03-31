@@ -15,6 +15,7 @@ import co.publist.core.common.data.models.wish.Item
 import co.publist.core.common.data.models.wish.WishAdapterItem
 import co.publist.core.utils.Utils
 import co.publist.core.utils.Utils.Constants.DETAILS
+import co.publist.core.utils.Utils.Constants.FLAME_ICON_PERCENTAGE
 import co.publist.core.utils.Utils.Constants.MAX_VISIBLE_WISH_ITEMS
 import co.publist.core.utils.Utils.Constants.MINIMUM_WISH_ITEMS
 import co.publist.core.utils.Utils.get90DegreesAnimation
@@ -29,7 +30,8 @@ class WishItemsAdapter(
     private val arrowImageView: ImageView,
     private val adapterIndex: Int,
     val expandListener: (adapterIndex: Int) -> Unit,
-    val completeListener: (itemId: String, isDone: Boolean) -> Unit
+    val completeListener: (itemId: String, isDone: Boolean) -> Unit,
+    val likeListener: (itemId: String, isLiked: Boolean) -> Unit
 ) :
     RecyclerView.Adapter<WishItemsAdapter.WishItemViewHolder>() {
     var isExpanded = false
@@ -69,32 +71,64 @@ class WishItemsAdapter(
             item: Item,
             position: Int
         ) {
-
+            //Load pre-existing data
             itemView.wishItemTextView.text = item.name
+            itemView.completedThisTextView.text =
+                seeMoreTextView.context.getString(R.string.completed, item.completeCount)
+            itemView.likeViewsTextView.text =
+                seeMoreTextView.context.getString(R.string.views, item.viewedCount)
+            if (item.viewedCount!! *FLAME_ICON_PERCENTAGE>= item.completeCount!!)
+                itemView.flameImageView.visibility = View.VISIBLE
+            //Todo load top users images
+
+            //Check/complete item logic
             if (item.done!!) {
                 itemView.wishItemTextView.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG
                 itemView.completeButton.isChecked = true
             }
-            itemView.likeViewsTextView.text =
-                seeMoreTextView.context.getString(R.string.views, item.viewedCount)
-            itemView.completedThisTextView.text =
-                seeMoreTextView.context.getString(R.string.completed, item.completeCount)
+            else
+            {
+                itemView.wishItemTextView.paintFlags = Paint.ANTI_ALIAS_FLAG
+                itemView.completeButton.isChecked = false
 
+            }
             itemView.completeButton.setOnCheckedChangeListener { _, isChecked ->
                 //Update Ui then remotely
                 if (isChecked) {
                     item.done = true
-                    itemView.wishItemTextView.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG
                     item.completeCount = item.completeCount?.inc()
                 } else {
                     item.done = false
-                    itemView.wishItemTextView.paintFlags = Paint.ANTI_ALIAS_FLAG
                     item.completeCount = item.completeCount?.dec()
                 }
                 notifyDataSetChanged()
 
                 completeListener(wish.itemsId!![position], isChecked)
             }
+
+            //Like/view item logic
+            if(item.isLiked!!)
+                itemView.likeViewsTextView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_heart_active, 0, 0, 0)
+            else
+                itemView.likeViewsTextView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_heart, 0, 0, 0)
+
+                itemView.likeViewsTextView.setOnClickListener {
+                //Update Ui then remotely
+                if(item.isLiked!!)
+                {
+                    item.isLiked = false
+                    item.viewedCount = item.viewedCount?.dec()
+                }
+                else
+                {
+                    item.isLiked = true
+                    item.viewedCount = item.viewedCount?.inc()
+                }
+                notifyDataSetChanged()
+
+                likeListener(wish.itemsId!![position],item.isLiked!!)
+            }
+
         }
     }
 

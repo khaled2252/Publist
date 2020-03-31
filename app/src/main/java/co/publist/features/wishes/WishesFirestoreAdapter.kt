@@ -26,10 +26,13 @@ import kotlin.collections.ArrayList
 class WishesFirestoreAdapter(
     options: FirestoreRecyclerOptions<Wish>,
     val wishesType: Int,
+    val likedItemsList: ArrayList<String>,
     val displayPlaceHolder: (Boolean) -> Unit,
     val unFavoriteListener: (wish: Wish) -> Unit,
     val detailsListener: (wish: Wish) -> Unit,
-    val completeListener: (itemId: String, wish: Wish, isDone: Boolean) -> Unit
+    val completeListener: (itemId: String, wish: Wish, isDone: Boolean) -> Unit,
+    val likeListener: (itemId: String, wish: Wish, isLiked: Boolean) -> Unit
+
 ) :
     FirestoreRecyclerAdapter<Wish, WishesFirestoreAdapter.WishViewHolder>(options) {
     val wishItemsAdapterArrayList = ArrayList<WishItemsAdapter>()
@@ -119,6 +122,11 @@ class WishesFirestoreAdapter(
             loadProfilePicture(binding.profilePictureImageView, wish.creator?.imagePath)
             binding.userNameTextView.text = wish.creator?.name
 
+            //Apply liked items in this wish
+            for (itemMap in wish.items!!)
+                if (likedItemsList.contains(itemMap.key))
+                    itemMap.value.isLiked = true
+
             //Load wish data
             loadWishImage(binding.wishImageView, wish.wishPhotoURL)
             val wishItemsAdapter = WishItemsAdapter(
@@ -135,6 +143,8 @@ class WishesFirestoreAdapter(
                     }
                 },completeListener = { itemId, isDone ->
                     completeListener(itemId, wish, isDone)
+                },likeListener = {itemId, isLiked ->
+                    likeListener(itemId,wish,isLiked)
                 })
             wishItemsAdapterArrayList.add(wishItemsAdapter)
             wishItemsAdapter.setHasStableIds(true)

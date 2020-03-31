@@ -99,7 +99,7 @@ object Utils {
         const val MAXIMUM_SELECTED_CATEGORIES = 9
         const val MAX_VISIBLE_WISH_ITEMS = 3
         const val MINIMUM_WISH_ITEMS = 3
-        const val TOP_COMPLETED_USERS_MINIMUM_COUNT = 3
+        const val TOP_USERS_THRESHOLD = 10
         const val PLATFORM_GOOGLE = "google"
         const val PLATFORM_FACEBOOK = "facebook"
         const val EMAIL_PERMISSION = "email"
@@ -113,17 +113,22 @@ object Utils {
         const val WISHES_COLLECTION_PATH = "wishes"
         const val ITEMS_ID_SUB_COLLECTION_PATH = "itemsId"
         const val COMPLETED_USERS_IDS_COLLECTION_PATH = "completedUsersId"
+        const val LIKED_USERS_IDS_COLLECTION_PATH = "viewedUsersId"
+        const val USER_VIEWED_ITEMS_COLLECTION_PATH = "viewedItems"
         const val PROFILE_PICTURE_URL_FIELD = "profilePictureUrl"
         const val TOP_COMPLETED_USER_IDS_FIELD = "topCompletedUsersId"
+        const val TOP_VIEWED_USER_IDS_FIELD = "topViewedUsersId"
         const val WISH_ID_FIELD = "wishId"
         const val EMAIL_FIELD = "email"
         const val NAME_FIELD = "name"
         const val DATE_FIELD = "date"
         const val CATEGORY_ID_FIELD = "categoryId"
         const val COMPLETE_COUNT_FIELD = "completeCount"
+        const val LIKE_COUNT_FIELD = "viewedCount"
         const val ITEMS_FIELD = "items"
         const val IS_DONE_FIELD = "done"
         const val USER_ID_FIELD = "userId"
+        const val ID_FIELD = "id"
         const val GALLERY = 1
         const val CAMERA = 2
         const val TEMP_IMAGE = "temp_image"
@@ -136,5 +141,6 @@ object Utils {
         const val EDIT_WISH_INTENT = "editedWish"
         const val COMING_FROM_PROFILE_INTENT = "isComingFromProfile"
         const val WISH_DETAILS_INTENT = "detailsIntent"
+        const val FLAME_ICON_PERCENTAGE = 0.3
     }
 }
