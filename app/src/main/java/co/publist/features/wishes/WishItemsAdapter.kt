@@ -15,10 +15,12 @@ import co.publist.core.common.data.models.wish.Item
 import co.publist.core.common.data.models.wish.WishAdapterItem
 import co.publist.core.utils.Utils
 import co.publist.core.utils.Utils.Constants.DETAILS
-import co.publist.core.utils.Utils.Constants.FLAME_ICON_PERCENTAGE
+import co.publist.core.utils.Utils.Constants.FLAME_ICON_COMPLETED_MINIMUM
+import co.publist.core.utils.Utils.Constants.FLAME_ICON_VIEWED_COUNT_PERCENTAGE
 import co.publist.core.utils.Utils.Constants.MAX_VISIBLE_WISH_ITEMS
 import co.publist.core.utils.Utils.Constants.MINIMUM_WISH_ITEMS
 import co.publist.core.utils.Utils.get90DegreesAnimation
+import co.publist.core.utils.Utils.loadTopUsersPictures
 import co.publist.features.wishdetails.WishDetailsActivity
 import kotlinx.android.synthetic.main.item_wish_item.view.*
 
@@ -77,21 +79,43 @@ class WishItemsAdapter(
                 seeMoreTextView.context.getString(R.string.completed, item.completeCount)
             itemView.likeViewsTextView.text =
                 seeMoreTextView.context.getString(R.string.views, item.viewedCount)
-            if (item.viewedCount!! *FLAME_ICON_PERCENTAGE>= item.completeCount!!)
+            if (item.viewedCount!! * FLAME_ICON_VIEWED_COUNT_PERCENTAGE >= item.completeCount!! && item.completeCount!! > FLAME_ICON_COMPLETED_MINIMUM)
                 itemView.flameImageView.visibility = View.VISIBLE
-            //Todo load top users images
 
             //Check/complete item logic
             if (item.done!!) {
                 itemView.wishItemTextView.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG
                 itemView.completeButton.isChecked = true
-            }
-            else
-            {
+                loadTopUsersPictures(
+                    item.topCompletedUsersId,
+                    arrayListOf(
+                        itemView.userOneImageView,
+                        itemView.userTwoImageView,
+                        itemView.userThreeImageView
+                    )
+                )
+            } else {
                 itemView.wishItemTextView.paintFlags = Paint.ANTI_ALIAS_FLAG
                 itemView.completeButton.isChecked = false
-
+                if (item.viewedCount!! > 0)
+                    loadTopUsersPictures(
+                        item.topViewedUsersId,
+                        arrayListOf(
+                            itemView.userOneImageView,
+                            itemView.userTwoImageView,
+                            itemView.userThreeImageView
+                        )
+                    ) else
+                    loadTopUsersPictures(
+                        item.topCompletedUsersId,
+                        arrayListOf(
+                            itemView.userOneImageView,
+                            itemView.userTwoImageView,
+                            itemView.userThreeImageView
+                        )
+                    )
             }
+
             itemView.completeButton.setOnCheckedChangeListener { _, isChecked ->
                 //Update Ui then remotely
                 if (isChecked) {
@@ -107,26 +131,33 @@ class WishItemsAdapter(
             }
 
             //Like/view item logic
-            if(item.isLiked!!)
-                itemView.likeViewsTextView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_heart_active, 0, 0, 0)
+            if (item.isLiked!!)
+                itemView.likeViewsTextView.setCompoundDrawablesWithIntrinsicBounds(
+                    R.drawable.ic_heart_active,
+                    0,
+                    0,
+                    0
+                )
             else
-                itemView.likeViewsTextView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_heart, 0, 0, 0)
+                itemView.likeViewsTextView.setCompoundDrawablesWithIntrinsicBounds(
+                    R.drawable.ic_heart,
+                    0,
+                    0,
+                    0
+                )
 
-                itemView.likeViewsTextView.setOnClickListener {
+            itemView.likeViewsTextView.setOnClickListener {
                 //Update Ui then remotely
-                if(item.isLiked!!)
-                {
+                if (item.isLiked!!) {
                     item.isLiked = false
                     item.viewedCount = item.viewedCount?.dec()
-                }
-                else
-                {
+                } else {
                     item.isLiked = true
                     item.viewedCount = item.viewedCount?.inc()
                 }
                 notifyDataSetChanged()
 
-                likeListener(wish.itemsId!![position],item.isLiked!!)
+                likeListener(wish.itemsId!![position], item.isLiked!!)
             }
 
         }

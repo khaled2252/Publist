@@ -8,6 +8,7 @@ import co.publist.core.utils.Utils.Constants.CATEGORY_ID_FIELD
 import co.publist.core.utils.Utils.Constants.COMPLETED_USERS_IDS_COLLECTION_PATH
 import co.publist.core.utils.Utils.Constants.COMPLETE_COUNT_FIELD
 import co.publist.core.utils.Utils.Constants.DATE_FIELD
+import co.publist.core.utils.Utils.Constants.FETCH_USER_PICTURE_CLOUD_FUNCTION
 import co.publist.core.utils.Utils.Constants.ID_FIELD
 import co.publist.core.utils.Utils.Constants.IS_DONE_FIELD
 import co.publist.core.utils.Utils.Constants.ITEMS_FIELD
@@ -27,6 +28,7 @@ import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.WriteBatch
+import com.google.firebase.functions.FirebaseFunctions
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageMetadata
 import io.reactivex.Completable
@@ -37,6 +39,7 @@ import javax.inject.Inject
 class WishesRepository @Inject constructor(
     var mFirebaseFirestore: FirebaseFirestore,
     var mFirebaseStorage: FirebaseStorage,
+    var mFirebaseFunctions: FirebaseFunctions,
     var localDataSource: LocalDataSource
 ) : WishesRepositoryInterface {
     private val userId = localDataSource.getSharedPreferences().getUser()?.id
@@ -603,6 +606,24 @@ class WishesRepository @Inject constructor(
                     for (document in querySnapshot.documents)
                         viewedItemsArrayList.add(document.id)
                     singleEmitter.onSuccess(viewedItemsArrayList)
+                }
+        }
+    }
+
+    override fun getUserPictureFromId(userId: String): Single<String> {
+        return Single.create {singleEmitter ->
+            mFirebaseFunctions
+                .getHttpsCallable(FETCH_USER_PICTURE_CLOUD_FUNCTION)
+                .call(hashMapOf("userIds" to arrayListOf(userId)))
+                .continueWith { task ->
+                  val result = task.result?.data as HashMap<*,*>
+                 result
+            }.
+            addOnSuccessListener {
+                    singleEmitter.onSuccess(it.toString())
+            }
+                .addOnFailureListener {
+                    singleEmitter.onError(it)
                 }
         }
     }

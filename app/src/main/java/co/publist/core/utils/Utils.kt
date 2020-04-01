@@ -12,14 +12,20 @@ import android.view.animation.Animation
 import android.view.animation.LinearInterpolator
 import android.view.animation.RotateAnimation
 import android.view.inputmethod.InputMethodManager
+import android.widget.ImageView
 import androidx.core.content.FileProvider
+import co.publist.core.utils.DataBindingAdapters.loadProfilePicture
+import co.publist.core.utils.Utils.Constants.FETCH_USER_PICTURE_CLOUD_FUNCTION
 import co.publist.core.utils.Utils.Constants.GALLERY
 import co.publist.core.utils.Utils.Constants.TEMP_IMAGE
+import co.publist.core.utils.Utils.Constants.USER_IDS_FIELD
 import co.publist.core.utils.Utils.Constants.WISH_IMAGE_FIXED_HEIGHT
 import co.publist.core.utils.Utils.Constants.WISH_IMAGE_FIXED_WIDTH
+import com.google.firebase.functions.FirebaseFunctions
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
 import java.io.File
+import java.util.*
 import kotlin.math.abs
 
 object Utils {
@@ -92,6 +98,26 @@ object Utils {
         anim.fillAfter = true
         return anim
     }
+
+    fun loadTopUsersPictures(
+        topUsersId: ArrayList<String>?,
+        imageViewArrayList: ArrayList<ImageView>
+    ) {
+            FirebaseFunctions.getInstance().getHttpsCallable(FETCH_USER_PICTURE_CLOUD_FUNCTION)
+                .call(hashMapOf(USER_IDS_FIELD to topUsersId))
+                .continueWith { task ->
+                    val result = task.result?.data as HashMap<String, ArrayList<String>>
+                    result
+                }.addOnSuccessListener {result ->
+                    val pictureUrlsArrayList = result.values.elementAt(0)
+                    for(pictureUrlIndex in 0 until pictureUrlsArrayList.size)
+                        loadProfilePicture(imageViewArrayList[pictureUrlIndex],
+                            pictureUrlsArrayList[pictureUrlIndex]
+                        )
+                }
+
+    }
+
     object Constants {
         const val DB_NAME = "PublistDb"
         const val SPLASH_DELAY: Long = 2000
@@ -128,6 +154,7 @@ object Utils {
         const val ITEMS_FIELD = "items"
         const val IS_DONE_FIELD = "done"
         const val USER_ID_FIELD = "userId"
+        const val USER_IDS_FIELD = "userIds"
         const val ID_FIELD = "id"
         const val GALLERY = 1
         const val CAMERA = 2
@@ -141,6 +168,8 @@ object Utils {
         const val EDIT_WISH_INTENT = "editedWish"
         const val COMING_FROM_PROFILE_INTENT = "isComingFromProfile"
         const val WISH_DETAILS_INTENT = "detailsIntent"
-        const val FLAME_ICON_PERCENTAGE = 0.3
+        const val FLAME_ICON_VIEWED_COUNT_PERCENTAGE = 0.3
+        const val FLAME_ICON_COMPLETED_MINIMUM = 50
+        const val FETCH_USER_PICTURE_CLOUD_FUNCTION = "fetchUserPictureUrl"
     }
 }

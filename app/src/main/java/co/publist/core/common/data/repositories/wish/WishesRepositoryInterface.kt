@@ -30,4 +30,5 @@ interface WishesRepositoryInterface {
     fun addUserIdInTopViewedUsersIdSubCollection(itemId: String, wishId: String,isAdding : Boolean): Completable
     fun addUserIdInTopViewedUsersIdField(itemId: String, wishId: String,isAdding : Boolean): Completable
     fun getUserLikedItems(): Single<ArrayList<String>>
+    fun getUserPictureFromId(userId : String) : Single<String>
 }

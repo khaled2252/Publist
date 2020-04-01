@@ -1,118 +1,131 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal">
+<layout>
 
-    <com.google.android.material.checkbox.MaterialCheckBox
-        android:id="@+id/completeButton"
-        style="@android:style/Widget.CompoundButton.RadioButton"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="7dp"
-        android:layout_marginEnd="10dp"
-        android:buttonTint="@color/sunsetOrange" />
+    <data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+        <variable
+            name="imageUrl"
+            type="String" />
+    </data>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/wishItemTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/completeButton"
+            style="@android:style/Widget.CompoundButton.RadioButton"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="7dp"
             android:layout_marginEnd="10dp"
-            android:fontFamily="@font/sfprodisplaysemibold"
-            android:textColor="@color/outerSpace"
-            android:textSize="16sp"
-            app:layout_constrainedWidth="true"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="Check the Landmarks of the city" />
+            android:buttonTint="@color/sunsetOrange" />
 
-        <FrameLayout
-            android:id="@+id/completedUsersLayout"
-            android:layout_width="40dp"
-            android:layout_height="20dp"
-            android:layout_marginTop="16dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/wishItemTextView">
-
-            <ImageView
-                android:id="@+id/userThreeImageView"
-                android:layout_width="19dp"
-                android:layout_height="19dp"
-                android:layout_gravity="start"
-                tools:src="@drawable/ic_guest"/>
-            <ImageView
-                android:id="@+id/userTwoImageView"
-                android:layout_width="19dp"
-                android:layout_height="19dp"
-                android:layout_gravity="center"
-                tools:src="@drawable/ic_guest"
-                />
-            <ImageView
-                android:id="@+id/userOneImageView"
-                android:layout_width="19dp"
-                android:layout_height="19dp"
-                android:layout_gravity="end"
-                tools:src="@drawable/ic_guest"/>
-        </FrameLayout>
-
-
-        <TextView
-            android:id="@+id/completedThisTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="11dp"
-            android:layout_marginTop="16dp"
-            app:layout_constraintStart_toEndOf="@id/completedUsersLayout"
-            app:layout_constraintTop_toBottomOf="@id/wishItemTextView"
-            tools:text="+50 Completed" />
-
-        <TextView
-            android:id="@+id/likeViewsTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:drawableLeft="@drawable/ic_heart"
-            android:drawablePadding="7dp"
-            android:paddingStart="20dp"
-            app:layout_constraintStart_toEndOf="@+id/completedThisTextView"
-            app:layout_constraintTop_toBottomOf="@id/wishItemTextView"
-            tools:text="+500 views" />
-
-        <View
-            android:id="@+id/dashed_line"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="4dp"
-            android:layout_marginTop="13dp"
-            android:background="@drawable/dashed_line"
-            android:layerType="software"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/completedThisTextView" />
-
-        <ImageView
-            android:id="@+id/flameImageView"
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/container_flame"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:visibility="visible" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            android:orientation="vertical">
 
-</LinearLayout>
+            <TextView
+                android:id="@+id/wishItemTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:fontFamily="@font/sfprodisplaysemibold"
+                android:textColor="@color/outerSpace"
+                android:textSize="16sp"
+                app:layout_constrainedWidth="true"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Check the Landmarks of the city" />
 
+            <FrameLayout
+                android:id="@+id/topUsersLayout"
+                android:layout_width="40dp"
+                android:layout_height="20dp"
+                android:layout_marginTop="16dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/wishItemTextView">
+
+                <ImageView
+                    android:id="@+id/userThreeImageView"
+                    android:layout_width="19dp"
+                    android:layout_height="19dp"
+                    android:layout_gravity="start"
+                    app:profilePictureUrl="@{imageUrl}"
+                    tools:src="@drawable/ic_guest" />
+
+                <ImageView
+                    android:id="@+id/userTwoImageView"
+                    android:layout_width="19dp"
+                    android:layout_height="19dp"
+                    android:layout_gravity="center"
+                    app:profilePictureUrl="@{imageUrl}"
+                    tools:src="@drawable/ic_guest" />
+
+                <ImageView
+                    android:id="@+id/userOneImageView"
+                    android:layout_width="19dp"
+                    android:layout_height="19dp"
+                    android:layout_gravity="end"
+                    app:profilePictureUrl="@{imageUrl}"
+                    tools:src="@drawable/ic_guest" />
+            </FrameLayout>
+
+
+            <TextView
+                android:id="@+id/completedThisTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="11dp"
+                android:layout_marginTop="16dp"
+                app:layout_constraintStart_toEndOf="@id/topUsersLayout"
+                app:layout_constraintTop_toBottomOf="@id/wishItemTextView"
+                tools:text="+50 Completed" />
+
+            <TextView
+                android:id="@+id/likeViewsTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:drawableLeft="@drawable/ic_heart"
+                android:drawablePadding="7dp"
+                android:paddingStart="20dp"
+                app:layout_constraintStart_toEndOf="@+id/completedThisTextView"
+                app:layout_constraintTop_toBottomOf="@id/wishItemTextView"
+                tools:text="+500 views" />
+
+            <View
+                android:id="@+id/dashed_line"
+                android:layout_width="match_parent"
+                android:layout_height="4dp"
+                android:layout_marginTop="13dp"
+                android:background="@drawable/dashed_line"
+                android:layerType="software"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/completedThisTextView" />
+
+            <ImageView
+                android:id="@+id/flameImageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/container_flame"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:visibility="visible" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </LinearLayout>
+</layout>
 
 
