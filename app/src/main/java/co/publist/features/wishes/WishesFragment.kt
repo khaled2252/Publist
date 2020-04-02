@@ -102,6 +102,8 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
                 viewModel.completeItem(itemId,Mapper.mapToWishAdapterItem(wish),isDone)
             },likeListener = {itemId, wish, isLiked ->
                 viewModel.likeItem(itemId,Mapper.mapToWishAdapterItem(wish),isLiked)
+            },seenCountListener = {wishId ->
+                viewModel.incrementSeenCount(wishId)
             })
 
         adapter.startListening()
@@ -115,14 +117,17 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
                 if (activity is HomeActivity)
                     (activity as HomeActivity).showEditWishDialog(Mapper.mapToWish(wish))
                 else
-                    (activity as WishDetailsActivity).showEditWishDialog(Mapper.mapToWish(wish))
+                    (activity as WishDetailsActivity).showEditWishDialog()
             }, favoriteListener = { wish, isFavoriting ->
                 viewModel.modifyFavorite(Mapper.mapToWish(wish), isFavoriting)
             },completeListener = {itemId , wish , isDone ->
                 viewModel.completeItem(itemId,wish,isDone)
             },likeListener = {itemId, wish, isLiked ->
                 viewModel.likeItem(itemId,wish,isLiked)
-            })
+            },seenCountListener = {wishId ->
+                viewModel.incrementSeenCount(wishId)
+            }
+            )
             wishesRecyclerView.adapter = adapter
         } else {
             //todo display placeholder

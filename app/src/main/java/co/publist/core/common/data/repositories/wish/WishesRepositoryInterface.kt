@@ -30,5 +30,8 @@ interface WishesRepositoryInterface {
     fun addUserIdInTopViewedUsersIdSubCollection(itemId: String, wishId: String,isAdding : Boolean): Completable
     fun addUserIdInTopViewedUsersIdField(itemId: String, wishId: String,isAdding : Boolean): Completable
     fun getUserLikedItems(): Single<ArrayList<String>>
-    fun getUserPictureFromId(userId : String) : Single<String>
+    fun incrementOrganicSeen(wishId: String) : Completable
+    fun isWishSeen(wishId: String) : Single<Boolean>
+    fun incrementSeenCountRemotely(wishId: String) : Completable
+    fun incrementSeenCountLocally(wishId: String)
 }

@@ -6,5 +6,4 @@ interface LocalDataSource {
 
     fun getSharedPreferences(): PublistSharedPreferencesInterface
     fun getPublistDataBase(): DataBaseInterface
-
 }

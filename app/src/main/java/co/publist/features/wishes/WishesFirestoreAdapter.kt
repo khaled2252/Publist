@@ -31,7 +31,8 @@ class WishesFirestoreAdapter(
     val unFavoriteListener: (wish: Wish) -> Unit,
     val detailsListener: (wish: Wish) -> Unit,
     val completeListener: (itemId: String, wish: Wish, isDone: Boolean) -> Unit,
-    val likeListener: (itemId: String, wish: Wish, isLiked: Boolean) -> Unit
+    val likeListener: (itemId: String, wish: Wish, isLiked: Boolean) -> Unit,
+    val seenCountListener : (wishId : String) -> Unit
 
 ) :
     FirestoreRecyclerAdapter<Wish, WishesFirestoreAdapter.WishViewHolder>(options) {
@@ -61,6 +62,7 @@ class WishesFirestoreAdapter(
     }
 
     override fun onBindViewHolder(holder: WishViewHolder, position: Int, wish: Wish) {
+        seenCountListener(wish.wishId!!)
         holder.bind(wish)
     }
 

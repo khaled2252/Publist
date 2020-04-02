@@ -1,4 +1,4 @@
-package co.publist.core.common.data.local.db
+package co.publist.core.common.data.local.db.publist
 
 import androidx.paging.DataSource
 import androidx.room.Dao

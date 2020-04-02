@@ -17,6 +17,7 @@ import co.publist.core.utils.Utils.Constants.TOP_USERS_THRESHOLD
 import co.publist.features.categories.data.CategoriesRepositoryInterface
 import co.publist.features.myfavorites.data.MyFavoritesRepositoryInterface
 import com.google.firebase.firestore.Query
+import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
@@ -213,7 +214,8 @@ class WishesViewModel @Inject constructor(
     fun modifyFavorite(wish: Wish, isFavoriting: Boolean) {
         if (isFavoriting)
             subscribe(
-                favoritesRepository.addToMyFavoritesRemotely(wish), Action {
+                favoritesRepository.addToMyFavoritesRemotely(wish).mergeWith(wishesRepository.incrementOrganicSeen(wish.wishId!!))
+                , Action {
                     isFavoriteAdded.postValue(true)
                 }, showLoading = false
             )
@@ -221,7 +223,7 @@ class WishesViewModel @Inject constructor(
             val doneItems = arrayListOf<String>()
             for (itemIndex in wish.items!!.values.indices)
                 if (wish.items!!.values.elementAt(itemIndex).done!!)
-                    doneItems.add(wish.itemsId!![itemIndex])
+                    doneItems.add(wish.items!!.keys.elementAt(itemIndex))
             subscribe(
                 favoritesRepository.deleteFromFavoritesRemotely(wish.wishId!!).mergeWith(
                     wishesRepository.decrementCompleteCountInDoneItems(wish.wishId!!, doneItems)
@@ -263,7 +265,7 @@ class WishesViewModel @Inject constructor(
             wish.wishId!!,
             collectionTobeEdited,
             isDone
-        )
+        ).mergeWith(wishesRepository.incrementOrganicSeen(wish.wishId!!))
             .andThen(
                 wishesRepository.incrementCompleteCountInWishes(
                     itemId,
@@ -299,6 +301,7 @@ class WishesViewModel @Inject constructor(
 
     fun likeItem(itemId: String, wish: WishAdapterItem, isLiked: Boolean) {
         subscribe(wishesRepository.addItemToUserViewedItems(itemId,isLiked)
+            .mergeWith(wishesRepository.incrementOrganicSeen(wish.wishId!!))
             .andThen(
                 wishesRepository.incrementViewedCountInWishes(
                     itemId,
@@ -335,5 +338,20 @@ class WishesViewModel @Inject constructor(
         subscribe(wishesRepository.getUserLikedItems(), Consumer { likedItemsList ->
             likedItemsLiveData.postValue(likedItemsList)
         })
+    }
+
+    fun incrementSeenCount(wishId: String) {
+        subscribe(wishesRepository.isWishSeen(wishId).flatMapCompletable {isSeen ->
+            if (!isSeen)
+            {
+                wishesRepository.incrementSeenCountLocally(wishId)
+                wishesRepository.incrementSeenCountRemotely(wishId)
+            }
+            else
+                Completable.complete()
+
+        }, Action {
+
+        },showLoading = false)
     }
 }

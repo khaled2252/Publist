@@ -141,9 +141,11 @@ object Utils {
         const val COMPLETED_USERS_IDS_COLLECTION_PATH = "completedUsersId"
         const val LIKED_USERS_IDS_COLLECTION_PATH = "viewedUsersId"
         const val USER_VIEWED_ITEMS_COLLECTION_PATH = "viewedItems"
+        const val ORGANIC_SEEN_USER_IDS_COLLECTION_PATH = "organicSeenUserIds"
         const val PROFILE_PICTURE_URL_FIELD = "profilePictureUrl"
         const val TOP_COMPLETED_USER_IDS_FIELD = "topCompletedUsersId"
         const val TOP_VIEWED_USER_IDS_FIELD = "topViewedUsersId"
+        const val SEEN_DATE_FIELD = "seenData"
         const val WISH_ID_FIELD = "wishId"
         const val EMAIL_FIELD = "email"
         const val NAME_FIELD = "name"
@@ -155,6 +157,8 @@ object Utils {
         const val IS_DONE_FIELD = "done"
         const val USER_ID_FIELD = "userId"
         const val USER_IDS_FIELD = "userIds"
+        const val USER_DOC_ID_FIELD = "userDocId"
+        const val WISH_DOC_ID_FIELD = "wishDocId"
         const val ID_FIELD = "id"
         const val GALLERY = 1
         const val CAMERA = 2
@@ -171,5 +175,7 @@ object Utils {
         const val FLAME_ICON_VIEWED_COUNT_PERCENTAGE = 0.3
         const val FLAME_ICON_COMPLETED_MINIMUM = 50
         const val FETCH_USER_PICTURE_CLOUD_FUNCTION = "fetchUserPictureUrl"
+        const val SEEN_FOR_WISH_CLOUD_FUNCTION = "seenForWish"
+        const val ORGANIC_SEEN_FOR_WISH_CLOUD_FUNCTION = "organicSeenForWish"
     }
 }

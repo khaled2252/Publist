@@ -8,7 +8,6 @@ import co.publist.core.utils.Utils.Constants.CATEGORY_ID_FIELD
 import co.publist.core.utils.Utils.Constants.COMPLETED_USERS_IDS_COLLECTION_PATH
 import co.publist.core.utils.Utils.Constants.COMPLETE_COUNT_FIELD
 import co.publist.core.utils.Utils.Constants.DATE_FIELD
-import co.publist.core.utils.Utils.Constants.FETCH_USER_PICTURE_CLOUD_FUNCTION
 import co.publist.core.utils.Utils.Constants.ID_FIELD
 import co.publist.core.utils.Utils.Constants.IS_DONE_FIELD
 import co.publist.core.utils.Utils.Constants.ITEMS_FIELD
@@ -17,12 +16,16 @@ import co.publist.core.utils.Utils.Constants.LIKED_USERS_IDS_COLLECTION_PATH
 import co.publist.core.utils.Utils.Constants.LIKE_COUNT_FIELD
 import co.publist.core.utils.Utils.Constants.MY_FAVORITES_COLLECTION_PATH
 import co.publist.core.utils.Utils.Constants.MY_LISTS_COLLECTION_PATH
+import co.publist.core.utils.Utils.Constants.ORGANIC_SEEN_FOR_WISH_CLOUD_FUNCTION
+import co.publist.core.utils.Utils.Constants.SEEN_FOR_WISH_CLOUD_FUNCTION
 import co.publist.core.utils.Utils.Constants.TOP_COMPLETED_USER_IDS_FIELD
 import co.publist.core.utils.Utils.Constants.TOP_VIEWED_USER_IDS_FIELD
 import co.publist.core.utils.Utils.Constants.USERS_COLLECTION_PATH
+import co.publist.core.utils.Utils.Constants.USER_DOC_ID_FIELD
 import co.publist.core.utils.Utils.Constants.USER_ID_FIELD
 import co.publist.core.utils.Utils.Constants.USER_VIEWED_ITEMS_COLLECTION_PATH
 import co.publist.core.utils.Utils.Constants.WISHES_COLLECTION_PATH
+import co.publist.core.utils.Utils.Constants.WISH_DOC_ID_FIELD
 import co.publist.core.utils.Utils.Constants.WISH_ID_FIELD
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
@@ -33,6 +36,7 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageMetadata
 import io.reactivex.Completable
 import io.reactivex.Single
+import io.reactivex.schedulers.Schedulers
 import java.util.*
 import javax.inject.Inject
 
@@ -479,8 +483,8 @@ class WishesRepository @Inject constructor(
                 ref
                     .delete()
                     .addOnFailureListener {
-                    completableEmitter.onError(it)
-                }
+                        completableEmitter.onError(it)
+                    }
                     .addOnSuccessListener {
                         completableEmitter.onComplete()
                     }
@@ -610,22 +614,39 @@ class WishesRepository @Inject constructor(
         }
     }
 
-    override fun getUserPictureFromId(userId: String): Single<String> {
-        return Single.create {singleEmitter ->
-            mFirebaseFunctions
-                .getHttpsCallable(FETCH_USER_PICTURE_CLOUD_FUNCTION)
-                .call(hashMapOf("userIds" to arrayListOf(userId)))
-                .continueWith { task ->
-                  val result = task.result?.data as HashMap<*,*>
-                 result
-            }.
-            addOnSuccessListener {
-                    singleEmitter.onSuccess(it.toString())
-            }
+    override fun incrementOrganicSeen(wishId: String): Completable {
+        return Completable.create { completableEmitter ->
+            mFirebaseFunctions.getHttpsCallable(ORGANIC_SEEN_FOR_WISH_CLOUD_FUNCTION)
+                .call(hashMapOf(USER_DOC_ID_FIELD to userId, WISH_DOC_ID_FIELD to wishId))
+                .addOnSuccessListener {
+                    completableEmitter.onComplete()
+                }
                 .addOnFailureListener {
-                    singleEmitter.onError(it)
+                    completableEmitter.onError(it)
                 }
         }
+    }
+
+    override fun isWishSeen(wishId: String): Single<Boolean> {
+        return localDataSource.getPublistDataBase().isWishSeen(wishId)
+            .subscribeOn(Schedulers.io())
+    }
+
+
+    override fun incrementSeenCountRemotely(wishId: String): Completable {
+        return Completable.create { completableEmitter ->
+            mFirebaseFunctions.getHttpsCallable(SEEN_FOR_WISH_CLOUD_FUNCTION)
+                .call(hashMapOf(WISH_DOC_ID_FIELD to wishId))
+                .addOnSuccessListener {
+                    completableEmitter.onComplete()
+                }
+                .addOnFailureListener {
+                    completableEmitter.onError(it)
+                }
+        }    }
+
+    override fun incrementSeenCountLocally(wishId: String) {
+        localDataSource.getPublistDataBase().insertSeenWish(wishId)
     }
 
 }

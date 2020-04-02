@@ -75,7 +75,10 @@ class WishDetailsActivity : BaseActivity<WishDetailsViewModel>() {
         wishesFragment =
             supportFragmentManager.findFragmentById(R.id.wishesFragment) as WishesFragment
         sheetBehavior = BottomSheetBehavior.from(editWishBottomSheet)
-        wishesFragment.viewModel.selectedWish = intent.getParcelableExtra(WISH_DETAILS_INTENT)!!
+
+        val selectedWish =  intent.getParcelableExtra<Wish>(WISH_DETAILS_INTENT)!!
+        wishesFragment.viewModel.selectedWish = selectedWish
+        viewModel.incrementOrganicSeen(selectedWish.wishId!!)
     }
 
     private fun setListeners() {
@@ -130,8 +133,7 @@ class WishDetailsActivity : BaseActivity<WishDetailsViewModel>() {
         deleteDialog.show()
     }
 
-    fun showEditWishDialog(wish: Wish) {
-        wishesFragment.viewModel.selectedWish = wish
+    fun showEditWishDialog() {
         sheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
     }
 

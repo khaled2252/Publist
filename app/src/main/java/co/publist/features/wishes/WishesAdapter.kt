@@ -25,7 +25,8 @@ class WishesAdapter(
     val favoriteListener: (wish: WishAdapterItem, isFavoriting: Boolean) -> Unit,
     val detailsListener: (wish: WishAdapterItem) -> Unit,
     val completeListener: (itemId: String, wish: WishAdapterItem, isDone: Boolean) -> Unit,
-    val likeListener: (itemId: String, wish: WishAdapterItem, isLiked: Boolean) -> Unit
+    val likeListener: (itemId: String, wish: WishAdapterItem, isLiked: Boolean) -> Unit,
+    val seenCountListener : (wishId : String) -> Unit
 ) :
     RecyclerView.Adapter<WishesAdapter.WishViewHolder>() {
     val wishItemsAdapterArrayList = ArrayList<WishItemsAdapter>()
@@ -37,7 +38,9 @@ class WishesAdapter(
     }
 
     override fun onBindViewHolder(holder: WishViewHolder, position: Int) {
-        holder.bind(list[position])
+        val wish = list[position]
+        seenCountListener(wish.wishId!!)
+        holder.bind(wish)
     }
 
     override fun getItemCount(): Int {
