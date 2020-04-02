@@ -64,26 +64,18 @@ class LoginViewModel @Inject constructor(
                     newDocumentId,
                     registeringUser.uId!!,
                     registeringUser.platform!!
-                )
-                    .toSingle {
-                        Pair(newDocumentId, true)
-                    }
+                ).andThen(Single.just(Pair(newDocumentId, true)))
             }
-
         } else {
             return loginRepository.addUidInUserAccounts(
                 documentId!!,
                 registeringUser.uId!!,
                 registeringUser.platform!!
             )
-                .to {
-                    loginRepository.updateProfilePictureUrl(
-                        documentId,
-                        registeringUser.profilePictureUrl!!
-                    ).toSingle {
-                        Pair(documentId, false)
-                    }
-                }
+                .mergeWith(loginRepository.updateProfilePictureUrl(
+                    documentId,
+                    registeringUser.profilePictureUrl!!
+                )).andThen(Single.just(Pair(documentId, false)))
         }
     }
 

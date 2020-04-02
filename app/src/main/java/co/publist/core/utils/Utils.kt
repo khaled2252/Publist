@@ -145,6 +145,7 @@ object Utils {
         const val PROFILE_PICTURE_URL_FIELD = "profilePictureUrl"
         const val TOP_COMPLETED_USER_IDS_FIELD = "topCompletedUsersId"
         const val TOP_VIEWED_USER_IDS_FIELD = "topViewedUsersId"
+        const val CREATOR_FIELD = "creator"
         const val SEEN_DATE_FIELD = "seenData"
         const val WISH_ID_FIELD = "wishId"
         const val EMAIL_FIELD = "email"
@@ -160,6 +161,7 @@ object Utils {
         const val USER_DOC_ID_FIELD = "userDocId"
         const val WISH_DOC_ID_FIELD = "wishDocId"
         const val ID_FIELD = "id"
+        const val IMAGE_PATH_FIELD = "imagePath"
         const val GALLERY = 1
         const val CAMERA = 2
         const val TEMP_IMAGE = "temp_image"

@@ -2,12 +2,18 @@ package co.publist.features.login.data
 
 import android.os.Bundle
 import co.publist.core.common.data.local.LocalDataSource
+import co.publist.core.common.data.models.Mapper
 import co.publist.core.common.data.models.User
+import co.publist.core.utils.Utils.Constants.CREATOR_FIELD
 import co.publist.core.utils.Utils.Constants.EMAIL_FIELD
+import co.publist.core.utils.Utils.Constants.ID_FIELD
+import co.publist.core.utils.Utils.Constants.IMAGE_PATH_FIELD
+import co.publist.core.utils.Utils.Constants.MY_LISTS_COLLECTION_PATH
 import co.publist.core.utils.Utils.Constants.NAME_FIELD
 import co.publist.core.utils.Utils.Constants.PROFILE_PICTURE_URL_FIELD
 import co.publist.core.utils.Utils.Constants.USERS_COLLECTION_PATH
 import co.publist.core.utils.Utils.Constants.USER_ACCOUNTS_COLLECTION_PATH
+import co.publist.core.utils.Utils.Constants.WISHES_COLLECTION_PATH
 import com.facebook.AccessToken
 import com.facebook.GraphRequest
 import com.google.firebase.auth.FacebookAuthProvider
@@ -26,6 +32,7 @@ class LoginRepository @Inject constructor(
     private val localDataSource: LocalDataSource
 
 ) : LoginRepositoryInterface {
+    val userId = localDataSource.getSharedPreferences().getUser()?.id
     override fun fetchUserDocId(email: String): Single<String?> {
         return Single.create { singleEmitter ->
             mFirebaseFirestore.let {
@@ -47,22 +54,58 @@ class LoginRepository @Inject constructor(
     }
 
     override fun updateProfilePictureUrl(
-        documentId: String,
+        userDocumentId: String,
         profilePictureUrl: String
     ): Completable {
         return Completable.create { completableEmitter ->
-            mFirebaseFirestore.let {
-                val users: CollectionReference = it.collection(USERS_COLLECTION_PATH)
-                val data = hashMapOf(PROFILE_PICTURE_URL_FIELD to profilePictureUrl)
-                users.document(documentId).set(data, SetOptions.merge())
-                    .addOnSuccessListener {
-                        completableEmitter.onComplete()
-                    }
-                    .addOnFailureListener { exception ->
-                        completableEmitter.onError(exception)
-                    }
-            }
+            //Update profilePicture in user
+            mFirebaseFirestore
+            val usersRef = mFirebaseFirestore.collection(USERS_COLLECTION_PATH)
+            val data = hashMapOf(PROFILE_PICTURE_URL_FIELD to profilePictureUrl)
+            usersRef.document(userDocumentId).set(data, SetOptions.merge())
+                .addOnSuccessListener {
+                    //Get users wishes
+                    val wishRef = mFirebaseFirestore.collection(WISHES_COLLECTION_PATH)
+                    wishRef
+                        .whereEqualTo("$CREATOR_FIELD.$ID_FIELD", userDocumentId)
+                        .get()
+                        .addOnFailureListener {
+                            completableEmitter.onError(it)
+                        }
+                        .addOnSuccessListener { querySnapshot ->
+                            //Update profilePicture in all user's wishes
+                            val wishesList = Mapper.mapToWishAdapterItemArrayList(querySnapshot)
+                            val wishIdsList = wishesList.map { it.wishId }
+                            val batch = mFirebaseFirestore.batch()
+                            for (wishId in wishIdsList) {
+                                //In wishes
+                                batch.update(
+                                    wishRef.document(wishId!!),
+                                    "$CREATOR_FIELD.$IMAGE_PATH_FIELD",
+                                    profilePictureUrl
+                                )
+                                //in myLists
+                                batch.update(
+                                    usersRef.document(userDocumentId).collection(
+                                        MY_LISTS_COLLECTION_PATH
+                                    ).document(wishId),
+                                    "$CREATOR_FIELD.$IMAGE_PATH_FIELD",
+                                    profilePictureUrl
+                                )
+                            }
+                            batch.commit().addOnSuccessListener {
+                                completableEmitter.onComplete()
+                            }
+                                .addOnFailureListener {
+                                    completableEmitter.onError(it)
+                                }
+                        }
+                }
+                .addOnFailureListener { exception ->
+                    completableEmitter.onError(exception)
+                }
         }
+
     }
 
     override fun addUidInUserAccounts(docId: String, uId: String, platform: String): Completable {
