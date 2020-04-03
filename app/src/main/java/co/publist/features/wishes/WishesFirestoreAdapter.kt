@@ -27,6 +27,7 @@ class WishesFirestoreAdapter(
     options: FirestoreRecyclerOptions<Wish>,
     val wishesType: Int,
     val likedItemsList: ArrayList<String>,
+    val userId: String,
     val displayPlaceHolder: (Boolean) -> Unit,
     val unFavoriteListener: (wish: Wish) -> Unit,
     val detailsListener: (wish: Wish) -> Unit,
@@ -134,6 +135,7 @@ class WishesFirestoreAdapter(
             val wishItemsAdapter = WishItemsAdapter(
                 Mapper.mapToWishAdapterItem(wish),
                 LISTS,
+                userId,
                 binding.seeMoreTextView,
                 binding.arrowImageView,
                 wishItemsAdapterArrayList.size

@@ -19,6 +19,7 @@ import co.publist.core.utils.Utils.Constants.FLAME_ICON_COMPLETED_MINIMUM
 import co.publist.core.utils.Utils.Constants.FLAME_ICON_VIEWED_COUNT_PERCENTAGE
 import co.publist.core.utils.Utils.Constants.MAX_VISIBLE_WISH_ITEMS
 import co.publist.core.utils.Utils.Constants.MINIMUM_WISH_ITEMS
+import co.publist.core.utils.Utils.Constants.TOP_USERS_THRESHOLD
 import co.publist.core.utils.Utils.get90DegreesAnimation
 import co.publist.core.utils.Utils.loadTopUsersPictures
 import co.publist.features.wishdetails.WishDetailsActivity
@@ -28,6 +29,7 @@ import kotlinx.android.synthetic.main.item_wish_item.view.*
 class WishItemsAdapter(
     private val wish: WishAdapterItem,
     private val wishesType: Int,
+    private val userId: String,
     private val seeMoreTextView: TextView,
     private val arrowImageView: ImageView,
     private val adapterIndex: Int,
@@ -74,6 +76,7 @@ class WishItemsAdapter(
             position: Int
         ) {
             //Load pre-existing data
+            loadTopUsersPictures(item)
             itemView.wishItemTextView.text = item.name
             itemView.completedThisTextView.text =
                 seeMoreTextView.context.getString(R.string.completed, item.completeCount)
@@ -82,55 +85,16 @@ class WishItemsAdapter(
             if (item.viewedCount!! * FLAME_ICON_VIEWED_COUNT_PERCENTAGE >= item.completeCount!! && item.completeCount!! > FLAME_ICON_COMPLETED_MINIMUM)
                 itemView.flameImageView.visibility = View.VISIBLE
 
-            //Check/complete item logic
+                //Check/complete item
             if (item.done!!) {
                 itemView.wishItemTextView.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG
                 itemView.completeButton.isChecked = true
-                loadTopUsersPictures(
-                    item.topCompletedUsersId,
-                    arrayListOf(
-                        itemView.userOneImageView,
-                        itemView.userTwoImageView,
-                        itemView.userThreeImageView
-                    )
-                )
             } else {
                 itemView.wishItemTextView.paintFlags = Paint.ANTI_ALIAS_FLAG
                 itemView.completeButton.isChecked = false
-                if (item.viewedCount!! > 0)
-                    loadTopUsersPictures(
-                        item.topViewedUsersId,
-                        arrayListOf(
-                            itemView.userOneImageView,
-                            itemView.userTwoImageView,
-                            itemView.userThreeImageView
-                        )
-                    ) else
-                    loadTopUsersPictures(
-                        item.topCompletedUsersId,
-                        arrayListOf(
-                            itemView.userOneImageView,
-                            itemView.userTwoImageView,
-                            itemView.userThreeImageView
-                        )
-                    )
             }
 
-            itemView.completeButton.setOnCheckedChangeListener { _, isChecked ->
-                //Update Ui then remotely
-                if (isChecked) {
-                    item.done = true
-                    item.completeCount = item.completeCount?.inc()
-                } else {
-                    item.done = false
-                    item.completeCount = item.completeCount?.dec()
-                }
-                notifyDataSetChanged()
-
-                completeListener(wish.itemsId!![position], isChecked)
-            }
-
-            //Like/view item logic
+                //Like/view item
             if (item.isLiked!!)
                 itemView.likeViewsTextView.setCompoundDrawablesWithIntrinsicBounds(
                     R.drawable.ic_heart_active,
@@ -146,16 +110,37 @@ class WishItemsAdapter(
                     0
                 )
 
+            //Listeners for actions
+            itemView.completeButton.setOnClickListener {
+                //Update Ui then remotely
+                if (!item.done!!) {//Opposite of previous state
+                    itemView.completeButton.isChecked = true
+                    item.done = true
+                    item.completeCount = item.completeCount?.inc()
+                    updateTopCompletedUsersPictures(item,true)
+                } else {
+                    itemView.completeButton.isChecked = false
+                    item.done = false
+                    item.completeCount = item.completeCount?.dec()
+                    updateTopCompletedUsersPictures(item,false)
+                }
+                notifyItemChanged(position)
+
+                completeListener(wish.itemsId!![position], item.done!!)
+            }
+
             itemView.likeViewsTextView.setOnClickListener {
                 //Update Ui then remotely
-                if (item.isLiked!!) {
-                    item.isLiked = false
-                    item.viewedCount = item.viewedCount?.dec()
-                } else {
+                if (!item.isLiked!!) {
                     item.isLiked = true
                     item.viewedCount = item.viewedCount?.inc()
+                    updateTopLikedUsersPictures(item,true)
+                } else {
+                    item.isLiked = false
+                    item.viewedCount = item.viewedCount?.dec()
+                    updateTopLikedUsersPictures(item,false)
                 }
-                notifyDataSetChanged()
+                notifyItemChanged(position)
 
                 likeListener(wish.itemsId!![position], item.isLiked!!)
             }
@@ -204,4 +189,64 @@ class WishItemsAdapter(
             extraWishItemsNumber
         )
     }
+
+    private fun WishItemViewHolder.loadTopUsersPictures(item: Item) {
+        when {
+            item.done!! -> loadTopUsersPictures(
+                item.topCompletedUsersId,
+                arrayListOf(
+                    itemView.userOneImageView,
+                    itemView.userTwoImageView,
+                    itemView.userThreeImageView
+                )
+            )
+
+            item.viewedCount!! > 0 -> loadTopUsersPictures(
+                item.topViewedUsersId,
+                arrayListOf(
+                    itemView.userOneImageView,
+                    itemView.userTwoImageView,
+                    itemView.userThreeImageView
+                )
+            )
+
+            else -> loadTopUsersPictures(
+                item.topCompletedUsersId,
+                arrayListOf(
+                    itemView.userOneImageView,
+                    itemView.userTwoImageView,
+                    itemView.userThreeImageView
+                )
+            )
+        }
+    }
+
+    private fun WishItemViewHolder.updateTopCompletedUsersPictures(
+        item: Item,
+    isAdding : Boolean
+    ) {
+        if (item.completeCount!! < TOP_USERS_THRESHOLD) {
+            if(isAdding)
+            item.topCompletedUsersId?.add(userId)
+            else
+                item.topCompletedUsersId?.remove(userId)
+
+            loadTopUsersPictures(item)
+        }
+    }
+
+    private fun WishItemViewHolder.updateTopLikedUsersPictures(
+        item: Item,
+        isAdding : Boolean
+    ) {
+        if (item.completeCount!! < TOP_USERS_THRESHOLD) {
+            if(isAdding)
+                item.topViewedUsersId?.add(userId)
+            else
+                item.topViewedUsersId?.remove(userId)
+
+            loadTopUsersPictures(item)
+        }
+    }
+
 }

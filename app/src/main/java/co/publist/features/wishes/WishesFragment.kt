@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.SimpleItemAnimator
 import co.publist.R
 import co.publist.core.common.data.models.Mapper
 import co.publist.core.common.data.models.wish.Wish
@@ -35,7 +36,7 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
     override fun getBaseViewModelFactory() = viewModelFactory
 
     private var wishesType = -1
-    lateinit var wishesQuery : Query
+    private lateinit var wishesQuery : Query
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -55,6 +56,7 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
             setListeners()
 
         })
+
         viewModel.wishesQueryLiveData.observe(viewLifecycleOwner, Observer { pair ->
             wishesQuery = pair.first
             wishesType = pair.second
@@ -64,6 +66,7 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
         viewModel.likedItemsLiveData.observe(viewLifecycleOwner, Observer {likedItemsList ->
             setAdapter(wishesQuery, wishesType ,likedItemsList)
         })
+
         viewModel.wishesListLiveData.observe(viewLifecycleOwner, Observer { list ->
             setAdapter(list)
             refreshLayout.isRefreshing = false
@@ -87,7 +90,7 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
                 .build()
 
         val adapter =
-            WishesFirestoreAdapter(options, type,likedItemsList, displayPlaceHolder = { displayPlaceHolder ->
+            WishesFirestoreAdapter(options, type,likedItemsList,userId = viewModel.userId!!, displayPlaceHolder = { displayPlaceHolder ->
                 val view =
                     this.parentFragment?.view?.findViewById<LinearLayout>(R.id.placeHolderView)
                 if (displayPlaceHolder)
@@ -113,7 +116,7 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
     private fun setAdapter(list: ArrayList<WishAdapterItem>) {
         refreshLayout.isRefreshing = false
         if (list.isNotEmpty()) {
-            val adapter = WishesAdapter(list, wishesType = wishesType, detailsListener = { wish ->
+            val wishesAdapter = WishesAdapter(list, wishesType = wishesType,userId = viewModel.userId!!, detailsListener = { wish ->
                 if (activity is HomeActivity)
                     (activity as HomeActivity).showEditWishDialog(Mapper.mapToWish(wish))
                 else
@@ -128,7 +131,8 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
                 viewModel.incrementSeenCount(wishId)
             }
             )
-            wishesRecyclerView.adapter = adapter
+            (wishesRecyclerView.itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false //To disable animation when favoriting
+            wishesRecyclerView.adapter = wishesAdapter
         } else {
             //todo display placeholder
         }

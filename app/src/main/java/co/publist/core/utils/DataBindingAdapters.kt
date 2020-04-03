@@ -5,6 +5,7 @@ import android.widget.ImageView
 import androidx.databinding.BindingAdapter
 import co.publist.R
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.squareup.picasso.Picasso
 
@@ -15,6 +16,7 @@ object DataBindingAdapters {
     fun loadProfilePicture(view: ImageView, imageUrl: String?) {
         Glide.with(view.context.applicationContext)
             .load(imageUrl)
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
             .placeholder(R.drawable.ic_guest)
             .apply(RequestOptions.circleCropTransform())
             .into(view)

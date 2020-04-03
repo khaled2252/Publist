@@ -22,6 +22,7 @@ import kotlin.collections.ArrayList
 class WishesAdapter(
     val list: ArrayList<WishAdapterItem>,
     val wishesType: Int,
+    val userId: String,
     val favoriteListener: (wish: WishAdapterItem, isFavoriting: Boolean) -> Unit,
     val detailsListener: (wish: WishAdapterItem) -> Unit,
     val completeListener: (itemId: String, wish: WishAdapterItem, isDone: Boolean) -> Unit,
@@ -40,7 +41,7 @@ class WishesAdapter(
     override fun onBindViewHolder(holder: WishViewHolder, position: Int) {
         val wish = list[position]
         seenCountListener(wish.wishId!!)
-        holder.bind(wish)
+        holder.bind(wish,position)
     }
 
     override fun getItemCount(): Int {
@@ -50,7 +51,8 @@ class WishesAdapter(
     inner class WishViewHolder(private val binding: ItemWishBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(
-            wish: WishAdapterItem
+            wish: WishAdapterItem,
+            position: Int
         ) {
             if (wishesType == DETAILS)
                 binding.seeMoreLayout.visibility = View.GONE
@@ -71,15 +73,13 @@ class WishesAdapter(
                 }
             else
                 binding.wishActionImageView.apply {
-                    if (wish.isFavorite) {
+                    if (wish.isFavorite)
                         setImageResource(R.drawable.ic_heart_active)
-                        setOnClickListener {
-                            favoriteWish(wish , false)
-                        }
-                    } else {
-                        setOnClickListener {
-                            favoriteWish(wish , true)
-                        }
+                     else
+                        setImageResource(R.drawable.ic_heart)
+
+                    setOnClickListener {
+                        favoriteWish(wish ,position,isFavoriting = !wish.isFavorite) //Taking the opposite of current state
                     }
                 }
 
@@ -104,6 +104,7 @@ class WishesAdapter(
             val wishItemsAdapter = WishItemsAdapter(
                 wish,
                 wishesType,
+                userId,
                 binding.seeMoreTextView,
                 binding.arrowImageView,
                 wishItemsAdapterArrayList.size
@@ -118,23 +119,24 @@ class WishesAdapter(
 
                     //completed item's wish is added to favorites according to business
                     if(!wish.isCreator && !wish.isFavorite && isDone)
-                        binding.wishActionImageView.favoriteWish(wish,true)
+                        binding.wishActionImageView.favoriteWish(wish ,position, true)
                     completeListener(itemId, wish, isDone)
                 },likeListener = {itemId, isLiked ->
                     likeListener(itemId,wish,isLiked)
                 })
             wishItemsAdapterArrayList.add(wishItemsAdapter)
-            wishItemsAdapter.setHasStableIds(true)
             binding.wishItemsRecyclerView.adapter = wishItemsAdapter
         }
 
-        private fun ImageView.favoriteWish(wish: WishAdapterItem , isFavoriting: Boolean) {
-            //Update Ui then remotely
+        private fun ImageView.favoriteWish(wish: WishAdapterItem ,position: Int, isFavoriting: Boolean) {
+
             if (isFavoriting)
-            {setImageResource(R.drawable.ic_heart_active)
+            {
+                //Update Ui
+                setImageResource(R.drawable.ic_heart_active)
                 wish.isFavorite = isFavoriting
+                //Update remotely
                 favoriteListener(wish, isFavoriting)
-                notifyDataSetChanged()
                 }
             else {
                 if(wish.items?.values?.any {it.done==true}!!)
@@ -149,10 +151,15 @@ class WishesAdapter(
                         favoriteListener(wish, isFavoriting)
                         for (item in wish.items!!.values)
                         {
-                            item.done = false
-                            item.completeCount = 0
+                            if(item.done!!)
+                            {
+                                item.done = false
+                                item.completeCount = item.completeCount?.dec()
+                                item.topCompletedUsersId?.remove(userId)
+                            }
+                            //Todo mimic deleting use interactions without reloading
                         }
-                        notifyDataSetChanged()
+                        notifyItemChanged(position)
                     }
                     builder.setNegativeButton(this.context.getString(R.string.cancel)) { _, _ ->
                     }
@@ -163,7 +170,6 @@ class WishesAdapter(
                     setImageResource(R.drawable.ic_heart)
                     wish.isFavorite = isFavoriting
                     favoriteListener(wish, isFavoriting)
-                    notifyDataSetChanged()
                 }
 
             }

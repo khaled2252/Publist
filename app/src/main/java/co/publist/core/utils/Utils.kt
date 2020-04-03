@@ -74,7 +74,10 @@ object Utils {
 
     var resultUri: Uri? = Uri.EMPTY
     fun navigateToCamera(activity: Activity) {
-        val photoFile =  File(activity.cacheDir,TEMP_IMAGE) //Will create temporary file https://stackoverflow.com/a/41618796/11276817
+        val photoFile = File(
+            activity.cacheDir,
+            TEMP_IMAGE
+        ) //Will create temporary file https://stackoverflow.com/a/41618796/11276817
         resultUri = FileProvider.getUriForFile(
             activity,
             activity.packageName + ".provider",
@@ -86,8 +89,7 @@ object Utils {
         activity.startActivityForResult(cameraIntent, Constants.CAMERA)
     }
 
-    fun get90DegreesAnimation() : RotateAnimation
-    {
+    fun get90DegreesAnimation(): RotateAnimation {
         val anim = RotateAnimation(
             0f, -90f, Animation.RELATIVE_TO_SELF,
             0.5f, Animation.RELATIVE_TO_SELF, 0.5f
@@ -103,18 +105,29 @@ object Utils {
         topUsersId: ArrayList<String>?,
         imageViewArrayList: ArrayList<ImageView>
     ) {
-            FirebaseFunctions.getInstance().getHttpsCallable(FETCH_USER_PICTURE_CLOUD_FUNCTION)
-                .call(hashMapOf(USER_IDS_FIELD to topUsersId))
-                .continueWith { task ->
-                    val result = task.result?.data as HashMap<String, ArrayList<String>>
-                    result
-                }.addOnSuccessListener {result ->
-                    val pictureUrlsArrayList = result.values.elementAt(0)
-                    for(pictureUrlIndex in 0 until pictureUrlsArrayList.size)
-                        loadProfilePicture(imageViewArrayList[pictureUrlIndex],
-                            pictureUrlsArrayList[pictureUrlIndex]
-                        )
-                }
+        //Clear extra loaded images when updating (i.e removed images)
+        if (topUsersId.isNullOrEmpty())
+            for (imageView in imageViewArrayList)
+                imageView.setImageDrawable(null)
+        else if (topUsersId.isNotEmpty())
+            for (emptyIndex in topUsersId.size.until(imageViewArrayList.size))
+                imageViewArrayList[emptyIndex].setImageDrawable(null)
+
+
+        //Load new Images
+        FirebaseFunctions.getInstance().getHttpsCallable(FETCH_USER_PICTURE_CLOUD_FUNCTION)
+            .call(hashMapOf(USER_IDS_FIELD to topUsersId))
+            .continueWith { task ->
+                val result = task.result?.data as HashMap<String, ArrayList<String>>
+                result
+            }.addOnSuccessListener { result ->
+                val pictureUrlsArrayList = result.values.elementAt(0)
+                for (pictureUrlIndex in 0 until pictureUrlsArrayList.size)
+                    loadProfilePicture(
+                        imageViewArrayList[pictureUrlIndex],
+                        pictureUrlsArrayList[pictureUrlIndex]
+                    )
+            }
 
     }
 

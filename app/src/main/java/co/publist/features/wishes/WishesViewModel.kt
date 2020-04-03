@@ -36,6 +36,7 @@ class WishesViewModel @Inject constructor(
     val wishDeletedLiveData = MutableLiveData<Boolean>()
     val editWishLiveData = MutableLiveData<Wish>()
     val likedItemsLiveData = MutableLiveData<ArrayList<String>>()
+    val userId = userRepository.getUser()?.id
     lateinit var selectedWish: Wish
     fun loadData(type: Int) {
         wishesType.postValue(type)
@@ -69,7 +70,7 @@ class WishesViewModel @Inject constructor(
                                                         .flatMap { doneItemsInMyListsArrayList ->
                                                             filteredWishes = filterWishesByCreator(
                                                                 filteredWishes,
-                                                                userRepository.getUser()?.id!!,
+                                                                userId!!,
                                                                 doneItemsInMyListsArrayList
                                                             )
                                                             wishesRepository.getUserLikedItems()
@@ -115,7 +116,7 @@ class WishesViewModel @Inject constructor(
                                 oneElementList =
                                     filterWishesByCreator(
                                         oneElementList,
-                                        userRepository.getUser()?.id!!,
+                                        userId!!,
                                         doneItemsInMyListsArrayList
                                     )
                                 wishesRepository.getDoneItemsInMyFavorites()
@@ -257,7 +258,7 @@ class WishesViewModel @Inject constructor(
     }
 
     fun completeItem(itemId: String, wish: WishAdapterItem, isDone: Boolean) {
-        if (wish.creator?.id == userRepository.getUser()?.id) wish.isCreator = true
+        if (wish.creator?.id == userId) wish.isCreator = true
         val collectionTobeEdited =
             if (wish.isCreator) MY_LISTS_COLLECTION_PATH else MY_FAVORITES_COLLECTION_PATH
         subscribe(wishesRepository.checkItemDoneInProfile(
