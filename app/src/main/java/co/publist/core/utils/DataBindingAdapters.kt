@@ -13,7 +13,7 @@ object DataBindingAdapters {
     @JvmStatic
     @BindingAdapter("profilePictureUrl")
     fun loadProfilePicture(view: ImageView, imageUrl: String?) {
-        Glide.with(view)
+        Glide.with(view.context.applicationContext)
             .load(imageUrl)
             .placeholder(R.drawable.ic_guest)
             .apply(RequestOptions.circleCropTransform())
