@@ -16,7 +16,7 @@ data class MyFavoritesDbEntity(
     @field:SerializedName("favoritesCount") val favorites_count: Int,
     @field:SerializedName("wishPhotoUrl") val wish_photo_url: String,
     @field:SerializedName("photoName") val photo_name: String,
-    @field:SerializedName("items") val items: Map<String, Item>,
+    @field:SerializedName("items") val items: Map<String, WishItem>,
     @field:SerializedName("itemsId") val items_id: ArrayList<String>
 
 )

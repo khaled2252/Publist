@@ -75,7 +75,7 @@ class EditProfileActivity : BaseActivity<EditProfileViewModel>() {
         })
 
         categoriesFragment.viewModel.saveCategoriesLiveData.observe(this, Observer {
-            Toast.makeText(this, getString(R.string.saved_successfully), Toast.LENGTH_SHORT)
+            Toast.makeText(this, getString(R.string.saved), Toast.LENGTH_SHORT)
                 .show()
 
             if (!isComingFromProfile!!) //from login or splash

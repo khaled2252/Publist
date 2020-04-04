@@ -13,7 +13,7 @@ data class Wish(
     val favoritesCount: Int = 0,
     var wishPhotoURL: String? = null,
     var photoName: String? = null,
-    var items: Map<String, Item>? = null,
+    var items: Map<String, WishItem>? = null,
     var itemsId: ArrayList<String>? = null,
     var wishId: String? = null,
     var seenCount : Int? = null,

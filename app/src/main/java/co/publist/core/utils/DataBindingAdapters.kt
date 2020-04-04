@@ -16,8 +16,8 @@ object DataBindingAdapters {
     fun loadProfilePicture(view: ImageView, imageUrl: String?) {
         Glide.with(view.context.applicationContext)
             .load(imageUrl)
-            .diskCacheStrategy(DiskCacheStrategy.ALL)
             .placeholder(R.drawable.ic_guest)
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
             .apply(RequestOptions.circleCropTransform())
             .into(view)
     }

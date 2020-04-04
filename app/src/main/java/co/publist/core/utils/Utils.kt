@@ -105,6 +105,9 @@ object Utils {
         topUsersId: ArrayList<String>?,
         imageViewArrayList: ArrayList<ImageView>
     ) {
+        if(topUsersId.isNullOrEmpty())
+            return
+
         //Clear extra loaded images when updating (i.e removed images)
         if (topUsersId.isNullOrEmpty())
             for (imageView in imageViewArrayList)

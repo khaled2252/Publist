@@ -176,7 +176,7 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
             }
 
             postButton.text = getString(R.string.save)
-            viewModel.populateWishData(editedWish!!)
+            viewModel.populateEditedWishData(editedWish!!)
         } else
             categoriesFragment.viewModel.getCategories()
 

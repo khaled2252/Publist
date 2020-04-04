@@ -2,7 +2,7 @@ package co.publist.core.common.data.models.wish
 
 import java.io.Serializable
 
-data class Item(
+data class WishItem(
     var name: String? = null,
     var orderId: Int? = null,
     var completeCount: Int? = 0,

@@ -5,7 +5,7 @@ import co.publist.core.common.data.models.category.Category
 import co.publist.core.common.data.models.category.Localization
 import co.publist.core.common.data.models.wish.CategoryWish
 import co.publist.core.common.data.models.wish.Creator
-import co.publist.core.common.data.models.wish.Item
+import co.publist.core.common.data.models.wish.WishItem
 import com.google.firebase.Timestamp
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -51,9 +51,9 @@ class Converters {
     }
 
     @TypeConverter
-    fun toItemMap(value: String?): Map<String,Item?>? {
+    fun toItemMap(value: String?): Map<String,WishItem?>? {
         val listType: Type =
-            object : TypeToken< Map<String,Item?>?>() {}.type
+            object : TypeToken< Map<String,WishItem?>?>() {}.type
         return Gson().fromJson(value, listType)
     }
 
