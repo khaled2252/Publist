@@ -20,15 +20,15 @@ interface WishesRepositoryInterface {
     fun getDoneItemsInMyLists() : Single<ArrayList<String>>
     fun getDoneItemsInMyFavorites() : Single<ArrayList<String>>
     fun checkItemDoneInProfile(itemId: String, wishId : String,collectionToBeEdited : String, isDone: Boolean): Completable
-    fun incrementCompleteCountInWishes(itemId: String , wishId : String, isDone: Boolean): Single<Int>
+    fun incrementCompleteCount(itemId: String, wishId : String, isDone: Boolean, collectionToBeEdited : String): Single<Int>
     fun addUserIdInTopCompletedUsersIdSubCollection(itemId : String , wishId : String,isAdding : Boolean): Completable
-    fun addUserIdInTopCompletedUsersIdField(itemId : String, wishId : String,isAdding : Boolean): Completable
+    fun addUserIdInTopCompletedUsersIdField(itemId : String, wishId : String,isAdding : Boolean,collectionToBeEdited: String): Completable
     fun decrementCompleteCountInDoneItems(wishId : String , doneItems: ArrayList<String>) : Completable
     fun removeUserIdFromTopCompletedItems(doneItems: ArrayList<String>, wishId: String) : Completable
     fun addItemToUserViewedItems(itemId: String,isLiked: Boolean): Completable
-    fun incrementViewedCountInWishes(itemId: String , wishId : String, isLiked: Boolean): Single<Int>
+    fun incrementViewedCount(itemId: String, wishId : String, isLiked: Boolean,collectionTobeEditedIfIsInUserWishes : String): Single<Int>
     fun addUserIdInTopViewedUsersIdSubCollection(itemId: String, wishId: String,isAdding : Boolean): Completable
-    fun addUserIdInTopViewedUsersIdField(itemId: String, wishId: String,isAdding : Boolean): Completable
+    fun addUserIdInTopViewedUsersIdField(itemId: String, wishId: String,isAdding : Boolean,collectionTobeEditedIfIsInUserWishes : String): Completable
     fun getUserLikedItems(): Single<ArrayList<String>>
     fun incrementOrganicSeen(wishId: String) : Completable
     fun isWishSeen(wishId: String) : Single<Boolean>

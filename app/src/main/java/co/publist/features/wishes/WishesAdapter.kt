@@ -8,7 +8,6 @@ import android.widget.ImageView
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
 import co.publist.R
-import co.publist.core.common.data.models.Mapper
 import co.publist.core.common.data.models.wish.WishAdapterItem
 import co.publist.core.utils.DataBindingAdapters
 import co.publist.core.utils.Utils.Constants.DETAILS
@@ -59,7 +58,7 @@ class WishesAdapter(
             else {
                 binding.root.setOnClickListener {
                     val intent = Intent(it.context, WishDetailsActivity::class.java)
-                    intent.putExtra(WISH_DETAILS_INTENT, Mapper.mapToWish(wish))
+                    intent.putExtra(WISH_DETAILS_INTENT, wish)
                     it.context.startActivity(intent)
                 }
             }

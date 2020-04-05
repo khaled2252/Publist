@@ -7,8 +7,7 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
 import co.publist.R
-import co.publist.core.common.data.models.Mapper
-import co.publist.core.common.data.models.wish.Wish
+import co.publist.core.common.data.models.wish.WishAdapterItem
 import co.publist.core.utils.DataBindingAdapters.loadProfilePicture
 import co.publist.core.utils.DataBindingAdapters.loadWishImage
 import co.publist.core.utils.Utils.Constants.DETAILS
@@ -16,27 +15,30 @@ import co.publist.core.utils.Utils.Constants.LISTS
 import co.publist.core.utils.Utils.Constants.WISH_DETAILS_INTENT
 import co.publist.databinding.ItemWishBinding
 import co.publist.features.wishdetails.WishDetailsActivity
+import com.firebase.ui.common.ChangeEventType
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
+import com.google.firebase.firestore.DocumentSnapshot
 import org.ocpsoft.prettytime.PrettyTime
 import java.util.*
 import kotlin.collections.ArrayList
 
 
 class WishesFirestoreAdapter(
-    options: FirestoreRecyclerOptions<Wish>,
+    options: FirestoreRecyclerOptions<WishAdapterItem>,
     val wishesType: Int,
+    val doneItemsList: ArrayList<String>,
     val likedItemsList: ArrayList<String>,
     val userId: String,
     val displayPlaceHolder: (Boolean) -> Unit,
-    val unFavoriteListener: (wish: Wish) -> Unit,
-    val detailsListener: (wish: Wish) -> Unit,
-    val completeListener: (itemId: String, wish: Wish, isDone: Boolean) -> Unit,
-    val likeListener: (itemId: String, wish: Wish, isLiked: Boolean) -> Unit,
+    val unFavoriteListener: (wish: WishAdapterItem) -> Unit,
+    val detailsListener: (wish: WishAdapterItem) -> Unit,
+    val completeListener: (itemId: String, wish: WishAdapterItem, isDone: Boolean) -> Unit,
+    val likeListener: (itemId: String, wish: WishAdapterItem, isLiked: Boolean) -> Unit,
     val seenCountListener : (wishId : String) -> Unit
 
 ) :
-    FirestoreRecyclerAdapter<Wish, WishesFirestoreAdapter.WishViewHolder>(options) {
+    FirestoreRecyclerAdapter<WishAdapterItem, WishesFirestoreAdapter.WishViewHolder>(options) {
     val wishItemsAdapterArrayList = ArrayList<WishItemsAdapter>()
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WishViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -54,6 +56,16 @@ class WishesFirestoreAdapter(
         super.onDataChanged()
     }
 
+    override fun onChildChanged(
+        type: ChangeEventType,
+        snapshot: DocumentSnapshot,
+        newIndex: Int,
+        oldIndex: Int
+    ) {
+        if(type == ChangeEventType.ADDED) //To Update only when adding new data (To avoid UI conflict when updating UI manually in WishItemsAdapter)
+        super.onChildChanged(type, snapshot, newIndex, oldIndex)
+    }
+
     override fun getItemId(position: Int): Long {
         return position.toLong()
     }
@@ -62,7 +74,7 @@ class WishesFirestoreAdapter(
         return position
     }
 
-    override fun onBindViewHolder(holder: WishViewHolder, position: Int, wish: Wish) {
+    override fun onBindViewHolder(holder: WishViewHolder, position: Int, wish: WishAdapterItem) {
         seenCountListener(wish.wishId!!)
         holder.bind(wish)
     }
@@ -70,7 +82,7 @@ class WishesFirestoreAdapter(
     inner class WishViewHolder(private val binding: ItemWishBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(
-            wish: Wish
+            wish: WishAdapterItem
         ) {
             if(wishesType == DETAILS)
                 binding.seeMoreLayout.visibility = View.GONE
@@ -82,13 +94,24 @@ class WishesFirestoreAdapter(
                 }
             }
 
+            //Apply done,liked items in this wish
+            for (itemMap in wish.items!!)
+            {
+                if (likedItemsList.contains(itemMap.key))
+                    itemMap.value.isLiked = true
+                if (doneItemsList.contains(itemMap.key))
+                    itemMap.value.done = true
+            }
+
             binding.wishActionImageView.apply {
                 if (wishesType == LISTS) {
+                    wish.isCreator = true
                     setImageResource(R.drawable.ic_dots)
                     setOnClickListener {
                         detailsListener(wish)
                     }
                 } else {
+                    wish.isFavorite = true
                     setImageResource(R.drawable.ic_heart_active)
                     setOnClickListener {
                         if(wish.items?.values?.any {it.done==true}!!)
@@ -98,9 +121,7 @@ class WishesFirestoreAdapter(
                             builder.setTitle(context.getString(R.string.remove_wish_title))
                             builder.setMessage(context.getString(R.string.remove_wish_message))
                             builder.setPositiveButton(this.context.getString(R.string.yes)) { _, _ ->
-
                                 unFavoriteListener(wish)
-
                             }
                             builder.setNegativeButton(this.context.getString(R.string.cancel)) { _, _ ->
                             }
@@ -125,15 +146,10 @@ class WishesFirestoreAdapter(
             loadProfilePicture(binding.profilePictureImageView, wish.creator?.imagePath)
             binding.userNameTextView.text = wish.creator?.name
 
-            //Apply liked items in this wish
-            for (itemMap in wish.items!!)
-                if (likedItemsList.contains(itemMap.key))
-                    itemMap.value.isLiked = true
-
             //Load wish data
             loadWishImage(binding.wishImageView, wish.wishPhotoURL)
             val wishItemsAdapter = WishItemsAdapter(
-                Mapper.mapToWishAdapterItem(wish),
+                wish,
                 LISTS,
                 userId,
                 binding.seeMoreTextView,
@@ -151,7 +167,6 @@ class WishesFirestoreAdapter(
                     likeListener(itemId,wish,isLiked)
                 })
             wishItemsAdapterArrayList.add(wishItemsAdapter)
-            wishItemsAdapter.setHasStableIds(true)
             binding.wishItemsRecyclerView.adapter = wishItemsAdapter
         }
 

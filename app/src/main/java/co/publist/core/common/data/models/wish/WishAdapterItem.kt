@@ -1,7 +1,11 @@
 package co.publist.core.common.data.models.wish
 
+import android.os.Parcelable
 import com.google.firebase.Timestamp
+import com.google.firebase.firestore.Exclude
+import kotlinx.android.parcel.Parcelize
 
+@Parcelize
 data class WishAdapterItem(
     var category: ArrayList<CategoryWish>? = null,
     var categoryId: ArrayList<String>? = null,
@@ -9,11 +13,13 @@ data class WishAdapterItem(
     var title: String? = null,
     val creator: Creator? = null,
     val favoritesCount: Int = 0,
-    var wishPhotoURL: String? = null,
-    var photoName: String? = null,
+    var wishPhotoURL: String? = "",
+    var photoName: String? = "",
     var items: Map<String, WishItem>? = null,
     var itemsId: ArrayList<String>? = null,
     var wishId: String? = null,
-    var isCreator: Boolean = false,
-    var isFavorite: Boolean = false
-)
+    var seenCount : Int? = 0,
+    var organicSeenCount : Int? = 0,
+    @set:Exclude @get:Exclude var isCreator: Boolean = false,
+    @set:Exclude @get:Exclude var isFavorite: Boolean = false
+) : Parcelable

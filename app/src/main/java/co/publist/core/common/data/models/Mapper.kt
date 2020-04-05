@@ -156,16 +156,13 @@ object Mapper {
      fun mapToWishAdapterItem(item: Wish): WishAdapterItem {
         return WishAdapterItem(
             category = item.category,
-            categoryId = item.categoryId,
             creator = item.creator,
             date = item.date,
-            favoritesCount = item.favoritesCount,
             items = item.items,
             itemsId = item.itemsId,
             title = item.title,
             wishId = item.wishId,
-            wishPhotoURL = item.wishPhotoURL,
-            photoName = item.photoName
+            wishPhotoURL = item.wishPhotoURL
         )
     }
 
@@ -175,13 +172,15 @@ object Mapper {
             categoryId = item.categoryId,
             creator = item.creator,
             date = item.date,
-            favoritesCount = item.favoritesCount,
             items = item.items,
             itemsId = item.itemsId,
             title = item.title,
             wishId = item.wishId,
             wishPhotoURL = item.wishPhotoURL,
-            photoName = item.photoName
+            photoName = item.photoName,
+            favoritesCount = item.favoritesCount,
+            organicSeenCount = item.organicSeenCount,
+            seenCount = item.seenCount
         )
     }
 

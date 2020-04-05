@@ -1,10 +1,7 @@
 package co.publist.features.createwish
 
 import androidx.lifecycle.MutableLiveData
-import co.publist.core.common.data.models.wish.CategoryWish
-import co.publist.core.common.data.models.wish.Creator
-import co.publist.core.common.data.models.wish.Wish
-import co.publist.core.common.data.models.wish.WishItem
+import co.publist.core.common.data.models.wish.*
 import co.publist.core.common.data.repositories.user.UserRepositoryInterface
 import co.publist.core.common.data.repositories.wish.WishesRepositoryInterface
 import co.publist.core.platform.BaseViewModel
@@ -51,7 +48,7 @@ class CreateWishViewModel @Inject constructor(
         }
     }
 
-    private fun makeWish(category: CategoryWish, title: String, items: ArrayList<String>) : Wish {
+    private fun makeWish(category: CategoryWish, title: String, items: ArrayList<String>): Wish {
 
         val categoryWish = category
         val user = userRepository.getUser()
@@ -72,8 +69,9 @@ class CreateWishViewModel @Inject constructor(
             title = title
         )
 
-        if(isEditing) {
-            for (itemPosition in 0 until items.size) {
+        for (itemPosition in 0 until items.size) {
+
+            if (isEditing) {
                 //getting old items from wish that is being edited
                 val oldItemValue = oldListMap.values.find { it.name == items[itemPosition] }
                 if (oldItemValue != null) {
@@ -83,20 +81,19 @@ class CreateWishViewModel @Inject constructor(
                     newListMap[oldItemKey] = oldItemValue
                     continue
                 }
-            }
-        }
-        else{
-            for (itemPosition in 0 until items.size) {
 
-                val id = UUID.randomUUID().toString().toUpperCase(Locale.getDefault())
-                newItemIdList.add(id)
-                val item = WishItem(
-                    name = items[itemPosition],
-                    orderId = itemPosition
-                )
-                newListMap[id] = item
             }
+
+            //Add new items
+            val id = UUID.randomUUID().toString().toUpperCase(Locale.getDefault())
+            newItemIdList.add(id)
+            val item = WishItem(
+                name = items[itemPosition],
+                orderId = itemPosition
+            )
+            newListMap[id] = item
         }
+
         wish.items = newListMap
         wish.itemsId = newItemIdList
 
@@ -149,7 +146,7 @@ class CreateWishViewModel @Inject constructor(
         }
     }
 
-    fun populateEditedWishData(editedWish: Wish) {
+    fun populateEditedWishData(editedWish: WishAdapterItem) {
         isEditing = true
         category = editedWish.category?.get(0)
         title = editedWish.title!!

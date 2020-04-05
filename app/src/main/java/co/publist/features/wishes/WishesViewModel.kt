@@ -34,10 +34,10 @@ class WishesViewModel @Inject constructor(
     val wishesType = MutableLiveData<Int>()
     val isFavoriteAdded = MutableLiveData<Boolean>()
     val wishDeletedLiveData = MutableLiveData<Boolean>()
-    val editWishLiveData = MutableLiveData<Wish>()
-    val likedItemsLiveData = MutableLiveData<ArrayList<String>>()
+    val editWishLiveData = MutableLiveData<WishAdapterItem>()
+    val itemsAttributesPairLiveData = MutableLiveData<Pair<ArrayList<String>,ArrayList<String>>>()
     val userId = userRepository.getUser()?.id
-    lateinit var selectedWish: Wish
+    lateinit var selectedWish: WishAdapterItem
     fun loadData(type: Int) {
         wishesType.postValue(type)
         when (type) {
@@ -245,8 +245,8 @@ class WishesViewModel @Inject constructor(
 
     fun deleteSelectedWish() {
         //Merge operator runs both calls in parallel (independent calls)
-        subscribe(wishesRepository.deleteWishFromWishes(selectedWish)
-            .mergeWith(wishesRepository.deleteWishFromMyLists(selectedWish))
+        subscribe(wishesRepository.deleteWishFromWishes(Mapper.mapToWish(selectedWish))
+            .mergeWith(wishesRepository.deleteWishFromMyLists(Mapper.mapToWish(selectedWish)))
             , Action {
                 wishDeletedLiveData.postValue(true)
             })
@@ -258,9 +258,9 @@ class WishesViewModel @Inject constructor(
     }
 
     fun completeItem(itemId: String, wish: WishAdapterItem, isDone: Boolean) {
-        if (wish.creator?.id == userId) wish.isCreator = true
         val collectionTobeEdited =
             if (wish.isCreator) MY_LISTS_COLLECTION_PATH else MY_FAVORITES_COLLECTION_PATH
+
         subscribe(wishesRepository.checkItemDoneInProfile(
             itemId,
             wish.wishId!!,
@@ -268,10 +268,11 @@ class WishesViewModel @Inject constructor(
             isDone
         ).mergeWith(wishesRepository.incrementOrganicSeen(wish.wishId!!))
             .andThen(
-                wishesRepository.incrementCompleteCountInWishes(
+                wishesRepository.incrementCompleteCount(
                     itemId,
                     wish.wishId!!,
-                    isDone
+                    isDone,
+                    collectionTobeEdited
                 )
             )
             .flatMapCompletable { completeCount ->
@@ -284,7 +285,8 @@ class WishesViewModel @Inject constructor(
                         .mergeWith(
                             wishesRepository.addUserIdInTopCompletedUsersIdField(
                                 itemId, wish.wishId!!,
-                                isDone
+                                isDone,
+                                collectionTobeEdited
                             )
                         )
                 else
@@ -301,13 +303,20 @@ class WishesViewModel @Inject constructor(
     }
 
     fun likeItem(itemId: String, wish: WishAdapterItem, isLiked: Boolean) {
+        var collectionTobeEditedIfIsInUserWishes =""
+        if (wish.isCreator)
+        collectionTobeEditedIfIsInUserWishes = MY_LISTS_COLLECTION_PATH
+        else if (wish.isFavorite)
+            collectionTobeEditedIfIsInUserWishes = MY_FAVORITES_COLLECTION_PATH
+
         subscribe(wishesRepository.addItemToUserViewedItems(itemId,isLiked)
             .mergeWith(wishesRepository.incrementOrganicSeen(wish.wishId!!))
             .andThen(
-                wishesRepository.incrementViewedCountInWishes(
+                wishesRepository.incrementViewedCount(
                     itemId,
                     wish.wishId!!,
-                    isLiked
+                    isLiked,
+                    collectionTobeEditedIfIsInUserWishes
                 )
             )
             .flatMapCompletable { likeCount ->
@@ -320,7 +329,8 @@ class WishesViewModel @Inject constructor(
                         .mergeWith(
                             wishesRepository.addUserIdInTopViewedUsersIdField(
                                 itemId, wish.wishId!!,
-                                isLiked
+                                isLiked,
+                                collectionTobeEditedIfIsInUserWishes
                             )
                         )
                 else
@@ -335,10 +345,23 @@ class WishesViewModel @Inject constructor(
         )
     }
 
-    fun getLikedItems() {
-        subscribe(wishesRepository.getUserLikedItems(), Consumer { likedItemsList ->
-            likedItemsLiveData.postValue(likedItemsList)
-        })
+    fun getItemsAttributes() {
+            subscribe(wishesRepository.getUserLikedItems().flatMap {likedItemsList ->
+
+                if(wishesType.value == LISTS)
+                    wishesRepository.getDoneItemsInMyLists().flatMap {doneItemsList ->
+                        Single.just(Pair(doneItemsList,likedItemsList))
+                    }
+                else
+                    wishesRepository.getDoneItemsInMyFavorites().flatMap {doneItemsList ->
+                        Single.just(Pair(doneItemsList,likedItemsList))
+                    }
+
+            }, Consumer { itemsAttributesPair ->
+                itemsAttributesPairLiveData.postValue(itemsAttributesPair)
+            })
+
+
     }
 
     fun incrementSeenCount(wishId: String) {

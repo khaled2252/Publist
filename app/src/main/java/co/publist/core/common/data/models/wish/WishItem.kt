@@ -1,5 +1,6 @@
 package co.publist.core.common.data.models.wish
 
+import com.google.firebase.firestore.Exclude
 import java.io.Serializable
 
 data class WishItem(
@@ -7,8 +8,8 @@ data class WishItem(
     var orderId: Int? = null,
     var completeCount: Int? = 0,
     var viewedCount: Int? = 0,
-    var topCompletedUsersId: ArrayList<String>? = null,
-    var topViewedUsersId: ArrayList<String>? = null,
-    var done : Boolean? = false,
-    var isLiked : Boolean? = false
+    var topCompletedUsersId: ArrayList<String>? = arrayListOf(),
+    var topViewedUsersId: ArrayList<String>? = arrayListOf(),
+    @get:Exclude var done : Boolean? = false,
+    @set:Exclude @get:Exclude var isLiked : Boolean? = false
 ) : Serializable

@@ -23,7 +23,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ItemTouchHelper.*
 import co.publist.R
 import co.publist.core.common.data.models.Mapper
-import co.publist.core.common.data.models.wish.Wish
+import co.publist.core.common.data.models.wish.WishAdapterItem
 import co.publist.core.platform.BaseActivity
 import co.publist.core.platform.ViewModelFactory
 import co.publist.core.utils.DataBindingAdapters
@@ -58,7 +58,7 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
     private lateinit var adapter: ItemsAdapter
     private lateinit var categoriesFragment: CategoriesFragment
     private lateinit var sheetBehavior: BottomSheetBehavior<*>
-    private var editedWish: Wish? = null
+    private var editedWish: WishAdapterItem? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -154,7 +154,7 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
     }
 
     private fun onCreated() {
-        editedWish = intent.getParcelableExtra(EDIT_WISH_INTENT) as? Wish
+        editedWish = intent.getParcelableExtra(EDIT_WISH_INTENT) as? WishAdapterItem
         categoriesFragment =
             supportFragmentManager.findFragmentById(R.id.categoriesFragment) as CategoriesFragment
         sheetBehavior = BottomSheetBehavior.from(categoriesFragmentBottomSheet)

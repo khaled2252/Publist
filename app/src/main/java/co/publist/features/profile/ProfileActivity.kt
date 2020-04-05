@@ -8,7 +8,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Observer
 import androidx.viewpager2.widget.ViewPager2
 import co.publist.R
-import co.publist.core.common.data.models.wish.Wish
+import co.publist.core.common.data.models.wish.WishAdapterItem
 import co.publist.core.platform.BaseActivity
 import co.publist.core.platform.ViewModelFactory
 import co.publist.core.utils.DataBindingAdapters.loadProfilePicture
@@ -143,7 +143,7 @@ class ProfileActivity : BaseActivity<ProfileViewModel>() {
         deleteDialog.show()
     }
 
-    fun showEditWishDialog(wish: Wish) {
+    fun showEditWishDialog(wish: WishAdapterItem) {
         viewModel.selectedWish = wish
         sheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
     }

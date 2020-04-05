@@ -7,7 +7,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Observer
 import co.publist.R
-import co.publist.core.common.data.models.wish.Wish
+import co.publist.core.common.data.models.wish.WishAdapterItem
 import co.publist.core.platform.BaseActivity
 import co.publist.core.platform.ViewModelFactory
 import co.publist.core.utils.Utils
@@ -44,6 +44,21 @@ class WishDetailsActivity : BaseActivity<WishDetailsViewModel>() {
         setListeners()
     }
 
+    override fun onStart() {
+        wishesFragment.viewModel.loadData(DETAILS)  // To reload data when coming back from another activity
+        sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+        super.onStart()
+    }
+    private fun onCreated() {
+        wishesFragment =
+            supportFragmentManager.findFragmentById(R.id.wishesFragment) as WishesFragment
+        sheetBehavior = BottomSheetBehavior.from(editWishBottomSheet)
+
+        val selectedWish =  intent.getParcelableExtra<WishAdapterItem>(WISH_DETAILS_INTENT)!!
+        wishesFragment.viewModel.selectedWish = selectedWish
+        viewModel.incrementOrganicSeen(selectedWish.wishId!!)
+    }
+
     private fun setObservers() {
         wishesFragment.viewModel.wishDeletedLiveData.observe(this, Observer {
             Toast.makeText(this, getString(R.string.delete_wish), Toast.LENGTH_SHORT).show()
@@ -66,20 +81,6 @@ class WishDetailsActivity : BaseActivity<WishDetailsViewModel>() {
         })
 
     }
-    override fun onStart() {
-        wishesFragment.viewModel.loadData(DETAILS)  // To reload data when coming back from another activity
-        sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-        super.onStart()
-    }
-    private fun onCreated() {
-        wishesFragment =
-            supportFragmentManager.findFragmentById(R.id.wishesFragment) as WishesFragment
-        sheetBehavior = BottomSheetBehavior.from(editWishBottomSheet)
-
-        val selectedWish =  intent.getParcelableExtra<Wish>(WISH_DETAILS_INTENT)!!
-        wishesFragment.viewModel.selectedWish = selectedWish
-        viewModel.incrementOrganicSeen(selectedWish.wishId!!)
-    }
 
     private fun setListeners() {
         backArrowImageViewLayout.setOnClickListener {
@@ -91,13 +92,11 @@ class WishDetailsActivity : BaseActivity<WishDetailsViewModel>() {
                 blurredBgView.visibility = View.VISIBLE
                 //Change alpha on sliding
                 blurredBgView.alpha = slideOffset
-//                window?.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
             }
 
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
                     blurredBgView.visibility = View.GONE
-//                    window?.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
                 }
             }
         })

@@ -10,7 +10,6 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import co.publist.R
-import co.publist.core.common.data.models.Mapper
 import co.publist.core.common.data.models.wish.WishAdapterItem
 import co.publist.core.common.data.models.wish.WishItem
 import co.publist.core.utils.Utils
@@ -39,9 +38,11 @@ class WishItemsAdapter(
 ) :
     RecyclerView.Adapter<WishItemsAdapter.WishItemViewHolder>() {
     var isExpanded = false
-    private var wishItemList: ArrayList<WishItem> = ArrayList(wish.items!!.values.sortedBy { it.orderId })
+    private  var wishItemList: ArrayList<WishItem>
 
     init {
+        wish.items = wish.items?.toList()?.sortedBy { it.second.orderId }?.toMap()
+        wishItemList= ArrayList(wish.items!!.values)
         if (wishesType != DETAILS)
             setExpandingConditions()
     }
@@ -64,8 +65,10 @@ class WishItemsAdapter(
     }
 
     override fun onBindViewHolder(holder: WishItemViewHolder, position: Int) {
-        if (!isExpanded && position == wishItemList.size - 1) //To hide last dashed line if items are not expandable
+        if (!isExpanded && position == MAX_VISIBLE_WISH_ITEMS-1) //To hide last dashed line if items are not expandable
             holder.itemView.dashed_line.visibility = View.GONE
+        else
+            holder.itemView.dashed_line.visibility = View.VISIBLE //Fixes a bug when user updates multiple items (causes line to be GONE  when it is not the last item)
 
         holder.bind(wishItemList[position], position)
     }
@@ -114,19 +117,17 @@ class WishItemsAdapter(
             itemView.completeButton.setOnClickListener {
                 //Update Ui then remotely
                 if (!wishItem.done!!) {//Opposite of previous state
-                    itemView.completeButton.isChecked = true
                     wishItem.done = true
                     wishItem.completeCount = wishItem.completeCount?.inc()
                     updateTopCompletedUsersPictures(wishItem,true)
                 } else {
-                    itemView.completeButton.isChecked = false
                     wishItem.done = false
                     wishItem.completeCount = wishItem.completeCount?.dec()
                     updateTopCompletedUsersPictures(wishItem,false)
                 }
                 notifyItemChanged(position)
 
-                completeListener(wish.itemsId!![position], wishItem.done!!)
+                completeListener(wish.items!!.keys.elementAt(position), wishItem.done!!)
             }
 
             itemView.likeViewsTextView.setOnClickListener {
@@ -142,7 +143,7 @@ class WishItemsAdapter(
                 }
                 notifyItemChanged(position)
 
-                likeListener(wish.itemsId!![position], wishItem.isLiked!!)
+                likeListener(wish.items!!.keys.elementAt(position), wishItem.isLiked!!)
             }
 
         }
@@ -160,7 +161,7 @@ class WishItemsAdapter(
                     expandListener(adapterIndex)
                 } else {
                     val intent = Intent(it.context, WishDetailsActivity::class.java)
-                    intent.putExtra(Utils.Constants.WISH_DETAILS_INTENT, Mapper.mapToWish(wish))
+                    intent.putExtra(Utils.Constants.WISH_DETAILS_INTENT, wish)
                     it.context.startActivity(intent)
                 }
             }

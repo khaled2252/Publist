@@ -37,8 +37,12 @@ class MyListsFragment : BaseFragment<MyListsViewModel>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         wishesFragment =
             childFragmentManager.findFragmentById(R.id.wishesFragment) as WishesFragment
-        wishesFragment.viewModel.loadData(LISTS)
         setListeners()
+    }
+
+    override fun onStart() {
+        wishesFragment.viewModel.loadData(LISTS)
+        super.onStart()
     }
 
     private fun setListeners() {

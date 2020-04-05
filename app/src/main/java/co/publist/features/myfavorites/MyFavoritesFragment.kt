@@ -35,11 +35,10 @@ class MyFavoritesFragment : BaseFragment<MyFavoritesViewModel>(){
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         wishesFragment =
             childFragmentManager.findFragmentById(R.id.wishesFragment) as WishesFragment
-        wishesFragment.viewModel.loadData(FAVORITES)
-        setObservers()
     }
 
-    private fun setObservers() {
-
+    override fun onStart() {
+        wishesFragment.viewModel.loadData(FAVORITES)
+        super.onStart()
     }
 }
