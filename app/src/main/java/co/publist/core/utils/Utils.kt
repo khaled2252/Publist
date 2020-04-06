@@ -137,21 +137,22 @@ object Utils {
             }
         }
 
-        //Load new Images
-        FirebaseFunctions.getInstance().getHttpsCallable(FETCH_USER_PICTURE_CLOUD_FUNCTION)
-            .call(hashMapOf(USER_IDS_FIELD to topUsersId))
-            .continueWith { task ->
-                val result = task.result?.data as HashMap<String, ArrayList<String>>
-                result
-            }.addOnSuccessListener { result ->
-                val pictureUrlsArrayList = result.values.elementAt(0)
-                for (pictureUrlIndex in 0 until pictureUrlsArrayList.size)
-                    loadProfilePicture(
-                        imageViewArrayList[pictureUrlIndex],
-                        pictureUrlsArrayList[pictureUrlIndex]
-                    )
-            }
-
+        if(topUsersId.isNotEmpty()) {
+            //Load new Images
+            FirebaseFunctions.getInstance().getHttpsCallable(FETCH_USER_PICTURE_CLOUD_FUNCTION)
+                .call(hashMapOf(USER_IDS_FIELD to topUsersId))
+                .continueWith { task ->
+                    val result = task.result?.data as HashMap<String, ArrayList<String>>
+                    result
+                }.addOnSuccessListener { result ->
+                    val pictureUrlsArrayList = result.values.elementAt(0)
+                    for (pictureUrlIndex in 0 until pictureUrlsArrayList.size)
+                        loadProfilePicture(
+                            imageViewArrayList[pictureUrlIndex],
+                            pictureUrlsArrayList[pictureUrlIndex]
+                        )
+                }
+        }
     }
 
     object Constants {
