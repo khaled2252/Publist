@@ -63,7 +63,7 @@ class WishesFirestoreAdapter(
         newIndex: Int,
         oldIndex: Int
     ) {
-        if(type == ChangeEventType.ADDED) //To Update only when adding new data (To avoid UI conflict when updating UI manually in WishItemsAdapter)
+        if(type != ChangeEventType.CHANGED) //To Update only when adding/removing (To avoid UI conflict when updating UI manually in WishItemsAdapter)
         super.onChildChanged(type, snapshot, newIndex, oldIndex)
     }
 
@@ -122,6 +122,7 @@ class WishesFirestoreAdapter(
                             builder.setTitle(context.getString(R.string.remove_wish_title))
                             builder.setMessage(context.getString(R.string.remove_wish_message))
                             builder.setPositiveButton(this.context.getString(R.string.yes)) { _, _ ->
+                                this@WishViewHolder.adapterPosition
                                 unFavoriteListener(wish)
                             }
                             builder.setNegativeButton(this.context.getString(R.string.cancel)) { _, _ ->
@@ -129,7 +130,10 @@ class WishesFirestoreAdapter(
                             builder.create().show()
                         }
                         else
+                        {
+                            wish.isFavorite = false
                             unFavoriteListener(wish)
+                        }
                     }
                 }
             }
@@ -147,8 +151,11 @@ class WishesFirestoreAdapter(
             loadProfilePicture(binding.profilePictureImageView, wish.creator?.imagePath)
             binding.userNameTextView.text = wish.creator?.name
 
-            //Load wish data
+            //Load wish Image
             loadWishImage(binding.wishImageView, wish.wishPhotoURL)
+
+            //Load wish Items
+            wish.items = wish.items?.toList()?.sortedBy { it.second.orderId }?.toMap() //sort Items map by orderId
             val wishItemsAdapter = WishItemsAdapter(
                 wish,
                 LISTS,
@@ -163,8 +170,12 @@ class WishesFirestoreAdapter(
                             wishItemsAdapterArrayList[adapterIndex].collapseList()
                     }
                 },completeListener = { itemId, isDone ->
+                    val incrementAmount = if(isDone) 1 else -1
+                    wish.items!![itemId]?.completeCount = wish.items!![itemId]?.completeCount!!+incrementAmount
                     completeListener(itemId, wish, isDone)
                 },likeListener = {itemId, isLiked ->
+                    val incrementAmount = if(isLiked) 1 else -1
+                    wish.items!![itemId]?.viewedCount = wish.items!![itemId]?.viewedCount!!+incrementAmount
                     likeListener(itemId,wish,isLiked)
                 })
             wishItemsAdapterArrayList.add(wishItemsAdapter)

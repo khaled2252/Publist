@@ -18,7 +18,9 @@
         android:layout_height="wrap_content"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         android:orientation="vertical"
-        tools:listitem="@layout/item_wish" />
+        tools:listitem="@layout/item_wish"
+        app:reverseLayout="true"
+        app:stackFromEnd="true"/>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <ProgressBar

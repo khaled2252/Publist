@@ -4,7 +4,6 @@ import android.net.Uri
 import co.publist.core.common.data.local.LocalDataSource
 import co.publist.core.common.data.models.Mapper
 import co.publist.core.common.data.models.wish.Wish
-import co.publist.core.utils.Utils.Constants.CATEGORY_ID_FIELD
 import co.publist.core.utils.Utils.Constants.COMPLETED_USERS_IDS_COLLECTION_PATH
 import co.publist.core.utils.Utils.Constants.COMPLETE_COUNT_FIELD
 import co.publist.core.utils.Utils.Constants.DATE_FIELD
@@ -44,29 +43,18 @@ class WishesRepository @Inject constructor(
 ) : WishesRepositoryInterface {
     private val userId = localDataSource.getSharedPreferences().getUser()?.id
 
-    override fun getAllWishesQuery(): Query {
-        return mFirebaseFirestore.collection(WISHES_COLLECTION_PATH)
-            .orderBy(DATE_FIELD, Query.Direction.DESCENDING)//Latest first
-    }
-
-    override fun getFilteredWishesQuery(categoryList: ArrayList<String?>): Query {
-        return mFirebaseFirestore.collection(WISHES_COLLECTION_PATH)
-            .whereArrayContainsAny(CATEGORY_ID_FIELD, categoryList)
-            .orderBy(DATE_FIELD, Query.Direction.DESCENDING)
-    }
-
     override fun getUserListWishesQuery(): Query {
         return mFirebaseFirestore.collection(USERS_COLLECTION_PATH)
             .document(userId!!)
             .collection(MY_LISTS_COLLECTION_PATH)
-            .orderBy(DATE_FIELD, Query.Direction.DESCENDING)
+            .orderBy(DATE_FIELD, Query.Direction.ASCENDING) //Get Wishes Ascending, then will be reversed by reverseLayout attribute in RecyclerView
     }
 
     override fun getUserFavoriteWishesQuery(): Query {
         return mFirebaseFirestore.collection(USERS_COLLECTION_PATH)
             .document(userId!!)
             .collection(MY_FAVORITES_COLLECTION_PATH)
-            .orderBy(DATE_FIELD, Query.Direction.DESCENDING)
+            .orderBy(DATE_FIELD, Query.Direction.ASCENDING) //Get Wishes Ascending, then will be reversed by reverseLayout attribute in RecyclerView
     }
 
     override fun getSpecificWish(wishId: String): Single<Wish> {
@@ -86,7 +74,7 @@ class WishesRepository @Inject constructor(
     override fun getAllWishes(): Single<ArrayList<Wish>> {
         return Single.create { singleEmitter ->
             mFirebaseFirestore.collection(WISHES_COLLECTION_PATH)
-                .orderBy(DATE_FIELD, Query.Direction.DESCENDING)
+                .orderBy(DATE_FIELD, Query.Direction.ASCENDING) //Get Wishes Ascending, then will be reversed by reverseLayout attribute in RecyclerView
                 .get()
                 .addOnFailureListener {
                     singleEmitter.onError(it)

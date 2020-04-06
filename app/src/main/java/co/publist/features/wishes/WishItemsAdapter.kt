@@ -39,11 +39,9 @@ class WishItemsAdapter(
 ) :
     RecyclerView.Adapter<WishItemsAdapter.WishItemViewHolder>() {
     var isExpanded = false
-    private  var wishItemList: ArrayList<WishItem>
+    private  var wishItemList: ArrayList<WishItem> = ArrayList(wish.items!!.values)
 
     init {
-        wish.items = wish.items?.toList()?.sortedBy { it.second.orderId }?.toMap()
-        wishItemList= ArrayList(wish.items!!.values)
         if (wishesType != DETAILS)
             setExpandingConditions()
     }
@@ -66,11 +64,6 @@ class WishItemsAdapter(
     }
 
     override fun onBindViewHolder(holder: WishItemViewHolder, position: Int) {
-        if (!isExpanded && position == MAX_VISIBLE_WISH_ITEMS-1) //To hide last dashed line if items are not expandable
-            holder.itemView.dashed_line.visibility = View.GONE
-        else
-            holder.itemView.dashed_line.visibility = View.VISIBLE //Fixes a bug when user updates multiple items (causes line to be GONE  when it is not the last item)
-
         holder.bind(wishItemList[position], position)
     }
 
@@ -119,11 +112,9 @@ class WishItemsAdapter(
                 //Update Ui then remotely
                 if (!wishItem.done!!) {//Opposite of previous state
                     wishItem.done = true
-                    wishItem.completeCount = wishItem.completeCount?.inc()
                     updateTopCompletedUsersPictures(wishItem, true)
                 } else {
                     wishItem.done = false
-                    wishItem.completeCount = wishItem.completeCount?.dec()
                     updateTopCompletedUsersPictures(wishItem, false)
                 }
                 notifyItemChanged(position)
@@ -135,11 +126,9 @@ class WishItemsAdapter(
                 //Update Ui then remotely
                 if (!wishItem.isLiked!!) {
                     wishItem.isLiked = true
-                    wishItem.viewedCount = wishItem.viewedCount?.inc()
                     updateTopLikedUsersPictures(wishItem, true)
                 } else {
                     wishItem.isLiked = false
-                    wishItem.viewedCount = wishItem.viewedCount?.dec()
                     updateTopLikedUsersPictures(wishItem, false)
                 }
                 notifyItemChanged(position)
@@ -171,14 +160,14 @@ class WishItemsAdapter(
 
     private fun expandList() {
         isExpanded = true
-        notifyDataSetChanged()
+        notifyItemRangeChanged(MINIMUM_WISH_ITEMS,wishItemList.size-MINIMUM_WISH_ITEMS)
         arrowImageView.startAnimation(get90DegreesAnimation())
         seeMoreTextView.text = seeMoreTextView.context.getString(R.string.go_to_details)
     }
 
     fun collapseList() {
         isExpanded = false
-        notifyDataSetChanged()
+        notifyItemRangeChanged(MINIMUM_WISH_ITEMS,wishItemList.size-MINIMUM_WISH_ITEMS)
         arrowImageView.clearAnimation()
         applySeeMoreText()
     }

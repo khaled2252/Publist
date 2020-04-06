@@ -111,8 +111,9 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
             })
 
         adapter.startListening()
-        wishesRecyclerView.adapter = adapter
         (wishesRecyclerView.itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false //To disable animation when changing holder information
+        wishesRecyclerView.setHasFixedSize(true)
+        wishesRecyclerView.adapter = adapter
     }
 
     private fun setAdapter(list: ArrayList<WishAdapterItem>) {

@@ -99,8 +99,11 @@ class WishesAdapter(
             )
             binding.userNameTextView.text = wish.creator?.name
 
-            //Load wish data
+            //Load wish Image
             DataBindingAdapters.loadWishImage(binding.wishImageView, wish.wishPhotoURL)
+
+            //Load wish Items
+            wish.items = wish.items?.toList()?.sortedBy { it.second.orderId }?.toMap() //sort Items map by orderId
             val wishItemsAdapter = WishItemsAdapter(
                 wish,
                 wishesType,
@@ -116,12 +119,17 @@ class WishesAdapter(
                     }
 
                 }, completeListener = { itemId, isDone ->
-
                     //completed item's wish is added to favorites according to business
                     if(!wish.isCreator && !wish.isFavorite && isDone)
                         binding.wishActionImageView.favoriteWish(wish ,position, true)
+
+                    //Add wish first to favorites then increment the done item(for some reason item is incremented twice if incremented in WishItemsAdapter)
+                    val incrementAmount = if(isDone) 1 else -1
+                    wish.items!![itemId]?.completeCount = wish.items!![itemId]?.completeCount!!+incrementAmount
                     completeListener(itemId, wish, isDone)
                 },likeListener = {itemId, isLiked ->
+                    val incrementAmount = if(isLiked) 1 else -1
+                    wish.items!![itemId]?.viewedCount = wish.items!![itemId]?.  viewedCount!!+incrementAmount
                     likeListener(itemId,wish,isLiked)
                 })
             wishItemsAdapterArrayList.add(wishItemsAdapter)

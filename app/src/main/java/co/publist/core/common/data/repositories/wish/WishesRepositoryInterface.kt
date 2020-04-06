@@ -5,8 +5,6 @@ import io.reactivex.Completable
 import io.reactivex.Single
 
 interface WishesRepositoryInterface {
-    fun getAllWishesQuery(): Query
-    fun getFilteredWishesQuery(categoryList: ArrayList<String?>): Query
     fun getUserListWishesQuery(): Query
     fun getUserFavoriteWishesQuery(): Query
     fun getSpecificWish(wishId : String): Single<Wish>
