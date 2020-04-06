@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
 import co.publist.R
+import co.publist.core.common.data.models.User
 import co.publist.core.common.data.models.wish.WishAdapterItem
 import co.publist.core.utils.DataBindingAdapters.loadProfilePicture
 import co.publist.core.utils.DataBindingAdapters.loadWishImage
@@ -29,7 +30,7 @@ class WishesFirestoreAdapter(
     val wishesType: Int,
     val doneItemsList: ArrayList<String>,
     val likedItemsList: ArrayList<String>,
-    val userId: String,
+    val user: User,
     val displayPlaceHolder: (Boolean) -> Unit,
     val unFavoriteListener: (wish: WishAdapterItem) -> Unit,
     val detailsListener: (wish: WishAdapterItem) -> Unit,
@@ -151,7 +152,7 @@ class WishesFirestoreAdapter(
             val wishItemsAdapter = WishItemsAdapter(
                 wish,
                 LISTS,
-                userId,
+                user,
                 binding.seeMoreTextView,
                 binding.arrowImageView,
                 wishItemsAdapterArrayList.size

@@ -8,6 +8,7 @@ import android.widget.ImageView
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
 import co.publist.R
+import co.publist.core.common.data.models.User
 import co.publist.core.common.data.models.wish.WishAdapterItem
 import co.publist.core.utils.DataBindingAdapters
 import co.publist.core.utils.Utils.Constants.DETAILS
@@ -21,7 +22,7 @@ import kotlin.collections.ArrayList
 class WishesAdapter(
     val list: ArrayList<WishAdapterItem>,
     val wishesType: Int,
-    val userId: String,
+    val user: User,
     val favoriteListener: (wish: WishAdapterItem, isFavoriting: Boolean) -> Unit,
     val detailsListener: (wish: WishAdapterItem) -> Unit,
     val completeListener: (itemId: String, wish: WishAdapterItem, isDone: Boolean) -> Unit,
@@ -103,7 +104,7 @@ class WishesAdapter(
             val wishItemsAdapter = WishItemsAdapter(
                 wish,
                 wishesType,
-                userId,
+                user,
                 binding.seeMoreTextView,
                 binding.arrowImageView,
                 wishItemsAdapterArrayList.size
@@ -154,9 +155,8 @@ class WishesAdapter(
                             {
                                 item.done = false
                                 item.completeCount = item.completeCount?.dec()
-                                item.topCompletedUsersId?.remove(userId)
+                                item.topCompletedUsersId?.remove(user.id)
                             }
-                            //Todo mimic deleting use interactions without reloading
                         }
                         notifyItemChanged(position)
                     }

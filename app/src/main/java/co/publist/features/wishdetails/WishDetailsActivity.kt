@@ -76,7 +76,10 @@ class WishDetailsActivity : BaseActivity<WishDetailsViewModel>() {
             if(isFavoriteAdded)
                 Toast.makeText(this,getString(R.string.add_favorite), Toast.LENGTH_SHORT).show()
             else
+            {
                 Toast.makeText(this,getString(R.string.remove_favorite), Toast.LENGTH_SHORT).show()
+                finish()
+            }
 
         })
 

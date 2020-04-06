@@ -36,7 +36,7 @@ class WishesViewModel @Inject constructor(
     val wishDeletedLiveData = MutableLiveData<Boolean>()
     val editWishLiveData = MutableLiveData<WishAdapterItem>()
     val itemsAttributesPairLiveData = MutableLiveData<Pair<ArrayList<String>,ArrayList<String>>>()
-    val userId = userRepository.getUser()?.id
+    val user = userRepository.getUser()
     lateinit var selectedWish: WishAdapterItem
     fun loadData(type: Int) {
         wishesType.postValue(type)
@@ -70,7 +70,7 @@ class WishesViewModel @Inject constructor(
                                                         .flatMap { doneItemsInMyListsArrayList ->
                                                             filteredWishes = filterWishesByCreator(
                                                                 filteredWishes,
-                                                                userId!!,
+                                                                user?.id!!,
                                                                 doneItemsInMyListsArrayList
                                                             )
                                                             wishesRepository.getUserLikedItems()
@@ -116,7 +116,7 @@ class WishesViewModel @Inject constructor(
                                 oneElementList =
                                     filterWishesByCreator(
                                         oneElementList,
-                                        userId!!,
+                                        user?.id!!,
                                         doneItemsInMyListsArrayList
                                     )
                                 wishesRepository.getDoneItemsInMyFavorites()

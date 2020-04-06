@@ -91,7 +91,7 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
                 .build()
 
         val adapter =
-            WishesFirestoreAdapter(options, type,doneItemsList,likedItemsList,userId = viewModel.userId!!, displayPlaceHolder = { displayPlaceHolder ->
+            WishesFirestoreAdapter(options, type,doneItemsList,likedItemsList,user = viewModel.user!!, displayPlaceHolder = { displayPlaceHolder ->
                 val view =
                     this.parentFragment?.view?.findViewById<LinearLayout>(R.id.placeHolderView)
                 if (displayPlaceHolder)
@@ -118,7 +118,7 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
     private fun setAdapter(list: ArrayList<WishAdapterItem>) {
         refreshLayout.isRefreshing = false
         if (list.isNotEmpty()) {
-            val wishesAdapter = WishesAdapter(list, wishesType = wishesType,userId = viewModel.userId!!, detailsListener = { wish ->
+            val wishesAdapter = WishesAdapter(list, wishesType = wishesType,user = viewModel.user!!, detailsListener = { wish ->
                 if (activity is HomeActivity)
                     (activity as HomeActivity).showEditWishDialog(wish)
                 else

@@ -14,6 +14,7 @@ import android.view.animation.RotateAnimation
 import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import androidx.core.content.FileProvider
+import co.publist.core.common.data.models.User
 import co.publist.core.utils.DataBindingAdapters.loadProfilePicture
 import co.publist.core.utils.Utils.Constants.FETCH_USER_PICTURE_CLOUD_FUNCTION
 import co.publist.core.utils.Utils.Constants.GALLERY
@@ -103,19 +104,38 @@ object Utils {
 
     fun loadTopUsersPictures(
         topUsersId: ArrayList<String>?,
-        imageViewArrayList: ArrayList<ImageView>
+        imageViewArrayList: ArrayList<ImageView>,
+        user : User
     ) {
         //Clear extra loaded images when updating (i.e removed images)
         if (topUsersId.isNullOrEmpty())
         {
             for (imageView in imageViewArrayList)
                 imageView.setImageDrawable(null)
-            return
+            return //Case where all images are removed , Undraw all then terminate
         }
         else if (topUsersId.isNotEmpty())
+        {
             for (emptyIndex in topUsersId.size.until(imageViewArrayList.size))
                 imageViewArrayList[emptyIndex].setImageDrawable(null)
+             //Case where some images are removed , Undraw them then load new images
+        }
 
+        //Load cached user image if is in topUsersId
+        if(topUsersId.contains(user.id!!))
+        {
+            for (topUserIdIndex in 0 until topUsersId.size)
+            {
+                if(topUsersId[topUserIdIndex]==user.id)
+                {
+                    loadProfilePicture(imageViewArrayList[topUserIdIndex],user.profilePictureUrl)
+                    topUsersId.removeAt(topUserIdIndex)
+                    imageViewArrayList.removeAt(topUserIdIndex)
+                }
+                else
+                    loadProfilePicture(imageViewArrayList[topUserIdIndex],null) //Load placeholders for images to be loaded
+            }
+        }
 
         //Load new Images
         FirebaseFunctions.getInstance().getHttpsCallable(FETCH_USER_PICTURE_CLOUD_FUNCTION)

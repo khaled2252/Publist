@@ -10,6 +10,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import co.publist.R
+import co.publist.core.common.data.models.User
 import co.publist.core.common.data.models.wish.WishAdapterItem
 import co.publist.core.common.data.models.wish.WishItem
 import co.publist.core.utils.Utils
@@ -28,7 +29,7 @@ import kotlinx.android.synthetic.main.item_wish_item.view.*
 class WishItemsAdapter(
     private val wish: WishAdapterItem,
     private val wishesType: Int,
-    private val userId: String,
+    private val user: User,
     private val seeMoreTextView: TextView,
     private val arrowImageView: ImageView,
     private val adapterIndex: Int,
@@ -119,11 +120,11 @@ class WishItemsAdapter(
                 if (!wishItem.done!!) {//Opposite of previous state
                     wishItem.done = true
                     wishItem.completeCount = wishItem.completeCount?.inc()
-                    updateTopCompletedUsersPictures(wishItem,true)
+                    updateTopCompletedUsersPictures(wishItem, true)
                 } else {
                     wishItem.done = false
                     wishItem.completeCount = wishItem.completeCount?.dec()
-                    updateTopCompletedUsersPictures(wishItem,false)
+                    updateTopCompletedUsersPictures(wishItem, false)
                 }
                 notifyItemChanged(position)
 
@@ -135,11 +136,11 @@ class WishItemsAdapter(
                 if (!wishItem.isLiked!!) {
                     wishItem.isLiked = true
                     wishItem.viewedCount = wishItem.viewedCount?.inc()
-                    updateTopLikedUsersPictures(wishItem,true)
+                    updateTopLikedUsersPictures(wishItem, true)
                 } else {
                     wishItem.isLiked = false
                     wishItem.viewedCount = wishItem.viewedCount?.dec()
-                    updateTopLikedUsersPictures(wishItem,false)
+                    updateTopLikedUsersPictures(wishItem, false)
                 }
                 notifyItemChanged(position)
 
@@ -192,61 +193,39 @@ class WishItemsAdapter(
     }
 
     private fun WishItemViewHolder.loadTopUsersPictures(wishItem: WishItem) {
+        val imageViewArrayList = arrayListOf(
+            itemView.userOneImageView,
+            itemView.userTwoImageView,
+            itemView.userThreeImageView
+        )
         when {
-            wishItem.done!! -> loadTopUsersPictures(
-                wishItem.topCompletedUsersId,
-                arrayListOf(
-                    itemView.userOneImageView,
-                    itemView.userTwoImageView,
-                    itemView.userThreeImageView
-                )
-            )
-
-            wishItem.viewedCount!! > 0 -> loadTopUsersPictures(
-                wishItem.topViewedUsersId,
-                arrayListOf(
-                    itemView.userOneImageView,
-                    itemView.userTwoImageView,
-                    itemView.userThreeImageView
-                )
-            )
-
-            else -> loadTopUsersPictures(
-                wishItem.topCompletedUsersId,
-                arrayListOf(
-                    itemView.userOneImageView,
-                    itemView.userTwoImageView,
-                    itemView.userThreeImageView
-                )
-            )
+            wishItem.done!! -> loadTopUsersPictures(wishItem.topCompletedUsersId,imageViewArrayList,user)
+            wishItem.viewedCount!! > 0 -> loadTopUsersPictures(wishItem.topViewedUsersId,imageViewArrayList,user)
+            else -> loadTopUsersPictures(wishItem.topCompletedUsersId,imageViewArrayList,user)
         }
     }
 
-    private fun WishItemViewHolder.updateTopCompletedUsersPictures(
+    private fun updateTopCompletedUsersPictures(
         wishItem: WishItem,
-        isAdding : Boolean
+        isAdding: Boolean
     ) {
         if (wishItem.completeCount!! < TOP_USERS_THRESHOLD) {
             if(isAdding)
-            wishItem.topCompletedUsersId?.add(userId)
+            wishItem.topCompletedUsersId?.add(user.id!!)
             else
-                wishItem.topCompletedUsersId?.remove(userId)
-
-            loadTopUsersPictures(wishItem)
+                wishItem.topCompletedUsersId?.remove(user.id)
         }
     }
 
-    private fun WishItemViewHolder.updateTopLikedUsersPictures(
+    private fun updateTopLikedUsersPictures(
         wishItem: WishItem,
-        isAdding : Boolean
+        isAdding: Boolean
     ) {
         if (wishItem.completeCount!! < TOP_USERS_THRESHOLD) {
             if(isAdding)
-                wishItem.topViewedUsersId?.add(userId)
+                wishItem.topViewedUsersId?.add(user.id!!)
             else
-                wishItem.topViewedUsersId?.remove(userId)
-
-            loadTopUsersPictures(wishItem)
+                wishItem.topViewedUsersId?.remove(user.id)
         }
     }
 
