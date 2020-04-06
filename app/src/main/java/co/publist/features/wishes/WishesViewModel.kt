@@ -16,6 +16,7 @@ import co.publist.core.utils.Utils.Constants.PUBLIC
 import co.publist.core.utils.Utils.Constants.TOP_USERS_THRESHOLD
 import co.publist.features.categories.data.CategoriesRepositoryInterface
 import co.publist.features.myfavorites.data.MyFavoritesRepositoryInterface
+import co.publist.features.mylists.data.MyListsRepository
 import com.google.firebase.firestore.Query
 import io.reactivex.Completable
 import io.reactivex.Single
@@ -26,6 +27,7 @@ import javax.inject.Inject
 class WishesViewModel @Inject constructor(
     private val wishesRepository: WishesRepositoryInterface,
     private val categoryRepository: CategoriesRepositoryInterface,
+    private val myListsRepository: MyListsRepository,
     private val favoritesRepository: MyFavoritesRepositoryInterface,
     private val userRepository: UserRepositoryInterface
 ) : BaseViewModel() {
@@ -96,13 +98,13 @@ class WishesViewModel @Inject constructor(
             }
             LISTS -> wishesQueryLiveData.postValue(
                 Pair(
-                    wishesRepository.getUserListWishesQuery(),
+                    myListsRepository.getUserListWishesQuery(),
                     type
                 )
             )
             FAVORITES -> wishesQueryLiveData.postValue(
                 Pair(
-                    wishesRepository.getUserFavoriteWishesQuery(),
+                    favoritesRepository.getUserFavoriteWishesQuery(),
                     type
                 )
             )
@@ -268,11 +270,10 @@ class WishesViewModel @Inject constructor(
             isDone
         ).mergeWith(wishesRepository.incrementOrganicSeen(wish.wishId!!))
             .andThen(
-                wishesRepository.incrementCompleteCount(
+                wishesRepository.incrementCompleteCountInWishes(
                     itemId,
                     wish.wishId!!,
-                    isDone,
-                    collectionTobeEdited
+                    isDone
                 )
             )
             .flatMapCompletable { completeCount ->
@@ -285,8 +286,7 @@ class WishesViewModel @Inject constructor(
                         .mergeWith(
                             wishesRepository.addUserIdInTopCompletedUsersIdField(
                                 itemId, wish.wishId!!,
-                                isDone,
-                                collectionTobeEdited
+                                isDone
                             )
                         )
                 else
@@ -312,11 +312,10 @@ class WishesViewModel @Inject constructor(
         subscribe(wishesRepository.addItemToUserViewedItems(itemId,isLiked)
             .mergeWith(wishesRepository.incrementOrganicSeen(wish.wishId!!))
             .andThen(
-                wishesRepository.incrementViewedCount(
+                wishesRepository.incrementViewedCountInWishes(
                     itemId,
                     wish.wishId!!,
-                    isLiked,
-                    collectionTobeEditedIfIsInUserWishes
+                    isLiked
                 )
             )
             .flatMapCompletable { likeCount ->
@@ -329,8 +328,7 @@ class WishesViewModel @Inject constructor(
                         .mergeWith(
                             wishesRepository.addUserIdInTopViewedUsersIdField(
                                 itemId, wish.wishId!!,
-                                isLiked,
-                                collectionTobeEditedIfIsInUserWishes
+                                isLiked
                             )
                         )
                 else

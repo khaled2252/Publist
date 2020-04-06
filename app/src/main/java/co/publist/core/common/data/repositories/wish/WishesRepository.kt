@@ -43,20 +43,6 @@ class WishesRepository @Inject constructor(
 ) : WishesRepositoryInterface {
     private val userId = localDataSource.getSharedPreferences().getUser()?.id
 
-    override fun getUserListWishesQuery(): Query {
-        return mFirebaseFirestore.collection(USERS_COLLECTION_PATH)
-            .document(userId!!)
-            .collection(MY_LISTS_COLLECTION_PATH)
-            .orderBy(DATE_FIELD, Query.Direction.ASCENDING) //Get Wishes Ascending, then will be reversed by reverseLayout attribute in RecyclerView
-    }
-
-    override fun getUserFavoriteWishesQuery(): Query {
-        return mFirebaseFirestore.collection(USERS_COLLECTION_PATH)
-            .document(userId!!)
-            .collection(MY_FAVORITES_COLLECTION_PATH)
-            .orderBy(DATE_FIELD, Query.Direction.ASCENDING) //Get Wishes Ascending, then will be reversed by reverseLayout attribute in RecyclerView
-    }
-
     override fun getSpecificWish(wishId: String): Single<Wish> {
         return Single.create { singleEmitter ->
             mFirebaseFirestore.collection(WISHES_COLLECTION_PATH)
@@ -280,42 +266,22 @@ class WishesRepository @Inject constructor(
         }
     }
 
-    override fun incrementCompleteCount(
+    override fun incrementCompleteCountInWishes(
         itemId: String,
         wishId: String,
-        isDone: Boolean,
-        collectionToBeEdited: String
+        isDone: Boolean
     ): Single<Int> {
         return Single.create { singleEmitter ->
-            val incrementAmount = if (isDone) 1 else -1
-            val batch = mFirebaseFirestore.batch()
-
-            //In home wishes
             val wishRef =
                 mFirebaseFirestore
                     .collection(WISHES_COLLECTION_PATH)
                     .document(wishId)
-
-            batch.update(
-                wishRef,
-                "$ITEMS_FIELD.$itemId.$COMPLETE_COUNT_FIELD",
-                FieldValue.increment(incrementAmount.toDouble())
-            )
-
-            //In user wishes
-            val userRef =
-                mFirebaseFirestore
-                    .collection(USERS_COLLECTION_PATH)
-                    .document(userId!!)
-                    .collection(collectionToBeEdited)
-                    .document(wishId)
-            batch.update(
-                userRef,
-                "$ITEMS_FIELD.$itemId.$COMPLETE_COUNT_FIELD",
-                FieldValue.increment(incrementAmount.toDouble())
-            )
-
-            batch.commit()
+            val incrementAmount = if (isDone) 1 else -1
+            wishRef
+                .update(
+                    "$ITEMS_FIELD.$itemId.$COMPLETE_COUNT_FIELD",
+                    FieldValue.increment(incrementAmount.toDouble())
+                )
                 .addOnFailureListener {
                     singleEmitter.onError(it)
                 }
@@ -373,54 +339,35 @@ class WishesRepository @Inject constructor(
     override fun addUserIdInTopCompletedUsersIdField(
         itemId: String,
         wishId: String,
-        isAdding: Boolean,
-        collectionToBeEdited: String
+        isAdding: Boolean
     ): Completable {
         return Completable.create { completableEmitter ->
-            //Update both home wishes , user wishes
-            val wishRef = mFirebaseFirestore
+            val ref = mFirebaseFirestore
                 .collection(WISHES_COLLECTION_PATH)
                 .document(wishId)
 
-            val userRef = mFirebaseFirestore
-                .collection(USERS_COLLECTION_PATH)
-                .document(userId!!)
-                .collection(collectionToBeEdited)
-                .document(wishId)
-
-            val batch = mFirebaseFirestore.batch()
-            if (isAdding) {
-                batch.update(
-                    wishRef,
+            if (isAdding)
+                ref.update(
                     "$ITEMS_FIELD.$itemId.$TOP_COMPLETED_USER_IDS_FIELD",
                     FieldValue.arrayUnion(userId)
                 )
-                batch.update(
-                    userRef,
-                    "$ITEMS_FIELD.$itemId.$TOP_COMPLETED_USER_IDS_FIELD",
-                    FieldValue.arrayUnion(userId)
-                )
-            } else {
-                batch.update(
-                    wishRef,
-                    "$ITEMS_FIELD.$itemId.$TOP_COMPLETED_USER_IDS_FIELD",
-                    FieldValue.arrayRemove(userId)
-                )
-                batch.update(
-                    userRef,
+                    .addOnFailureListener {
+                        completableEmitter.onError(it)
+                    }
+                    .addOnSuccessListener {
+                        completableEmitter.onComplete()
+                    }
+            else
+                ref.update(
                     "$ITEMS_FIELD.$itemId.$TOP_COMPLETED_USER_IDS_FIELD",
                     FieldValue.arrayRemove(userId)
                 )
-
-            }
-
-            batch.commit()
-                .addOnFailureListener {
-                    completableEmitter.onError(it)
-                }
-                .addOnSuccessListener {
-                    completableEmitter.onComplete()
-                }
+                    .addOnFailureListener {
+                        completableEmitter.onError(it)
+                    }
+                    .addOnSuccessListener {
+                        completableEmitter.onComplete()
+                    }
         }
     }
 
@@ -517,41 +464,22 @@ class WishesRepository @Inject constructor(
     }
 
 
-    override fun incrementViewedCount(
+    override fun incrementViewedCountInWishes(
         itemId: String,
         wishId: String,
-        isLiked: Boolean,
-        collectionTobeEditedIfIsInUserWishes: String
+        isLiked: Boolean
     ): Single<Int> {
         return Single.create { singleEmitter ->
             val wishRef =
                 mFirebaseFirestore
                     .collection(WISHES_COLLECTION_PATH)
                     .document(wishId)
-
             val incrementAmount = if (isLiked) 1 else -1
-            val batch = mFirebaseFirestore.batch()
             wishRef
                 .update(
                     "$ITEMS_FIELD.$itemId.$LIKE_COUNT_FIELD",
                     FieldValue.increment(incrementAmount.toDouble())
                 )
-
-            //Increment in user wishes (if is user's list , or favorites)
-            if (collectionTobeEditedIfIsInUserWishes.isNotEmpty()) {
-                val userRef =
-                    mFirebaseFirestore.collection(USERS_COLLECTION_PATH)
-                        .document(userId!!)
-                        .collection(collectionTobeEditedIfIsInUserWishes)
-                        .document(wishId)
-                userRef.update(
-                    "$ITEMS_FIELD.$itemId.$LIKE_COUNT_FIELD",
-                    FieldValue.increment(incrementAmount.toDouble())
-                )
-
-            }
-
-            batch.commit()
                 .addOnFailureListener {
                     singleEmitter.onError(it)
                 }
@@ -609,62 +537,35 @@ class WishesRepository @Inject constructor(
     override fun addUserIdInTopViewedUsersIdField(
         itemId: String,
         wishId: String,
-        isAdding: Boolean,
-        collectionTobeEditedIfIsInUserWishes: String
+        isAdding: Boolean
     ): Completable {
         return Completable.create { completableEmitter ->
-            val wishRef = mFirebaseFirestore
+            val ref = mFirebaseFirestore
                 .collection(WISHES_COLLECTION_PATH)
                 .document(wishId)
 
-            val batch = mFirebaseFirestore.batch()
             if (isAdding)
-            {
-                batch.update(
-                    wishRef,
+                ref.update(
                     "$ITEMS_FIELD.$itemId.$TOP_VIEWED_USER_IDS_FIELD",
                     FieldValue.arrayUnion(userId)
                 )
-            if (collectionTobeEditedIfIsInUserWishes.isNotEmpty()) {
-                val userRef = mFirebaseFirestore
-                    .collection(USERS_COLLECTION_PATH)
-                    .document(userId!!)
-                    .collection(collectionTobeEditedIfIsInUserWishes)
-                    .document(wishId)
-                batch.update(
-                    userRef,
-                    "$ITEMS_FIELD.$itemId.$TOP_VIEWED_USER_IDS_FIELD",
-                    FieldValue.arrayUnion(userId)
-                )
-            }
-            } else {
-                batch.update(
-                    wishRef,
+                    .addOnFailureListener {
+                        completableEmitter.onError(it)
+                    }
+                    .addOnSuccessListener {
+                        completableEmitter.onComplete()
+                    }
+            else
+                ref.update(
                     "$ITEMS_FIELD.$itemId.$TOP_VIEWED_USER_IDS_FIELD",
                     FieldValue.arrayRemove(userId)
                 )
-
-                if (collectionTobeEditedIfIsInUserWishes.isNotEmpty()) {
-                    val userRef = mFirebaseFirestore
-                        .collection(USERS_COLLECTION_PATH)
-                        .document(userId!!)
-                        .collection(collectionTobeEditedIfIsInUserWishes)
-                        .document(wishId)
-                    batch.update(
-                        userRef,
-                        "$ITEMS_FIELD.$itemId.$TOP_VIEWED_USER_IDS_FIELD",
-                        FieldValue.arrayRemove(userId)
-                    )
-                }
-            }
-
-            batch.commit()
-                .addOnFailureListener {
-                    completableEmitter.onError(it)
-                }
-                .addOnSuccessListener {
-                    completableEmitter.onComplete()
-                }
+                    .addOnFailureListener {
+                        completableEmitter.onError(it)
+                    }
+                    .addOnSuccessListener {
+                        completableEmitter.onComplete()
+                    }
         }
     }
 
