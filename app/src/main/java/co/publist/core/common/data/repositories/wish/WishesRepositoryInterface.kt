@@ -29,4 +29,6 @@ interface WishesRepositoryInterface {
     fun isWishSeen(wishId: String) : Single<Boolean>
     fun incrementSeenCountRemotely(wishId: String) : Completable
     fun incrementSeenCountLocally(wishId: String)
+    fun getCorrespondingMyListsPublicWishes(): Single<ArrayList<Wish>>
+    fun getCorrespondingMyFavoritesPublicWishes(): Single<ArrayList<Wish>>
 }

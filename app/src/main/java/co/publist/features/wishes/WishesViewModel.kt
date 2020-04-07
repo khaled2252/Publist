@@ -37,7 +37,8 @@ class WishesViewModel @Inject constructor(
     val isFavoriteAdded = MutableLiveData<Boolean>()
     val wishDeletedLiveData = MutableLiveData<Boolean>()
     val editWishLiveData = MutableLiveData<WishAdapterItem>()
-    val itemsAttributesPairLiveData = MutableLiveData<Pair<ArrayList<String>,ArrayList<String>>>()
+    val wishDataPairLiveData =
+        MutableLiveData<Pair<ArrayList<Wish>, Pair<ArrayList<String>, ArrayList<String>>>>()
     val user = userRepository.getUser()
     lateinit var selectedWish: WishAdapterItem
     fun loadData(type: Int) {
@@ -217,7 +218,8 @@ class WishesViewModel @Inject constructor(
     fun modifyFavorite(wish: Wish, isFavoriting: Boolean) {
         if (isFavoriting)
             subscribe(
-                favoritesRepository.addToMyFavoritesRemotely(wish).mergeWith(wishesRepository.incrementOrganicSeen(wish.wishId!!))
+                favoritesRepository.addToMyFavoritesRemotely(wish)
+                    .mergeWith(wishesRepository.incrementOrganicSeen(wish.wishId!!))
                 , Action {
                     isFavoriteAdded.postValue(true)
                 }, showLoading = false
@@ -303,13 +305,7 @@ class WishesViewModel @Inject constructor(
     }
 
     fun likeItem(itemId: String, wish: WishAdapterItem, isLiked: Boolean) {
-        var collectionTobeEditedIfIsInUserWishes =""
-        if (wish.isCreator)
-        collectionTobeEditedIfIsInUserWishes = MY_LISTS_COLLECTION_PATH
-        else if (wish.isFavorite)
-            collectionTobeEditedIfIsInUserWishes = MY_FAVORITES_COLLECTION_PATH
-
-        subscribe(wishesRepository.addItemToUserViewedItems(itemId,isLiked)
+        subscribe(wishesRepository.addItemToUserViewedItems(itemId, isLiked)
             .mergeWith(wishesRepository.incrementOrganicSeen(wish.wishId!!))
             .andThen(
                 wishesRepository.incrementViewedCountInWishes(
@@ -343,37 +339,42 @@ class WishesViewModel @Inject constructor(
         )
     }
 
-    fun getItemsAttributes() {
-            subscribe(wishesRepository.getUserLikedItems().flatMap {likedItemsList ->
-
-                if(wishesType.value == LISTS)
-                    wishesRepository.getDoneItemsInMyLists().flatMap {doneItemsList ->
-                        Single.just(Pair(doneItemsList,likedItemsList))
+    fun getCorrespondingPublicWishesData(currentWishType: Int) {
+        subscribe(wishesRepository.getUserLikedItems().flatMap { likedItemsList ->
+            if (currentWishType == LISTS)
+                wishesRepository.getDoneItemsInMyLists().flatMap { doneItemsList ->
+                    Single.just(Pair(doneItemsList, likedItemsList))
+                }.flatMap { itemsAttributesPair ->
+                    wishesRepository.getCorrespondingMyListsPublicWishes()
+                        .flatMap { wishList ->
+                            Single.just(Pair(wishList, itemsAttributesPair))
+                        }
+                }
+            else
+                wishesRepository.getDoneItemsInMyFavorites().flatMap { doneItemsList ->
+                    Single.just(Pair(doneItemsList, likedItemsList))
+                }.flatMap { itemsAttributesPair ->
+                    wishesRepository.getCorrespondingMyFavoritesPublicWishes().flatMap { wishList ->
+                        Single.just(Pair(wishList, itemsAttributesPair))
                     }
-                else
-                    wishesRepository.getDoneItemsInMyFavorites().flatMap {doneItemsList ->
-                        Single.just(Pair(doneItemsList,likedItemsList))
-                    }
-
-            }, Consumer { itemsAttributesPair ->
-                itemsAttributesPairLiveData.postValue(itemsAttributesPair)
-            })
+                }
+        }, Consumer { dataPair ->
+            wishDataPairLiveData.postValue(dataPair)
+        })
 
 
     }
 
     fun incrementSeenCount(wishId: String) {
-        subscribe(wishesRepository.isWishSeen(wishId).flatMapCompletable {isSeen ->
-            if (!isSeen)
-            {
+        subscribe(wishesRepository.isWishSeen(wishId).flatMapCompletable { isSeen ->
+            if (!isSeen) {
                 wishesRepository.incrementSeenCountLocally(wishId)
                 wishesRepository.incrementSeenCountRemotely(wishId)
-            }
-            else
+            } else
                 Completable.complete()
 
         }, Action {
 
-        },showLoading = false)
+        }, showLoading = false)
     }
 }

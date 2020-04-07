@@ -7,7 +7,7 @@ import io.reactivex.Single
 
 interface LoginRepositoryInterface {
     fun fetchUserDocId(email : String): Single<String?>
-    fun updateProfilePictureUrl(documentId: String, profilePictureUrl: String): Completable
+    fun updateProfilePictureUrl(userDocumentId: String, profilePictureUrl: String): Completable
     fun addUidInUserAccounts(docId: String, uId: String, platform: String): Completable
     fun addNewUser(
         email: String,

@@ -60,7 +60,7 @@ class WishesRepository @Inject constructor(
     override fun getAllWishes(): Single<ArrayList<Wish>> {
         return Single.create { singleEmitter ->
             mFirebaseFirestore.collection(WISHES_COLLECTION_PATH)
-                .orderBy(DATE_FIELD, Query.Direction.ASCENDING) //Get Wishes Ascending, then will be reversed by reverseLayout attribute in RecyclerView
+                .orderBy(DATE_FIELD, Query.Direction.ASCENDING) //Fixme , Get Wishes Ascending, then will be reversed by reverseLayout attribute in RecyclerView
                 .get()
                 .addOnFailureListener {
                     singleEmitter.onError(it)
@@ -621,5 +621,64 @@ class WishesRepository @Inject constructor(
     override fun incrementSeenCountLocally(wishId: String) {
         localDataSource.getPublistDataBase().insertSeenWish(wishId)
     }
+
+    override fun getCorrespondingMyListsPublicWishes(): Single<ArrayList<Wish>> {
+        return Single.create { singleEmitter ->
+            mFirebaseFirestore.collection(USERS_COLLECTION_PATH)
+                .document(userId!!)
+                .collection(MY_LISTS_COLLECTION_PATH)
+                .orderBy(DATE_FIELD, Query.Direction.ASCENDING)
+                .get()
+                .addOnFailureListener {
+                    singleEmitter.onError(it)
+                }.addOnSuccessListener { myListsQuerySnapshot ->
+                    val myListWishes = Mapper.mapToWishAdapterItemArrayList(myListsQuerySnapshot)
+                    if(myListWishes.isNotEmpty())
+                    {
+                        val myListWishesId = myListWishes.map{it.wishId}
+                        mFirebaseFirestore.collection(WISHES_COLLECTION_PATH)
+                            .whereIn(FieldPath.documentId(),myListWishesId)
+                            .get()
+                            .addOnFailureListener {
+                                singleEmitter.onError(it)
+                            }
+                            .addOnSuccessListener {publicWishesQuerySnapshot ->
+                                singleEmitter.onSuccess(Mapper.mapToWishArrayList(publicWishesQuerySnapshot))
+                            }
+                    }
+                    else
+                        singleEmitter.onSuccess(arrayListOf())
+                  }
+        }
+    }
+
+    override fun getCorrespondingMyFavoritesPublicWishes(): Single<ArrayList<Wish>> {
+        return Single.create { singleEmitter ->
+            mFirebaseFirestore.collection(USERS_COLLECTION_PATH)
+                .document(userId!!)
+                .collection(MY_FAVORITES_COLLECTION_PATH)
+                .orderBy(DATE_FIELD, Query.Direction.ASCENDING)
+                .get()
+                .addOnFailureListener {
+                    singleEmitter.onError(it)
+                }.addOnSuccessListener { MyFavoritesQuerySnapshot ->
+                    val myFavoritesWishes = Mapper.mapToWishAdapterItemArrayList(MyFavoritesQuerySnapshot)
+                       if(myFavoritesWishes.isNotEmpty())
+                       {
+                           val myFavoritesWishesId = myFavoritesWishes.map{it.wishId}
+                           mFirebaseFirestore.collection(WISHES_COLLECTION_PATH)
+                               .whereIn(FieldPath.documentId(),myFavoritesWishesId)
+                               .get()
+                               .addOnFailureListener {
+                                   singleEmitter.onError(it)
+                               }
+                               .addOnSuccessListener {publicWishesQuerySnapshot ->
+                                   singleEmitter.onSuccess(Mapper.mapToWishArrayList(publicWishesQuerySnapshot))
+                               }
+                       }
+                    else
+                           singleEmitter.onSuccess(arrayListOf())
+                   }
+        }    }
 
 }

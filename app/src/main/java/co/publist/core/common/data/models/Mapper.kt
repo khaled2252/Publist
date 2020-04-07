@@ -153,6 +153,13 @@ object Mapper {
         return arrayList
     }
 
+    fun mapToWishArrayList(documents: QuerySnapshot): ArrayList<Wish> {
+        val arrayList = ArrayList<Wish>()
+        for (document in documents)
+            arrayList.add(document.toObject(Wish::class.java))
+        return arrayList
+    }
+
      fun mapToWishAdapterItem(item: Wish): WishAdapterItem {
         return WishAdapterItem(
             category = item.category,

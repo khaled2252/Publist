@@ -8,6 +8,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
 import co.publist.R
 import co.publist.core.common.data.models.User
+import co.publist.core.common.data.models.wish.Wish
 import co.publist.core.common.data.models.wish.WishAdapterItem
 import co.publist.core.utils.DataBindingAdapters.loadProfilePicture
 import co.publist.core.utils.DataBindingAdapters.loadWishImage
@@ -28,6 +29,7 @@ import kotlin.collections.ArrayList
 class WishesFirestoreAdapter(
     options: FirestoreRecyclerOptions<WishAdapterItem>,
     val wishesType: Int,
+    val correspondingPublicWishes : ArrayList<Wish>,
     val doneItemsList: ArrayList<String>,
     val likedItemsList: ArrayList<String>,
     val user: User,
@@ -77,7 +79,20 @@ class WishesFirestoreAdapter(
 
     override fun onBindViewHolder(holder: WishViewHolder, position: Int, wish: WishAdapterItem) {
         seenCountListener(wish.wishId!!)
+        val index = if(position==0) 0 else position-1
+        applyPublicWishDataToReceivedWish(wish,correspondingPublicWishes[index])
         holder.bind(wish)
+    }
+
+    private fun applyPublicWishDataToReceivedWish(wish: WishAdapterItem, publicWish: Wish) {
+        wish.title = publicWish.title
+        wish.creator = publicWish.creator
+        wish.category = publicWish.category
+        wish.categoryId = publicWish.categoryId
+        wish.photoName = publicWish.photoName
+        wish.wishPhotoURL = publicWish.wishPhotoURL
+        wish.itemsId = publicWish.itemsId
+        wish.items = publicWish.items
     }
 
     inner class WishViewHolder(private val binding: ItemWishBinding) :

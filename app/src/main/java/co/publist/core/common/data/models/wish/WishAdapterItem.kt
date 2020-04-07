@@ -11,7 +11,7 @@ data class WishAdapterItem(
     var categoryId: ArrayList<String>? = null,
     var date: Timestamp? = null,
     var title: String? = null,
-    val creator: Creator? = null,
+    var creator: Creator? = null,
     val favoritesCount: Int = 0,
     var wishPhotoURL: String? = "",
     var photoName: String? = "",
