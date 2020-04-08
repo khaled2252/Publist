@@ -627,7 +627,6 @@ class WishesRepository @Inject constructor(
             mFirebaseFirestore.collection(USERS_COLLECTION_PATH)
                 .document(userId!!)
                 .collection(MY_LISTS_COLLECTION_PATH)
-                .orderBy(DATE_FIELD, Query.Direction.ASCENDING)
                 .get()
                 .addOnFailureListener {
                     singleEmitter.onError(it)
@@ -657,7 +656,6 @@ class WishesRepository @Inject constructor(
             mFirebaseFirestore.collection(USERS_COLLECTION_PATH)
                 .document(userId!!)
                 .collection(MY_FAVORITES_COLLECTION_PATH)
-                .orderBy(DATE_FIELD, Query.Direction.ASCENDING)
                 .get()
                 .addOnFailureListener {
                     singleEmitter.onError(it)

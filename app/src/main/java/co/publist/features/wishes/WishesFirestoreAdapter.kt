@@ -12,6 +12,7 @@ import co.publist.core.common.data.models.wish.Wish
 import co.publist.core.common.data.models.wish.WishAdapterItem
 import co.publist.core.utils.DataBindingAdapters.loadProfilePicture
 import co.publist.core.utils.DataBindingAdapters.loadWishImage
+import co.publist.core.utils.Utils
 import co.publist.core.utils.Utils.Constants.DETAILS
 import co.publist.core.utils.Utils.Constants.LISTS
 import co.publist.core.utils.Utils.Constants.WISH_DETAILS_INTENT
@@ -78,9 +79,11 @@ class WishesFirestoreAdapter(
     }
 
     override fun onBindViewHolder(holder: WishViewHolder, position: Int, wish: WishAdapterItem) {
+        if(wish.itemsId!!.size> Utils.Constants.MAX_VISIBLE_WISH_ITEMS) // To avoid recycling seeMore layout for expandable wish Items
+            holder.setIsRecyclable(false)
+
         seenCountListener(wish.wishId!!)
-        val index = if(position==0) 0 else position-1
-        applyPublicWishDataToReceivedWish(wish,correspondingPublicWishes[index])
+        applyPublicWishDataToReceivedWish(wish,correspondingPublicWishes[position])
         holder.bind(wish)
     }
 
@@ -93,6 +96,7 @@ class WishesFirestoreAdapter(
         wish.wishPhotoURL = publicWish.wishPhotoURL
         wish.itemsId = publicWish.itemsId
         wish.items = publicWish.items
+        wish.date = publicWish.date
     }
 
     inner class WishViewHolder(private val binding: ItemWishBinding) :

@@ -34,5 +34,7 @@ object DataBindingAdapters {
                 .placeholder(R.drawable.ph_wish_image)
                 .into(view)
         }
+        else
+            view.visibility = View.GONE
     }
 }

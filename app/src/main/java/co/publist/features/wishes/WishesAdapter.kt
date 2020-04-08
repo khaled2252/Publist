@@ -12,6 +12,7 @@ import co.publist.core.common.data.models.User
 import co.publist.core.common.data.models.wish.WishAdapterItem
 import co.publist.core.utils.DataBindingAdapters
 import co.publist.core.utils.Utils.Constants.DETAILS
+import co.publist.core.utils.Utils.Constants.MAX_VISIBLE_WISH_ITEMS
 import co.publist.core.utils.Utils.Constants.WISH_DETAILS_INTENT
 import co.publist.databinding.ItemWishBinding
 import co.publist.features.wishdetails.WishDetailsActivity
@@ -40,6 +41,9 @@ class WishesAdapter(
 
     override fun onBindViewHolder(holder: WishViewHolder, position: Int) {
         val wish = list[position]
+        if(wish.itemsId!!.size>MAX_VISIBLE_WISH_ITEMS) // To avoid recycling seeMore layout for expandable wish Items
+            holder.setIsRecyclable(false)
+
         seenCountListener(wish.wishId!!)
         holder.bind(wish,position)
     }
