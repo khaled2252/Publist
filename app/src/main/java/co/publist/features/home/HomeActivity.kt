@@ -17,7 +17,6 @@ import co.publist.core.utils.Utils.Constants.EDIT_WISH_INTENT
 import co.publist.core.utils.Utils.Constants.PUBLIC
 import co.publist.databinding.ActivityHomeBinding
 import co.publist.features.createwish.CreateWishActivity
-import co.publist.features.login.LoginActivity
 import co.publist.features.profile.ProfileActivity
 import co.publist.features.wishes.WishesFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -70,10 +69,9 @@ class HomeActivity : BaseActivity<HomeViewModel>() {
         viewModel.userLiveData.observe(this, Observer { user ->
             if (user != null)
                 loadProfilePicture(profilePictureImageView, user.profilePictureUrl)
-            else {
+            else
                 profilePictureImageView.setImageResource(R.drawable.ic_guest)
-                logoutTextView.visibility = View.GONE
-            }
+
         })
 
         viewModel.profilePictureClickLiveData.observe(this, Observer { isGuest ->
@@ -114,20 +112,6 @@ class HomeActivity : BaseActivity<HomeViewModel>() {
     }
 
     private fun setListeners() {
-        logoutTextView.setOnClickListener {
-            val builder = AlertDialog.Builder(this)
-
-            builder.setMessage(getString(R.string.logout_dialog_title))
-            builder.setPositiveButton(getString(R.string.yes)) { _, _ ->
-                viewModel.handleLogout()
-                finish()
-                startActivity(Intent(this, LoginActivity::class.java))
-            }
-            builder.setNegativeButton(getString(R.string.cancel)) { _, _ ->
-            }
-            builder.create().show()
-        }
-
         profilePictureImageView.setOnClickListener {
             viewModel.handleEditProfile()
         }

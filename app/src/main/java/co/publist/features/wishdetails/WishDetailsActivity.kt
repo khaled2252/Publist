@@ -17,6 +17,7 @@ import co.publist.features.createwish.CreateWishActivity
 import co.publist.features.wishes.WishesFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.android.synthetic.main.activity_wish_details.*
+import kotlinx.android.synthetic.main.back_button_layout.*
 import kotlinx.android.synthetic.main.edit_wish_bottom_sheet.*
 import javax.inject.Inject
 

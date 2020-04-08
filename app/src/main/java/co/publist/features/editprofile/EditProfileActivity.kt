@@ -18,6 +18,7 @@ import co.publist.databinding.ActivityEditProfileBinding
 import co.publist.features.categories.CategoriesFragment
 import co.publist.features.home.HomeActivity
 import kotlinx.android.synthetic.main.activity_edit_profile.*
+import kotlinx.android.synthetic.main.back_button_layout.*
 import javax.inject.Inject
 
 

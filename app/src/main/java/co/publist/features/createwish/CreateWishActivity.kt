@@ -41,6 +41,7 @@ import co.publist.features.categories.CategoriesFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.theartofdev.edmodo.cropper.CropImage
 import kotlinx.android.synthetic.main.activity_create_wish.*
+import kotlinx.android.synthetic.main.back_button_layout.*
 import javax.inject.Inject
 
 

@@ -49,20 +49,17 @@
                         app:profilePictureUrl="@{imageUrl}"
                         tools:src="@drawable/ic_logo" />
 
-                    <TextView
-                        android:id="@+id/logoutTextView"
-                        android:layout_width="wrap_content"
+                    <androidx.appcompat.widget.SearchView
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginEnd="15dp"
-                        android:layout_marginBottom="8dp"
-                        android:fontFamily="@font/sfprodisplaybold"
-                        android:text="@string/log_out"
-                        android:textColor="@color/dimGray"
-                        android:textSize="16sp"
+                        android:clickable="true"
+
+                        app:layout_constraintStart_toEndOf="@id/profilePictureImageView"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:focusable="true" />
+
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </androidx.appcompat.widget.Toolbar>

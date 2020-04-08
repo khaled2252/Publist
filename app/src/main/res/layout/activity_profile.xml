@@ -31,17 +31,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <LinearLayout
-                android:id="@+id/backArrowImageViewLayout"
-                android:layout_width="50dp"
-                android:layout_height="40dp"
-                android:gravity="center">
-                <ImageView
-                    android:layout_width="30dp"
-                    android:layout_height="20dp"
-                    android:src="@drawable/ic_left_arrow"
-                    />
-            </LinearLayout>
+            <include layout="@layout/back_button_layout" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -53,18 +43,38 @@
                 android:textSize="16sp" />
 
             <LinearLayout
-                android:id="@+id/editProfileImageViewLayout"
-                android:layout_width="50dp"
-                android:layout_height="40dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
                 android:layout_gravity="top|end"
-                android:layout_marginEnd="20dp"
+                android:gravity="end"
+                >
+
+            <LinearLayout
+                android:id="@+id/editProfileImageViewLayout"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginEnd="10dp"
                 android:gravity="center">
-            <ImageView
+                <ImageView
                 android:layout_width="17dp"
                 android:layout_height="17dp"
                 android:src="@drawable/ic_edit" />
             </LinearLayout>
 
+                <LinearLayout
+                    android:id="@+id/logoutImageViewLayout"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginEnd="15dp"
+                    android:gravity="center">
+                    <ImageView
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        android:src="@drawable/ic_logout" />
+                </LinearLayout>
+
+            </LinearLayout>
         </androidx.appcompat.widget.Toolbar>
 
         <ImageView

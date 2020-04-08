@@ -22,17 +22,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <LinearLayout
-                android:id="@+id/backArrowImageViewLayout"
-                android:layout_width="50dp"
-                android:layout_height="40dp"
-                android:gravity="center">
-                <ImageView
-                    android:layout_width="30dp"
-                    android:layout_height="20dp"
-                    android:src="@drawable/ic_left_arrow"
-                    />
-            </LinearLayout>
+            <include layout="@layout/back_button_layout" />
 
             <TextView
                 android:layout_width="wrap_content"

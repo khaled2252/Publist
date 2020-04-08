@@ -16,9 +16,11 @@ import co.publist.core.utils.Utils.Constants.COMING_FROM_PROFILE_INTENT
 import co.publist.core.utils.Utils.Constants.EDIT_WISH_INTENT
 import co.publist.features.createwish.CreateWishActivity
 import co.publist.features.editprofile.EditProfileActivity
+import co.publist.features.login.LoginActivity
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.android.synthetic.main.activity_profile.*
+import kotlinx.android.synthetic.main.back_button_layout.*
 import kotlinx.android.synthetic.main.edit_wish_bottom_sheet.*
 import javax.inject.Inject
 
@@ -100,6 +102,18 @@ class ProfileActivity : BaseActivity<ProfileViewModel>() {
             startActivity(intent)
         }
 
+        logoutImageViewLayout.setOnClickListener {
+            val builder = AlertDialog.Builder(this)
+            builder.setMessage(getString(R.string.logout_dialog_title))
+            builder.setPositiveButton(getString(R.string.yes)) { _, _ ->
+                viewModel.handleLogout()
+                finishAffinity() //To clear all past activities
+                startActivity(Intent(this, LoginActivity::class.java))
+            }
+            builder.setNegativeButton(getString(R.string.cancel)) { _, _ ->
+            }
+            builder.create().show()
+        }
         sheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
             override fun onSlide(bottomSheet: View, slideOffset: Float) {
                 blurredBgView.visibility = View.VISIBLE
