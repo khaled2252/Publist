@@ -61,6 +61,7 @@
     <string name="wish_details">Wish details</string>
     <string name="remove_wish_title">Remove Wish from My Favorites</string>
     <string name="remove_wish_message">You already have checked items in this wish , are you sure?</string>
+    <string name="search_hint">Search wishes</string>
 
 </resources>
 

@@ -17,7 +17,6 @@
 
         <activity
             android:name="co.publist.features.splash.SplashActivity"
-            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -28,13 +27,11 @@
 
         <activity
             android:name=".features.login.LoginActivity"
-            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.LoginScreen">
         </activity>
 
         <activity
             android:name=".features.intro.IntroActivity"
-            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.IntroScreen">
         </activity>
 
@@ -42,31 +39,31 @@
             android:name=".features.editprofile.EditProfileActivity"
             android:launchMode = "singleTop"
             android:label="@string/edit_profile"
-            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.EditProfileScreen">
         </activity>
 
-        <activity android:name=".features.home.HomeActivity" />
+        <activity android:name=".features.home.HomeActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+        </activity>
 
         <activity
             android:name=".features.createwish.CreateWishActivity"
             android:launchMode = "singleTop"
             android:label="Create a wish"
-            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.CreateWishScreen" />
 
         <activity
             android:name=".features.profile.ProfileActivity"
             android:launchMode = "singleTop"
             android:label="Profile"
-            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.ProfileScreen" />
 
         <activity
             android:name=".features.wishdetails.WishDetailsActivity"
             android:launchMode = "singleTop"
             android:label="Wish details"
-            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.WishDetailsScreen" />
 
         <provider

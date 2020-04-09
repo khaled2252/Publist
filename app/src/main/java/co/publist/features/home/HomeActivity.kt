@@ -1,11 +1,17 @@
 package co.publist.features.home
 
 
+import android.app.Activity
+import android.app.SearchManager
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
+import android.widget.AutoCompleteTextView
+import android.widget.SimpleCursorAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import co.publist.R
@@ -152,6 +158,64 @@ class HomeActivity : BaseActivity<HomeViewModel>() {
         editWishBottomSheet.setOnClickListener {
             //Do nothing when clicking on empty space to avoid triggering blurredBg thus collapsing bottomsheet
         }
+
+        searchView.apply {
+            //Quick hack to set threshold of SearchView's AutoCompleteTextView (minimum number of characters to display suggestions)
+            val autoCompleteTextViewID =
+                resources.getIdentifier("android:id/search_src_text", null, null)
+            val autoCompleteTextView = findViewById<AutoCompleteTextView>(autoCompleteTextViewID)
+            autoCompleteTextView.threshold = 1
+
+            setOnSearchClickListener {
+                profilePictureImageView.visibility = View.GONE
+                val params = searchView.layoutParams
+                params.width = ViewGroup.LayoutParams.MATCH_PARENT
+                searchView.layoutParams = params
+            }
+
+            setOnCloseListener {
+                profilePictureImageView.visibility = View.VISIBLE
+                val params = searchView.layoutParams
+                params.width = ViewGroup.LayoutParams.WRAP_CONTENT
+                searchView.layoutParams = params
+                false
+            }
+
+            setOnQueryTextListener(object : SearchView.OnQueryTextListener,
+                android.widget.SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(query: String?): Boolean {
+                    return false
+                }
+
+                override fun onQueryTextChange(newText: String?): Boolean {
+                    if (newText?.length!! >= 1) {
+                        val queryResultCursor = viewModel.getSuggestedCategoriesFromQuery(newText)
+                        searchView.suggestionsAdapter.changeCursor(queryResultCursor)
+                    } else
+                        searchView.suggestionsAdapter.changeCursor(null)
+
+                    return true
+                }
+
+            })
+
+//            autoCompleteTextView.setOnItemClickListener { adapterView,_, position,_ ->
+//                    searchView.setQuery(adapterView.getItemAtPosition(position) as String,true)
+//            }
+
+           /* val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
+            setSearchableInfo(searchManager.getSearchableInfo(componentName))*/
+            suggestionsAdapter =
+                SimpleCursorAdapter(
+                this@HomeActivity,
+                android.R.layout.simple_list_item_1,
+                    null,
+                arrayOf(SearchManager.SUGGEST_COLUMN_TEXT_1),
+                intArrayOf(android.R.id.text1), Activity.DEFAULT_KEYS_SEARCH_LOCAL
+            )
+        }
+
+
     }
 
     private fun showDeleteDialog() {
