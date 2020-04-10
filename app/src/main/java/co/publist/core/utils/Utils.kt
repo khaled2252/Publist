@@ -178,12 +178,10 @@ object Utils {
         const val COMPLETED_USERS_IDS_COLLECTION_PATH = "completedUsersId"
         const val LIKED_USERS_IDS_COLLECTION_PATH = "viewedUsersId"
         const val USER_VIEWED_ITEMS_COLLECTION_PATH = "viewedItems"
-        const val ORGANIC_SEEN_USER_IDS_COLLECTION_PATH = "organicSeenUserIds"
         const val PROFILE_PICTURE_URL_FIELD = "profilePictureUrl"
         const val TOP_COMPLETED_USER_IDS_FIELD = "topCompletedUsersId"
         const val TOP_VIEWED_USER_IDS_FIELD = "topViewedUsersId"
         const val CREATOR_FIELD = "creator"
-        const val SEEN_DATE_FIELD = "seenData"
         const val WISH_ID_FIELD = "wishId"
         const val EMAIL_FIELD = "email"
         const val NAME_FIELD = "name"
@@ -193,7 +191,6 @@ object Utils {
         const val LIKE_COUNT_FIELD = "viewedCount"
         const val ITEMS_FIELD = "items"
         const val IS_DONE_FIELD = "done"
-        const val USER_ID_FIELD = "userId"
         const val USER_IDS_FIELD = "userIds"
         const val USER_DOC_ID_FIELD = "userDocId"
         const val WISH_DOC_ID_FIELD = "wishDocId"
@@ -206,6 +203,7 @@ object Utils {
         const val LISTS = 1
         const val FAVORITES = 2
         const val DETAILS = 3
+        const val SEARCH = 4
         const val WISH_IMAGE_FIXED_WIDTH = 2400
         const val WISH_IMAGE_FIXED_HEIGHT = 1200
         const val EDIT_WISH_INTENT = "editedWish"
@@ -216,5 +214,10 @@ object Utils {
         const val FETCH_USER_PICTURE_CLOUD_FUNCTION = "fetchUserPictureUrl"
         const val SEEN_FOR_WISH_CLOUD_FUNCTION = "seenForWish"
         const val ORGANIC_SEEN_FOR_WISH_CLOUD_FUNCTION = "organicSeenForWish"
+        const val ALGOLIA_APP_ID = "6RAUVU14O2"
+        const val ALGOLIA_API_KEY = "c858b1b659337e1e6c9cc0cbc716e1d0"
+        const val ALGOLIA_DATABASE_INDEX = "wishes"
+        const val ALGOLIA_HITS_FIELD= "hits"
+        const val ALGOLIA_WISH_ID_FIELD = "objectID"
     }
 }

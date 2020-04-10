@@ -1,14 +1,12 @@
 package co.publist.features.home
 
 
-import android.app.Activity
-import android.app.SearchManager
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
-import android.widget.SimpleCursorAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.SearchView
@@ -21,11 +19,13 @@ import co.publist.core.platform.ViewModelFactory
 import co.publist.core.utils.DataBindingAdapters.loadProfilePicture
 import co.publist.core.utils.Utils.Constants.EDIT_WISH_INTENT
 import co.publist.core.utils.Utils.Constants.PUBLIC
+import co.publist.core.utils.Utils.Constants.SEARCH
 import co.publist.databinding.ActivityHomeBinding
 import co.publist.features.createwish.CreateWishActivity
 import co.publist.features.profile.ProfileActivity
 import co.publist.features.wishes.WishesFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.chip.Chip
 import kotlinx.android.synthetic.main.activity_home.*
 import kotlinx.android.synthetic.main.edit_wish_bottom_sheet.*
 import javax.inject.Inject
@@ -62,7 +62,11 @@ class HomeActivity : BaseActivity<HomeViewModel>() {
     }
 
     override fun onStart() {
-        wishesFragment.viewModel.loadData(PUBLIC)  // To reload data when coming back from another activity
+        if (wishesFragment.wishesType == -1)
+            wishesFragment.viewModel.loadWishes(PUBLIC)
+        else
+            wishesFragment.viewModel.loadWishes(wishesFragment.wishesType)  // To reload same data when coming back from another activity , recent apps , lock screen etc..
+
         sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         super.onStart()
     }
@@ -71,6 +75,15 @@ class HomeActivity : BaseActivity<HomeViewModel>() {
         super.onDestroy()
     }
 
+    override fun onBackPressed() {
+        if(!searchView.isIconified || searchView.query.isNotEmpty())
+            {
+                searchView.setQuery("",false)
+                searchView.isIconified = true
+            }
+        else
+        super.onBackPressed()
+    }
     private fun setObservers() {
         viewModel.userLiveData.observe(this, Observer { user ->
             if (user != null)
@@ -103,7 +116,7 @@ class HomeActivity : BaseActivity<HomeViewModel>() {
         })
 
         wishesFragment.viewModel.wishDeletedLiveData.observe(this, Observer {
-            wishesFragment.viewModel.loadData(PUBLIC)
+            wishesFragment.viewModel.loadWishes(PUBLIC)
             Toast.makeText(this, getString(R.string.delete_wish), Toast.LENGTH_SHORT).show()
             sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         })
@@ -160,21 +173,40 @@ class HomeActivity : BaseActivity<HomeViewModel>() {
         }
 
         searchView.apply {
-            //Quick hack to set threshold of SearchView's AutoCompleteTextView (minimum number of characters to display suggestions)
+            //Getting reference of AutoCompleteTextView inside the SearchView
             val autoCompleteTextViewID =
                 resources.getIdentifier("android:id/search_src_text", null, null)
             val autoCompleteTextView = findViewById<AutoCompleteTextView>(autoCompleteTextViewID)
+
             autoCompleteTextView.threshold = 1
+            autoCompleteTextView.dropDownAnchor = R.id.toolbar
+            autoCompleteTextView.setOnItemClickListener { adapterView,_, position,_ ->
+                val selectedCategory = adapterView.getItemAtPosition(position) as String
+                searchView.setQuery(selectedCategory ,true)
+                autoCompleteTextView.setText(" ")
+                val categoryChip = Chip(this@HomeActivity,null,R.style.CategoryChip)
+                categoryChip.text = selectedCategory
+                categoryChip.isCheckedIconVisible = false
+                searchCategoryChipGroup.addView(categoryChip)
+                categoryChip.setOnCloseIconClickListener {
+                    searchView.setQuery("" ,false)
+                    searchCategoryChipGroup.removeView(it)
+                }
+            }
 
             setOnSearchClickListener {
                 profilePictureImageView.visibility = View.GONE
+                addWishTextView.visibility = View.GONE
                 val params = searchView.layoutParams
                 params.width = ViewGroup.LayoutParams.MATCH_PARENT
                 searchView.layoutParams = params
             }
 
             setOnCloseListener {
+                if(wishesFragment.wishesType == SEARCH) //Ensure that it was coming from a search (doesn't reload public if user didn't make a query)
+                wishesFragment.viewModel.loadWishes(PUBLIC)
                 profilePictureImageView.visibility = View.VISIBLE
+                addWishTextView.visibility = View.VISIBLE
                 val params = searchView.layoutParams
                 params.width = ViewGroup.LayoutParams.WRAP_CONTENT
                 searchView.layoutParams = params
@@ -184,35 +216,34 @@ class HomeActivity : BaseActivity<HomeViewModel>() {
             setOnQueryTextListener(object : SearchView.OnQueryTextListener,
                 android.widget.SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String?): Boolean {
-                    return false
+                    wishesFragment.viewModel.searchQuery = query!!
+                    wishesFragment.viewModel.loadWishes(SEARCH)
+                    this@HomeActivity.hideKeyboard()
+                    searchView.clearFocus()
+                    return true
                 }
 
                 override fun onQueryTextChange(newText: String?): Boolean {
                     if (newText?.length!! >= 1) {
-                        val queryResultCursor = viewModel.getSuggestedCategoriesFromQuery(newText)
-                        searchView.suggestionsAdapter.changeCursor(queryResultCursor)
+                        val queryResultArray = viewModel.getSuggestedCategoriesFromQuery(newText)
+                        autoCompleteTextView.setAdapter(ArrayAdapter(this@HomeActivity,android.R.layout.simple_dropdown_item_1line,queryResultArray))
                     } else
-                        searchView.suggestionsAdapter.changeCursor(null)
-
+                        autoCompleteTextView.setAdapter(null)
                     return true
                 }
 
             })
 
-//            autoCompleteTextView.setOnItemClickListener { adapterView,_, position,_ ->
-//                    searchView.setQuery(adapterView.getItemAtPosition(position) as String,true)
-//            }
-
            /* val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
             setSearchableInfo(searchManager.getSearchableInfo(componentName))*/
-            suggestionsAdapter =
+            /*suggestionsAdapter =
                 SimpleCursorAdapter(
                 this@HomeActivity,
                 android.R.layout.simple_list_item_1,
                     null,
                 arrayOf(SearchManager.SUGGEST_COLUMN_TEXT_1),
                 intArrayOf(android.R.id.text1), Activity.DEFAULT_KEYS_SEARCH_LOCAL
-            )
+            )*/
         }
 
 

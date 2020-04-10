@@ -2,17 +2,20 @@ package co.publist.features.wishes
 
 import androidx.lifecycle.MutableLiveData
 import co.publist.core.common.data.models.Mapper
+import co.publist.core.common.data.models.category.Category
 import co.publist.core.common.data.models.category.CategoryAdapterItem
 import co.publist.core.common.data.models.wish.Wish
 import co.publist.core.common.data.models.wish.WishAdapterItem
 import co.publist.core.common.data.repositories.user.UserRepositoryInterface
 import co.publist.core.common.data.repositories.wish.WishesRepositoryInterface
 import co.publist.core.platform.BaseViewModel
+import co.publist.core.utils.Utils.Constants.DETAILS
 import co.publist.core.utils.Utils.Constants.FAVORITES
 import co.publist.core.utils.Utils.Constants.LISTS
 import co.publist.core.utils.Utils.Constants.MY_FAVORITES_COLLECTION_PATH
 import co.publist.core.utils.Utils.Constants.MY_LISTS_COLLECTION_PATH
 import co.publist.core.utils.Utils.Constants.PUBLIC
+import co.publist.core.utils.Utils.Constants.SEARCH
 import co.publist.core.utils.Utils.Constants.TOP_USERS_THRESHOLD
 import co.publist.features.categories.data.CategoriesRepositoryInterface
 import co.publist.features.myfavorites.data.MyFavoritesRepositoryInterface
@@ -40,8 +43,9 @@ class WishesViewModel @Inject constructor(
     val wishDataPairLiveData =
         MutableLiveData<Pair<ArrayList<Wish>, Pair<ArrayList<String>, ArrayList<String>>>>()
     val user = userRepository.getUser()
+    lateinit var searchQuery: String
     lateinit var selectedWish: WishAdapterItem
-    fun loadData(type: Int) {
+    fun loadWishes(type: Int) {
         wishesType.postValue(type)
         when (type) {
             PUBLIC -> {
@@ -110,7 +114,7 @@ class WishesViewModel @Inject constructor(
                 )
             )
 
-            else -> {
+            DETAILS -> {
                 subscribe(favoritesRepository.getUserFavoriteWishes().flatMap { favoritesList ->
                     wishesRepository.getSpecificWish(selectedWish.wishId!!).flatMap { wish ->
                         wishesRepository.getDoneItemsInMyLists()
@@ -145,6 +149,64 @@ class WishesViewModel @Inject constructor(
                 }, Consumer { oneElementList ->
                     wishesListLiveData.postValue(oneElementList)
                 })
+            }
+
+            SEARCH -> {
+                subscribe(categoryRepository.fetchAllCategories().flatMap { allCategories ->
+                    val categoriesNames = allCategories.map { it.name }
+                    var selectedCategory: Category? = null
+                    for (categoryIndex in categoriesNames.indices) {
+                        if (searchQuery.equals(categoriesNames[categoryIndex], true)) {
+                            selectedCategory = allCategories[categoryIndex]
+                            break
+                        }
+                    }
+
+                    val searchResultsObservable =
+                        if (selectedCategory != null) wishesRepository.getWishesByCategory(
+                            selectedCategory.id!!
+                        )
+                        else wishesRepository.getWishesByTitle(searchQuery)
+
+                    searchResultsObservable.flatMap { wishList ->
+                        if (wishList.isNotEmpty()) {
+                            var list = Mapper.mapToWishAdapterItemArrayList(wishList)
+                            favoritesRepository.getUserFavoriteWishes()
+                                .flatMap { favoriteList ->
+                                    wishesRepository.getDoneItemsInMyFavorites()
+                                        .flatMap { doneItemsInFavoritesArrayList ->
+                                            list = filterWishesByFavorites(
+                                                list,
+                                                favoriteList,
+                                                doneItemsInFavoritesArrayList
+                                            )
+                                            wishesRepository.getDoneItemsInMyLists()
+                                                .flatMap { doneItemsInMyListsArrayList ->
+                                                    list = filterWishesByCreator(
+                                                        list,
+                                                        user?.id!!,
+                                                        doneItemsInMyListsArrayList
+                                                    )
+                                                    wishesRepository.getUserLikedItems()
+                                                        .flatMap { likedItemsList ->
+                                                            list =
+                                                                applyUserLikedItems(
+                                                                    list,
+                                                                    likedItemsList
+                                                                )
+                                                            Single.just(list)
+                                                        }
+                                                }
+
+                                        }
+                                }
+                        } else
+                            Single.just(arrayListOf())
+                    }
+
+                }, Consumer { list ->
+                    wishesListLiveData.postValue(list)
+                }, showLoading = false)
             }
 
         }

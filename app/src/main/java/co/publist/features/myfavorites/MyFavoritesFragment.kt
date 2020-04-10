@@ -38,7 +38,7 @@ class MyFavoritesFragment : BaseFragment<MyFavoritesViewModel>(){
     }
 
     override fun onStart() {
-        wishesFragment.viewModel.loadData(FAVORITES)
+        wishesFragment.viewModel.loadWishes(FAVORITES)
         super.onStart()
     }
 }

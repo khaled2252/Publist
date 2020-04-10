@@ -8,8 +8,12 @@ import co.publist.core.common.data.models.wish.CategoryWish
 import co.publist.core.common.data.models.wish.MyListDbEntity
 import co.publist.core.common.data.models.wish.Wish
 import co.publist.core.common.data.models.wish.WishAdapterItem
+import co.publist.core.utils.Utils.Constants.ALGOLIA_HITS_FIELD
+import co.publist.core.utils.Utils.Constants.ALGOLIA_WISH_ID_FIELD
 import com.google.firebase.firestore.QueryDocumentSnapshot
 import com.google.firebase.firestore.QuerySnapshot
+import org.json.JSONObject
+
 
 object Mapper {
     private fun mapToCategoryDbEntity(item: Category): CategoryDbEntity =
@@ -75,7 +79,7 @@ object Mapper {
     fun mapToCategoryAdapterItem(item: CategoryWish): CategoryAdapterItem {
         return CategoryAdapterItem(
             id = item.id,
-            localizations = Localization(null,item.name),
+            localizations = Localization(null, item.name),
             name = item.name
         )
     }
@@ -157,11 +161,21 @@ object Mapper {
         var arrayList = ArrayList<Wish>()
         for (document in documents)
             arrayList.add(document.toObject(Wish::class.java))
-        arrayList.sortBy {it.date} //Fixme sort ascending by date (as Query is sorted by Ascending in order to be reversed by RV)
+        arrayList.sortBy { it.date } //Fixme sort ascending by date (as Query is sorted by Ascending in order to be reversed by RV)
         return arrayList
     }
 
-     fun mapToWishAdapterItem(item: Wish): WishAdapterItem {
+    fun mapToWishIdsArrayList(jsonObject: JSONObject): ArrayList<String> {
+        val hitsJsonArray = jsonObject.getJSONArray(ALGOLIA_HITS_FIELD)
+        val wishIdsArrayList = arrayListOf<String>()
+        for (wishHitIndex in 0 until hitsJsonArray.length()) {
+            val wishHitJsonObject = hitsJsonArray.getJSONObject(wishHitIndex)
+            wishIdsArrayList.add(wishHitJsonObject.getString(ALGOLIA_WISH_ID_FIELD))
+        }
+        return wishIdsArrayList
+    }
+
+    fun mapToWishAdapterItem(item: Wish): WishAdapterItem {
         return WishAdapterItem(
             category = item.category,
             creator = item.creator,
@@ -192,7 +206,7 @@ object Mapper {
         )
     }
 
-    fun mapToCategoryWish(item : Category) : CategoryWish {
+    fun mapToCategoryWish(item: Category): CategoryWish {
         return CategoryWish(
             id = item.id,
             lang = "en",

@@ -14,6 +14,7 @@ import co.publist.core.common.data.models.wish.WishAdapterItem
 import co.publist.core.platform.BaseFragment
 import co.publist.core.platform.ViewModelFactory
 import co.publist.core.utils.Utils.Constants.PUBLIC
+import co.publist.core.utils.Utils.Constants.SEARCH
 import co.publist.features.home.HomeActivity
 import co.publist.features.profile.ProfileActivity
 import co.publist.features.wishdetails.WishDetailsActivity
@@ -35,8 +36,8 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
 
     override fun getBaseViewModelFactory() = viewModelFactory
 
-    private var wishesType = -1
-    private lateinit var wishesQuery : Query
+    var wishesType = -1
+    private lateinit var wishesQuery: Query
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -46,7 +47,6 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        refreshLayout.isRefreshing = true
         setObservers()
     }
 
@@ -67,7 +67,13 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
             val itemsAttributesPair = dataPair.second
             val doneItemsList = itemsAttributesPair.first
             val likedItemsList = itemsAttributesPair.second
-            setAdapter(wishesQuery, wishesType ,correspondingPublicWishes , doneItemsList,likedItemsList)
+            setAdapter(
+                wishesQuery,
+                wishesType,
+                correspondingPublicWishes,
+                doneItemsList,
+                likedItemsList
+            )
         })
 
         viewModel.wishesListLiveData.observe(viewLifecycleOwner, Observer { list ->
@@ -77,68 +83,101 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
     }
 
     private fun setListeners() {
-        if (wishesType == PUBLIC) {
+        if (wishesType == PUBLIC || wishesType == SEARCH) {
             refreshLayout.isEnabled = true
+            refreshLayout.isRefreshing = true
             refreshLayout.setOnRefreshListener {
-                viewModel.loadData(PUBLIC)
+                viewModel.loadWishes(wishesType)
             }
         } else
             refreshLayout.isEnabled = false
     }
 
-    private fun setAdapter(query: Query, type: Int, correspondingPublicWishes : ArrayList<Wish>, doneItemsList : ArrayList<String>, likedItemsList : ArrayList<String>) {
+    private fun setAdapter(
+        query: Query,
+        type: Int,
+        correspondingPublicWishes: ArrayList<Wish>,
+        doneItemsList: ArrayList<String>,
+        likedItemsList: ArrayList<String>
+    ) {
         val options: FirestoreRecyclerOptions<WishAdapterItem> =
             FirestoreRecyclerOptions.Builder<WishAdapterItem>()
                 .setQuery(query, WishAdapterItem::class.java)
                 .build()
 
         val adapter =
-            WishesFirestoreAdapter(options, type,correspondingPublicWishes,doneItemsList,likedItemsList,user = viewModel.user!!, displayPlaceHolder = { displayPlaceHolder ->
-                val view =
-                    this.parentFragment?.view?.findViewById<LinearLayout>(R.id.placeHolderView)
-                if (displayPlaceHolder)
-                    view?.visibility = View.VISIBLE
-                else
-                    view?.visibility = View.GONE
-            }, detailsListener = { wish ->
-                (activity as ProfileActivity).showEditWishDialog(wish)
-            }, unFavoriteListener = { wish ->
-                viewModel.modifyFavorite(Mapper.mapToWish(wish), false)
-            },completeListener = {itemId , wish , isDone ->
-                viewModel.completeItem(itemId,wish,isDone)
-            },likeListener = {itemId, wish, isLiked ->
-                viewModel.likeItem(itemId,wish,isLiked)
-            },seenCountListener = {wishId ->
-                viewModel.incrementSeenCount(wishId)
-            })
+            WishesFirestoreAdapter(
+                options,
+                type,
+                correspondingPublicWishes,
+                doneItemsList,
+                likedItemsList,
+                user = viewModel.user!!,
+                displayPlaceHolder = { displayPlaceHolder ->
+                    val view =
+                        this.parentFragment?.view?.findViewById<LinearLayout>(R.id.placeHolderView)
+                    if (displayPlaceHolder)
+                        view?.visibility = View.VISIBLE
+                    else
+                        view?.visibility = View.GONE
+                },
+                detailsListener = { wish ->
+                    (activity as ProfileActivity).showEditWishDialog(wish)
+                },
+                unFavoriteListener = { wish ->
+                    viewModel.modifyFavorite(Mapper.mapToWish(wish), false)
+                },
+                completeListener = { itemId, wish, isDone ->
+                    viewModel.completeItem(itemId, wish, isDone)
+                },
+                likeListener = { itemId, wish, isLiked ->
+                    viewModel.likeItem(itemId, wish, isLiked)
+                },
+                seenCountListener = { wishId ->
+                    viewModel.incrementSeenCount(wishId)
+                })
 
         adapter.startListening()
-        (wishesRecyclerView.itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false //To disable animation when changing holder information
+        (wishesRecyclerView.itemAnimator as SimpleItemAnimator).supportsChangeAnimations =
+            false //To disable animation when changing holder information
         wishesRecyclerView.adapter = adapter
     }
 
     private fun setAdapter(list: ArrayList<WishAdapterItem>) {
         refreshLayout.isRefreshing = false
         if (list.isNotEmpty()) {
-            val wishesAdapter = WishesAdapter(list, wishesType = wishesType,user = viewModel.user!!, detailsListener = { wish ->
-                if (activity is HomeActivity)
-                    (activity as HomeActivity).showEditWishDialog(wish)
-                else
-                    (activity as WishDetailsActivity).showEditWishDialog()
-            }, favoriteListener = { wish, isFavoriting ->
-                viewModel.modifyFavorite(Mapper.mapToWish(wish), isFavoriting)
-            },completeListener = {itemId , wish , isDone ->
-                viewModel.completeItem(itemId,wish,isDone)
-            },likeListener = {itemId, wish, isLiked ->
-                viewModel.likeItem(itemId,wish,isLiked)
-            },seenCountListener = {wishId ->
-                viewModel.incrementSeenCount(wishId)
-            }
+            noResultsPlaceholder.visibility = View.GONE
+            val wishesAdapter = WishesAdapter(
+                list,
+                wishesType = wishesType,
+                user = viewModel.user!!,
+                detailsListener = { wish ->
+                    if (activity is HomeActivity)
+                        (activity as HomeActivity).showEditWishDialog(wish)
+                    else
+                        (activity as WishDetailsActivity).showEditWishDialog()
+                },
+                favoriteListener = { wish, isFavoriting ->
+                    viewModel.modifyFavorite(Mapper.mapToWish(wish), isFavoriting)
+                },
+                completeListener = { itemId, wish, isDone ->
+                    viewModel.completeItem(itemId, wish, isDone)
+                },
+                likeListener = { itemId, wish, isLiked ->
+                    viewModel.likeItem(itemId, wish, isLiked)
+                },
+                seenCountListener = { wishId ->
+                    viewModel.incrementSeenCount(wishId)
+                }
             )
             (wishesRecyclerView.itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
             wishesRecyclerView.adapter = wishesAdapter
         } else {
-            //todo display placeholder
+            if(wishesType == SEARCH)
+            {
+                wishesRecyclerView.adapter = null
+                noResultsPlaceholder.visibility = View.VISIBLE
+            }
         }
 
     }

@@ -1,9 +1,5 @@
 package co.publist.features.home
 
-import android.app.SearchManager
-import android.database.Cursor
-import android.database.MatrixCursor
-import android.provider.BaseColumns
 import androidx.lifecycle.MutableLiveData
 import co.publist.core.common.data.models.User
 import co.publist.core.common.data.models.category.Category
@@ -58,12 +54,8 @@ class HomeViewModel @Inject constructor(
 
     }
 
-    fun getSuggestedCategoriesFromQuery(query: String): Cursor {
-        var cursor = MatrixCursor(arrayOf(
-            BaseColumns._ID,  // necessary for adapter
-            SearchManager.SUGGEST_COLUMN_TEXT_1 // the full search term
-        ))
-        var suggestedCategoriesNames = arrayListOf<String>()
+    fun getSuggestedCategoriesFromQuery(query: String): ArrayList<String> {
+        val suggestedCategoriesNames = arrayListOf<String>()
         for (categoryName in allCategories.map {it.name})
             if(categoryName.equals(query,true))
                 suggestedCategoriesNames.add(categoryName!!.capitalize())
@@ -72,9 +64,8 @@ class HomeViewModel @Inject constructor(
                 if (categoryName!!.startsWith(query,true))
                     suggestedCategoriesNames.add(categoryName.capitalize())
 
-        for (index in 0 until suggestedCategoriesNames.size)
-         cursor.addRow(arrayOf(index,suggestedCategoriesNames[index]))
 
-        return cursor
+        return suggestedCategoriesNames
     }
+
 }

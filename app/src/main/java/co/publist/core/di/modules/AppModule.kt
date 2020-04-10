@@ -4,6 +4,9 @@ import android.content.Context
 import co.publist.R
 import co.publist.core.common.data.local.LocalDataSource
 import co.publist.core.common.data.local.LocalDataSourceImpl
+import co.publist.core.utils.Utils.Constants.ALGOLIA_API_KEY
+import co.publist.core.utils.Utils.Constants.ALGOLIA_APP_ID
+import com.algolia.search.saas.Client
 import com.facebook.CallbackManager
 import com.facebook.internal.CallbackManagerImpl
 import com.facebook.login.LoginManager
@@ -71,6 +74,12 @@ class AppModule {
     @Provides
     fun provideFirebaseFunctions(): FirebaseFunctions {
         return FirebaseFunctions.getInstance()
+    }
+
+    @Singleton
+    @Provides
+    fun provideAlgoliaClient(): Client {
+        return Client(ALGOLIA_APP_ID,ALGOLIA_API_KEY)
     }
 
 

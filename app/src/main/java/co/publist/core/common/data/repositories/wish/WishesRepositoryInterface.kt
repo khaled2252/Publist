@@ -6,6 +6,7 @@ import io.reactivex.Single
 interface WishesRepositoryInterface {
     fun getSpecificWish(wishId : String): Single<Wish>
     fun getAllWishes(): Single<ArrayList<Wish>>
+    fun getWishesByCategory(categoryId: String): Single<ArrayList<Wish>>
     fun getMyListWishes(): Single<ArrayList<Wish>>
     fun createWish(wish: Wish): Completable
     fun updateWish(wish: Wish): Completable
@@ -31,4 +32,5 @@ interface WishesRepositoryInterface {
     fun incrementSeenCountLocally(wishId: String)
     fun getCorrespondingMyListsPublicWishes(): Single<ArrayList<Wish>>
     fun getCorrespondingMyFavoritesPublicWishes(): Single<ArrayList<Wish>>
+    fun getWishesByTitle(searchQuery: String) : Single<ArrayList<Wish>>
 }

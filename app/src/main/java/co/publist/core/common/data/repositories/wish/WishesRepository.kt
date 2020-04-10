@@ -4,6 +4,8 @@ import android.net.Uri
 import co.publist.core.common.data.local.LocalDataSource
 import co.publist.core.common.data.models.Mapper
 import co.publist.core.common.data.models.wish.Wish
+import co.publist.core.utils.Utils.Constants.ALGOLIA_DATABASE_INDEX
+import co.publist.core.utils.Utils.Constants.CATEGORY_ID_FIELD
 import co.publist.core.utils.Utils.Constants.COMPLETED_USERS_IDS_COLLECTION_PATH
 import co.publist.core.utils.Utils.Constants.COMPLETE_COUNT_FIELD
 import co.publist.core.utils.Utils.Constants.DATE_FIELD
@@ -25,6 +27,8 @@ import co.publist.core.utils.Utils.Constants.USER_VIEWED_ITEMS_COLLECTION_PATH
 import co.publist.core.utils.Utils.Constants.WISHES_COLLECTION_PATH
 import co.publist.core.utils.Utils.Constants.WISH_DOC_ID_FIELD
 import co.publist.core.utils.Utils.Constants.WISH_ID_FIELD
+import com.algolia.search.saas.Client
+import com.algolia.search.saas.CompletionHandler
 import com.google.firebase.firestore.*
 import com.google.firebase.functions.FirebaseFunctions
 import com.google.firebase.storage.FirebaseStorage
@@ -35,10 +39,12 @@ import io.reactivex.schedulers.Schedulers
 import java.util.*
 import javax.inject.Inject
 
+
 class WishesRepository @Inject constructor(
     var mFirebaseFirestore: FirebaseFirestore,
     var mFirebaseStorage: FirebaseStorage,
     var mFirebaseFunctions: FirebaseFunctions,
+    var mAlgoliaClient: Client,
     var localDataSource: LocalDataSource
 ) : WishesRepositoryInterface {
     private val userId = localDataSource.getSharedPreferences().getUser()?.id
@@ -69,6 +75,19 @@ class WishesRepository @Inject constructor(
                 }
         }
     }
+
+    override fun getWishesByCategory(categoryId: String): Single<ArrayList<Wish>> {
+        return Single.create { singleEmitter ->
+            mFirebaseFirestore.collection(WISHES_COLLECTION_PATH)
+                .whereArrayContains(CATEGORY_ID_FIELD, categoryId)
+                .orderBy(DATE_FIELD, Query.Direction.ASCENDING)
+                .get()
+                .addOnFailureListener {
+                    singleEmitter.onError(it)
+                }.addOnSuccessListener { querySnapshot ->
+                    singleEmitter.onSuccess(Mapper.mapToWishAdapterItemArrayList(querySnapshot))
+                }
+        }    }
 
     override fun getMyListWishes(): Single<ArrayList<Wish>> {
         return localDataSource.getPublistDataBase().getMyLists()
@@ -679,4 +698,33 @@ class WishesRepository @Inject constructor(
                    }
         }    }
 
+    override fun getWishesByTitle(searchQuery: String): Single<ArrayList<Wish>> {
+        return Single.create { singleEmitter ->
+            val completionHandler = CompletionHandler { content, error ->
+                    if(error==null)
+                    {
+                        val wishIdsList = Mapper.mapToWishIdsArrayList(content!!)
+                        if(wishIdsList.isNotEmpty())
+                        {
+                            mFirebaseFirestore.collection(WISHES_COLLECTION_PATH)
+                                .whereIn(FieldPath.documentId(),wishIdsList)
+                                .get()
+                                .addOnFailureListener {
+                                    singleEmitter.onError(it)
+                                }.addOnSuccessListener { querySnapshot ->
+                                    singleEmitter.onSuccess(Mapper.mapToWishArrayList(querySnapshot))
+                                }
+                        }
+                        else
+                            singleEmitter.onSuccess(arrayListOf())
+                    }
+                    else
+                        singleEmitter.onError(error)
+                }
+
+            mAlgoliaClient.getIndex(ALGOLIA_DATABASE_INDEX)
+                .searchAsync(com.algolia.search.saas.Query(searchQuery), completionHandler)
+
+        }
+    }
 }

@@ -46,7 +46,7 @@ class WishDetailsActivity : BaseActivity<WishDetailsViewModel>() {
     }
 
     override fun onStart() {
-        wishesFragment.viewModel.loadData(DETAILS)  // To reload data when coming back from another activity
+        wishesFragment.viewModel.loadWishes(DETAILS)  // To reload data when coming back from another activity
         sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         super.onStart()
     }

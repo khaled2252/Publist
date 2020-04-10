@@ -125,7 +125,7 @@ abstract class BaseActivity<MBaseViewModel : BaseViewModel>
     }
 
 
-    private fun hideKeyboard() {
+     fun hideKeyboard() {
         if (window.currentFocus != null)
             Utils.hideSoftKeyboard(this, window.currentFocus!!.windowToken)
     }

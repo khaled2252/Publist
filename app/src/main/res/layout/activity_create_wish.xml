@@ -69,17 +69,10 @@
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/categoryChip"
-                    style="@style/Widget.MaterialComponents.Chip.Entry"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    style="@style/CategoryChip"
                     android:layout_gravity="center|start"
-                    android:layout_marginStart="40dp"
-                    android:clickable="false"
-                    android:fontFamily="@font/sfprodisplaysemibold"
-                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
-                    android:textColor="@color/dimGray"
-                    android:visibility="gone"
-                    app:checkedIconEnabled="false" />
+
+                    android:visibility="gone" />
             </FrameLayout>
 
             <View

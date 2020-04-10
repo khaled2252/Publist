@@ -41,7 +41,7 @@ class MyListsFragment : BaseFragment<MyListsViewModel>() {
     }
 
     override fun onStart() {
-        wishesFragment.viewModel.loadData(LISTS)
+        wishesFragment.viewModel.loadWishes(LISTS)
         super.onStart()
     }
 
