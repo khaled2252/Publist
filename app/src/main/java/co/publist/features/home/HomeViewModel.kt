@@ -24,7 +24,7 @@ class HomeViewModel @Inject constructor(
     private var allCategories = arrayListOf<Category>()
 
     init {
-        subscribe(categoryRepository.fetchAllCategories(), Consumer {categoriesList ->
+        subscribe(categoryRepository.fetchAllCategories(), Consumer { categoriesList ->
             allCategories = categoriesList
         })
     }
@@ -41,14 +41,14 @@ class HomeViewModel @Inject constructor(
     }
 
     fun clearGuestSelectedCategories() {
-        if(user == null)
-        categoryRepository.clearLocalSelectedCategories()
+        if (user == null)
+            categoryRepository.clearLocalSelectedCategories()
     }
 
 
     fun handleAddWish() {
-        if(user == null)
-        addWishClickLiveData.postValue(true)
+        if (user == null)
+            addWishClickLiveData.postValue(true)
         else
             addWishClickLiveData.postValue(false)
 
@@ -56,12 +56,12 @@ class HomeViewModel @Inject constructor(
 
     fun getSuggestedCategoriesFromQuery(query: String): ArrayList<String> {
         val suggestedCategoriesNames = arrayListOf<String>()
-        for (categoryName in allCategories.map {it.name})
-            if(categoryName.equals(query,true))
+        for (categoryName in allCategories.map { it.name })
+            if (categoryName.equals(query, true))
                 suggestedCategoriesNames.add(categoryName!!.capitalize())
-        if(suggestedCategoriesNames.isEmpty())
-            for (categoryName in allCategories.map {it.name})
-                if (categoryName!!.startsWith(query,true))
+        if (suggestedCategoriesNames.isEmpty())
+            for (categoryName in allCategories.map { it.name })
+                if (categoryName!!.startsWith(query, true))
                     suggestedCategoriesNames.add(categoryName.capitalize())
 
 

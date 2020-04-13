@@ -83,9 +83,9 @@ class ProfileActivity : BaseActivity<ProfileViewModel>() {
             Toast.makeText(this, getString(R.string.delete_wish), Toast.LENGTH_SHORT).show()
         })
 
-        viewModel.editWishLiveData.observe(this, Observer {wish ->
+        viewModel.editWishLiveData.observe(this, Observer { wish ->
             val intent = Intent(this, CreateWishActivity::class.java)
-            intent.putExtra(EDIT_WISH_INTENT,wish)
+            intent.putExtra(EDIT_WISH_INTENT, wish)
             startActivity(intent)
             sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         })

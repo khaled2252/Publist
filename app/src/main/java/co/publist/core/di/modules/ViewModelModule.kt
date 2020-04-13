@@ -26,9 +26,9 @@ import co.publist.features.createwish.CreateWishViewModel
 import co.publist.features.editprofile.EditProfileViewModel
 import co.publist.features.home.HomeViewModel
 import co.publist.features.intro.IntroViewModel
-import co.publist.features.profile.ProfileViewModel
 import co.publist.features.myfavorites.MyFavoritesViewModel
 import co.publist.features.mylists.MyListsViewModel
+import co.publist.features.profile.ProfileViewModel
 import co.publist.features.splash.SplashViewModel
 import co.publist.features.wishes.WishesViewModel
 import dagger.Binds

@@ -43,25 +43,24 @@ class IntroActivity : BaseActivity<IntroViewModel>() {
         categoriesFragment.viewModel.getCategories()
     }
 
-    private fun setObservers(){
+    private fun setObservers() {
         categoriesFragment.viewModel.actionButtonLiveData.observe(this, Observer { viable ->
-            if (!viable)
-            {
+            if (!viable) {
                 Toast.makeText(
                     this,
                     getString(R.string.minimum_categories).format(MINIMUM_SELECTED_CATEGORIES),
                     Toast.LENGTH_SHORT
                 ).show()
             }
-         })
+        })
 
         categoriesFragment.viewModel.saveCategoriesLiveData.observe(this, Observer {
-            startActivity(Intent(this,HomeActivity::class.java))
+            startActivity(Intent(this, HomeActivity::class.java))
             finish()
         })
     }
 
-    private fun setListeners(){
+    private fun setListeners() {
         buttonFindWishes.setOnClickListener {
             categoriesFragment.viewModel.handleActionButton(false)
         }
@@ -71,7 +70,7 @@ class IntroActivity : BaseActivity<IntroViewModel>() {
         }
 
         skipTextView.setOnClickListener {
-            startActivity(Intent(this,HomeActivity::class.java))
+            startActivity(Intent(this, HomeActivity::class.java))
             finish()
         }
     }

@@ -13,7 +13,7 @@ import co.publist.core.utils.Utils.Constants.DB_NAME
 
 
 @Database(
-    entities = [CategoryDbEntity::class,MyListDbEntity::class,MyFavoritesDbEntity::class],
+    entities = [CategoryDbEntity::class, MyListDbEntity::class, MyFavoritesDbEntity::class],
     version = 1,
     exportSchema = false
 )
@@ -30,12 +30,12 @@ abstract class PublistDataBase : RoomDatabase() {
         fun getInstance(context: Context): PublistDataBase =
             INSTANCE
                 ?: synchronized(this) {
-                INSTANCE
-                    ?: buildDatabase(
-                        context
-                    )
-                        .also { INSTANCE = it }
-            }
+                    INSTANCE
+                        ?: buildDatabase(
+                            context
+                        )
+                            .also { INSTANCE = it }
+                }
 
         private fun buildDatabase(context: Context) =
             Room.databaseBuilder(

@@ -17,6 +17,6 @@ data class Wish(
     var items: Map<String, WishItem>? = null,
     var itemsId: ArrayList<String>? = null,
     var wishId: String? = null,
-    var seenCount : Int? = 0,
-    var organicSeenCount : Int? = 0
+    var seenCount: Int? = 0,
+    var organicSeenCount: Int? = 0
 ) : Parcelable

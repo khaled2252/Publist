@@ -23,7 +23,10 @@ class MyListsRepository @Inject constructor(
         return mFirebaseFirestore.collection(USERS_COLLECTION_PATH)
             .document(userId!!)
             .collection(MY_LISTS_COLLECTION_PATH)
-            .orderBy(Utils.Constants.DATE_FIELD, Query.Direction.ASCENDING) //Get Wishes Ascending, then will be reversed by reverseLayout attribute in RecyclerView
+            .orderBy(
+                Utils.Constants.DATE_FIELD,
+                Query.Direction.ASCENDING
+            ) //Get Wishes Ascending, then will be reversed by reverseLayout attribute in RecyclerView
     }
 
     override fun getMyLists(): Single<ArrayList<Wish>> {
@@ -70,7 +73,7 @@ class MyListsRepository @Inject constructor(
         }
     }
 
-    override fun addMyListsLocally(list : ArrayList<Wish>) {
+    override fun addMyListsLocally(list: ArrayList<Wish>) {
         AsyncTask.execute {
             localDataSource.getPublistDataBase()
                 .addMyLists(Mapper.mapToMyListDbEntityList(list))

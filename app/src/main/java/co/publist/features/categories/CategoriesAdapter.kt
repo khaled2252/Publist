@@ -11,8 +11,8 @@ import kotlinx.android.synthetic.main.item_category.view.*
 
 
 class CategoriesAdapter(
-    var list : ArrayList<CategoryAdapterItem>,
-    val selectingListener: (category: CategoryAdapterItem) ->Unit
+    var list: ArrayList<CategoryAdapterItem>,
+    val selectingListener: (category: CategoryAdapterItem) -> Unit
 ) :
     RecyclerView.Adapter<CategoriesAdapter.CategoryViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategoryViewHolder {
@@ -37,8 +37,7 @@ class CategoriesAdapter(
         holder.bind(list[position])
     }
 
-    fun updateList(newList : ArrayList<CategoryAdapterItem>)
-    {
+    fun updateList(newList: ArrayList<CategoryAdapterItem>) {
         list = newList
         notifyDataSetChanged()
     }
@@ -50,8 +49,7 @@ class CategoriesAdapter(
             itemView.btnCategory.text = category.name?.capitalize()
 
             //Highlight selected categories
-            if(category.isSelected)
-            {
+            if (category.isSelected) {
                 itemView.btnCategory.setBackgroundColor(
                     ContextCompat.getColor(
                         itemView.btnCategory.context,
@@ -67,8 +65,7 @@ class CategoriesAdapter(
             }
 
             //Default color for non selected categories
-            else
-            {
+            else {
                 itemView.btnCategory.setBackgroundColor(
                     ContextCompat.getColor(
                         itemView.btnCategory.context,

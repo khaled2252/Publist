@@ -50,12 +50,13 @@ class WishDetailsActivity : BaseActivity<WishDetailsViewModel>() {
         sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         super.onStart()
     }
+
     private fun onCreated() {
         wishesFragment =
             supportFragmentManager.findFragmentById(R.id.wishesFragment) as WishesFragment
         sheetBehavior = BottomSheetBehavior.from(editWishBottomSheet)
 
-        val selectedWish =  intent.getParcelableExtra<WishAdapterItem>(WISH_DETAILS_INTENT)!!
+        val selectedWish = intent.getParcelableExtra<WishAdapterItem>(WISH_DETAILS_INTENT)!!
         wishesFragment.viewModel.selectedWish = selectedWish
         viewModel.incrementOrganicSeen(selectedWish.wishId!!)
     }
@@ -66,19 +67,18 @@ class WishDetailsActivity : BaseActivity<WishDetailsViewModel>() {
             finish()
         })
 
-        wishesFragment.viewModel.editWishLiveData.observe(this, Observer {wish ->
+        wishesFragment.viewModel.editWishLiveData.observe(this, Observer { wish ->
             val intent = Intent(this, CreateWishActivity::class.java)
-            intent.putExtra(Utils.Constants.EDIT_WISH_INTENT,wish)
+            intent.putExtra(Utils.Constants.EDIT_WISH_INTENT, wish)
             startActivity(intent)
             sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         })
 
-        wishesFragment.viewModel.isFavoriteAdded.observe(this, Observer {isFavoriteAdded ->
-            if(isFavoriteAdded)
-                Toast.makeText(this,getString(R.string.add_favorite), Toast.LENGTH_SHORT).show()
-            else
-            {
-                Toast.makeText(this,getString(R.string.remove_favorite), Toast.LENGTH_SHORT).show()
+        wishesFragment.viewModel.isFavoriteAdded.observe(this, Observer { isFavoriteAdded ->
+            if (isFavoriteAdded)
+                Toast.makeText(this, getString(R.string.add_favorite), Toast.LENGTH_SHORT).show()
+            else {
+                Toast.makeText(this, getString(R.string.remove_favorite), Toast.LENGTH_SHORT).show()
                 finish()
             }
 

@@ -29,10 +29,9 @@ class CategoriesRepository @Inject constructor(
         return Single.create { singleEmitter ->
             mFirebaseFirestore.collection(CATEGORIES_COLLECTION_PATH)
                 .get()
-                .addOnSuccessListener {querySnapshot ->
+                .addOnSuccessListener { querySnapshot ->
                     val categories = ArrayList<Category>()
-                    for (document in querySnapshot)
-                    {
+                    for (document in querySnapshot) {
                         val category = document.toObject(Category::class.java)
                         category.id = document.id
                         categories.add(category)
@@ -62,8 +61,7 @@ class CategoriesRepository @Inject constructor(
                             }.addOnSuccessListener { querySnapshot ->
                                 singleEmitter.onSuccess(Mapper.mapToCategoryArrayList(querySnapshot))
                             }
-                    }
-                    else
+                    } else
                         singleEmitter.onSuccess(arrayListOf()) //Emit empty arrayList if user didn't save any previous categories
                 }
         }
@@ -71,7 +69,7 @@ class CategoriesRepository @Inject constructor(
 
     override fun getLocalSelectedCategories(): Single<ArrayList<CategoryAdapterItem>> {
         return localDataSource.getPublistDataBase().getCategories().flatMap {
-                Single.just(Mapper.mapToCategoryAdapterItemList(it))
+            Single.just(Mapper.mapToCategoryAdapterItemList(it))
         }
     }
 
@@ -90,7 +88,8 @@ class CategoriesRepository @Inject constructor(
                     //will create myCategories in firestore if is not created
                     for (document in documents) {
                         if (!selectedCategoriesList.contains(document.toObject(Category::class.java)))
-                            collectionReference.document(document.id).delete()  //Delete deselected categories
+                            collectionReference.document(document.id)
+                                .delete()  //Delete deselected categories
 
                         else
                             selectedCategoriesList.remove(document.toObject(Category::class.java)) //Delete not changed categories from list to be submitted

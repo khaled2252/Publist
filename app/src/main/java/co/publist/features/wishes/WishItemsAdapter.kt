@@ -43,7 +43,7 @@ class WishItemsAdapter(
 ) :
     RecyclerView.Adapter<WishItemsAdapter.WishItemViewHolder>() {
     var isExpanded = false
-    private  var wishItemList: ArrayList<WishItem> = ArrayList(wish.items!!.values)
+    private var wishItemList: ArrayList<WishItem> = ArrayList(wish.items!!.values)
 
     init {
         if (wishesType != DETAILS)
@@ -86,7 +86,7 @@ class WishItemsAdapter(
             if (wishItem.viewedCount!! * FLAME_ICON_VIEWED_COUNT_PERCENTAGE >= wishItem.completeCount!! && wishItem.completeCount!! > FLAME_ICON_COMPLETED_MINIMUM)
                 itemView.flameImageView.visibility = View.VISIBLE
 
-                //Check/complete item
+            //Check/complete item
             if (wishItem.done!!) {
                 itemView.wishItemTextView.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG
                 itemView.completeButton.isChecked = true
@@ -95,7 +95,7 @@ class WishItemsAdapter(
                 itemView.completeButton.isChecked = false
             }
 
-                //Like/view item
+            //Like/view item
             if (wishItem.isLiked!!)
                 itemView.likeViewsTextView.setCompoundDrawablesWithIntrinsicBounds(
                     R.drawable.ic_heart_active,
@@ -150,8 +150,16 @@ class WishItemsAdapter(
         } else {
             seeMoreTextSwitcher.setFactory {
                 val textView = TextView(seeMoreTextSwitcher.context)
-                textView.typeface =ResourcesCompat.getFont(seeMoreTextSwitcher.context,R.font.sfprodisplaysemibold)
-                textView.setTextColor(ContextCompat.getColor(seeMoreTextSwitcher.context,R.color.sunsetOrange))
+                textView.typeface = ResourcesCompat.getFont(
+                    seeMoreTextSwitcher.context,
+                    R.font.sfprodisplaysemibold
+                )
+                textView.setTextColor(
+                    ContextCompat.getColor(
+                        seeMoreTextSwitcher.context,
+                        R.color.sunsetOrange
+                    )
+                )
                 textView.gravity = Gravity.CENTER
                 return@setFactory textView
             }
@@ -171,26 +179,28 @@ class WishItemsAdapter(
 
     private fun expandList() {
         isExpanded = true
-        notifyItemRangeChanged(MINIMUM_WISH_ITEMS,wishItemList.size-MINIMUM_WISH_ITEMS)
+        notifyItemRangeChanged(MINIMUM_WISH_ITEMS, wishItemList.size - MINIMUM_WISH_ITEMS)
         arrowImageView.startAnimation(get90DegreesAnimation())
         seeMoreTextSwitcher.setText(seeMoreTextSwitcher.context.getString(R.string.go_to_details))
     }
 
     fun collapseList() {
         isExpanded = false
-        notifyItemRangeChanged(MINIMUM_WISH_ITEMS,wishItemList.size-MINIMUM_WISH_ITEMS)
+        notifyItemRangeChanged(MINIMUM_WISH_ITEMS, wishItemList.size - MINIMUM_WISH_ITEMS)
         arrowImageView.clearAnimation()
         applySeeMoreText()
     }
 
     private fun applySeeMoreText() {
         val extraWishItemsNumber = (wishItemList.size) - MAX_VISIBLE_WISH_ITEMS
-        seeMoreTextSwitcher.setText(seeMoreTextSwitcher.context.resources.getQuantityString(
-            R.plurals.see_more_text,
-            extraWishItemsNumber,
-            extraWishItemsNumber
-        ))
-        
+        seeMoreTextSwitcher.setText(
+            seeMoreTextSwitcher.context.resources.getQuantityString(
+                R.plurals.see_more_text,
+                extraWishItemsNumber,
+                extraWishItemsNumber
+            )
+        )
+
     }
 
     private fun WishItemViewHolder.loadTopUsersPictures(wishItem: WishItem) {
@@ -200,9 +210,17 @@ class WishItemsAdapter(
             itemView.userThreeImageView
         )
         when {
-            wishItem.done!! -> loadTopUsersPictures(wishItem.topCompletedUsersId,imageViewArrayList,user)
-            wishItem.viewedCount!! > 0 -> loadTopUsersPictures(wishItem.topViewedUsersId,imageViewArrayList,user)
-            else -> loadTopUsersPictures(wishItem.topCompletedUsersId,imageViewArrayList,user)
+            wishItem.done!! -> loadTopUsersPictures(
+                wishItem.topCompletedUsersId,
+                imageViewArrayList,
+                user
+            )
+            wishItem.viewedCount!! > 0 -> loadTopUsersPictures(
+                wishItem.topViewedUsersId,
+                imageViewArrayList,
+                user
+            )
+            else -> loadTopUsersPictures(wishItem.topCompletedUsersId, imageViewArrayList, user)
         }
     }
 
@@ -211,8 +229,8 @@ class WishItemsAdapter(
         isAdding: Boolean
     ) {
         if (wishItem.completeCount!! < TOP_USERS_THRESHOLD) {
-            if(isAdding)
-            wishItem.topCompletedUsersId?.add(user.id!!)
+            if (isAdding)
+                wishItem.topCompletedUsersId?.add(user.id!!)
             else
                 wishItem.topCompletedUsersId?.remove(user.id)
         }
@@ -223,7 +241,7 @@ class WishItemsAdapter(
         isAdding: Boolean
     ) {
         if (wishItem.completeCount!! < TOP_USERS_THRESHOLD) {
-            if(isAdding)
+            if (isAdding)
                 wishItem.topViewedUsersId?.add(user.id!!)
             else
                 wishItem.topViewedUsersId?.remove(user.id)

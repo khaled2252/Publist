@@ -21,7 +21,10 @@ class MyFavoritesRepository @Inject constructor(
         return mFirebaseFirestore.collection(USERS_COLLECTION_PATH)
             .document(userId!!)
             .collection(MY_FAVORITES_COLLECTION_PATH)
-            .orderBy(DATE_FIELD, Query.Direction.ASCENDING) //Get Wishes Ascending, then will be reversed by reverseLayout attribute in RecyclerView
+            .orderBy(
+                DATE_FIELD,
+                Query.Direction.ASCENDING
+            ) //Get Wishes Ascending, then will be reversed by reverseLayout attribute in RecyclerView
     }
 
     override fun getUserFavoriteWishes(): Single<ArrayList<Wish>> {
@@ -59,8 +62,8 @@ class MyFavoritesRepository @Inject constructor(
         }
     }
 
-    override fun deleteFromFavoritesRemotely(wishId: String) : Completable {
-        return Completable.create {completableEmitter ->
+    override fun deleteFromFavoritesRemotely(wishId: String): Completable {
+        return Completable.create { completableEmitter ->
             val userId = localDataSource.getSharedPreferences().getUser()?.id
             mFirebaseFirestore
                 .collection(USERS_COLLECTION_PATH)

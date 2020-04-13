@@ -112,10 +112,10 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
                     )
                 ) {
                     Toast.makeText(
-                            this,
-                            getString(R.string.permission_required),
-                            Toast.LENGTH_SHORT
-                        )
+                        this,
+                        getString(R.string.permission_required),
+                        Toast.LENGTH_SHORT
+                    )
                         .show()
                 } else {
                     //permission is denied (and never ask again is  checked)
@@ -170,9 +170,8 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
             titleHintTextView.visibility = View.GONE
             titleEditText.setText(editedWish?.title)
 
-            if (!editedWish?.wishPhotoURL.isNullOrEmpty())
-            {
-                DataBindingAdapters.loadWishImage(photoImageView,editedWish?.wishPhotoURL!!)
+            if (!editedWish?.wishPhotoURL.isNullOrEmpty()) {
+                DataBindingAdapters.loadWishImage(photoImageView, editedWish?.wishPhotoURL!!)
                 updateImageLayout()
             }
 
@@ -302,7 +301,7 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
         }
 
         deletePhotoImageView.setOnClickListener {
-            if(editedWish != null)
+            if (editedWish != null)
                 viewModel.deletedOldPhoto = true
 
             viewModel.wishImageUri = ""

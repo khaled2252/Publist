@@ -13,6 +13,6 @@ interface SeenWishesDao {
     fun insertSeenWish(wish: SeenWish)
 
     @Query("SELECT COUNT(*) FROM SeenWishes WHERE wish_id= :wishId")
-    fun isSeenWishExist(wishId : String): Single<Int>
+    fun isSeenWishExist(wishId: String): Single<Int>
 
 }

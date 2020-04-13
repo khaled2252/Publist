@@ -72,10 +72,12 @@ class LoginViewModel @Inject constructor(
                 registeringUser.uId!!,
                 registeringUser.platform!!
             )
-                .mergeWith(loginRepository.updateProfilePictureUrl(
-                    documentId,
-                    registeringUser.profilePictureUrl!!
-                )).andThen(Single.just(Pair(documentId, false)))
+                .mergeWith(
+                    loginRepository.updateProfilePictureUrl(
+                        documentId,
+                        registeringUser.profilePictureUrl!!
+                    )
+                ).andThen(Single.just(Pair(documentId, false)))
         }
     }
 

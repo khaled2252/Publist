@@ -36,7 +36,7 @@ class EditProfileActivity : BaseActivity<EditProfileViewModel>() {
 
     private lateinit var categoriesFragment: CategoriesFragment
 
-    private var isComingFromProfile : Boolean? = null
+    private var isComingFromProfile: Boolean? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,8 +44,8 @@ class EditProfileActivity : BaseActivity<EditProfileViewModel>() {
             this,
             R.layout.activity_edit_profile
         ).executePendingBindings()
-        isComingFromProfile = this.intent.getBooleanExtra(COMING_FROM_PROFILE_INTENT,false)
-        if(!isComingFromProfile!!)
+        isComingFromProfile = this.intent.getBooleanExtra(COMING_FROM_PROFILE_INTENT, false)
+        if (!isComingFromProfile!!)
             backArrowImageViewLayout.visibility = View.GONE
 
         onCreated()
@@ -69,7 +69,11 @@ class EditProfileActivity : BaseActivity<EditProfileViewModel>() {
         categoriesFragment.viewModel.actionButtonLiveData.observe(this, Observer { viable ->
             if (!viable) {
                 val toast =
-                    Toast.makeText(this, getString(R.string.minimum_categories).format(MINIMUM_SELECTED_CATEGORIES), Toast.LENGTH_SHORT)
+                    Toast.makeText(
+                        this,
+                        getString(R.string.minimum_categories).format(MINIMUM_SELECTED_CATEGORIES),
+                        Toast.LENGTH_SHORT
+                    )
                 toast.setGravity(Gravity.BOTTOM, 0, 400)
                 toast.show()
             }

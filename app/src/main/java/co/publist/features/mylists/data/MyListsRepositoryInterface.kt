@@ -7,9 +7,9 @@ import io.reactivex.Single
 
 interface MyListsRepositoryInterface {
     fun getUserListWishesQuery(): Query
-    fun getMyLists() : Single<ArrayList<Wish>>
+    fun getMyLists(): Single<ArrayList<Wish>>
     fun getLocalMyLists(): Single<ArrayList<Wish>>
-    fun addToMyListsRemotely(wish : Wish): Completable
-    fun addToMyListsLocally(wish : Wish)
+    fun addToMyListsRemotely(wish: Wish): Completable
+    fun addToMyListsLocally(wish: Wish)
     fun addMyListsLocally(list: ArrayList<Wish>)
 }

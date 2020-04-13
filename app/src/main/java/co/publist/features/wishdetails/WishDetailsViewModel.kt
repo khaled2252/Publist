@@ -7,8 +7,8 @@ import javax.inject.Inject
 
 class WishDetailsViewModel @Inject constructor(
     private val wishesRepository: WishesRepository
-) : BaseViewModel(){
-    fun incrementOrganicSeen(wishId : String){
+) : BaseViewModel() {
+    fun incrementOrganicSeen(wishId: String) {
         subscribe(wishesRepository.incrementOrganicSeen(wishId), Action {
 
         })

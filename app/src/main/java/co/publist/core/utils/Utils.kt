@@ -105,39 +105,35 @@ object Utils {
     fun loadTopUsersPictures(
         topUsersId: ArrayList<String>?,
         imageViewArrayList: ArrayList<ImageView>,
-        user : User
+        user: User
     ) {
         //Clear extra loaded images when updating (i.e removed images)
-        if (topUsersId.isNullOrEmpty())
-        {
+        if (topUsersId.isNullOrEmpty()) {
             for (imageView in imageViewArrayList)
                 imageView.setImageDrawable(null)
             return //Case where all images are removed , Undraw all then terminate
-        }
-        else if (topUsersId.isNotEmpty())
-        {
+        } else if (topUsersId.isNotEmpty()) {
             for (emptyIndex in topUsersId.size.until(imageViewArrayList.size))
                 imageViewArrayList[emptyIndex].setImageDrawable(null)
-             //Case where some images are removed , Undraw them then load new images
+            //Case where some images are removed , Undraw them then load new images
         }
 
         //Load cached user image if is in topUsersId
-        if(topUsersId.contains(user.id!!))
-        {
-            for (topUserIdIndex in 0 until topUsersId.size)
-            {
-                if(topUsersId[topUserIdIndex]==user.id)
-                {
-                    loadProfilePicture(imageViewArrayList[topUserIdIndex],user.profilePictureUrl)
+        if (topUsersId.contains(user.id!!)) {
+            for (topUserIdIndex in 0 until topUsersId.size) {
+                if (topUsersId[topUserIdIndex] == user.id) {
+                    loadProfilePicture(imageViewArrayList[topUserIdIndex], user.profilePictureUrl)
                     topUsersId.removeAt(topUserIdIndex)
                     imageViewArrayList.removeAt(topUserIdIndex)
-                }
-                else
-                    loadProfilePicture(imageViewArrayList[topUserIdIndex],null) //Load placeholders for images to be loaded
+                } else
+                    loadProfilePicture(
+                        imageViewArrayList[topUserIdIndex],
+                        null
+                    ) //Load placeholders for images to be loaded
             }
         }
 
-        if(topUsersId.isNotEmpty()) {
+        if (topUsersId.isNotEmpty()) {
             //Load new Images
             FirebaseFunctions.getInstance().getHttpsCallable(FETCH_USER_PICTURE_CLOUD_FUNCTION)
                 .call(hashMapOf(USER_IDS_FIELD to topUsersId))
@@ -217,7 +213,8 @@ object Utils {
         const val ALGOLIA_APP_ID = "6RAUVU14O2"
         const val ALGOLIA_API_KEY = "c858b1b659337e1e6c9cc0cbc716e1d0"
         const val ALGOLIA_DATABASE_INDEX = "wishes"
-        const val ALGOLIA_HITS_FIELD= "hits"
+        const val ALGOLIA_HITS_FIELD = "hits"
         const val ALGOLIA_WISH_ID_FIELD = "objectID"
+        const val AUTO_COMPLETE_TEXT_VIEW_ID = "android:id/search_src_text"
     }
 }

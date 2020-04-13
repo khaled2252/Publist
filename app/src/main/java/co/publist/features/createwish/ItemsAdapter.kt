@@ -10,11 +10,12 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 
-class ItemsAdapter (private val listChangedListener: (ArrayList<String>) -> Unit):
+class ItemsAdapter(private val listChangedListener: (ArrayList<String>) -> Unit) :
     RecyclerView.Adapter<ItemsAdapter.ItemViewHolder>() {
     private var list = ArrayList<String>()
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
-        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.item_create_wish, parent, false)
+        val itemView =
+            LayoutInflater.from(parent.context).inflate(R.layout.item_create_wish, parent, false)
         return ItemViewHolder(itemView)
     }
 
@@ -45,7 +46,7 @@ class ItemsAdapter (private val listChangedListener: (ArrayList<String>) -> Unit
         listChangedListener(list)
     }
 
-    fun populateOldList(oldList : ArrayList<String>){
+    fun populateOldList(oldList: ArrayList<String>) {
         list = oldList
         notifyDataSetChanged()
     }

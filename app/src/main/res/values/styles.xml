@@ -7,7 +7,7 @@
         <item name="colorAccent">@color/white</item>
     </style>
 
-    <style name="AppTheme.SplashScreen" >
+    <style name="AppTheme.SplashScreen">
         <item name="android:statusBarColor">@color/sunsetOrange</item>
         <!--        To remove white screen before splash-->
         <item name="android:windowDisablePreview">true</item>
@@ -15,34 +15,29 @@
     </style>
 
     <!-- Login screen -->
-    <style name="AppTheme.LoginScreen" >
+    <style name="AppTheme.LoginScreen">
         <item name="android:statusBarColor">@color/sunsetOrange</item>
     </style>
 
     <!-- Intro screen -->
-    <style name="AppTheme.IntroScreen" >
-    </style>
+    <style name="AppTheme.IntroScreen"></style>
 
     <!-- Edit Profile screen -->
-    <style name="AppTheme.EditProfileScreen" >
-    </style>
+    <style name="AppTheme.EditProfileScreen"></style>
 
     <!-- Create Wish screen -->
-    <style name="AppTheme.CreateWishScreen" >
+    <style name="AppTheme.CreateWishScreen">
         <item name="android:windowSoftInputMode">adjustPan</item>
     </style>
 
     <!-- Profile screen -->
-    <style name="AppTheme.ProfileScreen" >
-    </style>
+    <style name="AppTheme.ProfileScreen"></style>
 
     <!-- Wish Details screen -->
-    <style name="AppTheme.WishDetailsScreen" >
-    </style>
+    <style name="AppTheme.WishDetailsScreen"></style>
 
     <!-- Home screen -->
-    <style name="AppTheme.HomeScreen">
-    </style>
+    <style name="AppTheme.HomeScreen"></style>
 
     <style name="MyBottomSheetDialog" parent="AppTheme">
         <item name="android:windowFrame">@null</item>

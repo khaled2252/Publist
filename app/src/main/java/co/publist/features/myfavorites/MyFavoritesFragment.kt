@@ -11,7 +11,7 @@ import co.publist.core.utils.Utils.Constants.FAVORITES
 import co.publist.features.wishes.WishesFragment
 import javax.inject.Inject
 
-class MyFavoritesFragment : BaseFragment<MyFavoritesViewModel>(){
+class MyFavoritesFragment : BaseFragment<MyFavoritesViewModel>() {
     @Inject
     lateinit var viewModel: MyFavoritesViewModel
 

@@ -73,7 +73,7 @@
                     android:layout_gravity="center|start"
                     android:layout_marginStart="30dp"
                     android:visibility="gone"
-                    app:checkedIconEnabled="false"/>
+                    app:checkedIconEnabled="false" />
             </FrameLayout>
 
             <View
@@ -142,8 +142,7 @@
                         android:layout_marginTop="18dp"
                         android:text="@string/title_hint"
                         android:textColor="@color/dimGray"
-                        android:textSize="14.5sp"
-                         />
+                        android:textSize="14.5sp" />
                 </FrameLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
 

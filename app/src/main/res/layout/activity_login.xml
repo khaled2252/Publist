@@ -135,8 +135,7 @@
         android:alpha="0.35"
         android:animateLayoutChanges="true"
         android:background="@color/dimGray"
-        android:visibility="gone">
-    </FrameLayout>
+        android:visibility="gone"></FrameLayout>
 
     <ProgressBar
         android:id="@+id/progress_circular"

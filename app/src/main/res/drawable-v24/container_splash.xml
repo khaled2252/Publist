@@ -5,6 +5,6 @@
         android:drawable="@drawable/ic_logo_white_background"
         android:gravity="center"
         android:width="@dimen/icon_logo_size"
-        android:height="@dimen/icon_logo_size"/>
+        android:height="@dimen/icon_logo_size" />
 
 </layer-list>

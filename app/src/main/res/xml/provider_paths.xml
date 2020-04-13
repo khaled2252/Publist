@@ -12,6 +12,8 @@
     <external-cache-path
         name="external_cache"
         path="." />
-    <files-path name="my_images" path="app_images/"/>
+    <files-path
+        name="my_images"
+        path="app_images/" />
 
 </paths>

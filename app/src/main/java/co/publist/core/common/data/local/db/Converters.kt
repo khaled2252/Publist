@@ -15,31 +15,31 @@ class Converters {
 
     @TypeConverter
     fun toLocalization(json: String): Localization {
-        val type = object : TypeToken<Localization>(){}.type
+        val type = object : TypeToken<Localization>() {}.type
         return Gson().fromJson(json, type)
     }
 
     @TypeConverter
     fun toCategory(json: String): Category {
-        val type = object : TypeToken<Category>(){}.type
+        val type = object : TypeToken<Category>() {}.type
         return Gson().fromJson(json, type)
     }
 
     @TypeConverter
     fun toCategoryWish(json: String): CategoryWish {
-        val type = object : TypeToken<CategoryWish>(){}.type
+        val type = object : TypeToken<CategoryWish>() {}.type
         return Gson().fromJson(json, type)
     }
 
     @TypeConverter
     fun toDate(json: String): Timestamp {
-        val type = object : TypeToken<Timestamp>(){}.type
+        val type = object : TypeToken<Timestamp>() {}.type
         return Gson().fromJson(json, type)
     }
 
     @TypeConverter
     fun toCreator(json: String): Creator {
-        val type = object : TypeToken<Creator>(){}.type
+        val type = object : TypeToken<Creator>() {}.type
         return Gson().fromJson(json, type)
     }
 
@@ -51,9 +51,9 @@ class Converters {
     }
 
     @TypeConverter
-    fun toItemMap(value: String?): Map<String,WishItem?>? {
+    fun toItemMap(value: String?): Map<String, WishItem?>? {
         val listType: Type =
-            object : TypeToken< Map<String,WishItem?>?>() {}.type
+            object : TypeToken<Map<String, WishItem?>?>() {}.type
         return Gson().fromJson(value, listType)
     }
 
@@ -66,13 +66,13 @@ class Converters {
 
     @TypeConverter
     fun toJson(localization: Localization): String {
-        val type = object: TypeToken<Localization>(){}.type
+        val type = object : TypeToken<Localization>() {}.type
         return Gson().toJson(localization, type)
     }
 
     @TypeConverter
     fun toJson(category: CategoryWish): String {
-        val type = object: TypeToken<CategoryWish>(){}.type
+        val type = object : TypeToken<CategoryWish>() {}.type
         return Gson().toJson(category, type)
     }
 
@@ -83,20 +83,20 @@ class Converters {
     }
 
     @TypeConverter
-    fun toJson(map: Map<*,*>?): String? {
+    fun toJson(map: Map<*, *>?): String? {
         val gson = Gson()
         return gson.toJson(map)
     }
 
     @TypeConverter
     fun toJson(timestamp: Timestamp): String {
-        val type = object: TypeToken<Timestamp>(){}.type
+        val type = object : TypeToken<Timestamp>() {}.type
         return Gson().toJson(timestamp, type)
     }
 
     @TypeConverter
     fun toJson(creator: Creator): String {
-        val type = object: TypeToken<Creator>(){}.type
+        val type = object : TypeToken<Creator>() {}.type
         return Gson().toJson(creator, type)
     }
 

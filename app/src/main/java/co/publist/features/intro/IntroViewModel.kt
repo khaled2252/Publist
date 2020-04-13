@@ -4,6 +4,4 @@ import co.publist.core.platform.BaseViewModel
 import javax.inject.Inject
 
 
-class IntroViewModel @Inject constructor() : BaseViewModel() {
-
-}
+class IntroViewModel @Inject constructor() : BaseViewModel()

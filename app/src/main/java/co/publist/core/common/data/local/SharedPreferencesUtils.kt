@@ -44,7 +44,8 @@ class SharedPreferencesUtils @Inject constructor(context: Context) :
     override fun deleteUser() {
         getPref().edit().remove(USER_TAG).apply()
     }
-//
+
+    //
 //    override fun updateUserCategories(categoriesList: ArrayList<String>) {
 //        val gson = Gson()
 //        val json = getPref().getString(USER_TAG, null)

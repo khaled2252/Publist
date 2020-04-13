@@ -3,6 +3,6 @@
     <item android:drawable="@drawable/ic_rectangle" />
     <item
         android:drawable="@drawable/ic_shape"
-        android:gravity="center"/>
+        android:gravity="center" />
 
 </layer-list>

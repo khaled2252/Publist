@@ -24,12 +24,12 @@ abstract class SeenWishesDataBase : RoomDatabase() {
         fun getInstance(context: Context): SeenWishesDataBase =
             INSTANCE
                 ?: synchronized(this) {
-                INSTANCE
-                    ?: buildDatabase(
-                        context
-                    )
-                        .also { INSTANCE = it }
-            }
+                    INSTANCE
+                        ?: buildDatabase(
+                            context
+                        )
+                            .also { INSTANCE = it }
+                }
 
         private fun buildDatabase(context: Context) =
             Room.inMemoryDatabaseBuilder(

@@ -26,10 +26,10 @@ interface PublistDao {
     fun deleteCategories()
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertMyLists(items : List<MyListDbEntity>)
+    fun insertMyLists(items: List<MyListDbEntity>)
 
     @Insert
-    fun insertIntoMyLists(item : MyListDbEntity)
+    fun insertIntoMyLists(item: MyListDbEntity)
 
     @Query("SELECT * FROM myLists")
     fun getMyLists(): Single<List<MyListDbEntity>>
@@ -41,7 +41,7 @@ interface PublistDao {
     fun deleteMyLists()
 
     @Query("DELETE FROM myLists WHERE wish_id = :wishId")
-    fun deleteFromMyLists(wishId : String)
+    fun deleteFromMyLists(wishId: String)
 
 
     @Query("SELECT * FROM myFavorites")

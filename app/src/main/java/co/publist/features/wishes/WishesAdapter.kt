@@ -29,7 +29,7 @@ class WishesAdapter(
     val detailsListener: (wish: WishAdapterItem) -> Unit,
     val completeListener: (itemId: String, wish: WishAdapterItem, isDone: Boolean) -> Unit,
     val likeListener: (itemId: String, wish: WishAdapterItem, isLiked: Boolean) -> Unit,
-    val seenCountListener : (wishId : String) -> Unit
+    val seenCountListener: (wishId: String) -> Unit
 ) :
     RecyclerView.Adapter<WishesAdapter.WishViewHolder>() {
     val wishItemsAdapterArrayList = ArrayList<WishItemsAdapter>()
@@ -42,13 +42,13 @@ class WishesAdapter(
 
     override fun onBindViewHolder(holder: WishViewHolder, position: Int) {
         val wish = list[position]
-        if(wish.itemsId!!.size>MAX_VISIBLE_WISH_ITEMS) // To avoid recycling seeMore layout for expandable wish Items
+        if (wish.itemsId!!.size > MAX_VISIBLE_WISH_ITEMS) // To avoid recycling seeMore layout for expandable wish Items
             holder.setIsRecyclable(false)
 
         if (wish.wishId != null)//Fixme checking because of iOS bug where some wishes are without wishId
             seenCountListener(wish.wishId!!)
 
-        holder.bind(wish,position)
+        holder.bind(wish, position)
     }
 
     override fun getItemCount(): Int {
@@ -82,11 +82,15 @@ class WishesAdapter(
                 binding.wishActionImageView.apply {
                     if (wish.isFavorite)
                         setImageResource(R.drawable.ic_heart_active)
-                     else
+                    else
                         setImageResource(R.drawable.ic_heart)
 
                     setOnClickListener {
-                        favoriteWish(wish ,position,isFavoriting = !wish.isFavorite) //Taking the opposite of current state
+                        favoriteWish(
+                            wish,
+                            position,
+                            isFavoriting = !wish.isFavorite
+                        ) //Taking the opposite of current state
                     }
                 }
 
@@ -110,7 +114,8 @@ class WishesAdapter(
             DataBindingAdapters.loadWishImage(binding.wishImageView, wish.wishPhotoURL)
 
             //Load wish Items
-            wish.items = wish.items?.toList()?.sortedBy { it.second.orderId }?.toMap() //sort Items map by orderId
+            wish.items = wish.items?.toList()?.sortedBy { it.second.orderId }
+                ?.toMap() //sort Items map by orderId
             val wishItemsAdapter = WishItemsAdapter(
                 wish,
                 wishesType,
@@ -127,22 +132,25 @@ class WishesAdapter(
 
                 }, completeListener = { itemId, isDone ->
                     //completed item's wish is added to favorites according to business
-                    if(!wish.isCreator && !wish.isFavorite && isDone)
-                        binding.wishActionImageView.favoriteWish(wish ,position, true)
+                    if (!wish.isCreator && !wish.isFavorite && isDone)
+                        binding.wishActionImageView.favoriteWish(wish, position, true)
 
                     //Add wish first to favorites then increment the done item(for some reason item is incremented twice if incremented in WishItemsAdapter)
-                    val incrementAmount = if(isDone) 1 else -1
-                    wish.items!![itemId]?.completeCount = wish.items!![itemId]?.completeCount!!+incrementAmount
+                    val incrementAmount = if (isDone) 1 else -1
+                    wish.items!![itemId]?.completeCount =
+                        wish.items!![itemId]?.completeCount!! + incrementAmount
                     completeListener(itemId, wish, isDone)
-                },likeListener = {itemId, isLiked ->
-                    val incrementAmount = if(isLiked) 1 else -1
-                    wish.items!![itemId]?.viewedCount = wish.items!![itemId]?.  viewedCount!!+incrementAmount
-                    likeListener(itemId,wish,isLiked)
+                }, likeListener = { itemId, isLiked ->
+                    val incrementAmount = if (isLiked) 1 else -1
+                    wish.items!![itemId]?.viewedCount =
+                        wish.items!![itemId]?.viewedCount!! + incrementAmount
+                    likeListener(itemId, wish, isLiked)
                 })
             wishItemsAdapterArrayList.add(wishItemsAdapter)
 
-            val mLayoutManager = object : LinearLayoutManager(binding.wishItemsRecyclerView.context) {
-                //To make outer recyclerView (Wishes) scroll when user touched inner recyclerView (Items)
+            val mLayoutManager =
+                object : LinearLayoutManager(binding.wishItemsRecyclerView.context) {
+                    //To make outer recyclerView (Wishes) scroll when user touched inner recyclerView (Items)
                     override fun canScrollVertically(): Boolean {
                         return false
                     }
@@ -152,19 +160,20 @@ class WishesAdapter(
             binding.wishItemsRecyclerView.adapter = wishItemsAdapter
         }
 
-        private fun ImageView.favoriteWish(wish: WishAdapterItem ,position: Int, isFavoriting: Boolean) {
+        private fun ImageView.favoriteWish(
+            wish: WishAdapterItem,
+            position: Int,
+            isFavoriting: Boolean
+        ) {
 
-            if (isFavoriting)
-            {
+            if (isFavoriting) {
                 //Update Ui
                 setImageResource(R.drawable.ic_heart_active)
                 wish.isFavorite = isFavoriting
                 //Update remotely
                 favoriteListener(wish, isFavoriting)
-                }
-            else {
-                if(wish.items?.values?.any {it.done==true}!!)
-                {
+            } else {
+                if (wish.items?.values?.any { it.done == true }!!) {
                     val builder = AlertDialog.Builder(this.context!!)
 
                     builder.setTitle(context.getString(R.string.remove_wish_title))
@@ -173,10 +182,8 @@ class WishesAdapter(
                         setImageResource(R.drawable.ic_heart)
                         wish.isFavorite = isFavoriting
                         favoriteListener(wish, isFavoriting)
-                        for (item in wish.items!!.values)
-                        {
-                            if(item.done!!)
-                            {
+                        for (item in wish.items!!.values) {
+                            if (item.done!!) {
                                 item.done = false
                                 item.completeCount = item.completeCount?.dec()
                                 item.topCompletedUsersId?.remove(user.id)
@@ -187,9 +194,7 @@ class WishesAdapter(
                     builder.setNegativeButton(this.context.getString(R.string.cancel)) { _, _ ->
                     }
                     builder.create().show()
-                }
-                else
-                {
+                } else {
                     setImageResource(R.drawable.ic_heart)
                     wish.isFavorite = isFavoriting
                     favoriteListener(wish, isFavoriting)

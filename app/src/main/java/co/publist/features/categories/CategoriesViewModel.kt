@@ -64,7 +64,8 @@ class CategoriesViewModel @Inject constructor(
                             val categoryAdapterItemList =
                                 Mapper.mapToCategoryAdapterItemList(allCategories)
                             if (editedWishCategory.isNotEmpty()) {
-                                val selectedCategory = Mapper.mapToCategoryAdapterItem(editedWishCategory[0])
+                                val selectedCategory =
+                                    Mapper.mapToCategoryAdapterItem(editedWishCategory[0])
                                 selectedCategory.isSelected = true
                                 selectedCategoriesList.add(selectedCategory)
                                 val index =

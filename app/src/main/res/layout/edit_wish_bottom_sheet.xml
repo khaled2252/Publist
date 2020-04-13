@@ -11,7 +11,7 @@
     android:fitsSystemWindows="true"
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
-<!--    negative top margin is added because coordinator layout (parent) adds space-->
+    <!--    negative top margin is added because coordinator layout (parent) adds space-->
     <TextView
         android:id="@+id/editWishTextView"
         android:layout_width="match_parent"

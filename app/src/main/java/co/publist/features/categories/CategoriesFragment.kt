@@ -34,14 +34,14 @@ class CategoriesFragment : BaseFragment<CategoriesViewModel>() {
         return inflater.inflate(R.layout.fragment_categories, container, false)
     }
 
-    private lateinit var adapter : CategoriesAdapter
+    private lateinit var adapter: CategoriesAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         setObservers()
         setAdapter(arrayListOf())
     }
 
-    private fun setAdapter(categoriesList : ArrayList<CategoryAdapterItem>) {
+    private fun setAdapter(categoriesList: ArrayList<CategoryAdapterItem>) {
         adapter = CategoriesAdapter(categoriesList) { CategoryAdapterItem ->
             viewModel.addCategory(CategoryAdapterItem)
 
@@ -54,17 +54,27 @@ class CategoriesFragment : BaseFragment<CategoriesViewModel>() {
             adapter.updateList(newList)
         })
 
-        viewModel.reachedMaximumSelectionLiveData.observe(viewLifecycleOwner, Observer { isCreatingWish ->
-            if(!isCreatingWish)
-            Toast.makeText(this.context, getString(R.string.maximum_categories).format(MAXIMUM_SELECTED_CATEGORIES), Toast.LENGTH_SHORT)
-                .show()
-            else Toast.makeText(this.context, getString(R.string.maximum_categories_create_wish), Toast.LENGTH_SHORT)
-                .show()
+        viewModel.reachedMaximumSelectionLiveData.observe(
+            viewLifecycleOwner,
+            Observer { isCreatingWish ->
+                if (!isCreatingWish)
+                    Toast.makeText(
+                        this.context,
+                        getString(R.string.maximum_categories).format(MAXIMUM_SELECTED_CATEGORIES),
+                        Toast.LENGTH_SHORT
+                    )
+                        .show()
+                else Toast.makeText(
+                    this.context,
+                    getString(R.string.maximum_categories_create_wish),
+                    Toast.LENGTH_SHORT
+                )
+                    .show()
 //            val toast =
 //                Toast.makeText(this.context, getString(R.string.maximum_categories_create_wish), Toast.LENGTH_SHORT)
 //            toast.setGravity(Gravity.BOTTOM, 0, 400)
 //            toast.show()
-        })
+            })
     }
 
 }

@@ -66,7 +66,10 @@ class WishesRepository @Inject constructor(
     override fun getAllWishes(): Single<ArrayList<Wish>> {
         return Single.create { singleEmitter ->
             mFirebaseFirestore.collection(WISHES_COLLECTION_PATH)
-                .orderBy(DATE_FIELD, Query.Direction.ASCENDING) //Fixme , Get Wishes Ascending, then will be reversed by reverseLayout attribute in RecyclerView
+                .orderBy(
+                    DATE_FIELD,
+                    Query.Direction.ASCENDING
+                ) //Fixme , Get Wishes Ascending, then will be reversed by reverseLayout attribute in RecyclerView
                 .get()
                 .addOnFailureListener {
                     singleEmitter.onError(it)
@@ -87,7 +90,8 @@ class WishesRepository @Inject constructor(
                 }.addOnSuccessListener { querySnapshot ->
                     singleEmitter.onSuccess(Mapper.mapToWishAdapterItemArrayList(querySnapshot))
                 }
-        }    }
+        }
+    }
 
     override fun getMyListWishes(): Single<ArrayList<Wish>> {
         return localDataSource.getPublistDataBase().getMyLists()
@@ -153,7 +157,7 @@ class WishesRepository @Inject constructor(
                 }.addOnSuccessListener {
                     mFirebaseFirestore.collection(WISHES_COLLECTION_PATH)
                         .document(wish.wishId!!)
-                        .set(wish,SetOptions.merge())
+                        .set(wish, SetOptions.merge())
                         .addOnSuccessListener {
                             completableEmitter.onComplete()
                         }
@@ -651,22 +655,24 @@ class WishesRepository @Inject constructor(
                     singleEmitter.onError(it)
                 }.addOnSuccessListener { myListsQuerySnapshot ->
                     val myListWishes = Mapper.mapToWishAdapterItemArrayList(myListsQuerySnapshot)
-                    if(myListWishes.isNotEmpty())
-                    {
-                        val myListWishesId = myListWishes.map{it.wishId}
+                    if (myListWishes.isNotEmpty()) {
+                        val myListWishesId = myListWishes.map { it.wishId }
                         mFirebaseFirestore.collection(WISHES_COLLECTION_PATH)
-                            .whereIn(FieldPath.documentId(),myListWishesId)
+                            .whereIn(FieldPath.documentId(), myListWishesId)
                             .get()
                             .addOnFailureListener {
                                 singleEmitter.onError(it)
                             }
-                            .addOnSuccessListener {publicWishesQuerySnapshot ->
-                                singleEmitter.onSuccess(Mapper.mapToWishArrayList(publicWishesQuerySnapshot))
+                            .addOnSuccessListener { publicWishesQuerySnapshot ->
+                                singleEmitter.onSuccess(
+                                    Mapper.mapToWishArrayList(
+                                        publicWishesQuerySnapshot
+                                    )
+                                )
                             }
-                    }
-                    else
+                    } else
                         singleEmitter.onSuccess(arrayListOf())
-                  }
+                }
         }
     }
 
@@ -679,48 +685,48 @@ class WishesRepository @Inject constructor(
                 .addOnFailureListener {
                     singleEmitter.onError(it)
                 }.addOnSuccessListener { MyFavoritesQuerySnapshot ->
-                    val myFavoritesWishes = Mapper.mapToWishAdapterItemArrayList(MyFavoritesQuerySnapshot)
-                       if(myFavoritesWishes.isNotEmpty())
-                       {
-                           val myFavoritesWishesId = myFavoritesWishes.map{it.wishId}
-                           mFirebaseFirestore.collection(WISHES_COLLECTION_PATH)
-                               .whereIn(FieldPath.documentId(),myFavoritesWishesId)
-                               .get()
-                               .addOnFailureListener {
-                                   singleEmitter.onError(it)
-                               }
-                               .addOnSuccessListener {publicWishesQuerySnapshot ->
-                                   singleEmitter.onSuccess(Mapper.mapToWishArrayList(publicWishesQuerySnapshot))
-                               }
-                       }
-                    else
-                           singleEmitter.onSuccess(arrayListOf())
-                   }
-        }    }
+                    val myFavoritesWishes =
+                        Mapper.mapToWishAdapterItemArrayList(MyFavoritesQuerySnapshot)
+                    if (myFavoritesWishes.isNotEmpty()) {
+                        val myFavoritesWishesId = myFavoritesWishes.map { it.wishId }
+                        mFirebaseFirestore.collection(WISHES_COLLECTION_PATH)
+                            .whereIn(FieldPath.documentId(), myFavoritesWishesId)
+                            .get()
+                            .addOnFailureListener {
+                                singleEmitter.onError(it)
+                            }
+                            .addOnSuccessListener { publicWishesQuerySnapshot ->
+                                singleEmitter.onSuccess(
+                                    Mapper.mapToWishArrayList(
+                                        publicWishesQuerySnapshot
+                                    )
+                                )
+                            }
+                    } else
+                        singleEmitter.onSuccess(arrayListOf())
+                }
+        }
+    }
 
     override fun getWishesByTitle(searchQuery: String): Single<ArrayList<Wish>> {
         return Single.create { singleEmitter ->
             val completionHandler = CompletionHandler { content, error ->
-                    if(error==null)
-                    {
-                        val wishIdsList = Mapper.mapToWishIdsArrayList(content!!)
-                        if(wishIdsList.isNotEmpty())
-                        {
-                            mFirebaseFirestore.collection(WISHES_COLLECTION_PATH)
-                                .whereIn(FieldPath.documentId(),wishIdsList)
-                                .get()
-                                .addOnFailureListener {
-                                    singleEmitter.onError(it)
-                                }.addOnSuccessListener { querySnapshot ->
-                                    singleEmitter.onSuccess(Mapper.mapToWishArrayList(querySnapshot))
-                                }
-                        }
-                        else
-                            singleEmitter.onSuccess(arrayListOf())
-                    }
-                    else
-                        singleEmitter.onError(error)
-                }
+                if (error == null) {
+                    val wishIdsList = Mapper.mapToWishIdsArrayList(content!!)
+                    if (wishIdsList.isNotEmpty()) {
+                        mFirebaseFirestore.collection(WISHES_COLLECTION_PATH)
+                            .whereIn(FieldPath.documentId(), wishIdsList)
+                            .get()
+                            .addOnFailureListener {
+                                singleEmitter.onError(it)
+                            }.addOnSuccessListener { querySnapshot ->
+                                singleEmitter.onSuccess(Mapper.mapToWishArrayList(querySnapshot))
+                            }
+                    } else
+                        singleEmitter.onSuccess(arrayListOf())
+                } else
+                    singleEmitter.onError(error)
+            }
 
             mAlgoliaClient.getIndex(ALGOLIA_DATABASE_INDEX)
                 .searchAsync(com.algolia.search.saas.Query(searchQuery), completionHandler)

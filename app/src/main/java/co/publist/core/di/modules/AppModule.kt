@@ -1,4 +1,4 @@
-package co.publist.core.di.modules;
+package co.publist.core.di.modules
 
 import android.content.Context
 import co.publist.R
@@ -44,12 +44,12 @@ class AppModule {
 
     @Singleton
     @Provides
-    fun provideGoogleSignInClient(context : Context): GoogleSignInClient {
+    fun provideGoogleSignInClient(context: Context): GoogleSignInClient {
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(context.getString(R.string.default_web_client_id))
             .requestEmail()
             .build()
-        return GoogleSignIn.getClient(context,gso)
+        return GoogleSignIn.getClient(context, gso)
     }
 
     @Singleton
@@ -79,7 +79,7 @@ class AppModule {
     @Singleton
     @Provides
     fun provideAlgoliaClient(): Client {
-        return Client(ALGOLIA_APP_ID,ALGOLIA_API_KEY)
+        return Client(ALGOLIA_APP_ID, ALGOLIA_API_KEY)
     }
 
 

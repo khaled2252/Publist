@@ -6,5 +6,4 @@ import javax.inject.Inject
 class HomeRepository @Inject constructor(
     private val localDataSource: LocalDataSource
 
-)  : HomeRepositoryInterface{
-}
+) : HomeRepositoryInterface

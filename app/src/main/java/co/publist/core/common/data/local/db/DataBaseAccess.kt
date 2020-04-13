@@ -32,8 +32,7 @@ class DataBaseAccess @Inject constructor(context: Context) : DataBaseInterface {
         publistDao.insertCategoriesList(categoriesList)
     }
 
-    override fun getCategories(): Single<List<CategoryDbEntity>>
-    {
+    override fun getCategories(): Single<List<CategoryDbEntity>> {
         return publistDao.getCategories()
     }
 
@@ -61,15 +60,15 @@ class DataBaseAccess @Inject constructor(context: Context) : DataBaseInterface {
         return publistDao.insertMyLists(myList)
     }
 
-    override fun deleteFromMyLists(wishId : String) {
+    override fun deleteFromMyLists(wishId: String) {
         return publistDao.deleteFromMyLists(wishId)
     }
 
     override fun isWishSeen(wishId: String): Single<Boolean> {
-       return seenWishesDao.isSeenWishExist(wishId).flatMap { count ->
+        return seenWishesDao.isSeenWishExist(wishId).flatMap { count ->
             if (count == 0)
-              Single.just(false)
-           else
+                Single.just(false)
+            else
                 Single.just(true)
         }
     }
@@ -81,15 +80,15 @@ class DataBaseAccess @Inject constructor(context: Context) : DataBaseInterface {
 }
 
 interface DataBaseInterface {
-    fun getCategories():Single<List<CategoryDbEntity>>
+    fun getCategories(): Single<List<CategoryDbEntity>>
     fun getCategoriesDataSource(): DataSource.Factory<Int, CategoryDbEntity>
     fun updateCategories(categoriesList: List<CategoryDbEntity>)
     fun deleteCategories()
-    fun getMyLists():Single<List<MyListDbEntity>>
+    fun getMyLists(): Single<List<MyListDbEntity>>
     fun getMyListsDataSource(): DataSource.Factory<Int, MyListDbEntity>
     fun insertIntoMyLists(myList: MyListDbEntity)
     fun addMyLists(myList: List<MyListDbEntity>)
-    fun deleteFromMyLists(wishId : String)
-    fun isWishSeen(wishId: String) : Single<Boolean>
+    fun deleteFromMyLists(wishId: String)
+    fun isWishSeen(wishId: String): Single<Boolean>
     fun insertSeenWish(wishId: String)
 }
