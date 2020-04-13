@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.appcompat.app.AlertDialog
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import co.publist.R
 import co.publist.core.common.data.models.User
@@ -44,7 +45,9 @@ class WishesAdapter(
         if(wish.itemsId!!.size>MAX_VISIBLE_WISH_ITEMS) // To avoid recycling seeMore layout for expandable wish Items
             holder.setIsRecyclable(false)
 
-        seenCountListener(wish.wishId!!)
+        if (wish.wishId != null)//Fixme checking because of iOS bug where some wishes are without wishId
+            seenCountListener(wish.wishId!!)
+
         holder.bind(wish,position)
     }
 
@@ -112,7 +115,7 @@ class WishesAdapter(
                 wish,
                 wishesType,
                 user,
-                binding.seeMoreTextView,
+                binding.seeMoreTextSwitcher,
                 binding.arrowImageView,
                 wishItemsAdapterArrayList.size
                 , expandListener = { wishItemsAdapterIndex ->
@@ -137,6 +140,15 @@ class WishesAdapter(
                     likeListener(itemId,wish,isLiked)
                 })
             wishItemsAdapterArrayList.add(wishItemsAdapter)
+
+            val mLayoutManager = object : LinearLayoutManager(binding.wishItemsRecyclerView.context) {
+                //To make outer recyclerView (Wishes) scroll when user touched inner recyclerView (Items)
+                    override fun canScrollVertically(): Boolean {
+                        return false
+                    }
+                }
+
+            binding.wishItemsRecyclerView.layoutManager = mLayoutManager
             binding.wishItemsRecyclerView.adapter = wishItemsAdapter
         }
 

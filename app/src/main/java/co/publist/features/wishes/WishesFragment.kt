@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.SimpleItemAnimator
 import co.publist.R
@@ -51,7 +52,7 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
     }
 
     private fun setObservers() {
-        viewModel.wishesType.observe(viewLifecycleOwner, Observer { type ->
+        viewModel.preLoadedWishesType.observe(viewLifecycleOwner, Observer { type ->
             wishesType = type
             setListeners()
         })
@@ -84,6 +85,13 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
 
     private fun setListeners() {
         if (wishesType == PUBLIC || wishesType == SEARCH) {
+            noResultsPlaceholder.visibility = View.GONE
+            wishesFragmentContainer.setBackgroundColor(
+                ContextCompat.getColor(
+                    this.context!!,
+                    R.color.platinum
+                )
+            )
             refreshLayout.isEnabled = true
             refreshLayout.isRefreshing = true
             refreshLayout.setOnRefreshListener {
@@ -146,7 +154,6 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
     private fun setAdapter(list: ArrayList<WishAdapterItem>) {
         refreshLayout.isRefreshing = false
         if (list.isNotEmpty()) {
-            noResultsPlaceholder.visibility = View.GONE
             val wishesAdapter = WishesAdapter(
                 list,
                 wishesType = wishesType,
@@ -173,10 +180,13 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
             (wishesRecyclerView.itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
             wishesRecyclerView.adapter = wishesAdapter
         } else {
-            if(wishesType == SEARCH)
-            {
+            if (wishesType == SEARCH) {
                 wishesRecyclerView.adapter = null
                 noResultsPlaceholder.visibility = View.VISIBLE
+                wishesFragmentContainer.setBackgroundColor(
+                    ContextCompat.getColor(this.context!!, R.color.white)
+                )
+
             }
         }
 

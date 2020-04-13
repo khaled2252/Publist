@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
 
@@ -7,101 +8,101 @@
             name="imageUrl"
             type="String" />
     </data>
+
     <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/homeActivityContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true">
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
 
         <com.google.android.material.appbar.AppBarLayout
-            android:id="@+id/toolbar"
+            android:id="@+id/app_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/white">
+            android:background="@color/white"
+            >
 
             <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolBar"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                app:layout_scrollFlags="scroll|enterAlways">
 
-                <androidx.constraintlayout.widget.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
-                    xmlns:tools="http://schemas.android.com/tools"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@color/white">
-
-                    <ImageView
-                        android:id="@+id/profilePictureImageView"
-                        android:layout_width="37dp"
-                        android:layout_height="37dp"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginBottom="8dp"
-                        android:scaleType="fitXY"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:profilePictureUrl="@{imageUrl}"
-                        tools:src="@drawable/ic_logo" />
-
-                    <com.google.android.material.chip.ChipGroup
-                        android:id="@+id/searchCategoryChipGroup"
-                        android:layout_width="wrap_content"
+                    <FrameLayout xmlns:tools="http://schemas.android.com/tools"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="15dp"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"/>
-                    <SearchView
-                        android:id="@+id/searchView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:queryHint="@string/search_hint"
-                        android:queryBackground="@android:color/transparent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        />
+                        android:background="@color/white">
 
-                </androidx.constraintlayout.widget.ConstraintLayout>
+                        <ImageView
+                            android:id="@+id/profilePictureImageView"
+                            android:layout_width="37dp"
+                            android:layout_height="37dp"
+                            android:layout_gravity="start|center"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginBottom="8dp"
+                            android:scaleType="fitXY"
+                            app:profilePictureUrl="@{imageUrl}"
+                            tools:src="@drawable/ic_logo" />
+
+                        <SearchView
+                            android:id="@+id/searchView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="end|center"
+                            android:queryBackground="@android:color/transparent"
+                            android:queryHint="@string/search_hint" />
+
+                        <com.google.android.material.chip.ChipGroup
+                            android:id="@+id/searchCategoryChipGroup"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="start|center" />
+                    </FrameLayout>
 
             </androidx.appcompat.widget.Toolbar>
-        </com.google.android.material.appbar.AppBarLayout>
+         </com.google.android.material.appbar.AppBarLayout>
 
-        <TextView
-            android:id="@+id/addWishTextView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:background="@color/white"
-            android:fontFamily="@font/sfprodisplaysemibold"
-            android:paddingStart="12dp"
-            android:paddingTop="15dp"
-            android:paddingEnd="12dp"
-            android:paddingBottom="15dp"
-            android:text="@string/what_is_your_wish_list"
-            android:textColor="@color/taupeGray"
-            android:textSize="20sp" />
-
-
-        <androidx.fragment.app.FragmentContainerView
-            android:id="@+id/wishesFragment"
-            android:name="co.publist.features.wishes.WishesFragment"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
-        <View
-            android:id="@+id/blurredBgView"
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="#999D9D9D"
-            android:visibility="gone" />
-    </FrameLayout>
+            android:fillViewport="true"
+            app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/addWishTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:background="@color/white"
+                android:fontFamily="@font/sfprodisplaysemibold"
+                android:paddingStart="12dp"
+                android:paddingTop="15dp"
+                android:paddingEnd="12dp"
+                android:paddingBottom="15dp"
+                android:text="@string/what_is_your_wish_list"
+                android:textColor="@color/taupeGray"
+                android:textSize="20sp"
+                />
+
+            <androidx.fragment.app.FragmentContainerView
+                android:id="@+id/wishesFragment"
+                android:name="co.publist.features.wishes.WishesFragment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
+
+            <View
+                android:id="@+id/blurredBgView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#999D9D9D"
+                android:visibility="gone" />
+        </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
         <include
             android:id="@+id/editWishBottomSheet"
             layout="@layout/edit_wish_bottom_sheet" />

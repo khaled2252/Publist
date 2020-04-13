@@ -40,6 +40,10 @@
     <style name="AppTheme.WishDetailsScreen" >
     </style>
 
+    <!-- Home screen -->
+    <style name="AppTheme.HomeScreen">
+    </style>
+
     <style name="MyBottomSheetDialog" parent="AppTheme">
         <item name="android:windowFrame">@null</item>
         <item name="android:windowBackground">@android:color/transparent</item>
@@ -64,12 +68,9 @@
     <style name="CategoryChip" parent="Widget.MaterialComponents.Chip.Entry">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginStart">30dp</item>
-        <item name="android:clickable">false</item>
         <item name="android:fontFamily">@font/sfprodisplaysemibold</item>
         <item name="android:textAppearance">@style/Base.TextAppearance.AppCompat.Medium</item>
         <item name="android:textColor">@color/dimGray</item>
-        <item name="checkedIconEnabled">false</item>
     </style>
 
 </resources>

@@ -18,7 +18,7 @@
             tools:context=".features.createwish.CreateWishActivity">
 
             <com.google.android.material.appbar.AppBarLayout
-                android:id="@+id/toolbar"
+                android:id="@+id/app_bar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/white"
@@ -51,7 +51,7 @@
                 android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/toolbar">
+                app:layout_constraintTop_toBottomOf="@+id/app_bar">
 
                 <TextView
                     android:id="@+id/addCategoryTextView"
@@ -71,8 +71,9 @@
                     android:id="@+id/categoryChip"
                     style="@style/CategoryChip"
                     android:layout_gravity="center|start"
-
-                    android:visibility="gone" />
+                    android:layout_marginStart="30dp"
+                    android:visibility="gone"
+                    app:checkedIconEnabled="false"/>
             </FrameLayout>
 
             <View

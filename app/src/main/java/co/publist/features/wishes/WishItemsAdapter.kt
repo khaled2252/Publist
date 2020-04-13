@@ -2,12 +2,16 @@ package co.publist.features.wishes
 
 import android.content.Intent
 import android.graphics.Paint
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.TextSwitcher
 import android.widget.TextView
+import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.RecyclerView
 import co.publist.R
 import co.publist.core.common.data.models.User
@@ -30,7 +34,7 @@ class WishItemsAdapter(
     private val wish: WishAdapterItem,
     private val wishesType: Int,
     private val user: User,
-    private val seeMoreTextView: TextView,
+    private val seeMoreTextSwitcher: TextSwitcher,
     private val arrowImageView: ImageView,
     private val adapterIndex: Int,
     val expandListener: (adapterIndex: Int) -> Unit,
@@ -76,9 +80,9 @@ class WishItemsAdapter(
             loadTopUsersPictures(wishItem)
             itemView.wishItemTextView.text = wishItem.name
             itemView.completedThisTextView.text =
-                seeMoreTextView.context.getString(R.string.completed, wishItem.completeCount)
+                itemView.context.getString(R.string.completed, wishItem.completeCount)
             itemView.likeViewsTextView.text =
-                seeMoreTextView.context.getString(R.string.views, wishItem.viewedCount)
+                itemView.context.getString(R.string.views, wishItem.viewedCount)
             if (wishItem.viewedCount!! * FLAME_ICON_VIEWED_COUNT_PERCENTAGE >= wishItem.completeCount!! && wishItem.completeCount!! > FLAME_ICON_COMPLETED_MINIMUM)
                 itemView.flameImageView.visibility = View.VISIBLE
 
@@ -141,11 +145,18 @@ class WishItemsAdapter(
 
     private fun setExpandingConditions() {
         if (wishItemList.size <= MAX_VISIBLE_WISH_ITEMS) {
-            seeMoreTextView.visibility = View.GONE
+            seeMoreTextSwitcher.visibility = View.GONE
             arrowImageView.visibility = View.GONE
         } else {
+            seeMoreTextSwitcher.setFactory {
+                val textView = TextView(seeMoreTextSwitcher.context)
+                textView.typeface =ResourcesCompat.getFont(seeMoreTextSwitcher.context,R.font.sfprodisplaysemibold)
+                textView.setTextColor(ContextCompat.getColor(seeMoreTextSwitcher.context,R.color.sunsetOrange))
+                textView.gravity = Gravity.CENTER
+                return@setFactory textView
+            }
             applySeeMoreText()
-            (seeMoreTextView.parent as LinearLayout).setOnClickListener {
+            (seeMoreTextSwitcher.parent as LinearLayout).setOnClickListener {
                 if (!isExpanded) {
                     expandList()
                     expandListener(adapterIndex)
@@ -162,7 +173,7 @@ class WishItemsAdapter(
         isExpanded = true
         notifyItemRangeChanged(MINIMUM_WISH_ITEMS,wishItemList.size-MINIMUM_WISH_ITEMS)
         arrowImageView.startAnimation(get90DegreesAnimation())
-        seeMoreTextView.text = seeMoreTextView.context.getString(R.string.go_to_details)
+        seeMoreTextSwitcher.setText(seeMoreTextSwitcher.context.getString(R.string.go_to_details))
     }
 
     fun collapseList() {
@@ -174,11 +185,12 @@ class WishItemsAdapter(
 
     private fun applySeeMoreText() {
         val extraWishItemsNumber = (wishItemList.size) - MAX_VISIBLE_WISH_ITEMS
-        seeMoreTextView.text = seeMoreTextView.context.resources.getQuantityString(
+        seeMoreTextSwitcher.setText(seeMoreTextSwitcher.context.resources.getQuantityString(
             R.plurals.see_more_text,
             extraWishItemsNumber,
             extraWishItemsNumber
-        )
+        ))
+        
     }
 
     private fun WishItemViewHolder.loadTopUsersPictures(wishItem: WishItem) {

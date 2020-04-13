@@ -36,7 +36,7 @@ class WishesViewModel @Inject constructor(
 ) : BaseViewModel() {
     val wishesQueryLiveData = MutableLiveData<Pair<Query, Int>>()
     val wishesListLiveData = MutableLiveData<ArrayList<WishAdapterItem>>()
-    val wishesType = MutableLiveData<Int>()
+    val preLoadedWishesType = MutableLiveData<Int>()
     val isFavoriteAdded = MutableLiveData<Boolean>()
     val wishDeletedLiveData = MutableLiveData<Boolean>()
     val editWishLiveData = MutableLiveData<WishAdapterItem>()
@@ -46,7 +46,7 @@ class WishesViewModel @Inject constructor(
     lateinit var searchQuery: String
     lateinit var selectedWish: WishAdapterItem
     fun loadWishes(type: Int) {
-        wishesType.postValue(type)
+        preLoadedWishesType.postValue(type)
         when (type) {
             PUBLIC -> {
                 subscribe(categoryRepository.getLocalSelectedCategories()

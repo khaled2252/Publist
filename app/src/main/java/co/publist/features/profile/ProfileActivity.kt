@@ -119,13 +119,11 @@ class ProfileActivity : BaseActivity<ProfileViewModel>() {
                 blurredBgView.visibility = View.VISIBLE
                 //Change alpha on sliding
                 blurredBgView.alpha = slideOffset
-//                window?.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
             }
 
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
                     blurredBgView.visibility = View.GONE
-//                    window?.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
                 }
             }
         })

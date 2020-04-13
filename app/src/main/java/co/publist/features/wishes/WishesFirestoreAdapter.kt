@@ -179,7 +179,7 @@ class WishesFirestoreAdapter(
                 wish,
                 LISTS,
                 user,
-                binding.seeMoreTextView,
+                binding.seeMoreTextSwitcher,
                 binding.arrowImageView,
                 wishItemsAdapterArrayList.size
                 , expandListener = { wishItemsAdapterIndex ->

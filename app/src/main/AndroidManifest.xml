@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="co.publist">
+    package="co.publist"
+    tools:ignore="LockedOrientationActivity">
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -39,32 +40,32 @@
             android:name=".features.editprofile.EditProfileActivity"
             android:launchMode = "singleTop"
             android:label="@string/edit_profile"
-            android:theme="@style/AppTheme.EditProfileScreen">
-        </activity>
+            android:theme="@style/AppTheme.EditProfileScreen"/>
 
-        <activity android:name=".features.home.HomeActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.SEARCH" />
-            </intent-filter>
-        </activity>
+        <activity android:name=".features.home.HomeActivity"
+            android:theme="@style/AppTheme.HomeScreen"
+            android:screenOrientation="portrait"/>
 
         <activity
             android:name=".features.createwish.CreateWishActivity"
             android:launchMode = "singleTop"
             android:label="Create a wish"
-            android:theme="@style/AppTheme.CreateWishScreen" />
+            android:theme="@style/AppTheme.CreateWishScreen"
+            android:screenOrientation="portrait"/>
 
         <activity
             android:name=".features.profile.ProfileActivity"
             android:launchMode = "singleTop"
             android:label="Profile"
-            android:theme="@style/AppTheme.ProfileScreen" />
+            android:theme="@style/AppTheme.ProfileScreen"
+            android:screenOrientation="portrait"/>
 
         <activity
             android:name=".features.wishdetails.WishDetailsActivity"
             android:launchMode = "singleTop"
             android:label="Wish details"
-            android:theme="@style/AppTheme.WishDetailsScreen" />
+            android:theme="@style/AppTheme.WishDetailsScreen"
+            android:screenOrientation="portrait"/>
 
         <provider
             android:name="androidx.core.content.FileProvider"
