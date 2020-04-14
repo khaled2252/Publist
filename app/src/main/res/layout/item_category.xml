@@ -13,7 +13,7 @@
         android:textColor="@color/outerSpace"
         android:backgroundTint="@color/gray"
         android:fontFamily="@font/sfprodisplaysemibold"
-        android:textSize="14sp"
+        android:textSize="@dimen/default_text_size"
         android:textAllCaps="false"
         app:cornerRadius="7dp"
         android:stateListAnimator="@null"

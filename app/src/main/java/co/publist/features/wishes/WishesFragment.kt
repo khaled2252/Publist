@@ -157,7 +157,7 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
             val wishesAdapter = WishesAdapter(
                 list,
                 wishesType = wishesType,
-                user = viewModel.user!!,
+                user = viewModel.user,
                 detailsListener = { wish ->
                     if (activity is HomeActivity)
                         (activity as HomeActivity).showEditWishDialog(wish)

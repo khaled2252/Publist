@@ -61,6 +61,9 @@
             </androidx.appcompat.widget.Toolbar>
         </com.google.android.material.appbar.AppBarLayout>
 
+        <!-- addWishTextView is added with wishesFragment in a layout inside NestedScrollView
+          with layout_behaviour to trigger AppBar Scrolling when you scroll the view,
+          fillViewPort makes recyclerView fill its size properly inside NestedScrollView -->
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -76,20 +79,28 @@
                     android:layout_height="match_parent"
                     android:orientation="vertical">
 
+                    <!--focusableInTouchMode makes addWishTextView scrolls first then the wishes RV-->
                     <TextView
                         android:id="@+id/addWishTextView"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
                         android:background="@color/white"
+                        android:focusableInTouchMode="true"
                         android:fontFamily="@font/sfprodisplaysemibold"
-                        android:paddingStart="12dp"
+                        android:paddingStart="10dp"
                         android:paddingTop="15dp"
-                        android:paddingEnd="12dp"
+                        android:paddingEnd="10dp"
                         android:paddingBottom="15dp"
                         android:text="@string/what_is_your_wish_list"
                         android:textColor="@color/taupeGray"
-                        android:textSize="20sp" />
+                        android:textSize="@dimen/item_wish_title_text_size" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/platinum"
+                        app:layout_constraintTop_toTopOf="parent" />
 
                     <androidx.fragment.app.FragmentContainerView
                         android:id="@+id/wishesFragment"

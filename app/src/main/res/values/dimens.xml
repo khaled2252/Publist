@@ -1,10 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="horizontalDefaultMargin">29dp</dimen>
-    <dimen name="horizontalButtonMargin">7dp</dimen>
-    <dimen name="buttonLoginTextSize">17sp</dimen>
-    <dimen name="headlineTextSize">28sp</dimen>
-    <dimen name="subtitleTextSize">18sp</dimen>
-    <dimen name="buttonIconSize">25dp</dimen>
-    <dimen name="icon_logo_size">100dp</dimen>
+    <dimen name="horizontal_default_margin">29dp</dimen>
+    <dimen name="horizontal_button_margin">7dp</dimen>
+    <dimen name="button_login_text_size">17sp</dimen>
+    <dimen name="login_button_top_margin">15dp</dimen>
+    <dimen name="headline_text_size">28sp</dimen>
+    <dimen name="subtitle_text_size">18sp</dimen>
+    <dimen name="button_icon_size">25sp</dimen>
+    <dimen name="icon_logo_size">72sp</dimen>
+    <dimen name="default_text_size">14sp</dimen>
+    <dimen name="subtitle_intro_text_size">15sp</dimen>
+    <dimen name="item_wish_item_title_text_size">16sp</dimen>
+    <dimen name="item_wish_item_default_text_size">12sp</dimen>
+    <dimen name="item_wish_title_text_size">18sp</dimen>
+    <dimen name="wish_item_default_text_size">12sp</dimen>
+    <dimen name="wish_item_see_more_text_size">13sp</dimen>
 </resources>

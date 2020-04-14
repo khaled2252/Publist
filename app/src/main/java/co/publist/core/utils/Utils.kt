@@ -105,7 +105,7 @@ object Utils {
     fun loadTopUsersPictures(
         topUsersId: ArrayList<String>?,
         imageViewArrayList: ArrayList<ImageView>,
-        user: User
+        user: User?
     ) {
         //Clear extra loaded images when updating (i.e removed images)
         if (topUsersId.isNullOrEmpty()) {
@@ -119,7 +119,7 @@ object Utils {
         }
 
         //Load cached user image if is in topUsersId
-        if (topUsersId.contains(user.id!!)) {
+        if (user != null && topUsersId.contains(user.id!!)) {
             for (topUserIdIndex in 0 until topUsersId.size) {
                 if (topUsersId[topUserIdIndex] == user.id) {
                     loadProfilePicture(imageViewArrayList[topUserIdIndex], user.profilePictureUrl)

@@ -16,6 +16,7 @@ import co.publist.core.utils.Utils.Constants.WISH_DETAILS_INTENT
 import co.publist.features.createwish.CreateWishActivity
 import co.publist.features.wishes.WishesFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_wish_details.*
 import kotlinx.android.synthetic.main.back_button_layout.*
 import kotlinx.android.synthetic.main.edit_wish_bottom_sheet.*
@@ -76,9 +77,17 @@ class WishDetailsActivity : BaseActivity<WishDetailsViewModel>() {
 
         wishesFragment.viewModel.isFavoriteAdded.observe(this, Observer { isFavoriteAdded ->
             if (isFavoriteAdded)
-                Toast.makeText(this, getString(R.string.add_favorite), Toast.LENGTH_SHORT).show()
+                Snackbar.make(
+                    wishDetailsContainer,
+                    getString(R.string.add_favorite),
+                    Snackbar.LENGTH_SHORT
+                ).show()
             else {
-                Toast.makeText(this, getString(R.string.remove_favorite), Toast.LENGTH_SHORT).show()
+                Snackbar.make(
+                    wishDetailsContainer,
+                    getString(R.string.remove_favorite),
+                    Snackbar.LENGTH_SHORT
+                ).show()
                 finish()
             }
 

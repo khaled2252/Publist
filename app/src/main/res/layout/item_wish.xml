@@ -28,6 +28,7 @@
             android:layout_marginStart="15dp"
             android:layout_marginTop="15dp"
             android:textColor="@color/Manatee"
+            android:textSize="@dimen/wish_item_default_text_size"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Travel" />
@@ -39,6 +40,7 @@
             android:layout_marginStart="5dp"
             android:layout_marginTop="15dp"
             android:textColor="@color/Manatee"
+            android:textSize="@dimen/wish_item_default_text_size"
             app:layout_constraintStart_toEndOf="@id/categoryNameTextView"
             app:layout_constraintTop_toTopOf="parent"
             tools:text=".18h" />
@@ -53,7 +55,7 @@
             android:layout_marginTop="5dp"
             android:fontFamily="@font/sfprodisplaybold"
             android:textColor="@color/dimGray"
-            android:textSize="20sp"
+            android:textSize="@dimen/item_wish_title_text_size"
             app:layout_constrainedWidth="true"
             app:layout_constraintEnd_toStartOf="@id/wishActionImageView"
             app:layout_constraintHorizontal_bias="0"
@@ -92,6 +94,7 @@
             android:layout_marginStart="10dp"
             android:layout_marginTop="17dp"
             android:textColor="@color/Manatee"
+            android:textSize="@dimen/wish_item_default_text_size"
             app:layout_constraintStart_toEndOf="@id/profilePictureImageView"
             app:layout_constraintTop_toBottomOf="@id/titleTextView"
             tools:text="Kate Norris" />

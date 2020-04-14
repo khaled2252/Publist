@@ -115,37 +115,41 @@ class WishesViewModel @Inject constructor(
             )
 
             DETAILS -> {
-                subscribe(favoritesRepository.getUserFavoriteWishes().flatMap { favoritesList ->
-                    wishesRepository.getSpecificWish(selectedWish.wishId!!).flatMap { wish ->
-                        wishesRepository.getDoneItemsInMyLists()
-                            .flatMap { doneItemsInMyListsArrayList ->
-                                var oneElementList = arrayListOf(Mapper.mapToWishAdapterItem(wish))
-                                oneElementList =
-                                    filterWishesByCreator(
-                                        oneElementList,
-                                        user?.id!!,
-                                        doneItemsInMyListsArrayList
-                                    )
-                                wishesRepository.getDoneItemsInMyFavorites()
-                                    .flatMap { doneItemsInMyFavoritesArrayList ->
-                                        oneElementList = filterWishesByFavorites(
+                subscribe(wishesRepository.getSpecificWish(selectedWish.wishId!!).flatMap { wish ->
+                    if (user != null) {
+                        favoritesRepository.getUserFavoriteWishes().flatMap { favoritesList ->
+                            wishesRepository.getDoneItemsInMyLists()
+                                .flatMap { doneItemsInMyListsArrayList ->
+                                    var oneElementList =
+                                        arrayListOf(Mapper.mapToWishAdapterItem(wish))
+                                    oneElementList =
+                                        filterWishesByCreator(
                                             oneElementList,
-                                            favoritesList,
-                                            doneItemsInMyFavoritesArrayList
+                                            user.id!!,
+                                            doneItemsInMyListsArrayList
                                         )
-                                        wishesRepository.getUserLikedItems()
-                                            .flatMap { likedItemsList ->
-                                                oneElementList = applyUserLikedItems(
-                                                    oneElementList,
-                                                    likedItemsList
-                                                )
-                                                Single.just(oneElementList)
-                                            }
-                                    }
+                                    wishesRepository.getDoneItemsInMyFavorites()
+                                        .flatMap { doneItemsInMyFavoritesArrayList ->
+                                            oneElementList = filterWishesByFavorites(
+                                                oneElementList,
+                                                favoritesList,
+                                                doneItemsInMyFavoritesArrayList
+                                            )
+                                            wishesRepository.getUserLikedItems()
+                                                .flatMap { likedItemsList ->
+                                                    oneElementList = applyUserLikedItems(
+                                                        oneElementList,
+                                                        likedItemsList
+                                                    )
+                                                    Single.just(oneElementList)
+                                                }
+                                        }
 
-                            }
+                                }
+                        }
+                    } else
+                        Single.just(arrayListOf(Mapper.mapToWishAdapterItem(wish)))
 
-                    }
                 }, Consumer { oneElementList ->
                     wishesListLiveData.postValue(oneElementList)
                 })
@@ -171,35 +175,38 @@ class WishesViewModel @Inject constructor(
                     searchResultsObservable.flatMap { wishList ->
                         if (wishList.isNotEmpty()) {
                             var list = Mapper.mapToWishAdapterItemArrayList(wishList)
-                            favoritesRepository.getUserFavoriteWishes()
-                                .flatMap { favoriteList ->
-                                    wishesRepository.getDoneItemsInMyFavorites()
-                                        .flatMap { doneItemsInFavoritesArrayList ->
-                                            list = filterWishesByFavorites(
-                                                list,
-                                                favoriteList,
-                                                doneItemsInFavoritesArrayList
-                                            )
-                                            wishesRepository.getDoneItemsInMyLists()
-                                                .flatMap { doneItemsInMyListsArrayList ->
-                                                    list = filterWishesByCreator(
-                                                        list,
-                                                        user?.id!!,
-                                                        doneItemsInMyListsArrayList
-                                                    )
-                                                    wishesRepository.getUserLikedItems()
-                                                        .flatMap { likedItemsList ->
-                                                            list =
-                                                                applyUserLikedItems(
-                                                                    list,
-                                                                    likedItemsList
-                                                                )
-                                                            Single.just(list)
-                                                        }
-                                                }
+                            if (user != null) {
+                                favoritesRepository.getUserFavoriteWishes()
+                                    .flatMap { favoriteList ->
+                                        wishesRepository.getDoneItemsInMyFavorites()
+                                            .flatMap { doneItemsInFavoritesArrayList ->
+                                                list = filterWishesByFavorites(
+                                                    list,
+                                                    favoriteList,
+                                                    doneItemsInFavoritesArrayList
+                                                )
+                                                wishesRepository.getDoneItemsInMyLists()
+                                                    .flatMap { doneItemsInMyListsArrayList ->
+                                                        list = filterWishesByCreator(
+                                                            list,
+                                                            user.id!!,
+                                                            doneItemsInMyListsArrayList
+                                                        )
+                                                        wishesRepository.getUserLikedItems()
+                                                            .flatMap { likedItemsList ->
+                                                                list =
+                                                                    applyUserLikedItems(
+                                                                        list,
+                                                                        likedItemsList
+                                                                    )
+                                                                Single.just(list)
+                                                            }
+                                                    }
 
-                                        }
-                                }
+                                            }
+                                    }
+                            } else
+                                Single.just(Mapper.mapToWishAdapterItemArrayList(wishList))
                         } else
                             Single.just(arrayListOf())
                     }

@@ -31,6 +31,7 @@ import com.google.android.material.appbar.AppBarLayout.LayoutParams.SCROLL_FLAG_
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipDrawable
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_home.*
 import kotlinx.android.synthetic.main.edit_wish_bottom_sheet.*
 import javax.inject.Inject
@@ -115,10 +116,17 @@ class HomeActivity : BaseActivity<HomeViewModel>() {
 
         wishesFragment.viewModel.isFavoriteAdded.observe(this, Observer { isFavoriteAdded ->
             if (isFavoriteAdded)
-                Toast.makeText(this, getString(R.string.add_favorite), Toast.LENGTH_SHORT).show()
+                Snackbar.make(
+                    homeActivityContainer,
+                    getString(R.string.add_favorite),
+                    Snackbar.LENGTH_SHORT
+                ).show()
             else
-                Toast.makeText(this, getString(R.string.remove_favorite), Toast.LENGTH_SHORT).show()
-
+                Snackbar.make(
+                    homeActivityContainer,
+                    getString(R.string.remove_favorite),
+                    Snackbar.LENGTH_SHORT
+                ).show()
         })
 
         wishesFragment.viewModel.wishDeletedLiveData.observe(this, Observer {

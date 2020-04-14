@@ -24,7 +24,7 @@ import kotlin.collections.ArrayList
 class WishesAdapter(
     val list: ArrayList<WishAdapterItem>,
     val wishesType: Int,
-    val user: User,
+    val user: User?,
     val favoriteListener: (wish: WishAdapterItem, isFavoriting: Boolean) -> Unit,
     val detailsListener: (wish: WishAdapterItem) -> Unit,
     val completeListener: (itemId: String, wish: WishAdapterItem, isDone: Boolean) -> Unit,
@@ -150,7 +150,8 @@ class WishesAdapter(
 
             val mLayoutManager =
                 object : LinearLayoutManager(binding.wishItemsRecyclerView.context) {
-                    //To make outer recyclerView (Wishes) scroll when user touched inner recyclerView (Items)
+                    //Added because this recyclerView is in nestedScrollView in activity_home
+                    // ,To make outer recyclerView (Wishes) scroll when user touched inner recyclerView (Items)
                     override fun canScrollVertically(): Boolean {
                         return false
                     }
@@ -186,7 +187,7 @@ class WishesAdapter(
                             if (item.done!!) {
                                 item.done = false
                                 item.completeCount = item.completeCount?.dec()
-                                item.topCompletedUsersId?.remove(user.id)
+                                item.topCompletedUsersId?.remove(user!!.id)
                             }
                         }
                         notifyItemChanged(position)

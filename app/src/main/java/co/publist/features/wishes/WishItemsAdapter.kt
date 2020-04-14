@@ -33,7 +33,7 @@ import kotlinx.android.synthetic.main.item_wish_item.view.*
 class WishItemsAdapter(
     private val wish: WishAdapterItem,
     private val wishesType: Int,
-    private val user: User,
+    private val user: User?,
     private val seeMoreTextSwitcher: TextSwitcher,
     private val arrowImageView: ImageView,
     private val adapterIndex: Int,
@@ -161,6 +161,9 @@ class WishItemsAdapter(
                     )
                 )
                 textView.gravity = Gravity.CENTER
+                val textSizeDimen =
+                    textView.resources.getDimension(R.dimen.wish_item_see_more_text_size)
+                textView.textSize = textSizeDimen / textView.resources.displayMetrics.scaledDensity
                 return@setFactory textView
             }
             applySeeMoreText()
@@ -230,9 +233,9 @@ class WishItemsAdapter(
     ) {
         if (wishItem.completeCount!! < TOP_USERS_THRESHOLD) {
             if (isAdding)
-                wishItem.topCompletedUsersId?.add(user.id!!)
+                wishItem.topCompletedUsersId?.add(user!!.id!!)
             else
-                wishItem.topCompletedUsersId?.remove(user.id)
+                wishItem.topCompletedUsersId?.remove(user!!.id)
         }
     }
 
@@ -242,9 +245,9 @@ class WishItemsAdapter(
     ) {
         if (wishItem.completeCount!! < TOP_USERS_THRESHOLD) {
             if (isAdding)
-                wishItem.topViewedUsersId?.add(user.id!!)
+                wishItem.topViewedUsersId?.add(user!!.id!!)
             else
-                wishItem.topViewedUsersId?.remove(user.id)
+                wishItem.topViewedUsersId?.remove(user!!.id)
         }
     }
 
