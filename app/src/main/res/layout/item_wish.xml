@@ -112,11 +112,15 @@
             tools:src="@drawable/image_test"
             tools:visibility="visible" />
 
+        <!--nestedScrollingEnabled = false lets scrolling on items not make scroll behavior
+         on the parent wishes RV
+         (Thus scrolling addWish in nestedScrollView in homeActivity first then wishes RV)-->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/wishItemsRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
+            android:nestedScrollingEnabled="false"
             android:orientation="vertical"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toTopOf="@+id/seeMoreLayout"

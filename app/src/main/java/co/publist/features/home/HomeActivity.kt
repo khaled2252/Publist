@@ -21,6 +21,7 @@ import co.publist.core.utils.Utils.Constants.AUTO_COMPLETE_TEXT_VIEW_ID
 import co.publist.core.utils.Utils.Constants.EDIT_WISH_INTENT
 import co.publist.core.utils.Utils.Constants.PUBLIC
 import co.publist.core.utils.Utils.Constants.SEARCH
+import co.publist.core.utils.Utils.showLoginPromptForGuest
 import co.publist.databinding.ActivityHomeBinding
 import co.publist.features.createwish.CreateWishActivity
 import co.publist.features.profile.ProfileActivity
@@ -102,14 +103,14 @@ class HomeActivity : BaseActivity<HomeViewModel>() {
 
         viewModel.profilePictureClickLiveData.observe(this, Observer { isGuest ->
             if (isGuest)
-                finish()
+                showLoginPromptForGuest(this)
             else
                 startActivity(Intent(this, ProfileActivity::class.java))
         })
 
         viewModel.addWishClickLiveData.observe(this, Observer { isGuest ->
             if (isGuest)
-                finish()
+                showLoginPromptForGuest(this)
             else
                 startActivity(Intent(this, CreateWishActivity::class.java))
         })

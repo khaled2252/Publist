@@ -26,6 +26,7 @@ import co.publist.core.utils.Utils.Constants.MINIMUM_WISH_ITEMS
 import co.publist.core.utils.Utils.Constants.TOP_USERS_THRESHOLD
 import co.publist.core.utils.Utils.get90DegreesAnimation
 import co.publist.core.utils.Utils.loadTopUsersPictures
+import co.publist.core.utils.Utils.showLoginPromptForGuest
 import co.publist.features.wishdetails.WishDetailsActivity
 import kotlinx.android.synthetic.main.item_wish_item.view.*
 
@@ -113,33 +114,39 @@ class WishItemsAdapter(
 
             //Listeners for actions
             itemView.completeButton.setOnClickListener {
-                //Update Ui then remotely
-                if (!wishItem.done!!) {//Opposite of previous state
-                    wishItem.done = true
-                    updateTopCompletedUsersPictures(wishItem, true)
-                } else {
-                    wishItem.done = false
-                    updateTopCompletedUsersPictures(wishItem, false)
+                if (user == null)
+                    showLoginPromptForGuest(it.context)
+                else {
+                    //Update Ui then remotely
+                    if (!wishItem.done!!) {//Opposite of previous state
+                        wishItem.done = true
+                        updateTopCompletedUsersPictures(wishItem, true)
+                    } else {
+                        wishItem.done = false
+                        updateTopCompletedUsersPictures(wishItem, false)
+                    }
+                    notifyItemChanged(position)
+
+                    completeListener(wish.items!!.keys.elementAt(position), wishItem.done!!)
                 }
-                notifyItemChanged(position)
-
-                completeListener(wish.items!!.keys.elementAt(position), wishItem.done!!)
             }
-
             itemView.likeViewsTextView.setOnClickListener {
-                //Update Ui then remotely
-                if (!wishItem.isLiked!!) {
-                    wishItem.isLiked = true
-                    updateTopLikedUsersPictures(wishItem, true)
-                } else {
-                    wishItem.isLiked = false
-                    updateTopLikedUsersPictures(wishItem, false)
+                if (user == null)
+                    showLoginPromptForGuest(it.context)
+                else {
+                    //Update Ui then remotely
+                    if (!wishItem.isLiked!!) {
+                        wishItem.isLiked = true
+                        updateTopLikedUsersPictures(wishItem, true)
+                    } else {
+                        wishItem.isLiked = false
+                        updateTopLikedUsersPictures(wishItem, false)
+                    }
+                    notifyItemChanged(position)
+
+                    likeListener(wish.items!!.keys.elementAt(position), wishItem.isLiked!!)
                 }
-                notifyItemChanged(position)
-
-                likeListener(wish.items!!.keys.elementAt(position), wishItem.isLiked!!)
             }
-
         }
     }
 

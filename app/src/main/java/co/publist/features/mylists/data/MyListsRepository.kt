@@ -18,8 +18,8 @@ class MyListsRepository @Inject constructor(
     private val localDataSource: LocalDataSource
 
 ) : MyListsRepositoryInterface {
-    val userId = localDataSource.getSharedPreferences().getUser()?.id
     override fun getUserListWishesQuery(): Query {
+        val userId = localDataSource.getSharedPreferences().getUser()?.id
         return mFirebaseFirestore.collection(USERS_COLLECTION_PATH)
             .document(userId!!)
             .collection(MY_LISTS_COLLECTION_PATH)

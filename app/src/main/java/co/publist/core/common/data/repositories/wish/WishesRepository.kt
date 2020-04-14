@@ -47,7 +47,6 @@ class WishesRepository @Inject constructor(
     var mAlgoliaClient: Client,
     var localDataSource: LocalDataSource
 ) : WishesRepositoryInterface {
-    private val userId = localDataSource.getSharedPreferences().getUser()?.id
 
     override fun getSpecificWish(wishId: String): Single<Wish> {
         return Single.create { singleEmitter ->
@@ -122,6 +121,7 @@ class WishesRepository @Inject constructor(
     }
 
     private fun addWishToMyLists(wish: Wish): Completable {
+        val userId = localDataSource.getSharedPreferences().getUser()?.id
         return Completable.create { completableEmitter ->
             mFirebaseFirestore
                 .collection(USERS_COLLECTION_PATH)
@@ -145,6 +145,7 @@ class WishesRepository @Inject constructor(
     }
 
     override fun updateWish(wish: Wish): Completable {
+        val userId = localDataSource.getSharedPreferences().getUser()?.id
         return Completable.create { completableEmitter ->
             mFirebaseFirestore
                 .collection(USERS_COLLECTION_PATH)
@@ -190,6 +191,7 @@ class WishesRepository @Inject constructor(
     }
 
     override fun deleteWishFromMyLists(selectedWish: Wish): Completable {
+        val userId = localDataSource.getSharedPreferences().getUser()?.id
         return Completable.create { completableEmitter ->
             mFirebaseFirestore
                 .collection(USERS_COLLECTION_PATH)
@@ -222,6 +224,7 @@ class WishesRepository @Inject constructor(
     }
 
     override fun getDoneItemsInMyLists(): Single<ArrayList<String>> {
+        val userId = localDataSource.getSharedPreferences().getUser()?.id
         return Single.create { singleEmitter ->
             mFirebaseFirestore.collection(USERS_COLLECTION_PATH)
                 .document(userId!!)
@@ -245,6 +248,7 @@ class WishesRepository @Inject constructor(
     }
 
     override fun getDoneItemsInMyFavorites(): Single<ArrayList<String>> {
+        val userId = localDataSource.getSharedPreferences().getUser()?.id
         return Single.create { singleEmitter ->
             mFirebaseFirestore.collection(USERS_COLLECTION_PATH)
                 .document(userId!!)
@@ -274,6 +278,7 @@ class WishesRepository @Inject constructor(
         isDone: Boolean
     ): Completable {
         return Completable.create { completableEmitter ->
+            val userId = localDataSource.getSharedPreferences().getUser()?.id
             mFirebaseFirestore
                 .collection(USERS_COLLECTION_PATH)
                 .document(userId!!)
@@ -330,6 +335,7 @@ class WishesRepository @Inject constructor(
         wishId: String,
         isAdding: Boolean
     ): Completable {
+        val userId = localDataSource.getSharedPreferences().getUser()?.id
         return Completable.create { completableEmitter ->
             val ref = mFirebaseFirestore
                 .collection(WISHES_COLLECTION_PATH)
@@ -364,6 +370,7 @@ class WishesRepository @Inject constructor(
         wishId: String,
         isAdding: Boolean
     ): Completable {
+        val userId = localDataSource.getSharedPreferences().getUser()?.id
         return Completable.create { completableEmitter ->
             val ref = mFirebaseFirestore
                 .collection(WISHES_COLLECTION_PATH)
@@ -425,6 +432,7 @@ class WishesRepository @Inject constructor(
         doneItems: ArrayList<String>,
         wishId: String
     ): Completable {
+        val userId = localDataSource.getSharedPreferences().getUser()?.id
         return Completable.create { completableEmitter ->
             val batch: WriteBatch = mFirebaseFirestore.batch()
             val wishRef =
@@ -459,6 +467,7 @@ class WishesRepository @Inject constructor(
     }
 
     override fun addItemToUserViewedItems(itemId: String, isLiked: Boolean): Completable {
+        val userId = localDataSource.getSharedPreferences().getUser()?.id
         return Completable.create { completableEmitter ->
             val ref = mFirebaseFirestore
                 .collection(USERS_COLLECTION_PATH)
@@ -528,6 +537,7 @@ class WishesRepository @Inject constructor(
         wishId: String,
         isAdding: Boolean
     ): Completable {
+        val userId = localDataSource.getSharedPreferences().getUser()?.id
         return Completable.create { completableEmitter ->
             val ref = mFirebaseFirestore
                 .collection(WISHES_COLLECTION_PATH)
@@ -562,6 +572,7 @@ class WishesRepository @Inject constructor(
         wishId: String,
         isAdding: Boolean
     ): Completable {
+        val userId = localDataSource.getSharedPreferences().getUser()?.id
         return Completable.create { completableEmitter ->
             val ref = mFirebaseFirestore
                 .collection(WISHES_COLLECTION_PATH)
@@ -594,6 +605,7 @@ class WishesRepository @Inject constructor(
 
     override fun getUserLikedItems(): Single<ArrayList<String>> {
         val viewedItemsArrayList = arrayListOf<String>()
+        val userId = localDataSource.getSharedPreferences().getUser()?.id
         return Single.create { singleEmitter ->
             mFirebaseFirestore.collection(USERS_COLLECTION_PATH)
                 .document(userId!!)
@@ -610,6 +622,7 @@ class WishesRepository @Inject constructor(
     }
 
     override fun incrementOrganicSeen(wishId: String): Completable {
+        val userId = localDataSource.getSharedPreferences().getUser()?.id
         return Completable.create { completableEmitter ->
             mFirebaseFunctions.getHttpsCallable(ORGANIC_SEEN_FOR_WISH_CLOUD_FUNCTION)
                 .call(hashMapOf(USER_DOC_ID_FIELD to userId, WISH_DOC_ID_FIELD to wishId))
@@ -646,6 +659,7 @@ class WishesRepository @Inject constructor(
     }
 
     override fun getCorrespondingMyListsPublicWishes(): Single<ArrayList<Wish>> {
+        val userId = localDataSource.getSharedPreferences().getUser()?.id
         return Single.create { singleEmitter ->
             mFirebaseFirestore.collection(USERS_COLLECTION_PATH)
                 .document(userId!!)
@@ -677,6 +691,7 @@ class WishesRepository @Inject constructor(
     }
 
     override fun getCorrespondingMyFavoritesPublicWishes(): Single<ArrayList<Wish>> {
+        val userId = localDataSource.getSharedPreferences().getUser()?.id
         return Single.create { singleEmitter ->
             mFirebaseFirestore.collection(USERS_COLLECTION_PATH)
                 .document(userId!!)

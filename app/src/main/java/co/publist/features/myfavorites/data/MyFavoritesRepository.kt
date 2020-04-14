@@ -16,8 +16,9 @@ class MyFavoritesRepository @Inject constructor(
     private val localDataSource: LocalDataSource,
     private val mFirebaseFirestore: FirebaseFirestore
 ) : MyFavoritesRepositoryInterface {
-    private val userId = localDataSource.getSharedPreferences().getUser()?.id
+
     override fun getUserFavoriteWishesQuery(): Query {
+        val userId = localDataSource.getSharedPreferences().getUser()?.id
         return mFirebaseFirestore.collection(USERS_COLLECTION_PATH)
             .document(userId!!)
             .collection(MY_FAVORITES_COLLECTION_PATH)

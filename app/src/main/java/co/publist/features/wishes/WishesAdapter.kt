@@ -6,12 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.appcompat.app.AlertDialog
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import co.publist.R
 import co.publist.core.common.data.models.User
 import co.publist.core.common.data.models.wish.WishAdapterItem
 import co.publist.core.utils.DataBindingAdapters
+import co.publist.core.utils.Utils
 import co.publist.core.utils.Utils.Constants.DETAILS
 import co.publist.core.utils.Utils.Constants.MAX_VISIBLE_WISH_ITEMS
 import co.publist.core.utils.Utils.Constants.WISH_DETAILS_INTENT
@@ -86,11 +86,14 @@ class WishesAdapter(
                         setImageResource(R.drawable.ic_heart)
 
                     setOnClickListener {
-                        favoriteWish(
-                            wish,
-                            position,
-                            isFavoriting = !wish.isFavorite
-                        ) //Taking the opposite of current state
+                        if (user == null)
+                            Utils.showLoginPromptForGuest(it.context)
+                        else
+                            favoriteWish(
+                                wish,
+                                position,
+                                isFavoriting = !wish.isFavorite
+                            ) //Taking the opposite of current state
                     }
                 }
 
@@ -147,17 +150,6 @@ class WishesAdapter(
                     likeListener(itemId, wish, isLiked)
                 })
             wishItemsAdapterArrayList.add(wishItemsAdapter)
-
-            val mLayoutManager =
-                object : LinearLayoutManager(binding.wishItemsRecyclerView.context) {
-                    //Added because this recyclerView is in nestedScrollView in activity_home
-                    // ,To make outer recyclerView (Wishes) scroll when user touched inner recyclerView (Items)
-                    override fun canScrollVertically(): Boolean {
-                        return false
-                    }
-                }
-
-            binding.wishItemsRecyclerView.layoutManager = mLayoutManager
             binding.wishItemsRecyclerView.adapter = wishItemsAdapter
         }
 

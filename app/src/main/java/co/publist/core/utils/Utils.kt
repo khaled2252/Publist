@@ -13,7 +13,10 @@ import android.view.animation.LinearInterpolator
 import android.view.animation.RotateAnimation
 import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
+import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat.startActivity
 import androidx.core.content.FileProvider
+import co.publist.R
 import co.publist.core.common.data.models.User
 import co.publist.core.utils.DataBindingAdapters.loadProfilePicture
 import co.publist.core.utils.Utils.Constants.FETCH_USER_PICTURE_CLOUD_FUNCTION
@@ -22,6 +25,7 @@ import co.publist.core.utils.Utils.Constants.TEMP_IMAGE
 import co.publist.core.utils.Utils.Constants.USER_IDS_FIELD
 import co.publist.core.utils.Utils.Constants.WISH_IMAGE_FIXED_HEIGHT
 import co.publist.core.utils.Utils.Constants.WISH_IMAGE_FIXED_WIDTH
+import co.publist.features.login.LoginActivity
 import com.google.firebase.functions.FirebaseFunctions
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
@@ -151,6 +155,18 @@ object Utils {
         }
     }
 
+    fun showLoginPromptForGuest(context: Context) {
+        val builder = AlertDialog.Builder(context)
+        builder.setMessage(context.getString(R.string.guest_action_prompt))
+        builder.setPositiveButton(context.getString(R.string.login)) { _, _ ->
+            val intent = Intent(context, LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(context, intent, null)
+        }
+        builder.setNegativeButton(context.getString(R.string.cancel)) { _, _ ->
+        }
+        builder.create().show()
+    }
     object Constants {
         const val DB_NAME = "PublistDb"
         const val SPLASH_DELAY: Long = 2000

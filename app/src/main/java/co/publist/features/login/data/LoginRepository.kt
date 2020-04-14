@@ -32,7 +32,6 @@ class LoginRepository @Inject constructor(
     private val localDataSource: LocalDataSource
 
 ) : LoginRepositoryInterface {
-    val userId = localDataSource.getSharedPreferences().getUser()?.id
     override fun fetchUserDocId(email: String): Single<String?> {
         return Single.create { singleEmitter ->
             mFirebaseFirestore.let {
