@@ -15,4 +15,5 @@
     <dimen name="item_wish_title_text_size">18sp</dimen>
     <dimen name="wish_item_default_text_size">12sp</dimen>
     <dimen name="wish_item_see_more_text_size">13sp</dimen>
+    <dimen name="icon_logo_splash_size">88dp</dimen>
 </resources>
