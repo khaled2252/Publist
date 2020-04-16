@@ -38,8 +38,8 @@
 
         <ImageView
             android:id="@+id/profilePictureImageView"
-            android:layout_width="130dp"
-            android:layout_height="130dp"
+            android:layout_width="@dimen/profile_image_size"
+            android:layout_height="@dimen/profile_image_size"
             android:scaleType="fitXY"
             app:layout_constraintBottom_toTopOf="@id/nameTextView"
             app:layout_constraintEnd_toEndOf="parent"

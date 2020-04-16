@@ -81,9 +81,9 @@ class WishesFirestoreAdapter(
     override fun onBindViewHolder(holder: WishViewHolder, position: Int, wish: WishAdapterItem) {
         if (wish.itemsId!!.size > Utils.Constants.MAX_VISIBLE_WISH_ITEMS) // To avoid recycling seeMore layout for expandable wish Items
             holder.setIsRecyclable(false)
-
         seenCountListener(wish.wishId!!)
-        applyPublicWishDataToReceivedWish(wish, correspondingPublicWishes[position])
+        if (correspondingPublicWishes.isNotEmpty())
+            applyPublicWishDataToReceivedWish(wish, correspondingPublicWishes[position])
         holder.bind(wish)
     }
 
@@ -97,6 +97,7 @@ class WishesFirestoreAdapter(
         wish.itemsId = publicWish.itemsId
         wish.items = publicWish.items
         wish.date = publicWish.date
+
     }
 
     inner class WishViewHolder(private val binding: ItemWishBinding) :

@@ -16,13 +16,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/textView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/horizontal_default_margin"
         android:layout_marginEnd="@dimen/horizontal_default_margin"
         android:layout_marginTop="23dp"
+        android:maxLines="3"
+        app:autoSizeTextType="uniform"
         android:fontFamily="@font/sfprodisplaybold"
         android:text="@string/login_headline"
         android:textColor="@android:color/white"
