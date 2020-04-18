@@ -152,13 +152,13 @@ class WishesRepository @Inject constructor(
                 .document(userId!!)
                 .collection(MY_LISTS_COLLECTION_PATH)
                 .document(wish.wishId!!)
-                .set(wish, SetOptions.merge())
+                .set(wish)
                 .addOnFailureListener {
                     completableEmitter.onError(it)
                 }.addOnSuccessListener {
                     mFirebaseFirestore.collection(WISHES_COLLECTION_PATH)
                         .document(wish.wishId!!)
-                        .set(wish, SetOptions.merge())
+                        .set(wish)
                         .addOnSuccessListener {
                             completableEmitter.onComplete()
                         }

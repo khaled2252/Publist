@@ -22,6 +22,7 @@ import com.firebase.ui.common.ChangeEventType
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.firebase.firestore.DocumentSnapshot
+import com.google.gson.Gson
 import org.ocpsoft.prettytime.PrettyTime
 import java.util.*
 import kotlin.collections.ArrayList
@@ -105,6 +106,10 @@ class WishesFirestoreAdapter(
         fun bind(
             wish: WishAdapterItem
         ) {
+            val wishCopy = Gson().fromJson(
+                Gson().toJson(wish),
+                WishAdapterItem::class.java
+            ) //FIXME (this is quick fix because object is not deep copied , when clicked on details listener , proper data is not loaded)
             if (wishesType == DETAILS)
                 binding.seeMoreLayout.visibility = View.GONE
             else {
@@ -128,7 +133,7 @@ class WishesFirestoreAdapter(
                     wish.isCreator = true
                     setImageResource(R.drawable.ic_dots)
                     setOnClickListener {
-                        detailsListener(wish)
+                        detailsListener(wishCopy)
                     }
                 } else {
                     wish.isFavorite = true
