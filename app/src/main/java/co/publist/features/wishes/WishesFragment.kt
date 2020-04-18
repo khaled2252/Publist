@@ -10,7 +10,6 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.SimpleItemAnimator
 import co.publist.R
 import co.publist.core.common.data.models.Mapper
-import co.publist.core.common.data.models.wish.Wish
 import co.publist.core.common.data.models.wish.WishAdapterItem
 import co.publist.core.platform.BaseFragment
 import co.publist.core.platform.ViewModelFactory
@@ -38,7 +37,6 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
     override fun getBaseViewModelFactory() = viewModelFactory
 
     var wishesType = -1
-    private lateinit var wishesQuery: Query
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -57,21 +55,14 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
             setListeners()
         })
 
-        viewModel.wishesQueryLiveData.observe(viewLifecycleOwner, Observer { pair ->
-            wishesQuery = pair.first
-            wishesType = pair.second
-            viewModel.getCorrespondingPublicWishesData(wishesType)
-        })
-
         viewModel.wishDataPairLiveData.observe(viewLifecycleOwner, Observer { dataPair ->
-            val correspondingPublicWishes = dataPair.first
+            val wishesQuery = dataPair.first
             val itemsAttributesPair = dataPair.second
             val doneItemsList = itemsAttributesPair.first
             val likedItemsList = itemsAttributesPair.second
             setAdapter(
                 wishesQuery,
                 wishesType,
-                correspondingPublicWishes,
                 doneItemsList,
                 likedItemsList
             )
@@ -104,7 +95,6 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
     private fun setAdapter(
         query: Query,
         type: Int,
-        correspondingPublicWishes: ArrayList<Wish>,
         doneItemsList: ArrayList<String>,
         likedItemsList: ArrayList<String>
     ) {
@@ -117,7 +107,6 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
             WishesFirestoreAdapter(
                 options,
                 type,
-                correspondingPublicWishes,
                 doneItemsList,
                 likedItemsList,
                 user = viewModel.user!!,

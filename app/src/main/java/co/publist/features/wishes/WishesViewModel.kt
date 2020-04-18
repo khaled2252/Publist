@@ -34,14 +34,13 @@ class WishesViewModel @Inject constructor(
     private val favoritesRepository: MyFavoritesRepositoryInterface,
     private val userRepository: UserRepositoryInterface
 ) : BaseViewModel() {
-    val wishesQueryLiveData = MutableLiveData<Pair<Query, Int>>()
     val wishesListLiveData = MutableLiveData<ArrayList<WishAdapterItem>>()
+    val wishDataPairLiveData =
+        MutableLiveData<Pair<Query, Pair<ArrayList<String>, ArrayList<String>>>>()
     val preLoadedWishesType = MutableLiveData<Int>()
     val isFavoriteAdded = MutableLiveData<Boolean>()
     val wishDeletedLiveData = MutableLiveData<Boolean>()
     val editWishLiveData = MutableLiveData<WishAdapterItem>()
-    val wishDataPairLiveData =
-        MutableLiveData<Pair<ArrayList<Wish>, Pair<ArrayList<String>, ArrayList<String>>>>()
     val user = userRepository.getUser()
     lateinit var searchQuery: String
     lateinit var selectedWish: WishAdapterItem
@@ -101,18 +100,37 @@ class WishesViewModel @Inject constructor(
                 }, showLoading = false
                 )
             }
-            LISTS -> wishesQueryLiveData.postValue(
-                Pair(
-                    myListsRepository.getUserListWishesQuery(),
-                    type
-                )
-            )
-            FAVORITES -> wishesQueryLiveData.postValue(
-                Pair(
-                    favoritesRepository.getUserFavoriteWishesQuery(),
-                    type
-                )
-            )
+            LISTS -> {
+                subscribe(
+                    wishesRepository.getCorrespondingMyListsPublicWishes().flatMap { query ->
+                        wishesRepository.getUserLikedItems().flatMap { likedItemsList ->
+                            wishesRepository.getDoneItemsInMyLists().flatMap { doneItemsList ->
+                                Single.just(Pair(doneItemsList, likedItemsList))
+                            }.flatMap { itemsAttributesPair ->
+                                Single.just(Pair(query, itemsAttributesPair))
+                            }
+                        }
+                    },
+                    Consumer { dataPair ->
+                        wishDataPairLiveData.postValue(dataPair)
+                    })
+            }
+
+            FAVORITES -> {
+                subscribe(
+                    wishesRepository.getCorrespondingMyFavoritesPublicWishes().flatMap { query ->
+                        wishesRepository.getUserLikedItems().flatMap { likedItemsList ->
+                            wishesRepository.getDoneItemsInMyLists().flatMap { doneItemsList ->
+                                Single.just(Pair(doneItemsList, likedItemsList))
+                            }.flatMap { itemsAttributesPair ->
+                                Single.just(Pair(query, itemsAttributesPair))
+                            }
+                        }
+                    },
+                    Consumer { dataPair ->
+                        wishDataPairLiveData.postValue(dataPair)
+                    })
+            }
 
             DETAILS -> {
                 subscribe(wishesRepository.getSpecificWish(selectedWish.wishId!!).flatMap { wish ->
@@ -406,32 +424,6 @@ class WishesViewModel @Inject constructor(
             , Action {
             }, showLoading = false
         )
-    }
-
-    fun getCorrespondingPublicWishesData(currentWishType: Int) {
-        subscribe(wishesRepository.getUserLikedItems().flatMap { likedItemsList ->
-            if (currentWishType == LISTS)
-                wishesRepository.getDoneItemsInMyLists().flatMap { doneItemsList ->
-                    Single.just(Pair(doneItemsList, likedItemsList))
-                }.flatMap { itemsAttributesPair ->
-                    wishesRepository.getCorrespondingMyListsPublicWishes()
-                        .flatMap { wishList ->
-                            Single.just(Pair(wishList, itemsAttributesPair))
-                        }
-                }
-            else
-                wishesRepository.getDoneItemsInMyFavorites().flatMap { doneItemsList ->
-                    Single.just(Pair(doneItemsList, likedItemsList))
-                }.flatMap { itemsAttributesPair ->
-                    wishesRepository.getCorrespondingMyFavoritesPublicWishes().flatMap { wishList ->
-                        Single.just(Pair(wishList, itemsAttributesPair))
-                    }
-                }
-        }, Consumer { dataPair ->
-            wishDataPairLiveData.postValue(dataPair)
-        })
-
-
     }
 
     fun incrementSeenCount(wishId: String) {

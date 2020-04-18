@@ -8,7 +8,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
 import co.publist.R
 import co.publist.core.common.data.models.User
-import co.publist.core.common.data.models.wish.Wish
 import co.publist.core.common.data.models.wish.WishAdapterItem
 import co.publist.core.utils.DataBindingAdapters.loadProfilePicture
 import co.publist.core.utils.DataBindingAdapters.loadWishImage
@@ -31,7 +30,6 @@ import kotlin.collections.ArrayList
 class WishesFirestoreAdapter(
     options: FirestoreRecyclerOptions<WishAdapterItem>,
     val wishesType: Int,
-    val correspondingPublicWishes: ArrayList<Wish>,
     val doneItemsList: ArrayList<String>,
     val likedItemsList: ArrayList<String>,
     val user: User,
@@ -82,23 +80,10 @@ class WishesFirestoreAdapter(
     override fun onBindViewHolder(holder: WishViewHolder, position: Int, wish: WishAdapterItem) {
         if (wish.itemsId!!.size > Utils.Constants.MAX_VISIBLE_WISH_ITEMS) // To avoid recycling seeMore layout for expandable wish Items
             holder.setIsRecyclable(false)
-        seenCountListener(wish.wishId!!)
-        if (correspondingPublicWishes.isNotEmpty())
-            applyPublicWishDataToReceivedWish(wish, correspondingPublicWishes[position])
+
+        if (wish.wishId != null)//Fixme checking because of iOS bug where some wishes are without wishId
+            seenCountListener(wish.wishId!!)
         holder.bind(wish)
-    }
-
-    private fun applyPublicWishDataToReceivedWish(wish: WishAdapterItem, publicWish: Wish) {
-        wish.title = publicWish.title
-        wish.creator = publicWish.creator
-        wish.category = publicWish.category
-        wish.categoryId = publicWish.categoryId
-        wish.photoName = publicWish.photoName
-        wish.wishPhotoURL = publicWish.wishPhotoURL
-        wish.itemsId = publicWish.itemsId
-        wish.items = publicWish.items
-        wish.date = publicWish.date
-
     }
 
     inner class WishViewHolder(private val binding: ItemWishBinding) :
