@@ -23,7 +23,6 @@ import co.publist.core.utils.Utils.Constants.FLAME_ICON_COMPLETED_MINIMUM
 import co.publist.core.utils.Utils.Constants.FLAME_ICON_VIEWED_COUNT_PERCENTAGE
 import co.publist.core.utils.Utils.Constants.MAX_VISIBLE_WISH_ITEMS
 import co.publist.core.utils.Utils.Constants.MINIMUM_WISH_ITEMS
-import co.publist.core.utils.Utils.Constants.TOP_USERS_THRESHOLD
 import co.publist.core.utils.Utils.get90DegreesAnimation
 import co.publist.core.utils.Utils.loadTopUsersPictures
 import co.publist.core.utils.Utils.showLoginPromptForGuest
@@ -39,12 +38,12 @@ class WishItemsAdapter(
     private val arrowImageView: ImageView,
     private val adapterIndex: Int,
     val expandListener: (adapterIndex: Int) -> Unit,
-    val completeListener: (itemId: String, isDone: Boolean) -> Unit,
-    val likeListener: (itemId: String, isLiked: Boolean) -> Unit
+    val completeListener: (itemId: String, isDone: Boolean, adapterIndex: Int) -> Unit,
+    val likeListener: (itemId: String, isLiked: Boolean, adapterIndex: Int) -> Unit
 ) :
     RecyclerView.Adapter<WishItemsAdapter.WishItemViewHolder>() {
     var isExpanded = false
-    private var wishItemList: ArrayList<WishItem> = ArrayList(wish.items!!.values)
+    private var wishItemList = wish.items!!.values
 
     init {
         if (wishesType != DETAILS)
@@ -69,7 +68,7 @@ class WishItemsAdapter(
     }
 
     override fun onBindViewHolder(holder: WishItemViewHolder, position: Int) {
-        holder.bind(wishItemList[position], position)
+        holder.bind(wishItemList.elementAt(position), position)
     }
 
     inner class WishItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -116,36 +115,23 @@ class WishItemsAdapter(
             itemView.completeButton.setOnClickListener {
                 if (user == null)
                     showLoginPromptForGuest(it.context)
-                else {
-                    //Update Ui then remotely
-                    if (!wishItem.done!!) {//Opposite of previous state
-                        wishItem.done = true
-                        updateTopCompletedUsersPictures(wishItem, true)
-                    } else {
-                        wishItem.done = false
-                        updateTopCompletedUsersPictures(wishItem, false)
-                    }
-                    notifyItemChanged(position)
+                else
+                    completeListener(
+                        wish.itemsId!!.elementAt(position),
+                        !wishItem.done!!,
+                        adapterIndex
+                    )//Send opposite of the previous state
 
-                    completeListener(wish.items!!.keys.elementAt(position), wishItem.done!!)
-                }
             }
             itemView.likeViewsTextView.setOnClickListener {
                 if (user == null)
                     showLoginPromptForGuest(it.context)
-                else {
-                    //Update Ui then remotely
-                    if (!wishItem.isLiked!!) {
-                        wishItem.isLiked = true
-                        updateTopLikedUsersPictures(wishItem, true)
-                    } else {
-                        wishItem.isLiked = false
-                        updateTopLikedUsersPictures(wishItem, false)
-                    }
-                    notifyItemChanged(position)
-
-                    likeListener(wish.items!!.keys.elementAt(position), wishItem.isLiked!!)
-                }
+                else
+                    likeListener(
+                        wish.items!!.keys.elementAt(position),
+                        !wishItem.isLiked!!,
+                        adapterIndex
+                    )
             }
         }
     }
@@ -231,30 +217,6 @@ class WishItemsAdapter(
                 user
             )
             else -> loadTopUsersPictures(wishItem.topCompletedUsersId, imageViewArrayList, user)
-        }
-    }
-
-    private fun updateTopCompletedUsersPictures(
-        wishItem: WishItem,
-        isAdding: Boolean
-    ) {
-        if (wishItem.completeCount!! < TOP_USERS_THRESHOLD) {
-            if (isAdding)
-                wishItem.topCompletedUsersId?.add(user!!.id!!)
-            else
-                wishItem.topCompletedUsersId?.remove(user!!.id)
-        }
-    }
-
-    private fun updateTopLikedUsersPictures(
-        wishItem: WishItem,
-        isAdding: Boolean
-    ) {
-        if (wishItem.completeCount!! < TOP_USERS_THRESHOLD) {
-            if (isAdding)
-                wishItem.topViewedUsersId?.add(user!!.id!!)
-            else
-                wishItem.topViewedUsersId?.remove(user!!.id)
         }
     }
 

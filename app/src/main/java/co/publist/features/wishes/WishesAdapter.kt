@@ -14,6 +14,7 @@ import co.publist.core.utils.DataBindingAdapters
 import co.publist.core.utils.Utils
 import co.publist.core.utils.Utils.Constants.DETAILS
 import co.publist.core.utils.Utils.Constants.MAX_VISIBLE_WISH_ITEMS
+import co.publist.core.utils.Utils.Constants.TOP_USERS_THRESHOLD
 import co.publist.core.utils.Utils.Constants.WISH_DETAILS_INTENT
 import co.publist.databinding.ItemWishBinding
 import co.publist.features.wishdetails.WishDetailsActivity
@@ -133,20 +134,42 @@ class WishesAdapter(
                             wishItemsAdapterArrayList[adapterIndex].collapseList()
                     }
 
-                }, completeListener = { itemId, isDone ->
-                    //completed item's wish is added to favorites according to business
-                    if (!wish.isCreator && !wish.isFavorite && isDone)
-                        binding.wishActionImageView.favoriteWish(wish, position, true)
-
-                    //Add wish first to favorites then increment the done item(for some reason item is incremented twice if incremented in WishItemsAdapter)
+                }, completeListener = { itemId, isDone, adapterIndex ->
+                    //Update Ui then remotely
+                    wish.items!![itemId]?.done = isDone
                     val incrementAmount = if (isDone) 1 else -1
                     wish.items!![itemId]?.completeCount =
                         wish.items!![itemId]?.completeCount!! + incrementAmount
+                    if (wish.items!![itemId]?.completeCount!! < Utils.Constants.TOP_USERS_THRESHOLD) {
+                        if (isDone)
+                            wish.items!![itemId]?.topCompletedUsersId?.add(user!!.id!!)
+                        else
+                            wish.items!![itemId]?.topCompletedUsersId?.remove(user!!.id)
+                    }
+                    wishItemsAdapterArrayList[adapterIndex].notifyItemChanged(
+                        wish.itemsId!!.indexOf(
+                            itemId
+                        )
+                    )
+
                     completeListener(itemId, wish, isDone)
-                }, likeListener = { itemId, isLiked ->
+                }, likeListener = { itemId, isLiked, adapterIndex ->
+                    wish.items!![itemId]?.isLiked = isLiked
                     val incrementAmount = if (isLiked) 1 else -1
                     wish.items!![itemId]?.viewedCount =
                         wish.items!![itemId]?.viewedCount!! + incrementAmount
+                    if (wish.items!![itemId]?.viewedCount!! < TOP_USERS_THRESHOLD) {
+                        if (isLiked)
+                            wish.items!![itemId]?.topViewedUsersId?.add(user!!.id!!)
+                        else
+                            wish.items!![itemId]?.topViewedUsersId?.remove(user!!.id)
+                    }
+                    wishItemsAdapterArrayList[adapterIndex].notifyItemChanged(
+                        wish.itemsId!!.indexOf(
+                            itemId
+                        )
+                    )
+
                     likeListener(itemId, wish, isLiked)
                 })
             wishItemsAdapterArrayList.add(wishItemsAdapter)

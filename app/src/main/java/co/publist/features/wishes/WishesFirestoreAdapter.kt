@@ -14,6 +14,7 @@ import co.publist.core.utils.DataBindingAdapters.loadWishImage
 import co.publist.core.utils.Utils
 import co.publist.core.utils.Utils.Constants.DETAILS
 import co.publist.core.utils.Utils.Constants.LISTS
+import co.publist.core.utils.Utils.Constants.TOP_USERS_THRESHOLD
 import co.publist.core.utils.Utils.Constants.WISH_DETAILS_INTENT
 import co.publist.databinding.ItemWishBinding
 import co.publist.features.wishdetails.WishDetailsActivity
@@ -69,13 +70,6 @@ class WishesFirestoreAdapter(
             super.onChildChanged(type, snapshot, newIndex, oldIndex)
     }
 
-    override fun getItemId(position: Int): Long {
-        return position.toLong()
-    }
-
-    override fun getItemViewType(position: Int): Int {
-        return position
-    }
 
     override fun onBindViewHolder(holder: WishViewHolder, position: Int, wish: WishAdapterItem) {
         if (wish.itemsId!!.size > Utils.Constants.MAX_VISIBLE_WISH_ITEMS) // To avoid recycling seeMore layout for expandable wish Items
@@ -94,7 +88,7 @@ class WishesFirestoreAdapter(
             val wishCopy = Gson().fromJson(
                 Gson().toJson(wish),
                 WishAdapterItem::class.java
-            ) //FIXME (this is quick fix because object is not deep copied , when clicked on details listener , proper data is not loaded)
+            ) //FIXME (this is quick fix because object is not deep copied ; when clicked on details listener , proper data is not loaded)
             if (wishesType == DETAILS)
                 binding.seeMoreLayout.visibility = View.GONE
             else {
@@ -176,15 +170,42 @@ class WishesFirestoreAdapter(
                         if (adapterIndex != wishItemsAdapterIndex && wishItemsAdapterArrayList[adapterIndex].isExpanded)
                             wishItemsAdapterArrayList[adapterIndex].collapseList()
                     }
-                }, completeListener = { itemId, isDone ->
+                }, completeListener = { itemId, isDone, adapterIndex ->
+                    //Update Ui then remotely
+                    wish.items!![itemId]?.done = isDone
                     val incrementAmount = if (isDone) 1 else -1
                     wish.items!![itemId]?.completeCount =
                         wish.items!![itemId]?.completeCount!! + incrementAmount
+                    if (wish.items!![itemId]?.completeCount!! < TOP_USERS_THRESHOLD) {
+                        if (isDone)
+                            wish.items!![itemId]?.topCompletedUsersId?.add(user.id!!)
+                        else
+                            wish.items!![itemId]?.topCompletedUsersId?.remove(user.id)
+                    }
+                    wishItemsAdapterArrayList[adapterIndex].notifyItemChanged(
+                        wish.itemsId!!.indexOf(
+                            itemId
+                        )
+                    )
+
                     completeListener(itemId, wish, isDone)
-                }, likeListener = { itemId, isLiked ->
+                }, likeListener = { itemId, isLiked, adapterIndex ->
+                    wish.items!![itemId]?.isLiked = isLiked
                     val incrementAmount = if (isLiked) 1 else -1
                     wish.items!![itemId]?.viewedCount =
                         wish.items!![itemId]?.viewedCount!! + incrementAmount
+                    if (wish.items!![itemId]?.viewedCount!! < TOP_USERS_THRESHOLD) {
+                        if (isLiked)
+                            wish.items!![itemId]?.topViewedUsersId?.add(user.id!!)
+                        else
+                            wish.items!![itemId]?.topViewedUsersId?.remove(user.id)
+                    }
+                    wishItemsAdapterArrayList[adapterIndex].notifyItemChanged(
+                        wish.itemsId!!.indexOf(
+                            itemId
+                        )
+                    )
+
                     likeListener(itemId, wish, isLiked)
                 })
             wishItemsAdapterArrayList.add(wishItemsAdapter)
