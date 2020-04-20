@@ -158,7 +158,7 @@ object Mapper {
         var arrayList = ArrayList<Wish>()
         for (document in documents)
             arrayList.add(document.toObject(Wish::class.java))
-        arrayList.sortBy { it.date } //Fixme sort ascending by date (as Query is sorted by Ascending in order to be reversed by RV)
+        arrayList.sortByDescending { it.date }
         return arrayList
     }
 

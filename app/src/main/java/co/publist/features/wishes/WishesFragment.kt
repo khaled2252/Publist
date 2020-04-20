@@ -132,6 +132,8 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
                 },
                 seenCountListener = { wishId ->
                     viewModel.incrementSeenCount(wishId)
+                }, scrollListener = {
+//                    wishesRecyclerView.smoothScrollToPosition(0)
                 })
 
         adapter.startListening()

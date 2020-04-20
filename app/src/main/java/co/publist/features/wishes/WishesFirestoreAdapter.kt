@@ -38,7 +38,8 @@ class WishesFirestoreAdapter(
     val detailsListener: (wish: WishAdapterItem) -> Unit,
     val completeListener: (itemId: String, wish: WishAdapterItem, isDone: Boolean) -> Unit,
     val likeListener: (itemId: String, wish: WishAdapterItem, isLiked: Boolean) -> Unit,
-    val seenCountListener: (wishId: String) -> Unit
+    val seenCountListener: (wishId: String) -> Unit,
+    val scrollListener: () -> Unit
 
 ) :
     FirestoreRecyclerAdapter<WishAdapterItem, WishesFirestoreAdapter.WishViewHolder>(options) {
@@ -165,6 +166,7 @@ class WishesFirestoreAdapter(
                         if (adapterIndex != wishItemsAdapterIndex && wishItemsAdapterArrayList[adapterIndex].isExpanded)
                             wishItemsAdapterArrayList[adapterIndex].collapseList()
                     }
+                    scrollListener()
                 }, completeListener = { itemId, isDone, adapterIndex ->
                     //Update Ui then remotely
                     wish.items!![itemId]?.done = isDone

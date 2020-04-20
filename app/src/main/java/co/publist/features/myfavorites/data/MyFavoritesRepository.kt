@@ -24,8 +24,8 @@ class MyFavoritesRepository @Inject constructor(
             .collection(MY_FAVORITES_COLLECTION_PATH)
             .orderBy(
                 DATE_FIELD,
-                Query.Direction.ASCENDING
-            ) //Get Wishes Ascending, then will be reversed by reverseLayout attribute in RecyclerView
+                Query.Direction.DESCENDING
+            )
     }
 
     override fun getUserFavoriteWishes(): Single<ArrayList<Wish>> {
@@ -35,7 +35,7 @@ class MyFavoritesRepository @Inject constructor(
             mFirebaseFirestore.collection(USERS_COLLECTION_PATH)
                 .document(userId!!)
                 .collection(MY_FAVORITES_COLLECTION_PATH)
-                .orderBy(DATE_FIELD, Query.Direction.ASCENDING)
+                .orderBy(DATE_FIELD, Query.Direction.DESCENDING)
                 .get()
                 .addOnFailureListener {
                     singleEmitter.onError(it)

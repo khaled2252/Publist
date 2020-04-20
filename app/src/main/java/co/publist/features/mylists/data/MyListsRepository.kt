@@ -25,8 +25,8 @@ class MyListsRepository @Inject constructor(
             .collection(MY_LISTS_COLLECTION_PATH)
             .orderBy(
                 Utils.Constants.DATE_FIELD,
-                Query.Direction.ASCENDING
-            ) //Get Wishes Ascending, then will be reversed by reverseLayout attribute in RecyclerView
+                Query.Direction.DESCENDING
+            )
     }
 
     override fun getMyLists(): Single<ArrayList<Wish>> {

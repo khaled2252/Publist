@@ -68,8 +68,8 @@ class WishesRepository @Inject constructor(
             mFirebaseFirestore.collection(WISHES_COLLECTION_PATH)
                 .orderBy(
                     DATE_FIELD,
-                    Query.Direction.ASCENDING
-                ) //Fixme , Get Wishes Ascending, then will be reversed by reverseLayout attribute in RecyclerView
+                    Query.Direction.DESCENDING
+                )
                 .get()
                 .addOnFailureListener {
                     singleEmitter.onError(it)
@@ -83,7 +83,7 @@ class WishesRepository @Inject constructor(
         return Single.create { singleEmitter ->
             mFirebaseFirestore.collection(WISHES_COLLECTION_PATH)
                 .whereArrayContains(CATEGORY_ID_FIELD, categoryId)
-                .orderBy(DATE_FIELD, Query.Direction.ASCENDING)
+                .orderBy(DATE_FIELD, Query.Direction.DESCENDING)
                 .get()
                 .addOnFailureListener {
                     singleEmitter.onError(it)
@@ -676,6 +676,7 @@ class WishesRepository @Inject constructor(
                     if (myListWishesId.isNotEmpty()) {
                         val query = mFirebaseFirestore.collection(WISHES_COLLECTION_PATH)
                             .whereIn(FieldPath.documentId(), myListWishesId)
+                            .orderBy(DATE_FIELD, Query.Direction.DESCENDING)
                         singleEmitter.onSuccess(query)
                     } else {
                         val query = mFirebaseFirestore.collection(WISHES_COLLECTION_PATH)
@@ -705,6 +706,7 @@ class WishesRepository @Inject constructor(
                     if (myFavoritesWishesId.isNotEmpty()) {
                         val query = mFirebaseFirestore.collection(WISHES_COLLECTION_PATH)
                             .whereIn(FieldPath.documentId(), myFavoritesWishesId)
+                            .orderBy(DATE_FIELD, Query.Direction.DESCENDING)
                         singleEmitter.onSuccess(query)
                     } else {
                         val query = mFirebaseFirestore.collection(WISHES_COLLECTION_PATH)

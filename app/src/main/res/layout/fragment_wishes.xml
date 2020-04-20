@@ -20,8 +20,6 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:reverseLayout="true"
-            app:stackFromEnd="true"
             tools:listitem="@layout/item_wish" />
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
