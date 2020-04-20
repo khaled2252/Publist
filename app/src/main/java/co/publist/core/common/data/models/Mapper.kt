@@ -4,10 +4,7 @@ import co.publist.core.common.data.models.category.Category
 import co.publist.core.common.data.models.category.CategoryAdapterItem
 import co.publist.core.common.data.models.category.CategoryDbEntity
 import co.publist.core.common.data.models.category.Localization
-import co.publist.core.common.data.models.wish.CategoryWish
-import co.publist.core.common.data.models.wish.MyListDbEntity
-import co.publist.core.common.data.models.wish.Wish
-import co.publist.core.common.data.models.wish.WishAdapterItem
+import co.publist.core.common.data.models.wish.*
 import co.publist.core.utils.Utils.Constants.ALGOLIA_HITS_FIELD
 import co.publist.core.utils.Utils.Constants.ALGOLIA_WISH_ID_FIELD
 import com.google.firebase.firestore.QueryDocumentSnapshot
@@ -211,6 +208,44 @@ object Mapper {
             id = item.id,
             lang = "en",
             name = item.name
+        )
+    }
+
+    fun mapToEditedWish(wish: Wish): EditedWish {
+        return EditedWish(
+            wish.category,
+            wish.categoryId,
+            wish.date,
+            wish.title,
+            wish.creator,
+            wish.favoritesCount,
+            wish.wishPhotoURL,
+            wish.photoName,
+            mapToEditedWishItems(wish.items!!),
+            wish.itemsId,
+            wish.wishId,
+            wish.seenCount,
+            wish.organicSeenCount
+        )
+    }
+
+    fun mapToEditedWishItems(items: Map<String, WishItem>): Map<String, EditedWishItem> {
+        val resultItems = mutableMapOf<String, EditedWishItem>()
+        for (item in items)
+            resultItems[item.key] = mapToEditedWish(item.value)
+        return resultItems
+    }
+
+    private fun mapToEditedWish(item: WishItem): EditedWishItem {
+        return EditedWishItem(
+            item.name,
+            item.orderId,
+            item.completeCount,
+            item.viewedCount,
+            item.topCompletedUsersId,
+            item.topViewedUsersId,
+            item.done,
+            item.isLiked
         )
     }
 }

@@ -111,23 +111,25 @@ object Utils {
         imageViewArrayList: ArrayList<ImageView>,
         user: User?
     ) {
+        val topUsersIdCopyArray =
+            topUsersId?.toMutableList() //Take a copy of the received array and do logic on it to avoid changing data in all its referrals
         //Clear extra loaded images when updating (i.e removed images)
-        if (topUsersId.isNullOrEmpty()) {
+        if (topUsersIdCopyArray.isNullOrEmpty()) {
             for (imageView in imageViewArrayList)
                 imageView.setImageDrawable(null)
             return //Case where all images are removed , Undraw all then terminate
-        } else if (topUsersId.isNotEmpty()) {
-            for (emptyIndex in topUsersId.size.until(imageViewArrayList.size))
+        } else if (topUsersIdCopyArray.isNotEmpty()) {
+            for (emptyIndex in topUsersIdCopyArray.size.until(imageViewArrayList.size))
                 imageViewArrayList[emptyIndex].setImageDrawable(null)
             //Case where some images are removed , Undraw them then load new images
         }
 
         //Load cached user image if is in topUsersId
-        if (user != null && topUsersId.contains(user.id!!)) {
-            for (topUserIdIndex in 0 until topUsersId.size) {
-                if (topUsersId[topUserIdIndex] == user.id) {
+        if (user != null && topUsersIdCopyArray.contains(user.id!!)) {
+            for (topUserIdIndex in 0 until topUsersIdCopyArray.size) {
+                if (topUsersIdCopyArray[topUserIdIndex] == user.id) {
                     loadProfilePicture(imageViewArrayList[topUserIdIndex], user.profilePictureUrl)
-                    topUsersId.removeAt(topUserIdIndex)
+                    topUsersIdCopyArray.removeAt(topUserIdIndex)
                     imageViewArrayList.removeAt(topUserIdIndex)
                 } else
                     loadProfilePicture(
@@ -137,10 +139,10 @@ object Utils {
             }
         }
 
-        if (topUsersId.isNotEmpty()) {
+        if (topUsersIdCopyArray.isNotEmpty()) {
             //Load new Images
             FirebaseFunctions.getInstance().getHttpsCallable(FETCH_USER_PICTURE_CLOUD_FUNCTION)
-                .call(hashMapOf(USER_IDS_FIELD to topUsersId))
+                .call(hashMapOf(USER_IDS_FIELD to topUsersIdCopyArray))
                 .continueWith { task ->
                     val result = task.result?.data as HashMap<String, ArrayList<String>>
                     result
@@ -232,5 +234,6 @@ object Utils {
         const val ALGOLIA_HITS_FIELD = "hits"
         const val ALGOLIA_WISH_ID_FIELD = "objectID"
         const val AUTO_COMPLETE_TEXT_VIEW_ID = "android:id/search_src_text"
+        const val NULL_STRING = "null"
     }
 }

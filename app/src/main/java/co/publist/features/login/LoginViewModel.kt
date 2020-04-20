@@ -2,6 +2,7 @@ package co.publist.features.login
 
 import androidx.lifecycle.MutableLiveData
 import co.publist.core.platform.BaseViewModel
+import co.publist.core.utils.Utils.Constants.NULL_STRING
 import co.publist.core.utils.Utils.Constants.PLATFORM_FACEBOOK
 import co.publist.core.utils.Utils.Constants.PLATFORM_GOOGLE
 import co.publist.features.categories.data.CategoriesRepositoryInterface
@@ -52,7 +53,7 @@ class LoginViewModel @Inject constructor(
         registeringUser: RegisteringUser,
         documentId: String?
     ): Single<Pair<String, Boolean>> {
-        if (documentId == "null") {
+        if (documentId == NULL_STRING) {
             return loginRepository.addNewUser(
                 registeringUser.email!!,
                 registeringUser.name!!,

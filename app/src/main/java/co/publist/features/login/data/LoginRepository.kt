@@ -10,6 +10,7 @@ import co.publist.core.utils.Utils.Constants.ID_FIELD
 import co.publist.core.utils.Utils.Constants.IMAGE_PATH_FIELD
 import co.publist.core.utils.Utils.Constants.MY_LISTS_COLLECTION_PATH
 import co.publist.core.utils.Utils.Constants.NAME_FIELD
+import co.publist.core.utils.Utils.Constants.NULL_STRING
 import co.publist.core.utils.Utils.Constants.PROFILE_PICTURE_URL_FIELD
 import co.publist.core.utils.Utils.Constants.USERS_COLLECTION_PATH
 import co.publist.core.utils.Utils.Constants.USER_ACCOUNTS_COLLECTION_PATH
@@ -46,7 +47,7 @@ class LoginRepository @Inject constructor(
                                 return@addOnSuccessListener
                             }
                         }
-                        singleEmitter.onSuccess("null")
+                        singleEmitter.onSuccess(NULL_STRING)
                     }
             }
         }

@@ -17,6 +17,7 @@ import co.publist.core.utils.Utils.Constants.LIKED_USERS_IDS_COLLECTION_PATH
 import co.publist.core.utils.Utils.Constants.LIKE_COUNT_FIELD
 import co.publist.core.utils.Utils.Constants.MY_FAVORITES_COLLECTION_PATH
 import co.publist.core.utils.Utils.Constants.MY_LISTS_COLLECTION_PATH
+import co.publist.core.utils.Utils.Constants.NULL_STRING
 import co.publist.core.utils.Utils.Constants.ORGANIC_SEEN_FOR_WISH_CLOUD_FUNCTION
 import co.publist.core.utils.Utils.Constants.SEEN_FOR_WISH_CLOUD_FUNCTION
 import co.publist.core.utils.Utils.Constants.TOP_COMPLETED_USER_IDS_FIELD
@@ -147,18 +148,20 @@ class WishesRepository @Inject constructor(
     override fun updateWish(wish: Wish): Completable {
         val userId = localDataSource.getSharedPreferences().getUser()?.id
         return Completable.create { completableEmitter ->
-            mFirebaseFirestore
-                .collection(USERS_COLLECTION_PATH)
-                .document(userId!!)
-                .collection(MY_LISTS_COLLECTION_PATH)
+            mFirebaseFirestore.collection(WISHES_COLLECTION_PATH)
                 .document(wish.wishId!!)
                 .set(wish)
                 .addOnFailureListener {
                     completableEmitter.onError(it)
                 }.addOnSuccessListener {
-                    mFirebaseFirestore.collection(WISHES_COLLECTION_PATH)
+                    val userEditedWish =
+                        Mapper.mapToEditedWish(wish)//Change wishItem in items to EditedWishItem (to set done,liked items)
+                    mFirebaseFirestore
+                        .collection(USERS_COLLECTION_PATH)
+                        .document(userId!!)
+                        .collection(MY_LISTS_COLLECTION_PATH)
                         .document(wish.wishId!!)
-                        .set(wish)
+                        .set(userEditedWish)
                         .addOnSuccessListener {
                             completableEmitter.onComplete()
                         }
@@ -670,9 +673,18 @@ class WishesRepository @Inject constructor(
                 }.addOnSuccessListener { myListsQuerySnapshot ->
                     val myListWishes = Mapper.mapToWishAdapterItemArrayList(myListsQuerySnapshot)
                     val myListWishesId = myListWishes.map { it.wishId }
-                    val query = mFirebaseFirestore.collection(WISHES_COLLECTION_PATH)
-                        .whereIn(FieldPath.documentId(), myListWishesId)
-                    singleEmitter.onSuccess(query)
+                    if (myListWishesId.isNotEmpty()) {
+                        val query = mFirebaseFirestore.collection(WISHES_COLLECTION_PATH)
+                            .whereIn(FieldPath.documentId(), myListWishesId)
+                        singleEmitter.onSuccess(query)
+                    } else {
+                        val query = mFirebaseFirestore.collection(WISHES_COLLECTION_PATH)
+                            .whereIn(
+                                FieldPath.documentId(),
+                                arrayListOf(NULL_STRING)
+                            )//Because firebase can't do 'in' filter on empty/null value array , so we pass any non id string
+                        singleEmitter.onSuccess(query)
+                    }
                 }
         }
     }
@@ -689,13 +701,21 @@ class WishesRepository @Inject constructor(
                 }.addOnSuccessListener { MyFavoritesQuerySnapshot ->
                     val myFavoritesWishes =
                         Mapper.mapToWishAdapterItemArrayList(MyFavoritesQuerySnapshot)
-                        val myFavoritesWishesId = myFavoritesWishes.map { it.wishId }
-                    val query = mFirebaseFirestore.collection(WISHES_COLLECTION_PATH)
+                    val myFavoritesWishesId = myFavoritesWishes.map { it.wishId }
+                    if (myFavoritesWishesId.isNotEmpty()) {
+                        val query = mFirebaseFirestore.collection(WISHES_COLLECTION_PATH)
                             .whereIn(FieldPath.documentId(), myFavoritesWishesId)
-                    singleEmitter.onSuccess(query)
-                }
+                        singleEmitter.onSuccess(query)
+                    } else {
+                        val query = mFirebaseFirestore.collection(WISHES_COLLECTION_PATH)
+                            .whereIn(FieldPath.documentId(), arrayListOf(NULL_STRING))
+                        singleEmitter.onSuccess(query)
+                    }
+
                 }
         }
+    }
+
     override fun getWishesByTitle(searchQuery: String): Single<ArrayList<Wish>> {
         return Single.create { singleEmitter ->
             val completionHandler = CompletionHandler { content, error ->
