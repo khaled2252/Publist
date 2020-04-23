@@ -1,55 +1,30 @@
 package co.publist.features.wishes
 
-import android.content.Intent
 import android.graphics.Paint
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextSwitcher
-import android.widget.TextView
-import androidx.core.content.ContextCompat
-import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.RecyclerView
 import co.publist.R
 import co.publist.core.common.data.models.User
-import co.publist.core.common.data.models.wish.WishAdapterItem
 import co.publist.core.common.data.models.wish.WishItem
-import co.publist.core.utils.Utils
-import co.publist.core.utils.Utils.Constants.DETAILS
 import co.publist.core.utils.Utils.Constants.FLAME_ICON_COMPLETED_MINIMUM
 import co.publist.core.utils.Utils.Constants.FLAME_ICON_VIEWED_COUNT_PERCENTAGE
-import co.publist.core.utils.Utils.Constants.MAX_VISIBLE_WISH_ITEMS
 import co.publist.core.utils.Utils.Constants.MINIMUM_WISH_ITEMS
-import co.publist.core.utils.Utils.get90DegreesAnimation
+import co.publist.core.utils.Utils.Constants.TOP_USERS_THRESHOLD
 import co.publist.core.utils.Utils.loadTopUsersPictures
 import co.publist.core.utils.Utils.showLoginPromptForGuest
-import co.publist.features.wishdetails.WishDetailsActivity
 import kotlinx.android.synthetic.main.item_wish_item.view.*
 
 
 class WishItemsAdapter(
-    private val wish: WishAdapterItem,
-    private val wishesType: Int,
+    private val wishItems: Collection<WishItem>,
+    private val isExpanded: Boolean,
     private val user: User?,
-    private val seeMoreTextSwitcher: TextSwitcher,
-    private val arrowImageView: ImageView,
-    private val adapterIndex: Int,
-    val expandListener: (adapterIndex: Int) -> Unit,
-    val completeListener: (itemId: String, isDone: Boolean, adapterIndex: Int) -> Unit,
-    val likeListener: (itemId: String, isLiked: Boolean, adapterIndex: Int) -> Unit
+    val completeListener: (itemPosition: Int, isDone: Boolean) -> Unit,
+    val likeListener: (itemPosition: Int, isLiked: Boolean) -> Unit
 ) :
     RecyclerView.Adapter<WishItemsAdapter.WishItemViewHolder>() {
-    var isExpanded = false
-    private var wishItemList = wish.items!!.values
-
-    init {
-        if (wishesType != DETAILS)
-            setExpandingConditions()
-    }
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WishItemViewHolder {
         val view =
             LayoutInflater.from(parent.context).inflate(R.layout.item_wish_item, parent, false)
@@ -57,18 +32,14 @@ class WishItemsAdapter(
     }
 
     override fun getItemCount(): Int {
-        return if (wishesType == DETAILS)
-            wishItemList.size
-        else {
-            if (!isExpanded)
-                MINIMUM_WISH_ITEMS
-            else
-                wishItemList.size
-        }
+        return if (isExpanded)
+            wishItems.size
+        else
+            MINIMUM_WISH_ITEMS
     }
 
     override fun onBindViewHolder(holder: WishItemViewHolder, position: Int) {
-        holder.bind(wishItemList.elementAt(position), position)
+        holder.bind(wishItems.elementAt(position), position)
     }
 
     inner class WishItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -115,88 +86,50 @@ class WishItemsAdapter(
             itemView.completeButton.setOnClickListener {
                 if (user == null)
                     showLoginPromptForGuest(it.context)
-                else
+                else {
+                    //Update Ui then remotely
+                    wishItem.done = !wishItem.done!! //Opposite of the previous state
+                    val incrementAmount = if (wishItem.done!!) 1 else -1
+                    wishItem.completeCount =
+                        wishItem.completeCount!! + incrementAmount
+                    if (wishItem.completeCount!! < TOP_USERS_THRESHOLD) {
+                        if (wishItem.done!!)
+                            wishItem.topCompletedUsersId?.add(user.id!!)
+                        else
+                            wishItem.topCompletedUsersId?.remove(user.id)
+                    }
+                    notifyItemChanged(position)
+
                     completeListener(
-                        wish.itemsId!!.elementAt(position),
-                        !wishItem.done!!,
-                        adapterIndex
-                    )//Send opposite of the previous state
+                        position,
+                        wishItem.done!!
+                    )
+                }
 
             }
             itemView.likeViewsTextView.setOnClickListener {
                 if (user == null)
                     showLoginPromptForGuest(it.context)
-                else
-                    likeListener(
-                        wish.items!!.keys.elementAt(position),
-                        !wishItem.isLiked!!,
-                        adapterIndex
-                    )
-            }
-        }
-    }
+                else {
+                    wishItem.isLiked = !wishItem.isLiked!!
+                    val incrementAmount = if (wishItem.isLiked!!) 1 else -1
+                    wishItem.viewedCount =
+                        wishItem.viewedCount!! + incrementAmount
+                    if (wishItem.viewedCount!! < TOP_USERS_THRESHOLD) {
+                        if (wishItem.isLiked!!)
+                            wishItem.topViewedUsersId?.add(user.id!!)
+                        else
+                            wishItem.topViewedUsersId?.remove(user.id)
+                    }
+                    notifyItemChanged(position)
 
-    private fun setExpandingConditions() {
-        if (wishItemList.size <= MAX_VISIBLE_WISH_ITEMS) {
-            seeMoreTextSwitcher.visibility = View.GONE
-            arrowImageView.visibility = View.GONE
-        } else {
-            seeMoreTextSwitcher.setFactory {
-                val textView = TextView(seeMoreTextSwitcher.context)
-                textView.typeface = ResourcesCompat.getFont(
-                    seeMoreTextSwitcher.context,
-                    R.font.sfprodisplaysemibold
-                )
-                textView.setTextColor(
-                    ContextCompat.getColor(
-                        seeMoreTextSwitcher.context,
-                        R.color.sunsetOrange
+                    likeListener(
+                        position,
+                        wishItem.isLiked!!
                     )
-                )
-                textView.gravity = Gravity.CENTER
-                val textSizeDimen =
-                    textView.resources.getDimension(R.dimen.wish_item_see_more_text_size)
-                textView.textSize = textSizeDimen / textView.resources.displayMetrics.scaledDensity
-                return@setFactory textView
-            }
-            applySeeMoreText()
-            (seeMoreTextSwitcher.parent as LinearLayout).setOnClickListener {
-                if (!isExpanded) {
-                    expandList()
-                    expandListener(adapterIndex)
-                } else {
-                    val intent = Intent(it.context, WishDetailsActivity::class.java)
-                    intent.putExtra(Utils.Constants.WISH_DETAILS_INTENT, wish)
-                    it.context.startActivity(intent)
                 }
             }
         }
-    }
-
-    private fun expandList() {
-        isExpanded = true
-        notifyItemRangeChanged(MINIMUM_WISH_ITEMS, wishItemList.size - MINIMUM_WISH_ITEMS)
-        arrowImageView.startAnimation(get90DegreesAnimation())
-        seeMoreTextSwitcher.setText(seeMoreTextSwitcher.context.getString(R.string.go_to_details))
-    }
-
-    fun collapseList() {
-        isExpanded = false
-        notifyItemRangeChanged(MINIMUM_WISH_ITEMS, wishItemList.size - MINIMUM_WISH_ITEMS)
-        arrowImageView.clearAnimation()
-        applySeeMoreText()
-    }
-
-    private fun applySeeMoreText() {
-        val extraWishItemsNumber = (wishItemList.size) - MAX_VISIBLE_WISH_ITEMS
-        seeMoreTextSwitcher.setText(
-            seeMoreTextSwitcher.context.resources.getQuantityString(
-                R.plurals.see_more_text,
-                extraWishItemsNumber,
-                extraWishItemsNumber
-            )
-        )
-
     }
 
     private fun WishItemViewHolder.loadTopUsersPictures(wishItem: WishItem) {

@@ -120,7 +120,7 @@ class WishesViewModel @Inject constructor(
                 subscribe(
                     wishesRepository.getCorrespondingMyFavoritesPublicWishes().flatMap { query ->
                         wishesRepository.getUserLikedItems().flatMap { likedItemsList ->
-                            wishesRepository.getDoneItemsInMyLists().flatMap { doneItemsList ->
+                            wishesRepository.getDoneItemsInMyFavorites().flatMap { doneItemsList ->
                                 Single.just(Pair(doneItemsList, likedItemsList))
                             }.flatMap { itemsAttributesPair ->
                                 Single.just(Pair(query, itemsAttributesPair))
@@ -351,84 +351,82 @@ class WishesViewModel @Inject constructor(
         editWishLiveData.postValue(selectedWish)
     }
 
-    fun completeItem(itemId: String, wish: WishAdapterItem, isDone: Boolean) {
+    fun completeItem(itemId: String, wishId: String, isCreator: Boolean, isDone: Boolean) {
         val collectionTobeEdited =
-            if (wish.isCreator) MY_LISTS_COLLECTION_PATH else MY_FAVORITES_COLLECTION_PATH
+            if (isCreator) MY_LISTS_COLLECTION_PATH else MY_FAVORITES_COLLECTION_PATH
 
-        if (wish.wishId != null) //Check because of iOS bug
-            subscribe(wishesRepository.checkItemDoneInProfile(
-                itemId,
-                wish.wishId!!,
-                collectionTobeEdited,
-                isDone
-            ).mergeWith(wishesRepository.incrementOrganicSeen(wish.wishId!!))
-                .andThen(
-                    wishesRepository.incrementCompleteCountInWishes(
+        subscribe(wishesRepository.checkItemDoneInProfile(
+            itemId,
+            wishId,
+            collectionTobeEdited,
+            isDone
+        ).mergeWith(wishesRepository.incrementOrganicSeen(wishId))
+            .andThen(
+                wishesRepository.incrementCompleteCountInWishes(
+                    itemId,
+                    wishId,
+                    isDone
+                )
+            )
+            .flatMapCompletable { completeCount ->
+                if (completeCount < TOP_USERS_THRESHOLD)
+                    wishesRepository.addUserIdInTopCompletedUsersIdSubCollection(
                         itemId,
-                        wish.wishId!!,
+                        wishId,
                         isDone
                     )
-                )
-                .flatMapCompletable { completeCount ->
-                    if (completeCount < TOP_USERS_THRESHOLD)
-                        wishesRepository.addUserIdInTopCompletedUsersIdSubCollection(
-                            itemId,
-                            wish.wishId!!,
-                            isDone
-                        )
-                            .mergeWith(
-                                wishesRepository.addUserIdInTopCompletedUsersIdField(
-                                    itemId, wish.wishId!!,
-                                    isDone
-                                )
+                        .mergeWith(
+                            wishesRepository.addUserIdInTopCompletedUsersIdField(
+                                itemId, wishId,
+                                isDone
                             )
-                    else
-                        wishesRepository.addUserIdInTopCompletedUsersIdSubCollection(
-                            itemId,
-                            wish.wishId!!,
-                            isDone
                         )
-                }
-                , Action {
-                }, showLoading = false
-            )
+                else
+                    wishesRepository.addUserIdInTopCompletedUsersIdSubCollection(
+                        itemId,
+                        wishId,
+                        isDone
+                    )
+            }
+            , Action {
+            }, showLoading = false
+        )
 
     }
 
-    fun likeItem(itemId: String, wish: WishAdapterItem, isLiked: Boolean) {
-        if (wish.wishId != null) //Check because of iOS bug
-            subscribe(wishesRepository.addItemToUserViewedItems(itemId, isLiked)
-                .mergeWith(wishesRepository.incrementOrganicSeen(wish.wishId!!))
-                .andThen(
-                    wishesRepository.incrementViewedCountInWishes(
+    fun likeItem(itemId: String, wishId: String, isLiked: Boolean) {
+        subscribe(wishesRepository.addItemToUserViewedItems(itemId, isLiked)
+            .mergeWith(wishesRepository.incrementOrganicSeen(wishId))
+            .andThen(
+                wishesRepository.incrementViewedCountInWishes(
+                    itemId,
+                    wishId,
+                    isLiked
+                )
+            )
+            .flatMapCompletable { likeCount ->
+                if (likeCount < TOP_USERS_THRESHOLD)
+                    wishesRepository.addUserIdInTopViewedUsersIdSubCollection(
                         itemId,
-                        wish.wishId!!,
+                        wishId,
                         isLiked
                     )
-                )
-                .flatMapCompletable { likeCount ->
-                    if (likeCount < TOP_USERS_THRESHOLD)
-                        wishesRepository.addUserIdInTopViewedUsersIdSubCollection(
-                            itemId,
-                            wish.wishId!!,
-                            isLiked
-                        )
-                            .mergeWith(
-                                wishesRepository.addUserIdInTopViewedUsersIdField(
-                                    itemId, wish.wishId!!,
-                                    isLiked
-                                )
+                        .mergeWith(
+                            wishesRepository.addUserIdInTopViewedUsersIdField(
+                                itemId, wishId,
+                                isLiked
                             )
-                    else
-                        wishesRepository.addUserIdInTopViewedUsersIdSubCollection(
-                            itemId,
-                            wish.wishId!!,
-                            isLiked
                         )
-                }
-                , Action {
-                }, showLoading = false
-            )
+                else
+                    wishesRepository.addUserIdInTopViewedUsersIdSubCollection(
+                        itemId,
+                        wishId,
+                        isLiked
+                    )
+            }
+            , Action {
+            }, showLoading = false
+        )
     }
 
     fun incrementSeenCount(wishId: String) {

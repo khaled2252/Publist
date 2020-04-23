@@ -38,6 +38,7 @@ class ProfileActivity : BaseActivity<ProfileViewModel>() {
     override fun getBaseViewModelFactory() = viewModelFactory
 
     private lateinit var sheetBehavior: BottomSheetBehavior<*>
+    private lateinit var profilePagerAdapter: ProfilePagerAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,7 +54,7 @@ class ProfileActivity : BaseActivity<ProfileViewModel>() {
     }
 
     private fun setPagerAdapter() {
-        val profilePagerAdapter = ProfilePagerAdapter(supportFragmentManager, lifecycle)
+        profilePagerAdapter = ProfilePagerAdapter(supportFragmentManager, lifecycle)
         profile_pager!!.orientation = ViewPager2.ORIENTATION_HORIZONTAL
         profile_pager!!.adapter = profilePagerAdapter
         profile_pager!!.isUserInputEnabled = true // for swiping

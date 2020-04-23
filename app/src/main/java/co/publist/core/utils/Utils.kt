@@ -235,5 +235,6 @@ object Utils {
         const val ALGOLIA_WISH_ID_FIELD = "objectID"
         const val AUTO_COMPLETE_TEXT_VIEW_ID = "android:id/search_src_text"
         const val NULL_STRING = "null"
+        const val NOT_EXPANDABLE = -1
     }
 }

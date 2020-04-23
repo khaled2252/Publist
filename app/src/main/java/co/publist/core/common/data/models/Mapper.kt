@@ -211,7 +211,7 @@ object Mapper {
         )
     }
 
-    fun mapToEditedWish(wish: Wish): EditedWish {
+    fun mapToEditedWishItem(wish: Wish): EditedWish {
         return EditedWish(
             wish.category,
             wish.categoryId,
@@ -229,14 +229,14 @@ object Mapper {
         )
     }
 
-    fun mapToEditedWishItems(items: Map<String, WishItem>): Map<String, EditedWishItem> {
+    private fun mapToEditedWishItems(items: Map<String, WishItem>): Map<String, EditedWishItem> {
         val resultItems = mutableMapOf<String, EditedWishItem>()
         for (item in items)
-            resultItems[item.key] = mapToEditedWish(item.value)
+            resultItems[item.key] = mapToEditedWishItem(item.value)
         return resultItems
     }
 
-    private fun mapToEditedWish(item: WishItem): EditedWishItem {
+    private fun mapToEditedWishItem(item: WishItem): EditedWishItem {
         return EditedWishItem(
             item.name,
             item.orderId,
@@ -248,4 +248,5 @@ object Mapper {
             item.isLiked
         )
     }
+
 }

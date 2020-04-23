@@ -1,11 +1,15 @@
 package co.publist.features.wishes
 
 import android.content.Intent
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.RecyclerView
 import co.publist.R
 import co.publist.core.common.data.models.User
@@ -14,13 +18,14 @@ import co.publist.core.utils.DataBindingAdapters
 import co.publist.core.utils.Utils
 import co.publist.core.utils.Utils.Constants.DETAILS
 import co.publist.core.utils.Utils.Constants.MAX_VISIBLE_WISH_ITEMS
-import co.publist.core.utils.Utils.Constants.TOP_USERS_THRESHOLD
+import co.publist.core.utils.Utils.Constants.NOT_EXPANDABLE
 import co.publist.core.utils.Utils.Constants.WISH_DETAILS_INTENT
+import co.publist.core.utils.Utils.get90DegreesAnimation
 import co.publist.databinding.ItemWishBinding
 import co.publist.features.wishdetails.WishDetailsActivity
 import org.ocpsoft.prettytime.PrettyTime
 import java.util.*
-import kotlin.collections.ArrayList
+import kotlin.collections.set
 
 class WishesAdapter(
     val list: ArrayList<WishAdapterItem>,
@@ -28,28 +33,40 @@ class WishesAdapter(
     val user: User?,
     val favoriteListener: (wish: WishAdapterItem, isFavoriting: Boolean) -> Unit,
     val detailsListener: (wish: WishAdapterItem) -> Unit,
-    val completeListener: (itemId: String, wish: WishAdapterItem, isDone: Boolean) -> Unit,
-    val likeListener: (itemId: String, wish: WishAdapterItem, isLiked: Boolean) -> Unit,
-    val seenCountListener: (wishId: String) -> Unit
+    val completeListener: (itemId: String, wishId: String, isCreator: Boolean, isDone: Boolean) -> Unit,
+    val likeListener: (itemId: String, wishId: String, isLiked: Boolean) -> Unit,
+    val seenCountListener: (wishId: String) -> Unit,
+    val scrollListener: (position: Int) -> Unit
 ) :
     RecyclerView.Adapter<WishesAdapter.WishViewHolder>() {
-    val wishItemsAdapterArrayList = ArrayList<WishItemsAdapter>()
+    val expandableViewHolders = mutableMapOf<Int, WishViewHolder>()
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WishViewHolder {
-        val inflater = LayoutInflater.from(parent.context)
-        val binding = ItemWishBinding.inflate(inflater)
-        binding.executePendingBindings()
-        return WishViewHolder(binding)
+        return if (viewType == NOT_EXPANDABLE) {
+            val inflater = LayoutInflater.from(parent.context)
+            val binding = ItemWishBinding.inflate(inflater)
+            binding.executePendingBindings()
+            WishViewHolder(binding)
+        } else { //Return a viewHolder with corresponding binding of the expandable wish
+            WishViewHolder(expandableViewHolders[viewType]!!.holderBinding)
+        }
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return if (expandableViewHolders.keys.contains(position)) //Return expandable wish position as unique viewType
+            position
+        else
+            return NOT_EXPANDABLE
     }
 
     override fun onBindViewHolder(holder: WishViewHolder, position: Int) {
         val wish = list[position]
-        if (wish.itemsId!!.size > MAX_VISIBLE_WISH_ITEMS) // To avoid recycling seeMore layout for expandable wish Items
-            holder.setIsRecyclable(false)
 
         if (wish.wishId != null)//Fixme checking because of iOS bug where some wishes are without wishId
             seenCountListener(wish.wishId!!)
 
-        holder.bind(wish, position)
+        if (!expandableViewHolders.containsKey(position)) //To avoid binding expandable items
+            holder.bind(wish, position)
+
     }
 
     override fun getItemCount(): Int {
@@ -58,122 +75,183 @@ class WishesAdapter(
 
     inner class WishViewHolder(private val binding: ItemWishBinding) :
         RecyclerView.ViewHolder(binding.root) {
+        lateinit var holderWish: WishAdapterItem
+        var holderBinding = binding
+        var isExpanded = false
         fun bind(
             wish: WishAdapterItem,
             position: Int
         ) {
-            if (wishesType == DETAILS)
-                binding.seeMoreLayout.visibility = View.GONE
-            else {
-                binding.root.setOnClickListener {
-                    val intent = Intent(it.context, WishDetailsActivity::class.java)
-                    intent.putExtra(WISH_DETAILS_INTENT, wish)
-                    it.context.startActivity(intent)
+            holderWish = wish
+            binding.apply {
+                if (wishesType == DETAILS)
+                    seeMoreLayout.visibility = View.GONE
+                else {
+                    root.setOnClickListener {
+                        val intent = Intent(it.context, WishDetailsActivity::class.java)
+                        intent.putExtra(WISH_DETAILS_INTENT, wish)
+                        it.context.startActivity(intent)
+                    }
+                }
+
+                if (wish.isCreator)
+                    wishActionImageView.apply {
+                        setImageResource(R.drawable.ic_dots)
+                        setOnClickListener {
+                            detailsListener(wish)
+                        }
+                    }
+                else
+                    wishActionImageView.apply {
+                        if (wish.isFavorite)
+                            setImageResource(R.drawable.ic_heart_active)
+                        else
+                            setImageResource(R.drawable.ic_heart)
+
+                        setOnClickListener {
+                            if (user == null)
+                                Utils.showLoginPromptForGuest(it.context)
+                            else
+                                favoriteWish(
+                                    wish,
+                                    position,
+                                    isFavoriting = !wish.isFavorite
+                                ) //Taking the opposite of current state
+                        }
+                    }
+
+                categoryNameTextView.text = wish.category!![0].name?.capitalize()
+                titleTextView.text = wish.title
+
+                //Load ago time
+                val prettyTime = PrettyTime(Locale.getDefault())
+                val date = wish.date?.toDate()
+                val timeAgo = ". " + prettyTime.format(date)
+                timeTextView.text = timeAgo
+
+                //Load creator data
+                DataBindingAdapters.loadProfilePicture(
+                    profilePictureImageView,
+                    wish.creator?.imagePath
+                )
+                userNameTextView.text = wish.creator?.name
+
+                //Load wish Image
+                DataBindingAdapters.loadWishImage(wishImageView, wish.wishPhotoURL)
+
+                //Load wish Items
+                //sort Items map by orderId
+                wish.items = wish.items?.toList()?.sortedBy { it.second.orderId }
+                    ?.toMap()
+                //Setup expanding conditions
+                if (wishesType == DETAILS)
+                    setWishItemsAdapter(true) //Expanded wish in details screen
+                else {
+                    if (wish.items!!.size <= MAX_VISIBLE_WISH_ITEMS) {
+                        seeMoreTextSwitcher.visibility = View.GONE
+                        arrowImageView.visibility = View.GONE
+                    } else {//Expandable wish
+                        expandableViewHolders[position] = this@WishViewHolder
+                        setTextSwitcherFactory()
+                        applySeeMoreText()
+                        seeMoreLayout.setOnClickListener {
+                            if (!isExpanded) {
+                                expandWish(position)
+                                //Collapse all other expandable wishes except for the current one expanding
+                                for (viewHolderPosition in expandableViewHolders.keys) {
+                                    if (viewHolderPosition != position && expandableViewHolders[viewHolderPosition]!!.isExpanded)
+                                        expandableViewHolders[viewHolderPosition]!!.collapseWish()
+                                }
+                            } else {
+                                val intent = Intent(it.context, WishDetailsActivity::class.java)
+                                intent.putExtra(WISH_DETAILS_INTENT, wish)
+                                it.context.startActivity(intent)
+                            }
+                        }
+                    }
+                    setWishItemsAdapter(isExpanded)
                 }
             }
+        }
 
-            if (wish.isCreator)
-                binding.wishActionImageView.apply {
-                    setImageResource(R.drawable.ic_dots)
-                    setOnClickListener {
-                        detailsListener(wish)
-                    }
-                }
-            else
-                binding.wishActionImageView.apply {
-                    if (wish.isFavorite)
-                        setImageResource(R.drawable.ic_heart_active)
-                    else
-                        setImageResource(R.drawable.ic_heart)
-
-                    setOnClickListener {
-                        if (user == null)
-                            Utils.showLoginPromptForGuest(it.context)
-                        else
-                            favoriteWish(
-                                wish,
-                                position,
-                                isFavoriting = !wish.isFavorite
-                            ) //Taking the opposite of current state
-                    }
-                }
-
-            binding.categoryNameTextView.text = wish.category!![0].name?.capitalize()
-            binding.titleTextView.text = wish.title
-
-            //Load ago time
-            val prettyTime = PrettyTime(Locale.getDefault())
-            val date = wish.date?.toDate()
-            val timeAgo = ". " + prettyTime.format(date)
-            binding.timeTextView.text = timeAgo
-
-            //Load creator data
-            DataBindingAdapters.loadProfilePicture(
-                binding.profilePictureImageView,
-                wish.creator?.imagePath
-            )
-            binding.userNameTextView.text = wish.creator?.name
-
-            //Load wish Image
-            DataBindingAdapters.loadWishImage(binding.wishImageView, wish.wishPhotoURL)
-
-            //Load wish Items
-            wish.items = wish.items?.toList()?.sortedBy { it.second.orderId }
-                ?.toMap() //sort Items map by orderId
+        private fun setWishItemsAdapter(isExpanded: Boolean) {
             val wishItemsAdapter = WishItemsAdapter(
-                wish,
-                wishesType,
+                holderWish.items!!.values,
+                isExpanded,
                 user,
-                binding.seeMoreTextSwitcher,
-                binding.arrowImageView,
-                wishItemsAdapterArrayList.size
-                , expandListener = { wishItemsAdapterIndex ->
-                    //Collapse all other lists except for the current one expanding
-                    for (adapterIndex in 0 until wishItemsAdapterArrayList.size) {
-                        if (adapterIndex != wishItemsAdapterIndex && wishItemsAdapterArrayList[adapterIndex].isExpanded)
-                            wishItemsAdapterArrayList[adapterIndex].collapseList()
-                    }
+                completeListener = { itemPosition, isDone ->
+                    //completed item's wish is added to favorites according to business
+                    if (!holderWish.isCreator && !holderWish.isFavorite && isDone)
+                        binding.wishActionImageView.favoriteWish(holderWish, adapterPosition, true)
 
-                }, completeListener = { itemId, isDone, adapterIndex ->
-                    //Update Ui then remotely
-                    wish.items!![itemId]?.done = isDone
-                    val incrementAmount = if (isDone) 1 else -1
-                    wish.items!![itemId]?.completeCount =
-                        wish.items!![itemId]?.completeCount!! + incrementAmount
-                    if (wish.items!![itemId]?.completeCount!! < Utils.Constants.TOP_USERS_THRESHOLD) {
-                        if (isDone)
-                            wish.items!![itemId]?.topCompletedUsersId?.add(user!!.id!!)
-                        else
-                            wish.items!![itemId]?.topCompletedUsersId?.remove(user!!.id)
-                    }
-                    wishItemsAdapterArrayList[adapterIndex].notifyItemChanged(
-                        wish.itemsId!!.indexOf(
-                            itemId
-                        )
+                    completeListener(
+                        holderWish.itemsId!!.elementAt(itemPosition),
+                        holderWish.wishId!!,
+                        holderWish.isCreator,
+                        isDone
                     )
-
-                    completeListener(itemId, wish, isDone)
-                }, likeListener = { itemId, isLiked, adapterIndex ->
-                    wish.items!![itemId]?.isLiked = isLiked
-                    val incrementAmount = if (isLiked) 1 else -1
-                    wish.items!![itemId]?.viewedCount =
-                        wish.items!![itemId]?.viewedCount!! + incrementAmount
-                    if (wish.items!![itemId]?.viewedCount!! < TOP_USERS_THRESHOLD) {
-                        if (isLiked)
-                            wish.items!![itemId]?.topViewedUsersId?.add(user!!.id!!)
-                        else
-                            wish.items!![itemId]?.topViewedUsersId?.remove(user!!.id)
-                    }
-                    wishItemsAdapterArrayList[adapterIndex].notifyItemChanged(
-                        wish.itemsId!!.indexOf(
-                            itemId
-                        )
+                }, likeListener = { itemPosition, isLiked ->
+                    likeListener(
+                        holderWish.itemsId!!.elementAt(itemPosition),
+                        holderWish.wishId!!,
+                        isLiked
                     )
-
-                    likeListener(itemId, wish, isLiked)
                 })
-            wishItemsAdapterArrayList.add(wishItemsAdapter)
             binding.wishItemsRecyclerView.adapter = wishItemsAdapter
+        }
+
+        private fun setTextSwitcherFactory() {
+            binding.apply {
+                if (seeMoreTextSwitcher.childCount == 0) {
+                    seeMoreTextSwitcher.setFactory {
+                        val textView = TextView(seeMoreTextSwitcher.context)
+                        textView.typeface = ResourcesCompat.getFont(
+                            seeMoreTextSwitcher.context,
+                            R.font.sfprodisplaysemibold
+                        )
+                        textView.setTextColor(
+                            ContextCompat.getColor(
+                                seeMoreTextSwitcher.context,
+                                R.color.sunsetOrange
+                            )
+                        )
+                        textView.gravity = Gravity.CENTER
+                        val textSizeDimen =
+                            textView.resources.getDimension(R.dimen.wish_item_see_more_text_size)
+                        textView.textSize =
+                            textSizeDimen / textView.resources.displayMetrics.scaledDensity
+                        return@setFactory textView
+                    }
+                }
+            }
+        }
+
+        private fun applySeeMoreText() {
+            binding.apply {
+                val extraWishItemsNumber = (holderWish.items!!.size) - MAX_VISIBLE_WISH_ITEMS
+                seeMoreTextSwitcher.setText(
+                    seeMoreTextSwitcher.context.resources.getQuantityString(
+                        R.plurals.see_more_text,
+                        extraWishItemsNumber,
+                        extraWishItemsNumber
+                    )
+                )
+            }
+        }
+
+        private fun expandWish(position: Int) {
+            scrollListener(position)
+            isExpanded = true
+            setWishItemsAdapter(isExpanded)
+            binding.arrowImageView.startAnimation(get90DegreesAnimation())
+            binding.seeMoreTextSwitcher.setText(binding.seeMoreTextSwitcher.context.getString(R.string.go_to_details))
+        }
+
+        private fun collapseWish() {
+            isExpanded = false
+            setWishItemsAdapter(isExpanded)
+            binding.arrowImageView.clearAnimation()
+            applySeeMoreText()
         }
 
         private fun ImageView.favoriteWish(

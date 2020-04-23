@@ -1,6 +1,7 @@
 package co.publist.features.wishes
 
 import android.os.Bundle
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -124,16 +125,20 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
                 unFavoriteListener = { wish ->
                     viewModel.modifyFavorite(Mapper.mapToWish(wish), false)
                 },
-                completeListener = { itemId, wish, isDone ->
-                    viewModel.completeItem(itemId, wish, isDone)
+                completeListener = { itemId, wishId, isCreator, isDone ->
+                    viewModel.completeItem(itemId, wishId, isCreator, isDone)
                 },
-                likeListener = { itemId, wish, isLiked ->
-                    viewModel.likeItem(itemId, wish, isLiked)
+                likeListener = { itemId, wishId, isLiked ->
+                    viewModel.likeItem(itemId, wishId, isLiked)
                 },
                 seenCountListener = { wishId ->
                     viewModel.incrementSeenCount(wishId)
-                }, scrollListener = {
-//                    wishesRecyclerView.smoothScrollToPosition(0)
+                },
+                scrollListener = { position ->
+                    Handler().postDelayed(
+                        { wishesRecyclerView.smoothScrollToPosition(position) },
+                        100
+                    )
                 })
 
         adapter.startListening()
@@ -158,16 +163,20 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
                 favoriteListener = { wish, isFavoriting ->
                     viewModel.modifyFavorite(Mapper.mapToWish(wish), isFavoriting)
                 },
-                completeListener = { itemId, wish, isDone ->
-                    viewModel.completeItem(itemId, wish, isDone)
+                completeListener = { itemId, wishId, isCreator, isDone ->
+                    viewModel.completeItem(itemId, wishId, isCreator, isDone)
                 },
-                likeListener = { itemId, wish, isLiked ->
-                    viewModel.likeItem(itemId, wish, isLiked)
+                likeListener = { itemId, wishId, isLiked ->
+                    viewModel.likeItem(itemId, wishId, isLiked)
                 },
                 seenCountListener = { wishId ->
                     viewModel.incrementSeenCount(wishId)
-                }
-            )
+                }, scrollListener = { position ->
+                    wishesRecyclerView.post {
+                        wishesRecyclerView.smoothScrollToPosition(position)
+                    }
+                })
+
             (wishesRecyclerView.itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
             wishesRecyclerView.adapter = wishesAdapter
         } else {

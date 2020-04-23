@@ -155,7 +155,7 @@ class WishesRepository @Inject constructor(
                     completableEmitter.onError(it)
                 }.addOnSuccessListener {
                     val userEditedWish =
-                        Mapper.mapToEditedWish(wish)//Change wishItem in items to EditedWishItem (to set done,liked items)
+                        Mapper.mapToEditedWishItem(wish)//Change wishItem in items to EditedWishItem (to set done,liked items)
                     mFirebaseFirestore
                         .collection(USERS_COLLECTION_PATH)
                         .document(userId!!)
