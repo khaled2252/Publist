@@ -3,7 +3,6 @@ package co.publist.features.profile
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Observer
 import androidx.viewpager2.widget.ViewPager2
@@ -13,10 +12,9 @@ import co.publist.core.platform.BaseActivity
 import co.publist.core.platform.ViewModelFactory
 import co.publist.core.utils.DataBindingAdapters.loadProfilePicture
 import co.publist.core.utils.Utils.Constants.COMING_FROM_PROFILE_INTENT
-import co.publist.core.utils.Utils.Constants.EDIT_WISH_INTENT
-import co.publist.features.createwish.CreateWishActivity
 import co.publist.features.editprofile.EditProfileActivity
 import co.publist.features.login.LoginActivity
+import co.publist.features.mylists.MyListsFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.android.synthetic.main.activity_profile.*
@@ -79,17 +77,6 @@ class ProfileActivity : BaseActivity<ProfileViewModel>() {
             nameTextView.text = user.name
             loadProfilePicture(profilePictureImageView, user.profilePictureUrl)
         })
-
-        viewModel.wishDeletedLiveData.observe(this, Observer {
-            Toast.makeText(this, getString(R.string.delete_wish), Toast.LENGTH_SHORT).show()
-        })
-
-        viewModel.editWishLiveData.observe(this, Observer { wish ->
-            val intent = Intent(this, CreateWishActivity::class.java)
-            intent.putExtra(EDIT_WISH_INTENT, wish)
-            startActivity(intent)
-            sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-        })
     }
 
     private fun setListeners() {
@@ -134,7 +121,10 @@ class ProfileActivity : BaseActivity<ProfileViewModel>() {
         }
 
         editWishTextView.setOnClickListener {
-            viewModel.editSelectedWish()
+            sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+            val myListsWishesFragmentViewModel =
+                (profilePagerAdapter.getFragmentReference(1) as MyListsFragment).wishesFragment.viewModel
+            myListsWishesFragmentViewModel.editSelectedWish()
         }
 
         deleteWishTextView.setOnClickListener {
@@ -148,7 +138,9 @@ class ProfileActivity : BaseActivity<ProfileViewModel>() {
             AlertDialog.Builder(this)
         deleteDialog.setTitle(getString(R.string.delete_dialog_title))
         deleteDialog.setPositiveButton(getString(R.string.yes)) { _, _ ->
-            viewModel.deleteSelectedWish()
+            val myListsWishesFragmentViewModel =
+                (profilePagerAdapter.getFragmentReference(1) as MyListsFragment).wishesFragment.viewModel
+            myListsWishesFragmentViewModel.deleteSelectedWish()
             sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED)
         }
         deleteDialog.setNegativeButton(getString(R.string.cancel)) { _, _ ->
@@ -157,7 +149,9 @@ class ProfileActivity : BaseActivity<ProfileViewModel>() {
     }
 
     fun showEditWishDialog(wish: WishAdapterItem) {
-        viewModel.selectedWish = wish
+        val myListsWishesFragmentViewModel =
+            (profilePagerAdapter.getFragmentReference(1) as MyListsFragment).wishesFragment.viewModel
+        myListsWishesFragmentViewModel.selectedWish = wish
         sheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
     }
 }

@@ -11,17 +11,25 @@ class ProfilePagerAdapter(manager: FragmentManager, lifecycle: Lifecycle) :
     FragmentStateAdapter(manager, lifecycle) {
 
     private val fragmentCount = 2
+    private val fragmentList = ArrayList<Fragment>()
 
     override fun getItemCount(): Int {
         return fragmentCount
     }
 
     override fun createFragment(position: Int): Fragment {
-        when (position) {
-            0 -> return MyFavoritesFragment()
-        }
-        return MyListsFragment()
+        val fragment: Fragment
+        fragment = if (position == 0)
+            MyFavoritesFragment()
+        else
+            MyListsFragment()
 
+        fragmentList.add(fragment)
+        return fragment
+    }
+
+    fun getFragmentReference(position: Int): Fragment {
+        return fragmentList[position]
     }
 
 }
