@@ -8,12 +8,15 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.SimpleItemAnimator
 import co.publist.R
 import co.publist.core.common.data.models.Mapper
 import co.publist.core.common.data.models.wish.WishAdapterItem
 import co.publist.core.platform.BaseFragment
 import co.publist.core.platform.ViewModelFactory
+import co.publist.core.utils.OnLoadMoreListener
+import co.publist.core.utils.RecyclerViewLoadMoreScroll
 import co.publist.core.utils.Utils.Constants.PUBLIC
 import co.publist.core.utils.Utils.Constants.SEARCH
 import co.publist.features.home.HomeActivity
@@ -38,6 +41,8 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
     override fun getBaseViewModelFactory() = viewModelFactory
 
     var wishesType = -1
+    private lateinit var publicWishesAdapter: WishesAdapter
+    private lateinit var scrollListener: RecyclerViewLoadMoreScroll
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -47,16 +52,28 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        setListeners()
         setObservers()
+        setAdapter()
     }
 
     private fun setObservers() {
         viewModel.preLoadedWishesType.observe(viewLifecycleOwner, Observer { type ->
+            refreshLayout.isRefreshing = true
             wishesType = type
-            setListeners()
+            if (wishesType == PUBLIC || wishesType == SEARCH) {
+                noResultsPlaceholder.visibility = View.GONE
+                wishesFragmentContainer.setBackgroundColor(
+                    ContextCompat.getColor(
+                        this.context!!,
+                        R.color.platinum
+                    )
+                )
+            }
         })
 
         viewModel.wishDataPairLiveData.observe(viewLifecycleOwner, Observer { dataPair ->
+            refreshLayout.isRefreshing = false
             val wishesQuery = dataPair.first
             val itemsAttributesPair = dataPair.second
             val doneItemsList = itemsAttributesPair.first
@@ -70,27 +87,31 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
         })
 
         viewModel.wishesListLiveData.observe(viewLifecycleOwner, Observer { list ->
-            setAdapter(list)
-            refreshLayout.isRefreshing = false
+            if (refreshLayout.isRefreshing) //After initial load disable refreshing icon
+            {
+                refreshLayout.isRefreshing = false
+                addWishesToAdapter(list)
+            } else { //still loading more data
+                publicWishesAdapter.renderLoadMoreUi(false)
+                scrollListener.setLoaded()
+                addWishesToAdapter(list)
+            }
         })
     }
 
     private fun setListeners() {
-        if (wishesType == PUBLIC || wishesType == SEARCH) {
-            noResultsPlaceholder.visibility = View.GONE
-            wishesFragmentContainer.setBackgroundColor(
-                ContextCompat.getColor(
-                    this.context!!,
-                    R.color.platinum
-                )
-            )
-            refreshLayout.isEnabled = true
-            refreshLayout.isRefreshing = true
-            refreshLayout.setOnRefreshListener {
-                viewModel.loadWishes(wishesType)
-            }
-        } else
-            refreshLayout.isEnabled = false
+        refreshLayout.setOnRefreshListener {
+            clearLoadedData()
+            viewModel.loadWishes(wishesType)
+        }
+    }
+
+    fun clearLoadedData() {
+        wishesRecyclerView.recycledViewPool.clear()
+        wishesRecyclerView.layoutManager = null
+        setAdapter()
+        viewModel.lastVisibleWishesPageDocumentSnapshot = null
+        viewModel.isLoadingMore = false
     }
 
     private fun setAdapter(
@@ -147,49 +168,61 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
         wishesRecyclerView.adapter = adapter
     }
 
-    private fun setAdapter(list: ArrayList<WishAdapterItem>) {
-        refreshLayout.isRefreshing = false
-        if (list.isNotEmpty()) {
-            val wishesAdapter = WishesAdapter(
-                list,
-                wishesType = wishesType,
-                user = viewModel.user,
-                detailsListener = { wish ->
-                    if (activity is HomeActivity)
-                        (activity as HomeActivity).showEditWishDialog(wish)
-                    else
-                        (activity as WishDetailsActivity).showEditWishDialog()
-                },
-                favoriteListener = { wish, isFavoriting ->
-                    viewModel.modifyFavorite(Mapper.mapToWish(wish), isFavoriting)
-                },
-                completeListener = { itemId, wishId, isCreator, isDone ->
-                    viewModel.completeItem(itemId, wishId, isCreator, isDone)
-                },
-                likeListener = { itemId, wishId, isLiked ->
-                    viewModel.likeItem(itemId, wishId, isLiked)
-                },
-                seenCountListener = { wishId ->
-                    viewModel.incrementSeenCount(wishId)
-                }, scrollListener = { position ->
-                    wishesRecyclerView.post {
-                        wishesRecyclerView.smoothScrollToPosition(position)
-                    }
-                })
+    fun setAdapter() {
+        publicWishesAdapter = WishesAdapter(
+            wishesType = wishesType,
+            user = viewModel.user,
+            detailsListener = { wish ->
+                if (activity is HomeActivity)
+                    (activity as HomeActivity).showEditWishDialog(wish)
+                else
+                    (activity as WishDetailsActivity).showEditWishDialog()
+            },
+            favoriteListener = { wish, isFavoriting ->
+                viewModel.modifyFavorite(Mapper.mapToWish(wish), isFavoriting)
+            },
+            completeListener = { itemId, wishId, isCreator, isDone ->
+                viewModel.completeItem(itemId, wishId, isCreator, isDone)
+            },
+            likeListener = { itemId, wishId, isLiked ->
+                viewModel.likeItem(itemId, wishId, isLiked)
+            },
+            seenCountListener = { wishId ->
+                viewModel.incrementSeenCount(wishId)
+            }, scrollListener = { position ->
+                wishesRecyclerView.post {
+                    wishesRecyclerView.smoothScrollToPosition(position)
+                }
+            })
+        val linearLayoutManager = LinearLayoutManager(this.context)
+        scrollListener = RecyclerViewLoadMoreScroll(linearLayoutManager)
+        scrollListener.setOnLoadMoreListener(object : OnLoadMoreListener {
+            override fun onLoadMore() {
+                if (viewModel.isLoadingMore) {
+                    publicWishesAdapter.renderLoadMoreUi(true)
+                    viewModel.loadWishes(wishesType)
+                }
+            }
 
-            (wishesRecyclerView.itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
-            wishesRecyclerView.adapter = wishesAdapter
-        } else {
-            if (wishesType == SEARCH) {
-                wishesRecyclerView.adapter = null
+        })
+        wishesRecyclerView.layoutManager = linearLayoutManager
+        wishesRecyclerView.addOnScrollListener(scrollListener)
+        (wishesRecyclerView.itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
+        wishesRecyclerView.adapter = publicWishesAdapter
+    }
+
+    private fun addWishesToAdapter(wishesArray: ArrayList<WishAdapterItem>) {
+        if (wishesArray.isNotEmpty())
+            publicWishesAdapter.addWishes(wishesArray)
+        else {
+            if (wishesType == SEARCH && publicWishesAdapter.itemCount == 0) //Empty search query
+            {
                 noResultsPlaceholder.visibility = View.VISIBLE
                 wishesFragmentContainer.setBackgroundColor(
                     ContextCompat.getColor(this.context!!, R.color.white)
                 )
-
             }
         }
-
     }
 
 }

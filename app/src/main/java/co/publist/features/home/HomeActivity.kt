@@ -62,17 +62,18 @@ class HomeActivity : BaseActivity<HomeViewModel>() {
         wishesFragment =
             supportFragmentManager.findFragmentById(R.id.wishesFragment) as WishesFragment
         sheetBehavior = BottomSheetBehavior.from(editWishBottomSheet)
+
         viewModel.onCreated()
+        wishesFragment.viewModel.loadWishes(PUBLIC)
         setObservers()
         setListeners()
     }
 
     override fun onStart() {
-        if (wishesFragment.wishesType == -1)
-            wishesFragment.viewModel.loadWishes(PUBLIC)
-        else
-            wishesFragment.viewModel.loadWishes(wishesFragment.wishesType)  // To reload same data when coming back from another activity , recent apps , lock screen etc..
-
+//        if (wishesFragment.wishesType == -1)
+//            wishesFragment.viewModel.loadWishes(PUBLIC)
+//        else
+//            wishesFragment.viewModel.loadWishes(wishesFragment.wishesType)  // To reload same data when coming back from another activity , recent apps , lock screen etc..
         if (sheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED)
             sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
 
@@ -131,6 +132,7 @@ class HomeActivity : BaseActivity<HomeViewModel>() {
         })
 
         wishesFragment.viewModel.wishDeletedLiveData.observe(this, Observer {
+            wishesFragment.clearLoadedData()
             wishesFragment.viewModel.loadWishes(PUBLIC)
             Toast.makeText(this, getString(R.string.delete_wish), Toast.LENGTH_SHORT).show()
             sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
@@ -227,7 +229,10 @@ class HomeActivity : BaseActivity<HomeViewModel>() {
 
             setOnCloseListener {
                 if (wishesFragment.wishesType == SEARCH) //Ensure that it was coming from a search (doesn't reload public if user didn't make a query)
+                {
+                    wishesFragment.clearLoadedData()
                     wishesFragment.viewModel.loadWishes(PUBLIC)
+                }
                 if (searchCategoryChipGroup.childCount > 0)// Remove category chip (was selected from autocomplete)
                 {
                     searchCategoryChipGroup.removeAllViews()
@@ -240,6 +245,7 @@ class HomeActivity : BaseActivity<HomeViewModel>() {
 
             setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String?): Boolean {
+                    wishesFragment.clearLoadedData()
                     wishesFragment.viewModel.searchQuery = query!!
                     wishesFragment.viewModel.loadWishes(SEARCH)
                     this@HomeActivity.hideKeyboard()

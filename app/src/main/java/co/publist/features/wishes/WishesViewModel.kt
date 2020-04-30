@@ -20,6 +20,7 @@ import co.publist.core.utils.Utils.Constants.TOP_USERS_THRESHOLD
 import co.publist.features.categories.data.CategoriesRepositoryInterface
 import co.publist.features.myfavorites.data.MyFavoritesRepositoryInterface
 import co.publist.features.mylists.data.MyListsRepository
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.Query
 import io.reactivex.Completable
 import io.reactivex.Single
@@ -42,24 +43,38 @@ class WishesViewModel @Inject constructor(
     val wishDeletedLiveData = MutableLiveData<Boolean>()
     val editWishLiveData = MutableLiveData<WishAdapterItem>()
     val user = userRepository.getUser()
+    var lastVisibleWishesPageDocumentSnapshot: DocumentSnapshot? = null
+    var isLoadingMore = false
     lateinit var searchQuery: String
     lateinit var selectedWish: WishAdapterItem
     fun loadWishes(type: Int) {
-        preLoadedWishesType.postValue(type)
+        if (!isLoadingMore || type != preLoadedWishesType.value) //Check if first time loading data or changed from type to another
+        {
+            preLoadedWishesType.postValue(type)
+            isLoadingMore = true
+        }
         when (type) {
             PUBLIC -> {
                 subscribe(categoryRepository.getLocalSelectedCategories()
                     .flatMap { categories ->
-                        val wishesSingleObservable = wishesRepository.getAllWishes()
+                        val wishesSingleObservable =
+                            wishesRepository.getAllWishesPage(lastVisibleWishesPageDocumentSnapshot)
                         if (categories.isNullOrEmpty())
-                            wishesSingleObservable.flatMap { list ->
-                                Single.just(Mapper.mapToWishAdapterItemArrayList(list)) //UnfilteredWishes for guest mode
+                            wishesSingleObservable.flatMap { wishesDataPair ->
+                                val wishesList = wishesDataPair.first
+                                lastVisibleWishesPageDocumentSnapshot = wishesDataPair.second
+                                if (lastVisibleWishesPageDocumentSnapshot == null)
+                                    isLoadingMore = false
+                                Single.just(Mapper.mapToWishAdapterItemArrayList(wishesList)) //UnfilteredWishes for guest mode
                             }
                         else {
-                            wishesSingleObservable.flatMap { list ->
+                            wishesSingleObservable.flatMap { wishesDataPair ->
+                                val wishesList = wishesDataPair.first
+                                lastVisibleWishesPageDocumentSnapshot = wishesDataPair.second
+                                if (lastVisibleWishesPageDocumentSnapshot == null)
+                                    isLoadingMore = false
                                 var filteredWishes =
-                                    filterWishesByCategories(list, categories)
-
+                                    filterWishesByCategories(wishesList, categories)
                                 if (userRepository.getUser() == null)
                                     Single.just(filteredWishes) //FilteredWishes for guest mode
                                 else {
@@ -186,14 +201,22 @@ class WishesViewModel @Inject constructor(
                     }
 
                     val searchResultsObservable =
-                        if (selectedCategory != null) wishesRepository.getWishesByCategory(
-                            selectedCategory.id!!
+                        if (selectedCategory != null) wishesRepository.getWishesByCategoryPage(
+                            selectedCategory.id!!,
+                            lastVisibleWishesPageDocumentSnapshot
                         )
-                        else wishesRepository.getWishesByTitle(searchQuery)
+                        else wishesRepository.getWishesByTitle(
+                            searchQuery,
+                            lastVisibleWishesPageDocumentSnapshot
+                        )
 
-                    searchResultsObservable.flatMap { wishList ->
-                        if (wishList.isNotEmpty()) {
-                            var list = Mapper.mapToWishAdapterItemArrayList(wishList)
+                    searchResultsObservable.flatMap { wishesDataPair ->
+                        val wishesList = wishesDataPair.first
+                        lastVisibleWishesPageDocumentSnapshot = wishesDataPair.second
+                        if (lastVisibleWishesPageDocumentSnapshot == null)
+                            isLoadingMore = false
+                        if (wishesList.isNotEmpty()) {
+                            var list = Mapper.mapToWishAdapterItemArrayList(wishesList)
                             if (user != null) {
                                 favoritesRepository.getUserFavoriteWishes()
                                     .flatMap { favoriteList ->
@@ -225,7 +248,7 @@ class WishesViewModel @Inject constructor(
                                             }
                                     }
                             } else
-                                Single.just(Mapper.mapToWishAdapterItemArrayList(wishList))
+                                Single.just(Mapper.mapToWishAdapterItemArrayList(wishesList))
                         } else
                             Single.just(arrayListOf())
                     }
@@ -236,7 +259,6 @@ class WishesViewModel @Inject constructor(
             }
 
         }
-
     }
 
     private fun applyUserLikedItems(

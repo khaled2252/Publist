@@ -17,6 +17,7 @@ import co.publist.core.common.data.models.wish.WishAdapterItem
 import co.publist.core.utils.DataBindingAdapters
 import co.publist.core.utils.Utils
 import co.publist.core.utils.Utils.Constants.DETAILS
+import co.publist.core.utils.Utils.Constants.LOADING_MORE
 import co.publist.core.utils.Utils.Constants.MAX_VISIBLE_WISH_ITEMS
 import co.publist.core.utils.Utils.Constants.NOT_EXPANDABLE
 import co.publist.core.utils.Utils.Constants.WISH_DETAILS_INTENT
@@ -25,10 +26,10 @@ import co.publist.databinding.ItemWishBinding
 import co.publist.features.wishdetails.WishDetailsActivity
 import org.ocpsoft.prettytime.PrettyTime
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.collections.set
 
 class WishesAdapter(
-    val list: ArrayList<WishAdapterItem>,
     val wishesType: Int,
     val user: User?,
     val favoriteListener: (wish: WishAdapterItem, isFavoriting: Boolean) -> Unit,
@@ -38,41 +39,68 @@ class WishesAdapter(
     val seenCountListener: (wishId: String) -> Unit,
     val scrollListener: (position: Int) -> Unit
 ) :
-    RecyclerView.Adapter<WishesAdapter.WishViewHolder>() {
+    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    private val wishList = ArrayList<WishAdapterItem?>()
     val expandableViewHolders = mutableMapOf<Int, WishViewHolder>()
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WishViewHolder {
-        return if (viewType == NOT_EXPANDABLE) {
-            val inflater = LayoutInflater.from(parent.context)
-            val binding = ItemWishBinding.inflate(inflater)
-            binding.executePendingBindings()
-            WishViewHolder(binding)
-        } else { //Return a viewHolder with corresponding binding of the expandable wish
-            WishViewHolder(expandableViewHolders[viewType]!!.holderBinding)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        return when (viewType) {
+            NOT_EXPANDABLE -> {
+                val inflater = LayoutInflater.from(parent.context)
+                val binding = ItemWishBinding.inflate(inflater)
+                binding.executePendingBindings()
+                WishViewHolder(binding)
+            }
+            LOADING_MORE -> {
+                val view = LayoutInflater.from(parent.context).inflate(
+                    R.layout.item_load_more, parent, false
+                )
+                LoadMoreViewHolder(view)
+            }
+            else -> {
+                //Return a viewHolder with past corresponding binding of the expandable wish
+                WishViewHolder(expandableViewHolders[viewType]!!.holderBinding)
+            }
         }
     }
 
     override fun getItemViewType(position: Int): Int {
-        return if (expandableViewHolders.keys.contains(position)) //Return expandable wish position as unique viewType
-            position
-        else
-            return NOT_EXPANDABLE
+        return when {
+            wishList[position] == null -> LOADING_MORE
+            expandableViewHolders.keys.contains(position) -> position //Return expandable wish position as unique viewType
+            else -> NOT_EXPANDABLE //General wish type
+        }
     }
 
-    override fun onBindViewHolder(holder: WishViewHolder, position: Int) {
-        val wish = list[position]
-
-        if (wish.wishId != null)//Fixme checking because of iOS bug where some wishes are without wishId
-            seenCountListener(wish.wishId!!)
-
-        if (!expandableViewHolders.containsKey(position)) //To avoid binding expandable items
-            holder.bind(wish, position)
-
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        if (holder is WishViewHolder) {
+            val wish = wishList[position]
+            if (wish!!.wishId != null)//Fixme checking because of iOS bug where some wishes are without wishId
+                seenCountListener(wish.wishId!!)
+            if (!expandableViewHolders.containsKey(position)) //To avoid binding expandable items
+                holder.bind(wish, position)
+        }
     }
 
     override fun getItemCount(): Int {
-        return list.size
+        return wishList.size
     }
 
+    fun addWishes(wishesArray: ArrayList<WishAdapterItem>) {
+        wishList.addAll(wishesArray)
+        notifyItemRangeInserted(wishList.size, wishesArray.size)
+    }
+
+    fun renderLoadMoreUi(isLoading: Boolean) {
+        if (isLoading) {
+            wishList.add(null)
+            notifyItemInserted(wishList.size + 1)
+        } else {
+            wishList.remove(null)
+            notifyItemRemoved(wishList.size)
+        }
+    }
+
+    inner class LoadMoreViewHolder(view: View) : RecyclerView.ViewHolder(view)
     inner class WishViewHolder(private val binding: ItemWishBinding) :
         RecyclerView.ViewHolder(binding.root) {
         lateinit var holderWish: WishAdapterItem

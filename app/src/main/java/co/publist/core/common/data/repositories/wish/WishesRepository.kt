@@ -26,6 +26,7 @@ import co.publist.core.utils.Utils.Constants.USERS_COLLECTION_PATH
 import co.publist.core.utils.Utils.Constants.USER_DOC_ID_FIELD
 import co.publist.core.utils.Utils.Constants.USER_VIEWED_ITEMS_COLLECTION_PATH
 import co.publist.core.utils.Utils.Constants.WISHES_COLLECTION_PATH
+import co.publist.core.utils.Utils.Constants.WISHES_NUM_PER_PAGE
 import co.publist.core.utils.Utils.Constants.WISH_DOC_ID_FIELD
 import co.publist.core.utils.Utils.Constants.WISH_ID_FIELD
 import com.algolia.search.saas.Client
@@ -48,7 +49,6 @@ class WishesRepository @Inject constructor(
     var mAlgoliaClient: Client,
     var localDataSource: LocalDataSource
 ) : WishesRepositoryInterface {
-
     override fun getSpecificWish(wishId: String): Single<Wish> {
         return Single.create { singleEmitter ->
             mFirebaseFirestore.collection(WISHES_COLLECTION_PATH)
@@ -63,32 +63,57 @@ class WishesRepository @Inject constructor(
     }
 
 
-    override fun getAllWishes(): Single<ArrayList<Wish>> {
+    override fun getAllWishesPage(lastVisibleWishesDocumentSnapshot: DocumentSnapshot?): Single<Pair<ArrayList<Wish>, DocumentSnapshot?>> {
         return Single.create { singleEmitter ->
-            mFirebaseFirestore.collection(WISHES_COLLECTION_PATH)
-                .orderBy(
-                    DATE_FIELD,
-                    Query.Direction.DESCENDING
-                )
-                .get()
+            var ref =
+                mFirebaseFirestore.collection(WISHES_COLLECTION_PATH)
+                    .orderBy(
+                        DATE_FIELD,
+                        Query.Direction.DESCENDING
+                    )
+                    .limit(WISHES_NUM_PER_PAGE.toLong())
+
+            if (lastVisibleWishesDocumentSnapshot != null)
+                ref = ref.startAfter(lastVisibleWishesDocumentSnapshot)
+            ref.get()
                 .addOnFailureListener {
                     singleEmitter.onError(it)
                 }.addOnSuccessListener { querySnapshot ->
-                    singleEmitter.onSuccess(Mapper.mapToWishAdapterItemArrayList(querySnapshot))
+                    // Get the last visible document
+                    val lastVisibleWishesDocument: DocumentSnapshot? =
+                        if (querySnapshot.documents.isNotEmpty())
+                            querySnapshot.documents[querySnapshot.size() - 1]
+                        else
+                            null
+                    val wishesList = Mapper.mapToWishAdapterItemArrayList(querySnapshot)
+                    singleEmitter.onSuccess(Pair(wishesList, lastVisibleWishesDocument))
                 }
         }
     }
 
-    override fun getWishesByCategory(categoryId: String): Single<ArrayList<Wish>> {
+    override fun getWishesByCategoryPage(
+        categoryId: String,
+        lastVisibleWishesDocumentSnapshot: DocumentSnapshot?
+    ): Single<Pair<ArrayList<Wish>, DocumentSnapshot?>> {
         return Single.create { singleEmitter ->
-            mFirebaseFirestore.collection(WISHES_COLLECTION_PATH)
+            var ref = mFirebaseFirestore.collection(WISHES_COLLECTION_PATH)
                 .whereArrayContains(CATEGORY_ID_FIELD, categoryId)
                 .orderBy(DATE_FIELD, Query.Direction.DESCENDING)
-                .get()
+                .limit(WISHES_NUM_PER_PAGE.toLong())
+
+            if (lastVisibleWishesDocumentSnapshot != null)
+                ref = ref.startAfter(lastVisibleWishesDocumentSnapshot)
+            ref.get()
                 .addOnFailureListener {
                     singleEmitter.onError(it)
                 }.addOnSuccessListener { querySnapshot ->
-                    singleEmitter.onSuccess(Mapper.mapToWishAdapterItemArrayList(querySnapshot))
+                    val lastVisibleWishesDocument: DocumentSnapshot? =
+                        if (querySnapshot.documents.isNotEmpty())
+                            querySnapshot.documents[querySnapshot.size() - 1]
+                        else
+                            null
+                    val wishesList = Mapper.mapToWishAdapterItemArrayList(querySnapshot)
+                    singleEmitter.onSuccess(Pair(wishesList, lastVisibleWishesDocument))
                 }
         }
     }
@@ -718,22 +743,36 @@ class WishesRepository @Inject constructor(
         }
     }
 
-    override fun getWishesByTitle(searchQuery: String): Single<ArrayList<Wish>> {
+    override fun getWishesByTitle(
+        searchQuery: String,
+        lastVisibleWishesDocumentSnapshot: DocumentSnapshot?
+    ): Single<Pair<ArrayList<Wish>, DocumentSnapshot?>> {
         return Single.create { singleEmitter ->
             val completionHandler = CompletionHandler { content, error ->
                 if (error == null) {
                     val wishIdsList = Mapper.mapToWishIdsArrayList(content!!)
                     if (wishIdsList.isNotEmpty()) {
-                        mFirebaseFirestore.collection(WISHES_COLLECTION_PATH)
-                            .whereIn(FieldPath.documentId(), wishIdsList)
-                            .get()
+                        var ref =
+                            mFirebaseFirestore.collection(WISHES_COLLECTION_PATH)
+                                .whereIn(FieldPath.documentId(), wishIdsList)
+                                .limit(WISHES_NUM_PER_PAGE.toLong())
+
+                        if (lastVisibleWishesDocumentSnapshot != null)
+                            ref = ref.startAfter(lastVisibleWishesDocumentSnapshot)
+                        ref.get()
                             .addOnFailureListener {
                                 singleEmitter.onError(it)
                             }.addOnSuccessListener { querySnapshot ->
-                                singleEmitter.onSuccess(Mapper.mapToWishArrayList(querySnapshot))
+                                val lastVisibleWishesDocument: DocumentSnapshot? =
+                                    if (querySnapshot.documents.isNotEmpty())
+                                        querySnapshot.documents[querySnapshot.size() - 1]
+                                    else
+                                        null
+                                val wishesList = Mapper.mapToWishAdapterItemArrayList(querySnapshot)
+                                singleEmitter.onSuccess(Pair(wishesList, lastVisibleWishesDocument))
                             }
                     } else
-                        singleEmitter.onSuccess(arrayListOf())
+                        singleEmitter.onSuccess(Pair(arrayListOf(), null))
                 } else
                     singleEmitter.onError(error)
             }

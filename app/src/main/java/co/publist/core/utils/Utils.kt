@@ -176,6 +176,7 @@ object Utils {
         const val MAXIMUM_SELECTED_CATEGORIES = 9
         const val MAX_VISIBLE_WISH_ITEMS = 3
         const val MINIMUM_WISH_ITEMS = 3
+        const val WISHES_NUM_PER_PAGE = 10
         const val TOP_USERS_THRESHOLD = 10
         const val PLATFORM_GOOGLE = "google"
         const val PLATFORM_FACEBOOK = "facebook"
@@ -236,5 +237,6 @@ object Utils {
         const val AUTO_COMPLETE_TEXT_VIEW_ID = "android:id/search_src_text"
         const val NULL_STRING = "null"
         const val NOT_EXPANDABLE = -1
+        const val LOADING_MORE = -2
     }
 }

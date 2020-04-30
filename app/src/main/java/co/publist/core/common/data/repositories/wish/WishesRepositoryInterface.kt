@@ -1,14 +1,18 @@
 package co.publist.core.common.data.repositories.wish
 
 import co.publist.core.common.data.models.wish.Wish
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.Query
 import io.reactivex.Completable
 import io.reactivex.Single
 
 interface WishesRepositoryInterface {
     fun getSpecificWish(wishId: String): Single<Wish>
-    fun getAllWishes(): Single<ArrayList<Wish>>
-    fun getWishesByCategory(categoryId: String): Single<ArrayList<Wish>>
+    fun getAllWishesPage(lastVisibleWishesDocumentSnapshot: DocumentSnapshot?): Single<Pair<ArrayList<Wish>, DocumentSnapshot?>>
+    fun getWishesByCategoryPage(
+        categoryId: String,
+        lastVisibleWishesDocumentSnapshot: DocumentSnapshot?
+    ): Single<Pair<ArrayList<Wish>, DocumentSnapshot?>>
     fun getMyListWishes(): Single<ArrayList<Wish>>
     fun createWish(wish: Wish): Completable
     fun updateWish(wish: Wish): Completable
@@ -60,5 +64,8 @@ interface WishesRepositoryInterface {
     fun incrementSeenCountLocally(wishId: String)
     fun getCorrespondingMyListsPublicWishes(): Single<Query>
     fun getCorrespondingMyFavoritesPublicWishes(): Single<Query>
-    fun getWishesByTitle(searchQuery: String): Single<ArrayList<Wish>>
+    fun getWishesByTitle(
+        searchQuery: String,
+        lastVisibleWishesDocumentSnapshot: DocumentSnapshot?
+    ): Single<Pair<ArrayList<Wish>, DocumentSnapshot?>>
 }
