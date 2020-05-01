@@ -109,9 +109,8 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
     fun clearLoadedData() {
         wishesRecyclerView.recycledViewPool.clear()
         wishesRecyclerView.layoutManager = null
+        viewModel.resetCurrentPagingSate()
         setAdapter()
-        viewModel.lastVisibleWishesPageDocumentSnapshot = null
-        viewModel.isLoadingMore = false
     }
 
     private fun setAdapter(

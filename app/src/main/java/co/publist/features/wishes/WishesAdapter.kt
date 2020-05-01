@@ -96,7 +96,7 @@ class WishesAdapter(
             notifyItemInserted(wishList.size + 1)
         } else {
             wishList.remove(null)
-            notifyItemRemoved(wishList.size)
+            notifyItemRemoved(wishList.size + 1)
         }
     }
 

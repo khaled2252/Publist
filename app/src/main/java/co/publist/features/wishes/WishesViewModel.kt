@@ -35,6 +35,7 @@ class WishesViewModel @Inject constructor(
     private val favoritesRepository: MyFavoritesRepositoryInterface,
     private val userRepository: UserRepositoryInterface
 ) : BaseViewModel() {
+    //LiveData
     val wishesListLiveData = MutableLiveData<ArrayList<WishAdapterItem>>()
     val wishDataPairLiveData =
         MutableLiveData<Pair<Query, Pair<ArrayList<String>, ArrayList<String>>>>()
@@ -42,9 +43,11 @@ class WishesViewModel @Inject constructor(
     val isFavoriteAdded = MutableLiveData<Boolean>()
     val wishDeletedLiveData = MutableLiveData<Boolean>()
     val editWishLiveData = MutableLiveData<WishAdapterItem>()
+
     val user = userRepository.getUser()
     var lastVisibleWishesPageDocumentSnapshot: DocumentSnapshot? = null
     var isLoadingMore = false
+    var loadedUserCategoriesFilteredWishes = false
     lateinit var searchQuery: String
     lateinit var selectedWish: WishAdapterItem
     fun loadWishes(type: Int) {
@@ -63,16 +66,22 @@ class WishesViewModel @Inject constructor(
                             wishesSingleObservable.flatMap { wishesDataPair ->
                                 val wishesList = wishesDataPair.first
                                 lastVisibleWishesPageDocumentSnapshot = wishesDataPair.second
-                                if (lastVisibleWishesPageDocumentSnapshot == null)
+
+                                if (lastVisibleWishesPageDocumentSnapshot == null) //Already at the last page
                                     isLoadingMore = false
+
                                 Single.just(Mapper.mapToWishAdapterItemArrayList(wishesList)) //UnfilteredWishes for guest mode
                             }
                         else {
                             wishesSingleObservable.flatMap { wishesDataPair ->
                                 val wishesList = wishesDataPair.first
                                 lastVisibleWishesPageDocumentSnapshot = wishesDataPair.second
-                                if (lastVisibleWishesPageDocumentSnapshot == null)
+
+                                if (lastVisibleWishesPageDocumentSnapshot == null && !loadedUserCategoriesFilteredWishes) //Already at the last page of user categories filtered wishes
+                                    loadedUserCategoriesFilteredWishes = true
+                                else if (lastVisibleWishesPageDocumentSnapshot == null && loadedUserCategoriesFilteredWishes) //Already at the last page after loading user categories filtered wishes and non user categories filtered wishes
                                     isLoadingMore = false
+
                                 var filteredWishes =
                                     filterWishesByCategories(wishesList, categories)
                                 if (userRepository.getUser() == null)
@@ -111,7 +120,10 @@ class WishesViewModel @Inject constructor(
                             }
                         }
                     }, Consumer { list ->
-                    wishesListLiveData.postValue(list)
+                    if (list.isEmpty() && isLoadingMore) //Current loaded page is empty (no data due to filtration)
+                        loadWishes(preLoadedWishesType.value!!) //Pass this page and load the next one
+                    else
+                        wishesListLiveData.postValue(list)
                 }, showLoading = false
                 )
             }
@@ -317,10 +329,17 @@ class WishesViewModel @Inject constructor(
         list: ArrayList<Wish>,
         categories: ArrayList<CategoryAdapterItem>
     ): ArrayList<WishAdapterItem> {
-        val filteredList = ArrayList(Mapper.mapToWishAdapterItemArrayList(list))
+        val filteredList = arrayListOf<WishAdapterItem>()
         for (wish in list) {
-            if (!categories.map { it.id }.contains(wish.categoryId!![0]))
-                filteredList.remove(Mapper.mapToWishAdapterItem(wish))
+            val mappedWish = Mapper.mapToWishAdapterItem(wish)
+            //Add wishes that are in user categories
+            if (!loadedUserCategoriesFilteredWishes && categories.map { it.id }
+                    .contains(wish.categoryId!![0]))
+                filteredList.add(mappedWish)
+            else if (loadedUserCategoriesFilteredWishes && !categories.map { it.id }
+                    .contains(wish.categoryId!![0]))
+            //According to business , load wishes [that are not in user categories] after user categories filtered wish pages are loaded
+                filteredList.add(mappedWish)
         }
         return filteredList
     }
@@ -462,5 +481,11 @@ class WishesViewModel @Inject constructor(
         }, Action {
 
         }, showLoading = false)
+    }
+
+    fun resetCurrentPagingSate() {
+        lastVisibleWishesPageDocumentSnapshot = null
+        isLoadingMore = false
+        loadedUserCategoriesFilteredWishes = false
     }
 }
