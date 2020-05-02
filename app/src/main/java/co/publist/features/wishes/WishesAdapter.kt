@@ -41,6 +41,8 @@ class WishesAdapter(
 ) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private val wishList = ArrayList<WishAdapterItem?>()
+    private lateinit var loadMoreView: View
+    var loadMoreViewHeight = 0
     val expandableViewHolders = mutableMapOf<Int, WishViewHolder>()
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
@@ -51,10 +53,10 @@ class WishesAdapter(
                 WishViewHolder(binding)
             }
             LOADING_MORE -> {
-                val view = LayoutInflater.from(parent.context).inflate(
+                loadMoreView = LayoutInflater.from(parent.context).inflate(
                     R.layout.item_load_more, parent, false
                 )
-                LoadMoreViewHolder(view)
+                LoadMoreViewHolder(loadMoreView)
             }
             else -> {
                 //Return a viewHolder with past corresponding binding of the expandable wish
@@ -95,6 +97,7 @@ class WishesAdapter(
             wishList.add(null)
             notifyItemInserted(wishList.size + 1)
         } else {
+            loadMoreViewHeight = loadMoreView.measuredHeight
             wishList.remove(null)
             notifyItemRemoved(wishList.size + 1)
         }

@@ -19,6 +19,7 @@ import co.publist.core.utils.OnLoadMoreListener
 import co.publist.core.utils.RecyclerViewLoadMoreScroll
 import co.publist.core.utils.Utils.Constants.PUBLIC
 import co.publist.core.utils.Utils.Constants.SEARCH
+import co.publist.core.utils.Utils.Constants.VISIBLE_THRESHOLD
 import co.publist.features.home.HomeActivity
 import co.publist.features.profile.ProfileActivity
 import co.publist.features.wishdetails.WishDetailsActivity
@@ -91,7 +92,7 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
             {
                 refreshLayout.isRefreshing = false
                 addWishesToAdapter(list)
-            } else { //still loading more data
+            } else { //Display the next page
                 publicWishesAdapter.renderLoadMoreUi(false)
                 scrollListener.setLoaded()
                 addWishesToAdapter(list)
@@ -211,8 +212,14 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
     }
 
     private fun addWishesToAdapter(wishesArray: ArrayList<WishAdapterItem>) {
-        if (wishesArray.isNotEmpty())
+        if (wishesArray.isNotEmpty()) {
             publicWishesAdapter.addWishes(wishesArray)
+            if (scrollListener.lastVisibleItem > VISIBLE_THRESHOLD)
+                wishesRecyclerView.smoothScrollBy(
+                    0,
+                    publicWishesAdapter.loadMoreViewHeight
+                ) //Scroll by loadMore view height after loading next page
+        }
         else {
             if (wishesType == SEARCH && publicWishesAdapter.itemCount == 0) //Empty search query
             {

@@ -177,6 +177,7 @@ object Utils {
         const val MAX_VISIBLE_WISH_ITEMS = 3
         const val MINIMUM_WISH_ITEMS = 3
         const val WISHES_NUM_PER_PAGE = 10
+        const val VISIBLE_THRESHOLD = 1
         const val TOP_USERS_THRESHOLD = 10
         const val PLATFORM_GOOGLE = "google"
         const val PLATFORM_FACEBOOK = "facebook"

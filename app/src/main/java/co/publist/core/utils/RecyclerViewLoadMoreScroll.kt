@@ -4,16 +4,17 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import co.publist.core.utils.Utils.Constants.VISIBLE_THRESHOLD
 
 class RecyclerViewLoadMoreScroll : RecyclerView.OnScrollListener {
 
-    private var visibleThreshold =
-        1 //Minimum number of visible items to have before triggering loading more (1 here because list can't contain zero items according to WishViewModel logic)
+    //Minimum number of visible items to have before triggering loading more (1 here because list can't contain zero items according to WishViewModel logic)
     private lateinit var mOnLoadMoreListener: OnLoadMoreListener
+    private var visibleThreshold = VISIBLE_THRESHOLD
     private var isLoading: Boolean = false
-    private var lastVisibleItem: Int = 0
     private var totalItemCount: Int = 0
     private var mLayoutManager: RecyclerView.LayoutManager
+    var lastVisibleItem: Int = 0
 
     fun setLoaded() { //Call this function after onLoadMore() is called and data is fetched and ready to be bind
         isLoading = false
@@ -45,7 +46,7 @@ class RecyclerViewLoadMoreScroll : RecyclerView.OnScrollListener {
     override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
         super.onScrolled(recyclerView, dx, dy)
 
-        totalItemCount = recyclerView.childCount
+        totalItemCount = recyclerView.layoutManager!!.itemCount
 
         when (mLayoutManager) {
             is StaggeredGridLayoutManager -> {
