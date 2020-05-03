@@ -17,6 +17,7 @@ import co.publist.core.platform.BaseFragment
 import co.publist.core.platform.ViewModelFactory
 import co.publist.core.utils.OnLoadMoreListener
 import co.publist.core.utils.RecyclerViewLoadMoreScroll
+import co.publist.core.utils.Utils.Constants.DETAILS
 import co.publist.core.utils.Utils.Constants.PUBLIC
 import co.publist.core.utils.Utils.Constants.SEARCH
 import co.publist.core.utils.Utils.Constants.VISIBLE_THRESHOLD
@@ -55,13 +56,13 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         setListeners()
         setObservers()
-        setAdapter()
     }
 
     private fun setObservers() {
         viewModel.preLoadedWishesType.observe(viewLifecycleOwner, Observer { type ->
             refreshLayout.isRefreshing = true
             wishesType = type
+            setAdapter()
             if (wishesType == PUBLIC || wishesType == SEARCH) {
                 noResultsPlaceholder.visibility = View.GONE
                 wishesFragmentContainer.setBackgroundColor(
@@ -88,7 +89,7 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
         })
 
         viewModel.wishesListLiveData.observe(viewLifecycleOwner, Observer { list ->
-            if (refreshLayout.isRefreshing) //After initial load disable refreshing icon
+            if (refreshLayout.isRefreshing) //Initial load or was doing a refresh
             {
                 refreshLayout.isRefreshing = false
                 addWishesToAdapter(list)
@@ -195,18 +196,21 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
                 }
             })
         val linearLayoutManager = LinearLayoutManager(this.context)
-        scrollListener = RecyclerViewLoadMoreScroll(linearLayoutManager)
-        scrollListener.setOnLoadMoreListener(object : OnLoadMoreListener {
-            override fun onLoadMore() {
-                if (viewModel.isLoadingMore) {
-                    publicWishesAdapter.renderLoadMoreUi(true)
-                    viewModel.loadWishes(wishesType)
-                }
-            }
-
-        })
         wishesRecyclerView.layoutManager = linearLayoutManager
-        wishesRecyclerView.addOnScrollListener(scrollListener)
+        
+        if (wishesType != DETAILS) {
+            scrollListener = RecyclerViewLoadMoreScroll(linearLayoutManager)
+            scrollListener.setOnLoadMoreListener(object : OnLoadMoreListener {
+                override fun onLoadMore() {
+                    if (viewModel.isLoadingMore) {
+                        publicWishesAdapter.renderLoadMoreUi(true)
+                        viewModel.loadWishes(wishesType)
+                    }
+                }
+
+            })
+            wishesRecyclerView.addOnScrollListener(scrollListener)
+        }
         (wishesRecyclerView.itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
         wishesRecyclerView.adapter = publicWishesAdapter
     }
@@ -214,13 +218,12 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
     private fun addWishesToAdapter(wishesArray: ArrayList<WishAdapterItem>) {
         if (wishesArray.isNotEmpty()) {
             publicWishesAdapter.addWishes(wishesArray)
-            if (scrollListener.lastVisibleItem > VISIBLE_THRESHOLD)
+            if (wishesType != DETAILS && scrollListener.lastVisibleItem > VISIBLE_THRESHOLD)
                 wishesRecyclerView.smoothScrollBy(
                     0,
                     publicWishesAdapter.loadMoreViewHeight
                 ) //Scroll by loadMore view height after loading next page
-        }
-        else {
+        } else {
             if (wishesType == SEARCH && publicWishesAdapter.itemCount == 0) //Empty search query
             {
                 noResultsPlaceholder.visibility = View.VISIBLE

@@ -17,9 +17,9 @@ import co.publist.core.common.data.models.wish.WishAdapterItem
 import co.publist.core.utils.DataBindingAdapters
 import co.publist.core.utils.Utils
 import co.publist.core.utils.Utils.Constants.DETAILS
+import co.publist.core.utils.Utils.Constants.GENERAL_TYPE
 import co.publist.core.utils.Utils.Constants.LOADING_MORE
 import co.publist.core.utils.Utils.Constants.MAX_VISIBLE_WISH_ITEMS
-import co.publist.core.utils.Utils.Constants.NOT_EXPANDABLE
 import co.publist.core.utils.Utils.Constants.WISH_DETAILS_INTENT
 import co.publist.core.utils.Utils.get90DegreesAnimation
 import co.publist.databinding.ItemWishBinding
@@ -46,12 +46,6 @@ class WishesAdapter(
     val expandableViewHolders = mutableMapOf<Int, WishViewHolder>()
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
-            NOT_EXPANDABLE -> {
-                val inflater = LayoutInflater.from(parent.context)
-                val binding = ItemWishBinding.inflate(inflater)
-                binding.executePendingBindings()
-                WishViewHolder(binding)
-            }
             LOADING_MORE -> {
                 loadMoreView = LayoutInflater.from(parent.context).inflate(
                     R.layout.item_load_more, parent, false
@@ -59,8 +53,10 @@ class WishesAdapter(
                 LoadMoreViewHolder(loadMoreView)
             }
             else -> {
-                //Return a viewHolder with past corresponding binding of the expandable wish
-                WishViewHolder(expandableViewHolders[viewType]!!.holderBinding)
+                val inflater = LayoutInflater.from(parent.context)
+                val binding = ItemWishBinding.inflate(inflater, parent, false)
+                binding.executePendingBindings()
+                WishViewHolder(binding)
             }
         }
     }
@@ -68,18 +64,21 @@ class WishesAdapter(
     override fun getItemViewType(position: Int): Int {
         return when {
             wishList[position] == null -> LOADING_MORE
-            expandableViewHolders.keys.contains(position) -> position //Return expandable wish position as unique viewType
-            else -> NOT_EXPANDABLE //General wish type
+            else -> GENERAL_TYPE
         }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (holder is WishViewHolder) {
             val wish = wishList[position]
-            if (wish!!.wishId != null)//Fixme checking because of iOS bug where some wishes are without wishId
+
+            if (wish!!.items!!.size <= MAX_VISIBLE_WISH_ITEMS) //To avoid recycling expandable items to keep their state
+                holder.setIsRecyclable(false)
+
+            if (wish.wishId != null)//Fixme checking because of iOS bug where some wishes are without wishId
                 seenCountListener(wish.wishId!!)
-            if (!expandableViewHolders.containsKey(position)) //To avoid binding expandable items
-                holder.bind(wish, position)
+
+            holder.bind(wish, position)
         }
     }
 
@@ -88,8 +87,9 @@ class WishesAdapter(
     }
 
     fun addWishes(wishesArray: ArrayList<WishAdapterItem>) {
+        val startPosition = wishList.size
         wishList.addAll(wishesArray)
-        notifyItemRangeInserted(wishList.size, wishesArray.size)
+        notifyItemRangeInserted(startPosition, wishesArray.size)
     }
 
     fun renderLoadMoreUi(isLoading: Boolean) {
@@ -97,7 +97,9 @@ class WishesAdapter(
             wishList.add(null)
             notifyItemInserted(wishList.size + 1)
         } else {
-            loadMoreViewHeight = loadMoreView.measuredHeight
+            if (::loadMoreView.isInitialized)
+                loadMoreViewHeight = loadMoreView.measuredHeight
+
             wishList.remove(null)
             notifyItemRemoved(wishList.size + 1)
         }
@@ -107,7 +109,6 @@ class WishesAdapter(
     inner class WishViewHolder(private val binding: ItemWishBinding) :
         RecyclerView.ViewHolder(binding.root) {
         lateinit var holderWish: WishAdapterItem
-        var holderBinding = binding
         var isExpanded = false
         fun bind(
             wish: WishAdapterItem,
@@ -182,7 +183,6 @@ class WishesAdapter(
                         seeMoreTextSwitcher.visibility = View.GONE
                         arrowImageView.visibility = View.GONE
                     } else {//Expandable wish
-                        expandableViewHolders[position] = this@WishViewHolder
                         setTextSwitcherFactory()
                         applySeeMoreText()
                         seeMoreLayout.setOnClickListener {
@@ -199,6 +199,7 @@ class WishesAdapter(
                                 it.context.startActivity(intent)
                             }
                         }
+                        expandableViewHolders[position] = this@WishViewHolder
                     }
                     setWishItemsAdapter(isExpanded)
                 }

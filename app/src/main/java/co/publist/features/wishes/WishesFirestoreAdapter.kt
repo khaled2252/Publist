@@ -15,9 +15,9 @@ import co.publist.core.common.data.models.User
 import co.publist.core.common.data.models.wish.WishAdapterItem
 import co.publist.core.utils.DataBindingAdapters
 import co.publist.core.utils.Utils.Constants.DETAILS
+import co.publist.core.utils.Utils.Constants.GENERAL_TYPE
 import co.publist.core.utils.Utils.Constants.LISTS
 import co.publist.core.utils.Utils.Constants.MAX_VISIBLE_WISH_ITEMS
-import co.publist.core.utils.Utils.Constants.NOT_EXPANDABLE
 import co.publist.core.utils.Utils.Constants.WISH_DETAILS_INTENT
 import co.publist.core.utils.Utils.get90DegreesAnimation
 import co.publist.databinding.ItemWishBinding
@@ -48,7 +48,7 @@ class WishesFirestoreAdapter(
     FirestoreRecyclerAdapter<WishAdapterItem, WishesFirestoreAdapter.WishViewHolder>(options) {
     val expandableViewHolders = mutableMapOf<Int, WishViewHolder>()
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WishViewHolder {
-        return if (viewType == NOT_EXPANDABLE) {
+        return if (viewType == GENERAL_TYPE) {
             val inflater = LayoutInflater.from(parent.context)
             val binding = ItemWishBinding.inflate(inflater)
             binding.executePendingBindings()
@@ -62,7 +62,7 @@ class WishesFirestoreAdapter(
         return if (expandableViewHolders.keys.contains(position)) //Return expandable wish position as unique viewType
             position
         else
-            return NOT_EXPANDABLE
+            return GENERAL_TYPE
     }
 
     override fun onDataChanged() {
