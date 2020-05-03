@@ -18,6 +18,7 @@ class CreateWishViewModel @Inject constructor(
 
     val validationLiveData = MutableLiveData<Boolean>()
     val addingWishLiveData = MutableLiveData<Boolean>()
+    val editingWishLiveData = MutableLiveData<Boolean>()
     var category: CategoryWish? = null
     var title = ""
     var wishImageUri = ""
@@ -113,7 +114,7 @@ class CreateWishViewModel @Inject constructor(
                     wish.date = oldTimeStamp
                     wishesRepository.updateWish(wish)
                 }, Action {
-                    addingWishLiveData.postValue(true)
+                    editingWishLiveData.postValue(true)
                 })
             } else {
                 if (!deletedOldPhoto) { // get old image if user didn't delete it
@@ -123,7 +124,7 @@ class CreateWishViewModel @Inject constructor(
                 wish.wishId = oldWishId
                 wish.date = oldTimeStamp
                 subscribe(wishesRepository.updateWish(wish), Action {
-                    addingWishLiveData.postValue(true)
+                    editingWishLiveData.postValue(true)
                 })
 
             }

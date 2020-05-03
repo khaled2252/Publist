@@ -46,12 +46,6 @@ class WishDetailsActivity : BaseActivity<WishDetailsViewModel>() {
         setListeners()
     }
 
-    override fun onStart() {
-        wishesFragment.viewModel.loadWishes(DETAILS)  // To reload data when coming back from another activity
-        sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-        super.onStart()
-    }
-
     private fun onCreated() {
         wishesFragment =
             supportFragmentManager.findFragmentById(R.id.wishesFragment) as WishesFragment
@@ -60,6 +54,7 @@ class WishDetailsActivity : BaseActivity<WishDetailsViewModel>() {
         val selectedWish = intent.getParcelableExtra<WishAdapterItem>(WISH_DETAILS_INTENT)!!
         wishesFragment.viewModel.selectedWish = selectedWish
         viewModel.incrementOrganicSeen(selectedWish.wishId!!)
+        wishesFragment.viewModel.loadWishes(DETAILS)
     }
 
     private fun setObservers() {

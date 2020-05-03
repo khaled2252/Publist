@@ -33,6 +33,7 @@
     <string name="permission_required">Permission is required to proceed</string>
     <string name="permission_from_settings">Enable permissions from settings to proceed</string>
     <string name="post_wish_success">Posted Successfully!</string>
+    <string name="edit_wish_success">Edited Successfully!</string>
     <string name="minimum_wish_items">You have to make at least %1$d items</string>
     <string name="camera_gallery_dialog_title">Add a Photo</string>
     <string name="select_from_gallery">Select photo from gallery</string>

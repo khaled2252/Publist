@@ -218,6 +218,11 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
                 ).show()
         })
 
+        viewModel.editingWishLiveData.observe(this, Observer {
+            Toast.makeText(this, getString(R.string.edit_wish_success), Toast.LENGTH_SHORT)
+                .show()
+            finish()
+        })
     }
 
     private fun setListeners() {
