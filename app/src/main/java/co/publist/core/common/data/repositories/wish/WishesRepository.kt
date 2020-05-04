@@ -722,16 +722,19 @@ class WishesRepository @Inject constructor(
 
     override fun getProfileWishesPageFromCorrespondingPublicWishes(wishIdsArray: ArrayList<String>): Single<ArrayList<Wish>> {
         return Single.create { singleEmitter ->
-            mFirebaseFirestore.collection(WISHES_COLLECTION_PATH)
-                .whereIn(WISH_ID_FIELD, wishIdsArray)
-                .orderBy(DATE_FIELD, Query.Direction.DESCENDING)
-                .get()
-                .addOnSuccessListener { querySnapshot ->
-                    singleEmitter.onSuccess(Mapper.mapToWishArrayList(querySnapshot))
-                }
-                .addOnFailureListener {
-                    singleEmitter.onError(it)
-                }
+            if (wishIdsArray.isEmpty())
+                singleEmitter.onSuccess(arrayListOf()) //Return empty array instead of doing Firestore network call (because whereIn filter requires non empty array)
+            else
+                mFirebaseFirestore.collection(WISHES_COLLECTION_PATH)
+                    .whereIn(WISH_ID_FIELD, wishIdsArray)
+                    .orderBy(DATE_FIELD, Query.Direction.DESCENDING)
+                    .get()
+                    .addOnSuccessListener { querySnapshot ->
+                        singleEmitter.onSuccess(Mapper.mapToWishArrayList(querySnapshot))
+                    }
+                    .addOnFailureListener {
+                        singleEmitter.onError(it)
+                    }
         }
     }
 

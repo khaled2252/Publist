@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.SimpleItemAnimator
@@ -232,8 +233,8 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
         if (wishesArray.isNotEmpty()) {
             //Hide placeholder if is displayed
             val view = this.parentFragment?.view?.findViewById<LinearLayout>(R.id.placeHolderView)
-            if (view?.visibility == View.VISIBLE)
-                view.visibility == View.GONE
+            if (view!!.isVisible)
+                view.visibility = View.GONE
 
             profileWishesAdapter.addWishes(wishesArray)
             if (scrollListener.lastVisibleItem > VISIBLE_THRESHOLD)
