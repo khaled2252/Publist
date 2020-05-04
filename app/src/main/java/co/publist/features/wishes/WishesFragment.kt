@@ -24,8 +24,6 @@ import co.publist.core.utils.Utils.Constants.VISIBLE_THRESHOLD
 import co.publist.features.home.HomeActivity
 import co.publist.features.profile.ProfileActivity
 import co.publist.features.wishdetails.WishDetailsActivity
-import com.firebase.ui.firestore.FirestoreRecyclerOptions
-import com.google.firebase.firestore.Query
 import kotlinx.android.synthetic.main.fragment_wishes.*
 import javax.inject.Inject
 
@@ -43,7 +41,8 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
     override fun getBaseViewModelFactory() = viewModelFactory
 
     var wishesType = -1
-    private lateinit var publicWishesAdapter: WishesAdapter
+    private lateinit var publicWishesAdapter: PublicWishesAdapter
+    private lateinit var profileWishesAdapter: ProfileWishesAdapter
     private lateinit var scrollListener: RecyclerViewLoadMoreScroll
 
     override fun onCreateView(
@@ -62,8 +61,8 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
         viewModel.preLoadedWishesType.observe(viewLifecycleOwner, Observer { type ->
             refreshLayout.isRefreshing = true
             wishesType = type
-            setAdapter()
-            if (wishesType == PUBLIC || wishesType == SEARCH) {
+            if (wishesType == PUBLIC || wishesType == SEARCH || wishesType == DETAILS) {
+                setPublicWishesAdapter()
                 noResultsPlaceholder.visibility = View.GONE
                 wishesFragmentContainer.setBackgroundColor(
                     ContextCompat.getColor(
@@ -71,32 +70,36 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
                         R.color.platinum
                     )
                 )
-            }
+            } else
+                setProfileWishesAdapter()
         })
 
-        viewModel.wishDataPairLiveData.observe(viewLifecycleOwner, Observer { dataPair ->
+        viewModel.profileWishesDataPairLiveData.observe(viewLifecycleOwner, Observer { dataPair ->
             refreshLayout.isRefreshing = false
-            val wishesQuery = dataPair.first
+            val wishesList = dataPair.first
             val itemsAttributesPair = dataPair.second
             val doneItemsList = itemsAttributesPair.first
             val likedItemsList = itemsAttributesPair.second
-            setAdapter(
-                wishesQuery,
-                wishesType,
-                doneItemsList,
-                likedItemsList
-            )
+            profileWishesAdapter.addDoneAndLikedItems(doneItemsList, likedItemsList)
+            if (refreshLayout.isRefreshing) {
+                refreshLayout.isRefreshing = false
+                addItemsToProfileWishesAdapter(wishesList)
+            } else {
+                profileWishesAdapter.renderLoadMoreUi(false)
+                scrollListener.setLoaded()
+                addItemsToProfileWishesAdapter(wishesList)
+            }
         })
 
-        viewModel.wishesListLiveData.observe(viewLifecycleOwner, Observer { list ->
+        viewModel.publicWishesListLiveData.observe(viewLifecycleOwner, Observer { list ->
             if (refreshLayout.isRefreshing) //Initial load or was doing a refresh
             {
                 refreshLayout.isRefreshing = false
-                addWishesToAdapter(list)
+                addItemsToPublicWishesAdapter(list)
             } else { //Display the next page
                 publicWishesAdapter.renderLoadMoreUi(false)
                 scrollListener.setLoaded()
-                addWishesToAdapter(list)
+                addItemsToPublicWishesAdapter(list)
             }
         })
     }
@@ -112,35 +115,14 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
         wishesRecyclerView.recycledViewPool.clear()
         wishesRecyclerView.layoutManager = null
         viewModel.resetCurrentPagingSate()
-        setAdapter()
+        setPublicWishesAdapter()
     }
 
-    private fun setAdapter(
-        query: Query,
-        type: Int,
-        doneItemsList: ArrayList<String>,
-        likedItemsList: ArrayList<String>
-    ) {
-        val options: FirestoreRecyclerOptions<WishAdapterItem> =
-            FirestoreRecyclerOptions.Builder<WishAdapterItem>()
-                .setQuery(query, WishAdapterItem::class.java)
-                .build()
-
-        val adapter =
-            WishesFirestoreAdapter(
-                options,
-                type,
-                doneItemsList,
-                likedItemsList,
+    private fun setProfileWishesAdapter() {
+        profileWishesAdapter =
+            ProfileWishesAdapter(
+                wishesType,
                 user = viewModel.user!!,
-                displayPlaceHolder = { displayPlaceHolder ->
-                    val view =
-                        this.parentFragment?.view?.findViewById<LinearLayout>(R.id.placeHolderView)
-                    if (displayPlaceHolder)
-                        view?.visibility = View.VISIBLE
-                    else
-                        view?.visibility = View.GONE
-                },
                 detailsListener = { wish ->
                     (activity as ProfileActivity).showEditWishDialog(wish)
                 },
@@ -162,15 +144,27 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
                         100
                     )
                 })
+        val linearLayoutManager = LinearLayoutManager(this.context)
+        wishesRecyclerView.layoutManager = linearLayoutManager
 
-        adapter.startListening()
+        scrollListener = RecyclerViewLoadMoreScroll(linearLayoutManager)
+        scrollListener.setOnLoadMoreListener(object : OnLoadMoreListener {
+            override fun onLoadMore() {
+                if (viewModel.isLoadingMore) {
+                    profileWishesAdapter.renderLoadMoreUi(true)
+                    viewModel.loadWishes(wishesType)
+                }
+            }
+
+        })
+        wishesRecyclerView.addOnScrollListener(scrollListener)
         (wishesRecyclerView.itemAnimator as SimpleItemAnimator).supportsChangeAnimations =
             false //To disable animation when changing holder information
-        wishesRecyclerView.adapter = adapter
+        wishesRecyclerView.adapter = profileWishesAdapter
     }
 
-    fun setAdapter() {
-        publicWishesAdapter = WishesAdapter(
+    private fun setPublicWishesAdapter() {
+        publicWishesAdapter = PublicWishesAdapter(
             wishesType = wishesType,
             user = viewModel.user,
             detailsListener = { wish ->
@@ -197,7 +191,7 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
             })
         val linearLayoutManager = LinearLayoutManager(this.context)
         wishesRecyclerView.layoutManager = linearLayoutManager
-        
+
         if (wishesType != DETAILS) {
             scrollListener = RecyclerViewLoadMoreScroll(linearLayoutManager)
             scrollListener.setOnLoadMoreListener(object : OnLoadMoreListener {
@@ -215,7 +209,7 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
         wishesRecyclerView.adapter = publicWishesAdapter
     }
 
-    private fun addWishesToAdapter(wishesArray: ArrayList<WishAdapterItem>) {
+    private fun addItemsToPublicWishesAdapter(wishesArray: ArrayList<WishAdapterItem>) {
         if (wishesArray.isNotEmpty()) {
             publicWishesAdapter.addWishes(wishesArray)
             if (wishesType != DETAILS && scrollListener.lastVisibleItem > VISIBLE_THRESHOLD)
@@ -231,6 +225,26 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
                     ContextCompat.getColor(this.context!!, R.color.white)
                 )
             }
+        }
+    }
+
+    private fun addItemsToProfileWishesAdapter(wishesArray: ArrayList<WishAdapterItem>) {
+        if (wishesArray.isNotEmpty()) {
+            //Hide placeholder if is displayed
+            val view = this.parentFragment?.view?.findViewById<LinearLayout>(R.id.placeHolderView)
+            if (view?.visibility == View.VISIBLE)
+                view.visibility == View.GONE
+
+            profileWishesAdapter.addWishes(wishesArray)
+            if (scrollListener.lastVisibleItem > VISIBLE_THRESHOLD)
+                wishesRecyclerView.smoothScrollBy(
+                    0,
+                    profileWishesAdapter.loadMoreViewHeight
+                ) //Scroll by loadMore view height after loading next page
+        } else {
+            //Display placeholder
+            val view = this.parentFragment?.view?.findViewById<LinearLayout>(R.id.placeHolderView)
+            view?.visibility = View.VISIBLE
         }
     }
 

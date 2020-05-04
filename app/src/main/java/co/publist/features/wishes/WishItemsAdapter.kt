@@ -22,7 +22,8 @@ class WishItemsAdapter(
     private val isExpanded: Boolean,
     private val user: User?,
     val completeListener: (itemPosition: Int, isDone: Boolean) -> Unit,
-    val likeListener: (itemPosition: Int, isLiked: Boolean) -> Unit
+    val likeListener: (itemPosition: Int, isLiked: Boolean) -> Unit,
+    val viewHolderSpaceClickListener: () -> Unit
 ) :
     RecyclerView.Adapter<WishItemsAdapter.WishItemViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WishItemViewHolder {
@@ -83,6 +84,10 @@ class WishItemsAdapter(
                 )
 
             //Listeners for actions
+            itemView.setOnClickListener {
+                viewHolderSpaceClickListener()
+            }
+
             itemView.completeButton.setOnClickListener {
                 if (user == null)
                     showLoginPromptForGuest(it.context)

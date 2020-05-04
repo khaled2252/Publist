@@ -42,10 +42,12 @@ class MyListsFragment : BaseFragment<MyListsViewModel>() {
             childFragmentManager.findFragmentById(R.id.wishesFragment) as WishesFragment
         setListeners()
         setObservers()
+        wishesFragment.viewModel.loadWishes(LISTS)
     }
 
     private fun setObservers() {
         wishesFragment.viewModel.wishDeletedLiveData.observe(viewLifecycleOwner, Observer {
+            wishesFragment.clearLoadedData()
             wishesFragment.viewModel.loadWishes(LISTS)
             Toast.makeText(this.context, getString(R.string.delete_wish), Toast.LENGTH_SHORT).show()
         })
@@ -55,11 +57,6 @@ class MyListsFragment : BaseFragment<MyListsViewModel>() {
             intent.putExtra(EDIT_WISH_INTENT, wish)
             startActivity(intent)
         })
-    }
-
-    override fun onStart() {
-        wishesFragment.viewModel.loadWishes(LISTS)
-        super.onStart()
     }
 
     private fun setListeners() {

@@ -36,6 +36,7 @@ class MyFavoritesFragment : BaseFragment<MyFavoritesViewModel>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         wishesFragment =
             childFragmentManager.findFragmentById(R.id.wishesFragment) as WishesFragment
+        wishesFragment.viewModel.loadWishes(FAVORITES)
         wishesFragment.viewModel.isFavoriteAdded.observe(
             viewLifecycleOwner,
             Observer { isFavoriteAdded ->
@@ -44,8 +45,4 @@ class MyFavoritesFragment : BaseFragment<MyFavoritesViewModel>() {
             })
     }
 
-    override fun onStart() {
-        wishesFragment.viewModel.loadWishes(FAVORITES)
-        super.onStart()
-    }
 }

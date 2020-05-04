@@ -29,7 +29,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.set
 
-class WishesAdapter(
+class PublicWishesAdapter(
     val wishesType: Int,
     val user: User?,
     val favoriteListener: (wish: WishAdapterItem, isFavoriting: Boolean) -> Unit,
@@ -228,6 +228,13 @@ class WishesAdapter(
                         holderWish.wishId!!,
                         isLiked
                     )
+                }, viewHolderSpaceClickListener = {
+                    val intent = Intent(
+                        binding.wishItemsRecyclerView.context,
+                        WishDetailsActivity::class.java
+                    )
+                    intent.putExtra(WISH_DETAILS_INTENT, holderWish)
+                    binding.wishItemsRecyclerView.context.startActivity(intent)
                 })
             binding.wishItemsRecyclerView.adapter = wishItemsAdapter
         }

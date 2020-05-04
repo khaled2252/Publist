@@ -17,11 +17,11 @@ import co.publist.core.utils.Utils.Constants.MY_LISTS_COLLECTION_PATH
 import co.publist.core.utils.Utils.Constants.PUBLIC
 import co.publist.core.utils.Utils.Constants.SEARCH
 import co.publist.core.utils.Utils.Constants.TOP_USERS_THRESHOLD
+import co.publist.core.utils.Utils.Constants.WISHES_NUM_PER_PAGE
 import co.publist.features.categories.data.CategoriesRepositoryInterface
 import co.publist.features.myfavorites.data.MyFavoritesRepositoryInterface
 import co.publist.features.mylists.data.MyListsRepository
 import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.Query
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.functions.Action
@@ -36,18 +36,22 @@ class WishesViewModel @Inject constructor(
     private val userRepository: UserRepositoryInterface
 ) : BaseViewModel() {
     //LiveData
-    val wishesListLiveData = MutableLiveData<ArrayList<WishAdapterItem>>()
-    val wishDataPairLiveData =
-        MutableLiveData<Pair<Query, Pair<ArrayList<String>, ArrayList<String>>>>()
+    val publicWishesListLiveData = MutableLiveData<ArrayList<WishAdapterItem>>()
+    val profileWishesDataPairLiveData =
+        MutableLiveData<Pair<ArrayList<WishAdapterItem>, Pair<ArrayList<String>, ArrayList<String>>>>()
     val preLoadedWishesType = MutableLiveData<Int>()
     val isFavoriteAdded = MutableLiveData<Boolean>()
     val wishDeletedLiveData = MutableLiveData<Boolean>()
     val editWishLiveData = MutableLiveData<WishAdapterItem>()
 
-    val user = userRepository.getUser()
-    var lastVisibleWishesPageDocumentSnapshot: DocumentSnapshot? = null
+    //Paging properties
     var isLoadingMore = false
+    var lastVisibleWishesPageDocumentSnapshot: DocumentSnapshot? = null
     var loadedUserCategoriesFilteredWishes = false
+    var profileWishesIds: ArrayList<String>? = null
+    var profileItemsAttributesPair: Pair<ArrayList<String>, ArrayList<String>>? = null
+
+    val user = userRepository.getUser()
     lateinit var searchQuery: String
     lateinit var selectedWish: WishAdapterItem
     fun loadWishes(type: Int) {
@@ -120,42 +124,97 @@ class WishesViewModel @Inject constructor(
                             }
                         }
                     }, Consumer { list ->
-                    if (list.isEmpty() && isLoadingMore) //Current loaded page is empty (no data due to filtration)
+                    if (list.isEmpty() && isLoadingMore) //Current loaded page is empty (no data due to categories filtration)
                         loadWishes(preLoadedWishesType.value!!) //Pass this page and load the next one
                     else
-                        wishesListLiveData.postValue(list)
+                        publicWishesListLiveData.postValue(list)
                 }, showLoading = false
                 )
             }
             LISTS -> {
                 subscribe(
-                    wishesRepository.getCorrespondingMyListsPublicWishes().flatMap { query ->
+                    if (profileWishesIds == null)
+                        wishesRepository.getMyListsWishesIds().flatMap { wishIdsList ->
+                            profileWishesIds = wishIdsList
                         wishesRepository.getUserLikedItems().flatMap { likedItemsList ->
                             wishesRepository.getDoneItemsInMyLists().flatMap { doneItemsList ->
                                 Single.just(Pair(doneItemsList, likedItemsList))
                             }.flatMap { itemsAttributesPair ->
-                                Single.just(Pair(query, itemsAttributesPair))
+                                profileItemsAttributesPair = itemsAttributesPair
+                                val currentWishIdsList = getCurrentPageWishesIds(profileWishesIds!!)
+                                wishesRepository.getProfileWishesPageFromCorrespondingPublicWishes(
+                                    currentWishIdsList
+                                ).flatMap { wishList ->
+                                    Single.just(
+                                        Pair(
+                                            Mapper.mapToWishAdapterItemArrayList(wishList),
+                                            profileItemsAttributesPair!!
+                                        )
+                                    )
+                                }
                             }
+                        }
+                        }
+                    else {
+                        val currentWishIdsList = getCurrentPageWishesIds(profileWishesIds!!)
+                        wishesRepository.getProfileWishesPageFromCorrespondingPublicWishes(
+                            currentWishIdsList
+                        ).flatMap { wishList ->
+                            Single.just(
+                                Pair(
+                                    Mapper.mapToWishAdapterItemArrayList(wishList),
+                                    profileItemsAttributesPair!!
+                                )
+                            )
                         }
                     },
                     Consumer { dataPair ->
-                        wishDataPairLiveData.postValue(dataPair)
+                        profileWishesDataPairLiveData.postValue(dataPair)
                     })
             }
 
             FAVORITES -> {
                 subscribe(
-                    wishesRepository.getCorrespondingMyFavoritesPublicWishes().flatMap { query ->
-                        wishesRepository.getUserLikedItems().flatMap { likedItemsList ->
-                            wishesRepository.getDoneItemsInMyFavorites().flatMap { doneItemsList ->
-                                Single.just(Pair(doneItemsList, likedItemsList))
-                            }.flatMap { itemsAttributesPair ->
-                                Single.just(Pair(query, itemsAttributesPair))
+                    if (profileWishesIds == null)
+                        wishesRepository.getMyFavoritesWishesIds().flatMap { wishIdsList ->
+                            profileWishesIds = wishIdsList
+                            wishesRepository.getUserLikedItems().flatMap { likedItemsList ->
+                                wishesRepository.getDoneItemsInMyFavorites()
+                                    .flatMap { doneItemsList ->
+                                        Single.just(Pair(doneItemsList, likedItemsList))
+                                    }.flatMap { itemsAttributesPair ->
+                                    profileItemsAttributesPair = itemsAttributesPair
+                                    val currentWishIdsList =
+                                        getCurrentPageWishesIds(profileWishesIds!!)
+                                    wishesRepository.getProfileWishesPageFromCorrespondingPublicWishes(
+                                        currentWishIdsList
+                                    ).flatMap { wishList ->
+                                        Single.just(
+                                            Pair(
+                                                Mapper.mapToWishAdapterItemArrayList(
+                                                    wishList
+                                                ), profileItemsAttributesPair!!
+                                            )
+                                        )
+                                    }
+                                }
                             }
+                        }
+                    else {
+                        val currentWishIdsList = getCurrentPageWishesIds(profileWishesIds!!)
+                        wishesRepository.getProfileWishesPageFromCorrespondingPublicWishes(
+                            currentWishIdsList
+                        ).flatMap { wishList ->
+                            Single.just(
+                                Pair(
+                                    Mapper.mapToWishAdapterItemArrayList(wishList),
+                                    profileItemsAttributesPair!!
+                                )
+                            )
                         }
                     },
                     Consumer { dataPair ->
-                        wishDataPairLiveData.postValue(dataPair)
+                        profileWishesDataPairLiveData.postValue(dataPair)
                     })
             }
 
@@ -197,7 +256,7 @@ class WishesViewModel @Inject constructor(
                             Single.just(arrayListOf(Mapper.mapToWishAdapterItem(wish)))
 
                     }, Consumer { oneElementList ->
-                        wishesListLiveData.postValue(oneElementList)
+                        publicWishesListLiveData.postValue(oneElementList)
                     })
             }
 
@@ -266,11 +325,25 @@ class WishesViewModel @Inject constructor(
                     }
 
                 }, Consumer { list ->
-                    wishesListLiveData.postValue(list)
+                    publicWishesListLiveData.postValue(list)
                 }, showLoading = false)
             }
 
         }
+    }
+
+    private fun getCurrentPageWishesIds(profileWishesIds: ArrayList<String>): ArrayList<String> {
+        val currentWishIdsList = ArrayList<String>()
+        for (index in 0 until WISHES_NUM_PER_PAGE) {
+            if (profileWishesIds.isNotEmpty()) {
+                currentWishIdsList.add(profileWishesIds.last())
+                profileWishesIds.removeAt(profileWishesIds.size - 1)
+            } else {
+                isLoadingMore = false
+                break
+            }
+        }
+        return currentWishIdsList
     }
 
     private fun applyUserLikedItems(
@@ -484,8 +557,14 @@ class WishesViewModel @Inject constructor(
     }
 
     fun resetCurrentPagingSate() {
-        lastVisibleWishesPageDocumentSnapshot = null
+        if (preLoadedWishesType.value == PUBLIC || preLoadedWishesType.value == SEARCH) {
+            lastVisibleWishesPageDocumentSnapshot = null
+            loadedUserCategoriesFilteredWishes = false
+        } else {
+            profileWishesIds = null
+            profileItemsAttributesPair = null
+        }
         isLoadingMore = false
-        loadedUserCategoriesFilteredWishes = false
+
     }
 }

@@ -17,7 +17,6 @@ import co.publist.core.utils.Utils.Constants.LIKED_USERS_IDS_COLLECTION_PATH
 import co.publist.core.utils.Utils.Constants.LIKE_COUNT_FIELD
 import co.publist.core.utils.Utils.Constants.MY_FAVORITES_COLLECTION_PATH
 import co.publist.core.utils.Utils.Constants.MY_LISTS_COLLECTION_PATH
-import co.publist.core.utils.Utils.Constants.NULL_STRING
 import co.publist.core.utils.Utils.Constants.ORGANIC_SEEN_FOR_WISH_CLOUD_FUNCTION
 import co.publist.core.utils.Utils.Constants.SEEN_FOR_WISH_CLOUD_FUNCTION
 import co.publist.core.utils.Utils.Constants.TOP_COMPLETED_USER_IDS_FIELD
@@ -40,6 +39,7 @@ import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 
 class WishesRepository @Inject constructor(
@@ -686,7 +686,7 @@ class WishesRepository @Inject constructor(
         localDataSource.getPublistDataBase().insertSeenWish(wishId)
     }
 
-    override fun getCorrespondingMyListsPublicWishes(): Single<Query> {
+    override fun getMyListsWishesIds(): Single<ArrayList<String>> {
         val userId = localDataSource.getSharedPreferences().getUser()?.id
         return Single.create { singleEmitter ->
             mFirebaseFirestore.collection(USERS_COLLECTION_PATH)
@@ -696,26 +696,14 @@ class WishesRepository @Inject constructor(
                 .addOnFailureListener {
                     singleEmitter.onError(it)
                 }.addOnSuccessListener { myListsQuerySnapshot ->
-                    val myListWishes = Mapper.mapToWishAdapterItemArrayList(myListsQuerySnapshot)
-                    val myListWishesId = myListWishes.map { it.wishId }
-                    if (myListWishesId.isNotEmpty()) {
-                        val query = mFirebaseFirestore.collection(WISHES_COLLECTION_PATH)
-                            .whereIn(FieldPath.documentId(), myListWishesId)
-                            .orderBy(DATE_FIELD, Query.Direction.DESCENDING)
-                        singleEmitter.onSuccess(query)
-                    } else {
-                        val query = mFirebaseFirestore.collection(WISHES_COLLECTION_PATH)
-                            .whereIn(
-                                FieldPath.documentId(),
-                                arrayListOf(NULL_STRING)
-                            )//Because firebase can't do 'in' filter on empty/null value array , so we pass any non id string
-                        singleEmitter.onSuccess(query)
-                    }
+                    val myListWishes = Mapper.mapToWishArrayList(myListsQuerySnapshot)
+                    val myListWishesId = ArrayList(myListWishes.map { it.wishId!! })
+                    singleEmitter.onSuccess(myListWishesId)
                 }
         }
     }
 
-    override fun getCorrespondingMyFavoritesPublicWishes(): Single<Query> {
+    override fun getMyFavoritesWishesIds(): Single<ArrayList<String>> {
         val userId = localDataSource.getSharedPreferences().getUser()?.id
         return Single.create { singleEmitter ->
             mFirebaseFirestore.collection(USERS_COLLECTION_PATH)
@@ -724,21 +712,25 @@ class WishesRepository @Inject constructor(
                 .get()
                 .addOnFailureListener {
                     singleEmitter.onError(it)
-                }.addOnSuccessListener { MyFavoritesQuerySnapshot ->
-                    val myFavoritesWishes =
-                        Mapper.mapToWishAdapterItemArrayList(MyFavoritesQuerySnapshot)
-                    val myFavoritesWishesId = myFavoritesWishes.map { it.wishId }
-                    if (myFavoritesWishesId.isNotEmpty()) {
-                        val query = mFirebaseFirestore.collection(WISHES_COLLECTION_PATH)
-                            .whereIn(FieldPath.documentId(), myFavoritesWishesId)
-                            .orderBy(DATE_FIELD, Query.Direction.DESCENDING)
-                        singleEmitter.onSuccess(query)
-                    } else {
-                        val query = mFirebaseFirestore.collection(WISHES_COLLECTION_PATH)
-                            .whereIn(FieldPath.documentId(), arrayListOf(NULL_STRING))
-                        singleEmitter.onSuccess(query)
-                    }
+                }.addOnSuccessListener { myFavoritesQuerySnapshot ->
+                    val myFavoritesWishes = Mapper.mapToWishArrayList(myFavoritesQuerySnapshot)
+                    val myFavoritesWishesId = ArrayList(myFavoritesWishes.map { it.wishId!! })
+                    singleEmitter.onSuccess(myFavoritesWishesId)
+                }
+        }
+    }
 
+    override fun getProfileWishesPageFromCorrespondingPublicWishes(wishIdsArray: ArrayList<String>): Single<ArrayList<Wish>> {
+        return Single.create { singleEmitter ->
+            mFirebaseFirestore.collection(WISHES_COLLECTION_PATH)
+                .whereIn(WISH_ID_FIELD, wishIdsArray)
+                .orderBy(DATE_FIELD, Query.Direction.DESCENDING)
+                .get()
+                .addOnSuccessListener { querySnapshot ->
+                    singleEmitter.onSuccess(Mapper.mapToWishArrayList(querySnapshot))
+                }
+                .addOnFailureListener {
+                    singleEmitter.onError(it)
                 }
         }
     }
