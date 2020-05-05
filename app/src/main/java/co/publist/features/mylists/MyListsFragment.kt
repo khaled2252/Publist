@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.widget.Toast
 import androidx.lifecycle.Observer
 import co.publist.R
@@ -60,8 +61,18 @@ class MyListsFragment : BaseFragment<MyListsViewModel>() {
     }
 
     private fun setListeners() {
+        addListBtn.setOnHoverListener { v, event ->
+
+            true
+        }
         addListBtn.setOnClickListener {
-            startActivity(Intent(this.context, CreateWishActivity::class.java))
+            addListBtn.startAnimation(
+                AnimationUtils.loadAnimation(
+                    addListBtn.context,
+                    R.anim.pulsate_view
+                )
+            )
+            startActivity(Intent(addListBtn.context, CreateWishActivity::class.java))
         }
     }
 }
