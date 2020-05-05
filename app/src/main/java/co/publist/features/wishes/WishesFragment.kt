@@ -9,7 +9,6 @@ import android.widget.LinearLayout
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.SimpleItemAnimator
 import co.publist.R
 import co.publist.core.common.data.models.Mapper
 import co.publist.core.common.data.models.wish.WishAdapterItem
@@ -213,7 +212,6 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
             })
             wishesRecyclerView.addOnScrollListener(scrollListener)
         }
-        (wishesRecyclerView.itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
         wishesRecyclerView.adapter = publicWishesAdapter
     }
 

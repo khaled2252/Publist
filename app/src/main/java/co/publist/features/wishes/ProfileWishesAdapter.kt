@@ -111,7 +111,7 @@ class ProfileWishesAdapter(
                 loadMoreViewHeight = loadMoreView.measuredHeight
 
             wishList.remove(null)
-            notifyItemRemoved(wishList.size + 1)
+            notifyDataSetChanged()
         }
     }
 

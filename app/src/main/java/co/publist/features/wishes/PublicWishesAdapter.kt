@@ -103,7 +103,7 @@ class PublicWishesAdapter(
                 loadMoreViewHeight = loadMoreView.measuredHeight
 
             wishList.remove(null)
-            notifyItemRemoved(wishList.size + 1)
+            notifyDataSetChanged()
         }
     }
 
