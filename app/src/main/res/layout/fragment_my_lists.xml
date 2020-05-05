@@ -58,6 +58,7 @@
                 android:layout_width="62dp"
                 android:layout_height="62dp"
                 android:layout_marginTop="27dp"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
                 android:src="@drawable/btn_add_list" />
         </LinearLayout>
     </FrameLayout>

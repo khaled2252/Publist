@@ -61,6 +61,7 @@
                             <ImageView
                                 android:layout_width="17dp"
                                 android:layout_height="17dp"
+                                android:background="?android:attr/selectableItemBackground"
                                 android:src="@drawable/ic_edit" />
                         </LinearLayout>
 
@@ -74,6 +75,7 @@
                             <ImageView
                                 android:layout_width="25dp"
                                 android:layout_height="25dp"
+                                android:background="?android:attr/selectableItemBackground"
                                 android:src="@drawable/ic_logout" />
                         </LinearLayout>
 

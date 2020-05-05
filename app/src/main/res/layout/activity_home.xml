@@ -40,6 +40,7 @@
                         android:layout_marginTop="8dp"
                         android:layout_marginBottom="8dp"
                         android:scaleType="fitXY"
+                        android:background="?android:attr/selectableItemBackgroundBorderless"
                         app:profilePictureUrl="@{imageUrl}"
                         tools:src="@drawable/ic_logo" />
 
@@ -84,12 +85,12 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
-                        android:background="@color/white"
                         android:fontFamily="@font/sfprodisplaysemibold"
                         android:paddingStart="10dp"
                         android:paddingTop="15dp"
                         android:paddingEnd="10dp"
                         android:paddingBottom="15dp"
+                        android:background="?android:attr/selectableItemBackgroundBorderless"
                         android:text="@string/what_is_your_wish_list"
                         android:textColor="@color/taupeGray"
                         android:textSize="@dimen/item_wish_title_text_size" />
