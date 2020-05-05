@@ -168,14 +168,14 @@ class ProfileWishesAdapter(
                                     builder.setTitle(context.getString(R.string.remove_wish_title))
                                     builder.setMessage(context.getString(R.string.remove_wish_message))
                                     builder.setPositiveButton(this.context.getString(R.string.yes)) { _, _ ->
-                                        removeWish(wish, position, true)
+                                        removeWish(wish, adapterPosition, true)
                                         showUndoSnackbar(this)
                                     }
                                     builder.setNegativeButton(this.context.getString(R.string.cancel)) { _, _ ->
                                     }
                                     builder.create().show()
                                 } else {
-                                    removeWish(wish, position, true)
+                                    removeWish(wish, adapterPosition, true)
                                     showUndoSnackbar(this)
                                 }
                             }
@@ -332,6 +332,7 @@ class ProfileWishesAdapter(
             currentRemovedWishPosition = position
             wishList.removeAt(position)
             notifyItemRemoved(position)
+            notifyDataSetChanged()
         } else {
             wishList.add(position, wish)
             notifyItemInserted(position)

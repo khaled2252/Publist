@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.core.content.ContextCompat
-import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.SimpleItemAnimator
@@ -17,6 +16,7 @@ import co.publist.core.common.data.models.wish.WishAdapterItem
 import co.publist.core.platform.BaseFragment
 import co.publist.core.platform.ViewModelFactory
 import co.publist.core.utils.OnLoadMoreListener
+import co.publist.core.utils.PlaceHolderAdapterDataObserver
 import co.publist.core.utils.RecyclerViewLoadMoreScroll
 import co.publist.core.utils.Utils.Constants.DETAILS
 import co.publist.core.utils.Utils.Constants.PUBLIC
@@ -145,6 +145,15 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
                         100
                     )
                 })
+
+        val placeHolder =
+            this.parentFragment?.view?.findViewById<LinearLayout>(R.id.placeHolderView)
+        profileWishesAdapter.registerAdapterDataObserver(
+            PlaceHolderAdapterDataObserver(
+                profileWishesAdapter,
+                placeHolder!!
+            )
+        )
         val linearLayoutManager = LinearLayoutManager(this.context)
         wishesRecyclerView.layoutManager = linearLayoutManager
 
@@ -159,8 +168,6 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
 
         })
         wishesRecyclerView.addOnScrollListener(scrollListener)
-        (wishesRecyclerView.itemAnimator as SimpleItemAnimator).supportsChangeAnimations =
-            false //To disable animation when changing holder information
         wishesRecyclerView.adapter = profileWishesAdapter
     }
 
@@ -230,23 +237,11 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
     }
 
     private fun addItemsToProfileWishesAdapter(wishesArray: ArrayList<WishAdapterItem>) {
-        if (wishesArray.isNotEmpty()) {
-            //Hide placeholder if is displayed
-            val view = this.parentFragment?.view?.findViewById<LinearLayout>(R.id.placeHolderView)
-            if (view!!.isVisible)
-                view.visibility = View.GONE
-
             profileWishesAdapter.addWishes(wishesArray)
             if (scrollListener.lastVisibleItem > VISIBLE_THRESHOLD)
                 wishesRecyclerView.smoothScrollBy(
                     0,
                     profileWishesAdapter.loadMoreViewHeight
                 ) //Scroll by loadMore view height after loading next page
-        } else {
-            //Display placeholder
-            val view = this.parentFragment?.view?.findViewById<LinearLayout>(R.id.placeHolderView)
-            view?.visibility = View.VISIBLE
         }
-    }
-
 }
