@@ -187,6 +187,7 @@ object Utils {
     object Constants {
         const val DB_NAME = "PublistDb"
         const val SPLASH_DELAY: Long = 2000
+        const val LOAD_MORE_DELAY: Long = 100
         const val MINIMUM_SELECTED_CATEGORIES = 1
         const val MAXIMUM_SELECTED_CATEGORIES = 9
         const val MAX_VISIBLE_WISH_ITEMS = 3

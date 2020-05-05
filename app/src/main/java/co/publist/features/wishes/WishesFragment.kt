@@ -18,6 +18,7 @@ import co.publist.core.utils.OnLoadMoreListener
 import co.publist.core.utils.PlaceHolderAdapterDataObserver
 import co.publist.core.utils.RecyclerViewLoadMoreScroll
 import co.publist.core.utils.Utils.Constants.DETAILS
+import co.publist.core.utils.Utils.Constants.LOAD_MORE_DELAY
 import co.publist.core.utils.Utils.Constants.PUBLIC
 import co.publist.core.utils.Utils.Constants.SEARCH
 import co.publist.core.utils.Utils.Constants.VISIBLE_THRESHOLD
@@ -85,9 +86,11 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
                 refreshLayout.isRefreshing = false
                 addItemsToProfileWishesAdapter(wishesList)
             } else {
-                profileWishesAdapter.renderLoadMoreUi(false)
-                scrollListener.setLoaded()
-                addItemsToProfileWishesAdapter(wishesList)
+                Handler().postDelayed({
+                    profileWishesAdapter.renderLoadMoreUi(false)
+                    scrollListener.setLoaded()
+                    addItemsToProfileWishesAdapter(wishesList)
+                }, LOAD_MORE_DELAY)
             }
         })
 
@@ -97,9 +100,11 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
                 refreshLayout.isRefreshing = false
                 addItemsToPublicWishesAdapter(list)
             } else { //Display the next page
-                publicWishesAdapter.renderLoadMoreUi(false)
-                scrollListener.setLoaded()
-                addItemsToPublicWishesAdapter(list)
+                Handler().postDelayed({
+                    publicWishesAdapter.renderLoadMoreUi(false)
+                    scrollListener.setLoaded()
+                    addItemsToPublicWishesAdapter(list)
+                }, LOAD_MORE_DELAY)
             }
         })
     }
