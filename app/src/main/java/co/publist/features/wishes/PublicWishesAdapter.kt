@@ -5,6 +5,7 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
@@ -22,6 +23,7 @@ import co.publist.core.utils.Utils.Constants.LOADING_MORE
 import co.publist.core.utils.Utils.Constants.MAX_VISIBLE_WISH_ITEMS
 import co.publist.core.utils.Utils.Constants.WISH_DETAILS_INTENT
 import co.publist.core.utils.Utils.get90DegreesAnimation
+import co.publist.core.utils.Utils.getUnfavoriteAnimation
 import co.publist.databinding.ItemWishBinding
 import co.publist.features.wishdetails.WishDetailsActivity
 import org.ocpsoft.prettytime.PrettyTime
@@ -302,6 +304,7 @@ class PublicWishesAdapter(
             if (isFavoriting) {
                 //Update Ui
                 setImageResource(R.drawable.ic_heart_active)
+                startAnimation(AnimationUtils.loadAnimation(context, R.anim.favorite_activate))
                 wish.isFavorite = isFavoriting
                 //Update remotely
                 favoriteListener(wish, isFavoriting)
@@ -312,7 +315,7 @@ class PublicWishesAdapter(
                     builder.setTitle(context.getString(R.string.remove_wish_title))
                     builder.setMessage(context.getString(R.string.remove_wish_message))
                     builder.setPositiveButton(this.context.getString(R.string.yes)) { _, _ ->
-                        setImageResource(R.drawable.ic_heart)
+                        startAnimation(getUnfavoriteAnimation(this))
                         wish.isFavorite = isFavoriting
                         favoriteListener(wish, isFavoriting)
                         for (item in wish.items!!.values) {
@@ -328,7 +331,7 @@ class PublicWishesAdapter(
                     }
                     builder.create().show()
                 } else {
-                    setImageResource(R.drawable.ic_heart)
+                    startAnimation(getUnfavoriteAnimation(this))
                     wish.isFavorite = isFavoriting
                     favoriteListener(wish, isFavoriting)
                 }
@@ -337,4 +340,5 @@ class PublicWishesAdapter(
 
         }
     }
+
 }

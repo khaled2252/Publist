@@ -23,6 +23,7 @@ import co.publist.core.utils.Utils.Constants.WISH_DETAILS_INTENT
 import co.publist.core.utils.Utils.get90DegreesAnimation
 import co.publist.databinding.ItemWishBinding
 import co.publist.features.wishdetails.WishDetailsActivity
+import com.google.android.material.snackbar.Snackbar
 import org.ocpsoft.prettytime.PrettyTime
 import java.util.*
 import kotlin.collections.ArrayList
@@ -40,12 +41,14 @@ class ProfileWishesAdapter(
 
 ) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    private val wishList = ArrayList<WishAdapterItem?>()
-    var doneItemsList = ArrayList<String>()
-    var likedItemsList = ArrayList<String>()
     private lateinit var loadMoreView: View
+    private val wishList = ArrayList<WishAdapterItem?>()
     var loadMoreViewHeight = 0
     val expandableViewHolders = mutableMapOf<Int, WishViewHolder>()
+    var doneItemsList = ArrayList<String>()
+    var likedItemsList = ArrayList<String>()
+    var currentRemovedWish: WishAdapterItem? = null
+    var currentRemovedWishPosition = -1
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
             LOADING_MORE -> {
@@ -165,13 +168,15 @@ class ProfileWishesAdapter(
                                     builder.setTitle(context.getString(R.string.remove_wish_title))
                                     builder.setMessage(context.getString(R.string.remove_wish_message))
                                     builder.setPositiveButton(this.context.getString(R.string.yes)) { _, _ ->
-                                        unFavoriteListener(wish)
+                                        removeWish(wish, position, true)
+                                        showUndoSnackbar(this)
                                     }
                                     builder.setNegativeButton(this.context.getString(R.string.cancel)) { _, _ ->
                                     }
                                     builder.create().show()
                                 } else {
-                                    unFavoriteListener(wish)
+                                    removeWish(wish, position, true)
+                                    showUndoSnackbar(this)
                                 }
                             }
                         }
@@ -315,5 +320,42 @@ class ProfileWishesAdapter(
             binding.arrowImageView.clearAnimation()
             applySeeMoreText()
         }
+    }
+
+    private fun removeWish(
+        wish: WishAdapterItem,
+        position: Int,
+        isRemoving: Boolean
+    ) {
+        if (isRemoving) {
+            currentRemovedWish = wish
+            currentRemovedWishPosition = position
+            wishList.removeAt(position)
+            notifyItemRemoved(position)
+        } else {
+            wishList.add(position, wish)
+            notifyItemInserted(position)
+        }
+    }
+
+    private fun showUndoSnackbar(view: View) {
+        val snackbar: Snackbar = Snackbar.make(
+            view, view.context.getString(R.string.wish_removed),
+            Snackbar.LENGTH_LONG
+        )
+        var isDeleted = true
+        snackbar.addCallback(object : Snackbar.Callback() {
+            override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                if (isDeleted)
+                    unFavoriteListener(currentRemovedWish!!)
+                super.onDismissed(transientBottomBar, event)
+            }
+        })
+        snackbar.setAction(view.context.getString(R.string.undo)) {
+            removeWish(currentRemovedWish!!, currentRemovedWishPosition, false)
+            isDeleted = false
+            scrollListener(currentRemovedWishPosition)
+        }
+        snackbar.show()
     }
 }

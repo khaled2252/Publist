@@ -9,6 +9,7 @@ import android.os.IBinder
 import android.provider.MediaStore
 import android.view.View
 import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.view.animation.LinearInterpolator
 import android.view.animation.RotateAnimation
 import android.view.inputmethod.InputMethodManager
@@ -104,6 +105,20 @@ object Utils {
         anim.isFillEnabled = true
         anim.fillAfter = true
         return anim
+    }
+
+    fun getUnfavoriteAnimation(imageView: ImageView): Animation? {
+        val animation = AnimationUtils.loadAnimation(imageView.context, R.anim.favorite_activate)
+        animation.setAnimationListener(object : Animation.AnimationListener {
+            override fun onAnimationEnd(animation: Animation?) {
+                imageView.setImageResource(R.drawable.ic_heart)
+            }
+
+            override fun onAnimationStart(animation: Animation?) {}
+            override fun onAnimationRepeat(animation: Animation?) {}
+
+        })
+        return animation
     }
 
     fun loadTopUsersPictures(
