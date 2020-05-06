@@ -33,6 +33,7 @@ import com.theartofdev.edmodo.cropper.CropImageView
 import java.io.File
 import java.util.*
 import kotlin.math.abs
+import kotlin.reflect.full.memberProperties
 
 object Utils {
 
@@ -184,6 +185,17 @@ object Utils {
         }
         builder.create().show()
     }
+
+    @Throws(IllegalAccessException::class, ClassCastException::class)
+    inline fun <reified T> Any.getField(fieldName: String): T? {
+        this::class.memberProperties.forEach { kCallable ->
+            if (fieldName == kCallable.name) {
+                return kCallable.getter.call(this) as T?
+            }
+        }
+        return null
+    }
+
     object Constants {
         const val DB_NAME = "PublistDb"
         const val SPLASH_DELAY: Long = 2000

@@ -18,6 +18,7 @@ import co.publist.core.utils.Utils.Constants.PUBLIC
 import co.publist.core.utils.Utils.Constants.SEARCH
 import co.publist.core.utils.Utils.Constants.TOP_USERS_THRESHOLD
 import co.publist.core.utils.Utils.Constants.WISHES_NUM_PER_PAGE
+import co.publist.core.utils.Utils.getField
 import co.publist.features.categories.data.CategoriesRepositoryInterface
 import co.publist.features.myfavorites.data.MyFavoritesRepositoryInterface
 import co.publist.features.mylists.data.MyListsRepository
@@ -26,7 +27,9 @@ import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
+import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 class WishesViewModel @Inject constructor(
     private val wishesRepository: WishesRepositoryInterface,
@@ -51,9 +54,17 @@ class WishesViewModel @Inject constructor(
     var profileWishesIds: ArrayList<String>? = null
     var profileItemsAttributesPair: Pair<ArrayList<String>, ArrayList<String>>? = null
 
-    val user = userRepository.getUser()
     lateinit var searchQuery: String
     lateinit var selectedWish: WishAdapterItem
+    val user = userRepository.getUser()
+    var allCategories = arrayListOf<Category>()
+
+    init {
+        subscribe(categoryRepository.fetchAllCategories(), Consumer { categoriesList ->
+            allCategories = categoriesList
+        })
+    }
+
     fun loadWishes(type: Int) {
         if (!isLoadingMore || type != preLoadedWishesType.value) //Check if first time loading data or changed from type to another
         {
@@ -261,7 +272,6 @@ class WishesViewModel @Inject constructor(
             }
 
             SEARCH -> {
-                subscribe(categoryRepository.fetchAllCategories().flatMap { allCategories ->
                     val categoriesNames = allCategories.map { it.name }
                     var selectedCategory: Category? = null
                     for (categoryIndex in categoriesNames.indices) {
@@ -281,7 +291,7 @@ class WishesViewModel @Inject constructor(
                             lastVisibleWishesPageDocumentSnapshot
                         )
 
-                    searchResultsObservable.flatMap { wishesDataPair ->
+                subscribe(searchResultsObservable.flatMap { wishesDataPair ->
                         val wishesList = wishesDataPair.first
                         lastVisibleWishesPageDocumentSnapshot = wishesDataPair.second
                         if (lastVisibleWishesPageDocumentSnapshot == null)
@@ -322,8 +332,6 @@ class WishesViewModel @Inject constructor(
                                 Single.just(Mapper.mapToWishAdapterItemArrayList(wishesList))
                         } else
                             Single.just(arrayListOf())
-                    }
-
                 }, Consumer { list ->
                     publicWishesListLiveData.postValue(list)
                 }, showLoading = false)
@@ -566,5 +574,29 @@ class WishesViewModel @Inject constructor(
         }
         isLoadingMore = false
 
+    }
+
+    fun getSuggestedCategoriesFromQuery(query: String): ArrayList<String> {
+        val suggestedCategoriesNames = arrayListOf<String>()
+        for (categoryName in allCategories.map { it.name })
+            if (categoryName.equals(query, true))
+                suggestedCategoriesNames.add(categoryName!!.capitalize())
+        if (suggestedCategoriesNames.isEmpty())
+            for (categoryName in allCategories.map { it.name })
+                if (categoryName!!.startsWith(query, true))
+                    suggestedCategoriesNames.add(categoryName.capitalize())
+
+
+        return suggestedCategoriesNames
+    }
+
+    fun getCategoryNameById(categoryId: String): String {
+        val category = allCategories.find { it.id == categoryId }
+        val currentDeviceLanguage = Locale.getDefault().language
+        //Use reflection to access localization property of current device language
+        val localizedName =
+            category?.localizations?.getField<String>(currentDeviceLanguage)?.capitalize()
+                .toString()
+        return localizedName
     }
 }

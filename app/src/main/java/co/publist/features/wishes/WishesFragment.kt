@@ -148,6 +148,8 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
                         { wishesRecyclerView.smoothScrollToPosition(position) },
                         100
                     )
+                }, getCategoryNameById = { categoryId ->
+                    viewModel.getCategoryNameById(categoryId)
                 })
 
         val placeHolder =
@@ -200,6 +202,8 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
                 wishesRecyclerView.post {
                     wishesRecyclerView.smoothScrollToPosition(position)
                 }
+            }, getCategoryNameById = { categoryId ->
+                viewModel.getCategoryNameById(categoryId)
             })
         val linearLayoutManager = LinearLayoutManager(this.context)
         wishesRecyclerView.layoutManager = linearLayoutManager

@@ -70,10 +70,6 @@ class HomeActivity : BaseActivity<HomeViewModel>() {
     }
 
     override fun onStart() {
-//        if (wishesFragment.wishesType == -1)
-//            wishesFragment.viewModel.loadWishes(PUBLIC)
-//        else
-//            wishesFragment.viewModel.loadWishes(wishesFragment.wishesType)  // To reload same data when coming back from another activity , recent apps , lock screen etc..
         if (sheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED)
             sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
 
@@ -144,6 +140,7 @@ class HomeActivity : BaseActivity<HomeViewModel>() {
             startActivity(intent)
 
         })
+
 
     }
 
@@ -255,7 +252,8 @@ class HomeActivity : BaseActivity<HomeViewModel>() {
 
                 override fun onQueryTextChange(newText: String?): Boolean {
                     if (newText?.length!! >= 1) {
-                        val queryResultArray = viewModel.getSuggestedCategoriesFromQuery(newText)
+                        val queryResultArray =
+                            wishesFragment.viewModel.getSuggestedCategoriesFromQuery(newText)
                         autoCompleteTextView.setAdapter(
                             ArrayAdapter(
                                 this@HomeActivity,

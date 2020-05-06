@@ -10,6 +10,8 @@ import co.publist.core.utils.Utils.Constants.ALGOLIA_WISH_ID_FIELD
 import com.google.firebase.firestore.QueryDocumentSnapshot
 import com.google.firebase.firestore.QuerySnapshot
 import org.json.JSONObject
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 object Mapper {
@@ -74,9 +76,15 @@ object Mapper {
     }
 
     fun mapToCategoryAdapterItem(item: CategoryWish): CategoryAdapterItem {
+        val currentDeviceLanguage = Locale.getDefault().language
+        val localization = Localization(null, null)
+        if (currentDeviceLanguage == "en")
+            localization.en = item.name
+        else
+            localization.ar = item.name
         return CategoryAdapterItem(
             id = item.id,
-            localizations = Localization(null, item.name),
+            localizations = localization,
             name = item.name
         )
     }
@@ -175,6 +183,7 @@ object Mapper {
     fun mapToWishAdapterItem(item: Wish): WishAdapterItem {
         return WishAdapterItem(
             category = item.category,
+            categoryId = item.categoryId,
             creator = item.creator,
             date = item.date,
             items = item.items,
@@ -206,7 +215,7 @@ object Mapper {
     fun mapToCategoryWish(item: Category): CategoryWish {
         return CategoryWish(
             id = item.id,
-            lang = "en",
+            lang = Locale.getDefault().language,
             name = item.name
         )
     }

@@ -39,7 +39,8 @@ class PublicWishesAdapter(
     val completeListener: (itemId: String, wishId: String, isCreator: Boolean, isDone: Boolean) -> Unit,
     val likeListener: (itemId: String, wishId: String, isLiked: Boolean) -> Unit,
     val seenCountListener: (wishId: String) -> Unit,
-    val scrollListener: (position: Int) -> Unit
+    val scrollListener: (position: Int) -> Unit,
+    val getCategoryNameById: (categoryId: String) -> String
 ) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private val wishList = ArrayList<WishAdapterItem?>()
@@ -154,7 +155,7 @@ class PublicWishesAdapter(
                         }
                     }
 
-                categoryNameTextView.text = wish.category!![0].name?.capitalize()
+                categoryNameTextView.text = getCategoryNameById(wish.categoryId!![0])
                 titleTextView.text = wish.title
 
                 //Load ago time

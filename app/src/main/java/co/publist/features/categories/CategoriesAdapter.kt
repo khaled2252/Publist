@@ -7,7 +7,9 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import co.publist.R
 import co.publist.core.common.data.models.category.CategoryAdapterItem
+import co.publist.core.utils.Utils.getField
 import kotlinx.android.synthetic.main.item_category.view.*
+import java.util.*
 
 
 class CategoriesAdapter(
@@ -46,7 +48,10 @@ class CategoriesAdapter(
         fun bind(
             category: CategoryAdapterItem
         ) {
-            itemView.btnCategory.text = category.name?.capitalize()
+            val currentDeviceLanguage = Locale.getDefault().language
+            //Use reflection to access localization property of current device language
+            itemView.btnCategory.text =
+                category.localizations?.getField<String>(currentDeviceLanguage)?.capitalize()
 
             //Highlight selected categories
             if (category.isSelected) {
