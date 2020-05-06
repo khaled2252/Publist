@@ -578,11 +578,14 @@ class WishesViewModel @Inject constructor(
 
     fun getSuggestedCategoriesFromQuery(query: String): ArrayList<String> {
         val suggestedCategoriesNames = arrayListOf<String>()
-        for (categoryName in allCategories.map { it.name })
+        val currentDeviceLanguage = Locale.getDefault().language
+        val localizedNames =
+            allCategories.map { it.localizations?.getField<String>(currentDeviceLanguage) }
+        for (categoryName in localizedNames)
             if (categoryName.equals(query, true))
                 suggestedCategoriesNames.add(categoryName!!.capitalize())
         if (suggestedCategoriesNames.isEmpty())
-            for (categoryName in allCategories.map { it.name })
+            for (categoryName in localizedNames)
                 if (categoryName!!.startsWith(query, true))
                     suggestedCategoriesNames.add(categoryName.capitalize())
 
@@ -593,7 +596,6 @@ class WishesViewModel @Inject constructor(
     fun getCategoryNameById(categoryId: String): String {
         val category = allCategories.find { it.id == categoryId }
         val currentDeviceLanguage = Locale.getDefault().language
-        //Use reflection to access localization property of current device language
         val localizedName =
             category?.localizations?.getField<String>(currentDeviceLanguage)?.capitalize()
                 .toString()

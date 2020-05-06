@@ -33,6 +33,7 @@ import co.publist.core.utils.Utils.Constants.EDIT_WISH_INTENT
 import co.publist.core.utils.Utils.Constants.GALLERY
 import co.publist.core.utils.Utils.Constants.MINIMUM_WISH_ITEMS
 import co.publist.core.utils.Utils.getDistanceBetweenViews
+import co.publist.core.utils.Utils.getField
 import co.publist.core.utils.Utils.navigateToCamera
 import co.publist.core.utils.Utils.navigateToGallery
 import co.publist.core.utils.Utils.resultUri
@@ -42,7 +43,9 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.theartofdev.edmodo.cropper.CropImage
 import kotlinx.android.synthetic.main.activity_create_wish.*
 import kotlinx.android.synthetic.main.back_button_layout.*
+import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 
 class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
@@ -165,7 +168,8 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
             titleTextView.text = getString(R.string.edit_wish)
             addCategoryTextView.text = ""
             categoryChip.visibility = View.VISIBLE
-            categoryChip.text = editedWish?.category!![0].name?.capitalize()
+            val currentDeviceLanguage = Locale.getDefault().language
+            categoryChip.text = editedWish?.getField<String>(currentDeviceLanguage)?.capitalize()
             categoriesFragment.viewModel.getCategories(editedWish?.category!![0])
             titleHintTextView.visibility = View.GONE
             titleEditText.setText(editedWish?.title)
@@ -274,7 +278,10 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
                         viewModel.category = Mapper.mapToCategoryWish(mappedCategory)
                         addCategoryTextView.text = ""
                         categoryChip.visibility = View.VISIBLE
-                        categoryChip.text = category.name?.capitalize()
+                        val currentDeviceLanguage = Locale.getDefault().language
+                        categoryChip.text =
+                            category.localizations?.getField<String>(currentDeviceLanguage)
+                                ?.capitalize()
                     } else {
                         viewModel.category = null
                         categoryChip.visibility = View.GONE

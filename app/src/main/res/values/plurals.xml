@@ -4,4 +4,8 @@
         <item quantity="one">%1$d More Check Point</item>
         <item quantity="other">%1$d More Check Points</item>
     </plurals>
+    <plurals name="minimum_categories">
+        <item quantity="one">You must select a category</item>
+        <item quantity="other">You must select at least %1$s category</item>
+    </plurals>
 </resources>

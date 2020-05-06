@@ -71,7 +71,10 @@ class EditProfileActivity : BaseActivity<EditProfileViewModel>() {
                 val toast =
                     Toast.makeText(
                         this,
-                        getString(R.string.minimum_categories).format(MINIMUM_SELECTED_CATEGORIES),
+                        resources.getQuantityText(
+                            R.plurals.minimum_categories,
+                            MINIMUM_SELECTED_CATEGORIES
+                        ),
                         Toast.LENGTH_SHORT
                     )
                 toast.setGravity(Gravity.BOTTOM, 0, 400)
