@@ -34,6 +34,7 @@ import co.publist.core.utils.Utils.Constants.GALLERY
 import co.publist.core.utils.Utils.Constants.MINIMUM_WISH_ITEMS
 import co.publist.core.utils.Utils.getDistanceBetweenViews
 import co.publist.core.utils.Utils.getField
+import co.publist.core.utils.Utils.isConnectedToNetwork
 import co.publist.core.utils.Utils.navigateToCamera
 import co.publist.core.utils.Utils.navigateToGallery
 import co.publist.core.utils.Utils.resultUri
@@ -250,7 +251,10 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
         })
 
         postButton.setOnClickListener {
-            viewModel.postWish()
+            if (!isConnectedToNetwork(this))
+                viewModel.noInternetConnection.postValue(true)
+            else
+                viewModel.postWish()
         }
 
         categoryDoneButton.setOnClickListener {

@@ -2,6 +2,9 @@ package co.publist.core.platform
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.algolia.search.saas.AlgoliaException
+import com.google.firebase.firestore.FirebaseFirestoreException
+import com.google.firebase.functions.FirebaseFunctionsException
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Scheduler
@@ -16,8 +19,10 @@ import timber.log.Timber
 
 abstract class BaseViewModel : ViewModel() {
     private val compositeDisposable = CompositeDisposable()
-    val error = MutableLiveData<Error>()
+
+    //    val error = MutableLiveData<Error>()
     val loading = MutableLiveData<Boolean>()
+    val noInternetConnection = MutableLiveData<Boolean>()
 
     private fun handleError(exception: Throwable) {
 //        if (exception is RetrofitException) {
@@ -151,6 +156,11 @@ abstract class BaseViewModel : ViewModel() {
             .doOnError {
                 Timber.e(it)
                 handleError(it)
+                if (it is FirebaseFirestoreException && it.code == FirebaseFirestoreException.Code.UNAVAILABLE ||
+                    it is FirebaseFirestoreException && it.code == FirebaseFirestoreException.Code.INTERNAL ||
+                    it is AlgoliaException
+                )
+                    noInternetConnection.postValue(true)
             }
             .doOnSubscribe {
                 loading.postValue(showLoading)
@@ -167,6 +177,11 @@ abstract class BaseViewModel : ViewModel() {
         return completable.doOnError {
             Timber.e(it)
             handleError(it)
+            if (it is FirebaseFirestoreException && it.code == FirebaseFirestoreException.Code.UNAVAILABLE ||
+                it is FirebaseFunctionsException && it.code == FirebaseFunctionsException.Code.INTERNAL ||
+                it is AlgoliaException
+            )
+                noInternetConnection.postValue(true)
         }.doOnSubscribe {
             loading.postValue(showLoading)
         }.doAfterTerminate {

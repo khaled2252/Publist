@@ -90,7 +90,7 @@
                         android:paddingTop="15dp"
                         android:paddingEnd="10dp"
                         android:paddingBottom="15dp"
-                        android:background="?android:attr/selectableItemBackgroundBorderless"
+                        android:background="?android:attr/selectableItemBackground"
                         android:text="@string/what_is_your_wish_list"
                         android:textColor="@color/taupeGray"
                         android:textSize="@dimen/item_wish_title_text_size" />

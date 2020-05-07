@@ -75,7 +75,7 @@ class WishesRepository @Inject constructor(
 
             if (lastVisibleWishesDocumentSnapshot != null)
                 ref = ref.startAfter(lastVisibleWishesDocumentSnapshot)
-            ref.get()
+            ref.get(Source.SERVER)
                 .addOnFailureListener {
                     singleEmitter.onError(it)
                 }.addOnSuccessListener { querySnapshot ->
@@ -103,7 +103,7 @@ class WishesRepository @Inject constructor(
 
             if (lastVisibleWishesDocumentSnapshot != null)
                 ref = ref.startAfter(lastVisibleWishesDocumentSnapshot)
-            ref.get()
+            ref.get(Source.SERVER)
                 .addOnFailureListener {
                     singleEmitter.onError(it)
                 }.addOnSuccessListener { querySnapshot ->
@@ -692,7 +692,7 @@ class WishesRepository @Inject constructor(
             mFirebaseFirestore.collection(USERS_COLLECTION_PATH)
                 .document(userId!!)
                 .collection(MY_LISTS_COLLECTION_PATH)
-                .get()
+                .get(Source.SERVER)
                 .addOnFailureListener {
                     singleEmitter.onError(it)
                 }.addOnSuccessListener { myListsQuerySnapshot ->
@@ -709,7 +709,7 @@ class WishesRepository @Inject constructor(
             mFirebaseFirestore.collection(USERS_COLLECTION_PATH)
                 .document(userId!!)
                 .collection(MY_FAVORITES_COLLECTION_PATH)
-                .get()
+                .get(Source.SERVER)
                 .addOnFailureListener {
                     singleEmitter.onError(it)
                 }.addOnSuccessListener { myFavoritesQuerySnapshot ->
@@ -728,7 +728,7 @@ class WishesRepository @Inject constructor(
                 mFirebaseFirestore.collection(WISHES_COLLECTION_PATH)
                     .whereIn(WISH_ID_FIELD, wishIdsArray)
                     .orderBy(DATE_FIELD, Query.Direction.DESCENDING)
-                    .get()
+                    .get(Source.SERVER)
                     .addOnSuccessListener { querySnapshot ->
                         singleEmitter.onSuccess(Mapper.mapToWishArrayList(querySnapshot))
                     }

@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
-import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import co.publist.R
@@ -65,12 +65,7 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
             if (wishesType == PUBLIC || wishesType == SEARCH || wishesType == DETAILS) {
                 setPublicWishesAdapter()
                 noResultsPlaceholder.visibility = View.GONE
-                wishesFragmentContainer.setBackgroundColor(
-                    ContextCompat.getColor(
-                        this.context!!,
-                        R.color.platinum
-                    )
-                )
+                noInternetConnectionPlaceholder.visibility = View.GONE
             } else
                 setProfileWishesAdapter()
         })
@@ -107,10 +102,13 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
                 }, LOAD_MORE_DELAY)
             }
         })
+
     }
 
     private fun setListeners() {
         refreshLayout.setOnRefreshListener {
+            if (noInternetConnectionPlaceholder.isVisible)
+                noInternetConnectionPlaceholder.visibility = View.GONE
             clearLoadedData()
             viewModel.loadWishes(wishesType)
         }
@@ -234,12 +232,7 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
                 ) //Scroll by loadMore view height after loading next page
         } else {
             if (wishesType == SEARCH && publicWishesAdapter.itemCount == 0) //Empty search query
-            {
                 noResultsPlaceholder.visibility = View.VISIBLE
-                wishesFragmentContainer.setBackgroundColor(
-                    ContextCompat.getColor(this.context!!, R.color.white)
-                )
-            }
         }
     }
 

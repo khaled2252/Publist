@@ -71,6 +71,10 @@ class WishesViewModel @Inject constructor(
             preLoadedWishesType.postValue(type)
             isLoadingMore = true
         }
+        if (allCategories.isEmpty())
+            subscribe(categoryRepository.fetchAllCategories(), Consumer { categoriesList ->
+                allCategories = categoriesList
+            })
         when (type) {
             PUBLIC -> {
                 subscribe(categoryRepository.getLocalSelectedCategories()

@@ -8,10 +8,7 @@ import co.publist.core.common.data.models.category.CategoryAdapterItem
 import co.publist.core.utils.Utils.Constants.CATEGORIES_COLLECTION_PATH
 import co.publist.core.utils.Utils.Constants.MY_CATEGORIES_COLLECTION_PATH
 import co.publist.core.utils.Utils.Constants.USERS_COLLECTION_PATH
-import com.google.firebase.firestore.CollectionReference
-import com.google.firebase.firestore.FieldPath
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.WriteBatch
+import com.google.firebase.firestore.*
 import io.reactivex.Completable
 import io.reactivex.Single
 import javax.inject.Inject
@@ -28,7 +25,7 @@ class CategoriesRepository @Inject constructor(
     override fun fetchAllCategories(): Single<ArrayList<Category>> {
         return Single.create { singleEmitter ->
             mFirebaseFirestore.collection(CATEGORIES_COLLECTION_PATH)
-                .get()
+                .get(Source.SERVER)
                 .addOnSuccessListener { querySnapshot ->
                     val categories = ArrayList<Category>()
                     for (document in querySnapshot) {
@@ -37,6 +34,9 @@ class CategoriesRepository @Inject constructor(
                         categories.add(category)
                     }
                     singleEmitter.onSuccess(categories)
+                }
+                .addOnFailureListener {
+                    singleEmitter.onError(it)
                 }
         }
     }

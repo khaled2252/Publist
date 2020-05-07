@@ -6,16 +6,15 @@ import android.os.Handler
 import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
-import android.widget.EditText
-import android.widget.FrameLayout
-import android.widget.ProgressBar
-import android.widget.Toast
+import android.widget.*
 import androidx.annotation.CallSuper
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import co.publist.R
 import co.publist.core.utils.Utils
+import com.google.android.material.snackbar.Snackbar
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import javax.inject.Inject
@@ -42,13 +41,12 @@ abstract class BaseActivity<MBaseViewModel : BaseViewModel>
             else hideLoading()
         })
 
-        viewModel.error.observe(this, Observer {
-            hideLoading()
+//        viewModel.error.observe(this, Observer {
+//            hideLoading()
 //            showError(it)
-        })
-    }
+//        })
 
-//    open fun showError(error: Error) {
+        //    open fun showError(error: Error) {
 //        val errorMessage: String =
 //            if (error.error != null && error.error.isNotEmpty()) error.error
 //            else if (error.errorRes != null) getString(error.errorRes)
@@ -59,6 +57,24 @@ abstract class BaseActivity<MBaseViewModel : BaseViewModel>
 //    open fun showSuccess(message: String) {
 //        showAlert(this, message, R.color.success_message_color)
 //    }
+
+        viewModel.noInternetConnection.observe(this, Observer {
+            Snackbar.make(
+                this.window.decorView.rootView,
+                getString(R.string.check_your_internet_connection),
+                Snackbar.LENGTH_LONG
+            ).show()
+
+            val refreshLayout = findViewById<SwipeRefreshLayout>(R.id.refreshLayout)
+            if (refreshLayout != null)
+                refreshLayout.isRefreshing = false
+
+            val noInternetPlaceHolder =
+                findViewById<LinearLayout>(R.id.noInternetConnectionPlaceholder)
+            if (noInternetPlaceHolder != null)
+                noInternetPlaceHolder.visibility = View.VISIBLE
+        })
+    }
 
     open fun hideLoading() {
         val progressBar = findViewById<ProgressBar>(R.id.progress_circular)
