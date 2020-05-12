@@ -142,7 +142,7 @@ object Utils {
             //Case where some images are removed , Undraw them then load new images
         }
 
-        //Load cached user image if is in topUsersId
+        //Load cached user image if is in topUsersId and load placeholders for other users till loaded
         if (user != null && topUsersIdCopyArray.contains(user.id!!)) {
             for (topUserIdIndex in 0 until topUsersIdCopyArray.size) {
                 if (topUsersIdCopyArray[topUserIdIndex] == user.id) {
