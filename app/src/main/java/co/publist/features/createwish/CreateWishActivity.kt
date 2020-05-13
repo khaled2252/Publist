@@ -60,7 +60,8 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
 
     override fun getBaseViewModelFactory() = viewModelFactory
 
-    private lateinit var adapter: ItemsAdapter
+    private lateinit var wishItemsAdapter: ItemsAdapter
+    private lateinit var itemTouchHelper: ItemTouchHelper
     private lateinit var categoriesFragment: CategoriesFragment
     private lateinit var sheetBehavior: BottomSheetBehavior<*>
     private var editedWish: WishAdapterItem? = null
@@ -169,11 +170,13 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
             titleTextView.text = getString(R.string.edit_wish)
             addCategoryTextView.text = ""
             categoryChip.visibility = View.VISIBLE
-            val currentDeviceLanguage = Locale.getDefault().language
-            categoryChip.text = editedWish?.getField<String>(currentDeviceLanguage)?.capitalize()
+            categoryChip.text = editedWish?.category!![0].name?.capitalize()
             categoriesFragment.viewModel.getCategories(editedWish?.category!![0])
             titleHintTextView.visibility = View.GONE
             titleEditText.setText(editedWish?.title)
+
+            if (editedWish!!.items!!.isNotEmpty())
+                editWishItemsLayout.visibility = View.VISIBLE
 
             if (!editedWish?.wishPhotoURL.isNullOrEmpty()) {
                 DataBindingAdapters.loadWishImage(photoImageView, editedWish?.wishPhotoURL!!)
@@ -188,21 +191,25 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
     }
 
     private fun setAdapter() {
-        adapter = ItemsAdapter { items ->
-            viewModel.items = items
+        wishItemsAdapter = ItemsAdapter { items ->
+            if (items.size > 0)
+                editWishItemsLayout.visibility = View.VISIBLE
+            else
+                editWishItemsLayout.visibility = View.GONE
+            viewModel.updateWishItems(items)
             viewModel.validateEntries()
-            itemsRecyclerView.scrollToPosition(viewModel.items.size - 1)
+            itemsRecyclerView.scrollToPosition(items.size - 1)
         }
-        itemsRecyclerView.adapter = adapter
-
+        wishItemsAdapter.setHasStableIds(true)
+        itemsRecyclerView.adapter = wishItemsAdapter
 
         // Setup ItemTouchHelper
         val callback = DragManageAdapter(
-            adapter,
+            wishItemsAdapter,
             UP or DOWN, START or END
         )
-        val helper = ItemTouchHelper(callback)
-        helper.attachToRecyclerView(itemsRecyclerView)
+        itemTouchHelper = ItemTouchHelper(callback)
+
     }
 
     private fun setObservers() {
@@ -243,8 +250,8 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
                 if (editedWish != null) {
                     val oldList = ArrayList(editedWish!!.items!!.entries
                         .sortedBy { it.value.orderId } // Sort map entries by order id
-                        .map { it.value.name!! }) // get list of names of values(items)
-                    adapter.populateOldList(oldList)
+                    )
+                    wishItemsAdapter.populateOldList(oldList)
                 }
             }
 
@@ -400,6 +407,28 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
         btnItemDone.setOnClickListener {
             itemDoneOnClick()
         }
+
+        editWishItemsLayout.setOnClickListener {
+            if (!wishItemsAdapter.isInEditingMode) {
+                // Enable editing mode
+                editWishItemsImageView.setColorFilter(
+                    ContextCompat.getColor(
+                        this,
+                        R.color.sunsetOrange
+                    )
+                )
+                itemTouchHelper.attachToRecyclerView(itemsRecyclerView)
+                viewModel.isInEditingWishItemsMode = true
+            } else {
+                // Disable editing mode
+                editWishItemsImageView.setColorFilter(0)
+                itemTouchHelper.attachToRecyclerView(null)
+                viewModel.isInEditingWishItemsMode = false
+            }
+
+            wishItemsAdapter.toggleEditingMode()
+            viewModel.validateEntries()
+        }
     }
 
     private fun setUpItemsRecyclerViewMaxHeight() {
@@ -412,7 +441,7 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
 
     private fun itemDoneOnClick() {
         if (itemEditText.text!!.isNotEmpty()) {
-            adapter.addItem(itemEditText.text.toString())
+            wishItemsAdapter.addItem(itemEditText.text.toString())
             itemEditText.text = null
         }
     }

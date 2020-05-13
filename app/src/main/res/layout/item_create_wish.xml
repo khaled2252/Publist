@@ -8,20 +8,25 @@
     android:paddingBottom="10dp"
     android:layout_marginEnd="50dp">
 
-
-    <ImageView
-        android:id="@+id/deleteItemImageView"
-        android:layout_width="13dp"
-        android:layout_height="13dp"
+    <LinearLayout
+        android:id="@+id/preItemLayout"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
         android:layout_marginStart="40dp"
-        android:layout_marginEnd="50dp"
+        android:padding="12dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_cross" />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <TextView
-        android:id="@+id/textView"
+        <ImageView
+            android:id="@+id/preItemImageView"
+            android:layout_width="13dp"
+            android:layout_height="13dp"
+            app:srcCompat="@drawable/ic_cross" />
+    </LinearLayout>
+
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/wishItemEditText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="13dp"
@@ -29,11 +34,25 @@
         android:textColor="@color/outerSpace"
         android:textSize="16sp"
         android:paddingEnd="50dp"
+        app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/reOrderItemImageView"
         app:layout_constraintHorizontal_bias="0"
-        app:layout_constraintStart_toEndOf="@+id/deleteItemImageView"
+        app:layout_constraintStart_toEndOf="@+id/preItemLayout"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Item" />
+
+    <ImageView
+        android:id="@+id/reOrderItemImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="40dp"
+        android:tint="@color/Manatee"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="1"
+        app:layout_constraintStart_toEndOf="@id/wishItemEditText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_reorder" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

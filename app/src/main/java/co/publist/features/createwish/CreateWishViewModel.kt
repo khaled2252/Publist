@@ -16,14 +16,19 @@ class CreateWishViewModel @Inject constructor(
     private val userRepository: UserRepositoryInterface
 ) : BaseViewModel() {
 
+    //LiveData
     val validationLiveData = MutableLiveData<Boolean>()
     val addingWishLiveData = MutableLiveData<Boolean>()
     val editingWishLiveData = MutableLiveData<Boolean>()
+
+    //Current user data
     var category: CategoryWish? = null
     var title = ""
     var wishImageUri = ""
-    var items = ArrayList<String>()
+    var wishItemsMap = emptyMap<String, WishItem>()
+    var isInEditingWishItemsMode = false
 
+    //Edited wish data
     var deletedOldPhoto = false
     private var isEditing = false
     private var oldListMap = emptyMap<String, WishItem>()
@@ -32,25 +37,27 @@ class CreateWishViewModel @Inject constructor(
     private var oldWishImageUrl: String? = null
     private lateinit var oldTimeStamp: Timestamp
 
-
     fun validateEntries() {
-        if (category != null && title.isNotBlank() && (items.size > 0))
+        if (category != null && title.isNotBlank() && (wishItemsMap.isNotEmpty()) && !isInEditingWishItemsMode)
             validationLiveData.postValue(true)
         else
             validationLiveData.postValue(false)
     }
 
     fun postWish() {
-        if (items.size < 3)
+        if (wishItemsMap.size < 3)
             addingWishLiveData.postValue(false)
         else {
-            val wish = makeWish(category!!, title, items)
+            val wish = makeWish(category!!, title, wishItemsMap)
             postWish(wish)
         }
     }
 
-    private fun makeWish(category: CategoryWish, title: String, items: ArrayList<String>): Wish {
-
+    private fun makeWish(
+        category: CategoryWish,
+        title: String,
+        wishItemsMap: Map<String, WishItem>
+    ): Wish {
         val categoryWish = category
         val user = userRepository.getUser()
         val creator = Creator(
@@ -59,46 +66,16 @@ class CreateWishViewModel @Inject constructor(
             user.name!!
         )
         val date = Timestamp(Calendar.getInstance().time)
-        val newItemIdList = arrayListOf<String>()
-        val newListMap = mutableMapOf<String, WishItem>()
 
-        val wish = Wish(
+        return Wish(
             category = arrayListOf(categoryWish),
             categoryId = arrayListOf(category.id!!),
             creator = creator,
             date = date,
-            title = title
+            title = title,
+            items = wishItemsMap,
+            itemsId = ArrayList(wishItemsMap.keys)
         )
-
-        for (itemPosition in 0 until items.size) {
-
-            if (isEditing) {
-                //getting old items from wish that is being edited
-                val oldItemValue = oldListMap.values.find { it.name == items[itemPosition] }
-                if (oldItemValue != null) {
-                    val oldItemKey = oldListMap.filterValues { it == oldItemValue }.keys.first()
-                    newItemIdList.add(oldItemKey)
-                    oldItemValue.orderId = itemPosition
-                    newListMap[oldItemKey] = oldItemValue
-                    continue
-                }
-
-            }
-
-            //Add new items
-            val id = UUID.randomUUID().toString().toUpperCase(Locale.getDefault())
-            newItemIdList.add(id)
-            val item = WishItem(
-                name = items[itemPosition],
-                orderId = itemPosition
-            )
-            newListMap[id] = item
-        }
-
-        wish.items = newListMap
-        wish.itemsId = newItemIdList
-
-        return wish
     }
 
     private fun postWish(wish: Wish) {
@@ -154,12 +131,19 @@ class CreateWishViewModel @Inject constructor(
         oldListMap = (editedWish.items as MutableMap<String, WishItem>).toList().sortedBy {
             it.second.orderId
         }.toMap()
-        items = ArrayList(oldListMap.values.map { it.name!! })
+        wishItemsMap = oldListMap
         oldWishId = editedWish.wishId!!
         oldTimeStamp = editedWish.date!!
         oldPhotoName = editedWish.photoName
         oldWishImageUrl = editedWish.wishPhotoURL
         validateEntries()
+    }
+
+    fun updateWishItems(wishItems: ArrayList<Pair<String, WishItem>>) {
+        wishItems.forEachIndexed { index, pair ->
+            pair.second.orderId = index
+        }
+        wishItemsMap = wishItems.toMap()
     }
 
 }
