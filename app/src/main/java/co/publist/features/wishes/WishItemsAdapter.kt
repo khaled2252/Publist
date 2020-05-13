@@ -89,29 +89,13 @@ class WishItemsAdapter(
             }
 
             itemView.completeButton.setOnClickListener {
-                if (user == null)
-                    showLoginPromptForGuest(it.context)
-                else {
-                    //Update Ui then remotely
-                    wishItem.done = !wishItem.done!! //Opposite of the previous state
-                    val incrementAmount = if (wishItem.done!!) 1 else -1
-                    wishItem.completeCount =
-                        wishItem.completeCount!! + incrementAmount
-                    if (wishItem.completeCount!! < TOP_USERS_THRESHOLD) {
-                        if (wishItem.done!!)
-                            wishItem.topCompletedUsersId?.add(user.id!!)
-                        else
-                            wishItem.topCompletedUsersId?.remove(user.id)
-                    }
-                    notifyItemChanged(position)
-
-                    completeListener(
-                        position,
-                        wishItem.done!!
-                    )
-                }
-
+                itemView.completeItem(wishItem, position)
             }
+
+            itemView.wishItemTextView.setOnClickListener {
+                itemView.completeItem(wishItem, position)
+            }
+
             itemView.likeViewsTextView.setOnClickListener {
                 if (user == null)
                     showLoginPromptForGuest(it.context)
@@ -133,6 +117,33 @@ class WishItemsAdapter(
                         wishItem.isLiked!!
                     )
                 }
+            }
+        }
+
+        private fun View.completeItem(
+            wishItem: WishItem,
+            position: Int
+        ) {
+            if (user == null)
+                showLoginPromptForGuest(this.context)
+            else {
+                //Update Ui then remotely
+                wishItem.done = !wishItem.done!! //Opposite of the previous state
+                val incrementAmount = if (wishItem.done!!) 1 else -1
+                wishItem.completeCount =
+                    wishItem.completeCount!! + incrementAmount
+                if (wishItem.completeCount!! < TOP_USERS_THRESHOLD) {
+                    if (wishItem.done!!)
+                        wishItem.topCompletedUsersId?.add(user.id!!)
+                    else
+                        wishItem.topCompletedUsersId?.remove(user.id)
+                }
+                notifyItemChanged(position)
+
+                completeListener(
+                    position,
+                    wishItem.done!!
+                )
             }
         }
     }

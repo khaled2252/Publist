@@ -13,8 +13,8 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 
-class ItemsAdapter(private val listChangedListener: (ArrayList<Pair<String, WishItem>>) -> Unit) :
-    RecyclerView.Adapter<ItemsAdapter.ItemViewHolder>() {
+class CreateWishItemsAdapter(private val listChangedListener: (ArrayList<Pair<String, WishItem>>) -> Unit) :
+    RecyclerView.Adapter<CreateWishItemsAdapter.ItemViewHolder>() {
     private var wishItemsMapList = ArrayList<Pair<String, WishItem>>()
     var isInEditingMode = false
     var deletedItemFromEditingPosition = -1

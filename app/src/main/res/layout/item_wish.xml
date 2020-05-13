@@ -30,6 +30,7 @@
             android:layout_marginTop="15dp"
             android:textColor="@color/Manatee"
             android:textSize="@dimen/wish_item_default_text_size"
+            android:clickable="true"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Travel" />
@@ -42,6 +43,7 @@
             android:layout_marginTop="15dp"
             android:textColor="@color/Manatee"
             android:textSize="@dimen/wish_item_default_text_size"
+            android:clickable="true"
             app:layout_constraintStart_toEndOf="@id/categoryNameTextView"
             app:layout_constraintTop_toTopOf="parent"
             tools:text=".18h" />
@@ -57,6 +59,7 @@
             android:fontFamily="@font/sfprodisplaybold"
             android:textColor="@color/dimGray"
             android:textSize="@dimen/item_wish_title_text_size"
+            android:clickable="true"
             app:layout_constrainedWidth="true"
             app:layout_constraintEnd_toStartOf="@id/wishActionImageView"
             app:layout_constraintHorizontal_bias="0"
@@ -83,6 +86,7 @@
             android:layout_marginStart="20dp"
             android:layout_marginTop="13.5dp"
             android:layout_marginEnd="15dp"
+            android:clickable="true"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/titleTextView"
             app:profilePictureUrl="@{imageUrl}"
@@ -96,6 +100,7 @@
             android:layout_marginTop="17dp"
             android:textColor="@color/Manatee"
             android:textSize="@dimen/wish_item_default_text_size"
+            android:clickable="true"
             app:layout_constraintStart_toEndOf="@id/profilePictureImageView"
             app:layout_constraintTop_toBottomOf="@id/titleTextView"
             tools:text="Kate Norris" />
@@ -107,6 +112,7 @@
             android:layout_marginTop="15dp"
             android:scaleType="fitXY"
             android:visibility="gone"
+            android:clickable="true"
             app:layout_constraintBottom_toTopOf="@id/wishItemsRecyclerView"
             app:layout_constraintTop_toBottomOf="@id/profilePictureImageView"
             app:wishImageUrl="@{imageUrl}"

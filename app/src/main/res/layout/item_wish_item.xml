@@ -51,6 +51,7 @@
                 android:layout_width="40dp"
                 android:layout_height="20dp"
                 android:layout_marginTop="15dp"
+                android:clickable="true"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/wishItemTextView"
                 app:layout_constraintEnd_toStartOf="@id/completedThisTextView">
@@ -88,6 +89,7 @@
                 android:layout_marginStart="3dp"
                 android:layout_marginTop="16dp"
                 android:textSize="@dimen/item_wish_item_default_text_size"
+                android:clickable="true"
                 app:layout_constraintStart_toEndOf="@id/topUsersLayout"
                 app:layout_constraintTop_toBottomOf="@id/wishItemTextView"
                 app:layout_constraintEnd_toStartOf="@id/likeViewsTextView"
@@ -128,6 +130,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
+                android:clickable="true"
                 tools:visibility="visible" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -2,9 +2,13 @@ package co.publist.core.utils
 
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
-import co.publist.features.createwish.ItemsAdapter
+import co.publist.features.createwish.CreateWishItemsAdapter
 
-class DragManageAdapter(private val adapter: ItemsAdapter, dragDirs: Int, swipeDirs: Int) :
+class DragManageAdapter(
+    private val adapterCreateWish: CreateWishItemsAdapter,
+    dragDirs: Int,
+    swipeDirs: Int
+) :
     ItemTouchHelper.SimpleCallback(dragDirs, 0) {
 
     override fun onMove(
@@ -12,7 +16,7 @@ class DragManageAdapter(private val adapter: ItemsAdapter, dragDirs: Int, swipeD
         viewHolder: RecyclerView.ViewHolder,
         target: RecyclerView.ViewHolder
     ): Boolean {
-        adapter.moveItem(viewHolder.adapterPosition, target.adapterPosition)
+        adapterCreateWish.moveItem(viewHolder.adapterPosition, target.adapterPosition)
         return true
     }
 

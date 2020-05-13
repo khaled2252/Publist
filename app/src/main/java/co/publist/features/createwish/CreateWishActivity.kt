@@ -60,7 +60,7 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
 
     override fun getBaseViewModelFactory() = viewModelFactory
 
-    private lateinit var wishItemsAdapter: ItemsAdapter
+    private lateinit var wishCreateWishItemsAdapter: CreateWishItemsAdapter
     private lateinit var itemTouchHelper: ItemTouchHelper
     private lateinit var categoriesFragment: CategoriesFragment
     private lateinit var sheetBehavior: BottomSheetBehavior<*>
@@ -191,7 +191,7 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
     }
 
     private fun setAdapter() {
-        wishItemsAdapter = ItemsAdapter { items ->
+        wishCreateWishItemsAdapter = CreateWishItemsAdapter { items ->
             if (items.size > 0)
                 editWishItemsLayout.visibility = View.VISIBLE
             else
@@ -200,12 +200,12 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
             viewModel.validateEntries()
             itemsRecyclerView.scrollToPosition(items.size - 1)
         }
-        wishItemsAdapter.setHasStableIds(true)
-        itemsRecyclerView.adapter = wishItemsAdapter
+        wishCreateWishItemsAdapter.setHasStableIds(true)
+        itemsRecyclerView.adapter = wishCreateWishItemsAdapter
 
         // Setup ItemTouchHelper
         val callback = DragManageAdapter(
-            wishItemsAdapter,
+            wishCreateWishItemsAdapter,
             UP or DOWN, START or END
         )
         itemTouchHelper = ItemTouchHelper(callback)
@@ -251,7 +251,7 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
                     val oldList = ArrayList(editedWish!!.items!!.entries
                         .sortedBy { it.value.orderId } // Sort map entries by order id
                     )
-                    wishItemsAdapter.populateOldList(oldList)
+                    wishCreateWishItemsAdapter.populateOldList(oldList)
                 }
             }
 
@@ -409,7 +409,7 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
         }
 
         editWishItemsLayout.setOnClickListener {
-            if (!wishItemsAdapter.isInEditingMode) {
+            if (!wishCreateWishItemsAdapter.isInEditingMode) {
                 // Enable editing mode
                 editWishItemsImageView.setColorFilter(
                     ContextCompat.getColor(
@@ -426,7 +426,7 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
                 viewModel.isInEditingWishItemsMode = false
             }
 
-            wishItemsAdapter.toggleEditingMode()
+            wishCreateWishItemsAdapter.toggleEditingMode()
             viewModel.validateEntries()
         }
     }
@@ -441,7 +441,7 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
 
     private fun itemDoneOnClick() {
         if (itemEditText.text!!.isNotEmpty()) {
-            wishItemsAdapter.addItem(itemEditText.text.toString())
+            wishCreateWishItemsAdapter.addItem(itemEditText.text.toString())
             itemEditText.text = null
         }
     }
