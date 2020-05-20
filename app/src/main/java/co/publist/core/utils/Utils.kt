@@ -144,7 +144,7 @@ object Utils {
 
         //Load cached user image if is in topUsersId and load placeholders for other users till loaded
         if (user != null && topUsersIdCopyArray.contains(user.id!!)) {
-            for (topUserIdIndex in 0 until topUsersIdCopyArray.size) {
+            for (topUserIdIndex in topUsersIdCopyArray.size - 1 downTo 0) {
                 if (topUsersIdCopyArray[topUserIdIndex] == user.id) {
                     loadProfilePicture(imageViewArrayList[topUserIdIndex], user.profilePictureUrl)
                     topUsersIdCopyArray.removeAt(topUserIdIndex)
