@@ -68,6 +68,13 @@
             android:theme="@style/AppTheme.WishDetailsScreen"
             android:screenOrientation="portrait"/>
 
+        <activity
+            android:name=".features.onboarding.OnBoardingActivity"
+            android:launchMode="singleTop"
+            android:label="On boarding"
+            android:theme="@style/AppTheme.OnBoarding"
+            android:screenOrientation="portrait" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"

@@ -68,6 +68,12 @@
     <string name="undo">Undo</string>
     <string name="check_your_internet_connection">Please check your internet connection</string>
     <string name="no_internet_connection">No internet connection</string>
+    <string name="next">Next</string>
+    <string name="get_started">Get started</string>
+    <string name="onboarding_text1">Get the latest list you are interested in</string>
+    <string name="onboarding_text2">Create your own list and share it with others</string>
+    <string name="onboarding_text3">Complete , like or check the most important items</string>
+    <string name="onboarding_text4">Customize your interests and follow up categories</string>
 
 </resources>
 

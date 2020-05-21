@@ -39,6 +39,9 @@
     <!-- Home screen -->
     <style name="AppTheme.HomeScreen"></style>
 
+    <!-- OnBoarding screen -->
+    <style name="AppTheme.OnBoarding"></style>
+
     <style name="MyBottomSheetDialog" parent="AppTheme">
         <item name="android:windowFrame">@null</item>
         <item name="android:windowBackground">@android:color/transparent</item>

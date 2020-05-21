@@ -8,6 +8,7 @@ import co.publist.features.intro.IntroActivity
 import co.publist.features.login.LoginActivity
 import co.publist.features.myfavorites.MyFavoritesFragment
 import co.publist.features.mylists.MyListsFragment
+import co.publist.features.onboarding.OnBoardingActivity
 import co.publist.features.profile.ProfileActivity
 import co.publist.features.splash.SplashActivity
 import co.publist.features.wishdetails.WishDetailsActivity
@@ -54,5 +55,8 @@ abstract class ViewsModules {
 
     @ContributesAndroidInjector
     abstract fun contributeWishDetailsActivity(): WishDetailsActivity
+
+    @ContributesAndroidInjector
+    abstract fun contributeOnBoardingActivity(): OnBoardingActivity
 
 }

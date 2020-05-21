@@ -13,6 +13,7 @@ import co.publist.core.utils.Utils
 import co.publist.features.editprofile.EditProfileActivity
 import co.publist.features.home.HomeActivity
 import co.publist.features.login.LoginActivity
+import co.publist.features.onboarding.OnBoardingActivity
 import javax.inject.Inject
 
 
@@ -32,19 +33,28 @@ class SplashActivity : BaseActivity<SplashViewModel>() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
         viewModel.onCreated()
-        viewModel.userLoggedIn.observe(this, Observer { pair ->
+        viewModel.userLoggedIn.observe(this, Observer { data ->
             Handler().postDelayed({
-                val isNewUser = pair.first
-                val isMyCategoriesEmpty = pair.second
+                val isNewUser = data.first
+                val isMyCategoriesEmpty = data.second
+                val isOnBoardingFinished = data.third
                 if (!isNewUser) {
                     if (isMyCategoriesEmpty)
                         navigateEditProfile()
                     else
                         navigateToHome()
-                } else
+                } else if (!isOnBoardingFinished)
+                    navigateToOnBoarding()
+                else
                     navigateToLogin()
             }, Utils.Constants.SPLASH_DELAY)
         })
+    }
+
+    private fun navigateToOnBoarding() {
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+        startActivity(Intent(this, OnBoardingActivity::class.java))
+        finish()
     }
 
     private fun navigateEditProfile() {

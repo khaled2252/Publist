@@ -8,7 +8,7 @@
     <string name="intro_headline">اختر بعض من الفئات لعرض قوائم الامنيات</string>
     <string name="already_have_an_account">هل لديك حساب؟</string>
     <string name="log_in">تسجيل الدخول</string>
-    <string name="skip">تخطى من دون اختيارات</string>
+    <string name="skip">تخطى</string>
     <string name="save">حفظ</string>
     <string name="edit_profile">اختر الفئات المفضلة لديك</string>
     <string name="saved">تم الحفظ!</string>
@@ -67,4 +67,10 @@
     <string name="undo">الغاء</string>
     <string name="check_your_internet_connection">من فضلك تأكد انك متصل بالانترنت</string>
     <string name="no_internet_connection">لا يوجد انترنت</string>
+    <string name="next">التالى</string>
+    <string name="get_started">ابدأ</string>
+    <string name="onboarding_text1">تعرف على اخر قوائم الامنيات</string>
+    <string name="onboarding_text2">اضف قائمة امنيات خاصة بك و شاركها مع الجميع</string>
+    <string name="onboarding_text3">يمكنك ان تنجز او تعجب اى من النقاط المهمة</string>
+    <string name="onboarding_text4">يمكنك ان ان تختار او تعدل فئاتك المفضلة</string>
 </resources>

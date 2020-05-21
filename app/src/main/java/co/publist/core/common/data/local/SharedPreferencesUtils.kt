@@ -45,7 +45,14 @@ class SharedPreferencesUtils @Inject constructor(context: Context) :
         getPref().edit().remove(USER_TAG).apply()
     }
 
-    //
+    override fun setOnBoardingFinished() {
+        putString(ON_BOARDING_STATUS_TAG, FINISHED_TAG)
+    }
+
+    override fun getOnBoardingStatus(): Boolean {
+        return getString(ON_BOARDING_STATUS_TAG) == FINISHED_TAG
+    }
+
 //    override fun updateUserCategories(categoriesList: ArrayList<String>) {
 //        val gson = Gson()
 //        val json = getPref().getString(USER_TAG, null)
@@ -72,7 +79,8 @@ class SharedPreferencesUtils @Inject constructor(context: Context) :
     companion object {
         private const val MY_PREFS = "SHARED_PREFERENCES"
         private const val USER_TAG = "User"
-        private const val TEMPORARY_CATEGORIES_TAG = "Categories"
+    private const val ON_BOARDING_STATUS_TAG = "isOnBoardingFinished"
+    private const val FINISHED_TAG = "finished"
     }
 }
 
@@ -87,6 +95,8 @@ interface PublistSharedPreferencesInterface {
     fun getUser(): User?
     fun setUser(user: User)
     fun deleteUser()
+    fun setOnBoardingFinished()
+    fun getOnBoardingStatus(): Boolean
 //    fun updateUserCategories(categoriesList: ArrayList<String>)
 //    fun saveTemporaryCategories(selectedCategoriesList: ArrayList<String>)
 //    fun getTemporaryCategories(): ArrayList<String>?

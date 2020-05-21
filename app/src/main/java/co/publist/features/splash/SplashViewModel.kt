@@ -1,6 +1,7 @@
 package co.publist.features.splash
 
 import androidx.lifecycle.MutableLiveData
+import co.publist.core.common.data.local.LocalDataSource
 import co.publist.core.common.data.repositories.user.UserRepositoryInterface
 import co.publist.core.platform.BaseViewModel
 import co.publist.features.categories.data.CategoriesRepositoryInterface
@@ -10,26 +11,31 @@ import javax.inject.Inject
 
 class SplashViewModel @Inject constructor(
     private val userRepository: UserRepositoryInterface,
-    private val categoryRepository: CategoriesRepositoryInterface
+    private val categoryRepository: CategoriesRepositoryInterface,
+    private val localDataSource: LocalDataSource
 ) :
     BaseViewModel() {
 
-    val userLoggedIn = MutableLiveData<Pair<Boolean, Boolean>>()
+    val userLoggedIn = MutableLiveData<Triple<Boolean, Boolean, Boolean>>()
 
     fun onCreated() {
         var isNewUser = false
         var isMyCategoriesEmpty = false
-        val user = userRepository.getUser()
+        var isOnBoardingFinished = false
 
+        val user = userRepository.getUser()
         if (user == null)
             isNewUser = true
+
+        if (localDataSource.getSharedPreferences().getOnBoardingStatus())
+            isOnBoardingFinished = true
 
         //Checking Local , because if user saved categories before they are stored in local
         subscribe(categoryRepository.getLocalSelectedCategories(), Consumer {
             if (it.isNullOrEmpty())
                 isMyCategoriesEmpty = true
 
-            userLoggedIn.postValue(Pair(isNewUser, isMyCategoriesEmpty))
+            userLoggedIn.postValue(Triple(isNewUser, isMyCategoriesEmpty, isOnBoardingFinished))
         })
 
     }
