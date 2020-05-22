@@ -27,6 +27,7 @@ import co.publist.features.profile.ProfileActivity
 import co.publist.features.wishdetails.WishDetailsActivity
 import kotlinx.android.synthetic.main.fragment_wishes.*
 import javax.inject.Inject
+import kotlin.math.absoluteValue
 
 
 class WishesFragment : BaseFragment<WishesViewModel>() {
@@ -141,11 +142,14 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
                 seenCountListener = { wishId ->
                     viewModel.incrementSeenCount(wishId)
                 },
-                scrollListener = { position ->
-                    Handler().postDelayed(
-                        { wishesRecyclerView.smoothScrollToPosition(position) },
-                        100
-                    )
+                seeMoreListener = { position ->
+                    wishesRecyclerView.post {
+                        //Scroll to the beginning of the wish (if  aprox 55 % or less of it is shown from the bottom side)
+                        //i.e if 60 % of it is shown do nothing
+                        val currentWishView = wishesRecyclerView.getChildAt(0)
+                        if (currentWishView.top.absoluteValue > currentWishView.height * 0.55)
+                            wishesRecyclerView.smoothScrollToPosition(position)
+                    }
                 }, getCategoryNameById = { categoryId ->
                     viewModel.getCategoryNameById(categoryId)
                 })
@@ -196,9 +200,11 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
             },
             seenCountListener = { wishId ->
                 viewModel.incrementSeenCount(wishId)
-            }, scrollListener = { position ->
+            }, seeMoreListener = { position ->
                 wishesRecyclerView.post {
-                    wishesRecyclerView.smoothScrollToPosition(position)
+                    val currentWishView = wishesRecyclerView.getChildAt(0)
+                    if (currentWishView.top.absoluteValue > currentWishView.height * 0.55)
+                        wishesRecyclerView.smoothScrollToPosition(position)
                 }
             }, getCategoryNameById = { categoryId ->
                 viewModel.getCategoryNameById(categoryId)

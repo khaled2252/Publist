@@ -20,7 +20,6 @@ import co.publist.core.utils.Utils.Constants.LISTS
 import co.publist.core.utils.Utils.Constants.LOADING_MORE
 import co.publist.core.utils.Utils.Constants.MAX_VISIBLE_WISH_ITEMS
 import co.publist.core.utils.Utils.Constants.WISH_DETAILS_INTENT
-import co.publist.core.utils.Utils.get90DegreesAnimation
 import co.publist.databinding.ItemWishBinding
 import co.publist.features.wishdetails.WishDetailsActivity
 import com.google.android.material.snackbar.Snackbar
@@ -37,14 +36,14 @@ class ProfileWishesAdapter(
     val completeListener: (itemId: String, wishId: String, isCreator: Boolean, isDone: Boolean) -> Unit,
     val likeListener: (itemId: String, wishId: String, isLiked: Boolean) -> Unit,
     val seenCountListener: (wishId: String) -> Unit,
-    val scrollListener: (position: Int) -> Unit,
+    val seeMoreListener: (position: Int) -> Unit,
     val getCategoryNameById: (categoryId: String) -> String
 ) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private lateinit var loadMoreView: View
     private val wishList = ArrayList<WishAdapterItem?>()
     var loadMoreViewHeight = 0
-    val expandableViewHolders = mutableMapOf<Int, WishViewHolder>()
+    val expandableViewHolders = mutableMapOf<String, WishViewHolder>()
     var doneItemsList = ArrayList<String>()
     var likedItemsList = ArrayList<String>()
     var currentRemovedWish: WishAdapterItem? = null
@@ -77,7 +76,7 @@ class ProfileWishesAdapter(
         if (holder is WishViewHolder) {
             val wish = wishList[position]
 
-            if (wish!!.items!!.size <= MAX_VISIBLE_WISH_ITEMS) //To avoid recycling expandable items to keep their state
+            if (wish!!.items!!.size <= MAX_VISIBLE_WISH_ITEMS) //To preserve expandable items see more layout
                 holder.setIsRecyclable(false)
 
             if (wish.wishId != null) //Fixme checking because of iOS bug where some wishes are without wishId
@@ -216,11 +215,11 @@ class ProfileWishesAdapter(
                         applySeeMoreText()
                         seeMoreLayout.setOnClickListener {
                             if (!isExpanded) {
-                                expandWish(position)
+                                expandWish(position, true)
                                 //Collapse all other expandable wishes except for the current one expanding
-                                for (viewHolderPosition in expandableViewHolders.keys) {
-                                    if (viewHolderPosition != position && expandableViewHolders[viewHolderPosition]!!.isExpanded)
-                                        expandableViewHolders[viewHolderPosition]!!.collapseWish()
+                                for (viewHolderWishId in expandableViewHolders.keys) {
+                                    if (viewHolderWishId != holderWish.wishId && expandableViewHolders[viewHolderWishId]!!.isExpanded)
+                                        expandableViewHolders[viewHolderWishId]!!.collapseWish()
                                 }
                             } else {
                                 val intent = Intent(it.context, WishDetailsActivity::class.java)
@@ -228,7 +227,9 @@ class ProfileWishesAdapter(
                                 it.context.startActivity(intent)
                             }
                         }
-                        expandableViewHolders[position] = this@WishViewHolder
+                        if (expandableViewHolders.containsKey(holderWish.wishId) && expandableViewHolders[holderWish.wishId]!!.isExpanded) //Expand wish that was expanded after loading more wishes (causing it to be recycled)
+                            expandWish(position, false)
+                        expandableViewHolders[holderWish.wishId!!] = this@WishViewHolder
                     }
                     setWishItemsAdapter(isExpanded)
                 }
@@ -306,11 +307,12 @@ class ProfileWishesAdapter(
             }
         }
 
-        private fun expandWish(position: Int) {
-            scrollListener(position)
+        private fun expandWish(position: Int, callScrolling: Boolean) {
+            if (callScrolling)
+                seeMoreListener(position)
             isExpanded = true
             setWishItemsAdapter(isExpanded)
-            binding.arrowImageView.startAnimation(get90DegreesAnimation())
+            binding.arrowImageView.setImageResource(R.drawable.ic_right)
             binding.seeMoreTextSwitcher.setText(binding.seeMoreTextSwitcher.context.getString(R.string.go_to_details))
         }
 
@@ -355,7 +357,7 @@ class ProfileWishesAdapter(
         snackbar.setAction(view.context.getString(R.string.undo)) {
             removeWish(currentRemovedWish!!, currentRemovedWishPosition, false)
             isDeleted = false
-            scrollListener(currentRemovedWishPosition)
+            seeMoreListener(currentRemovedWishPosition)
         }
         snackbar.show()
     }
