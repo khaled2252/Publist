@@ -155,6 +155,13 @@ object Utils {
                         null
                     ) //Load placeholders for images to be loaded
             }
+        } else {// case guest , load placeholders for all images
+            for (index in topUsersIdCopyArray.indices) {
+                loadProfilePicture(
+                    imageViewArrayList[index],
+                    null
+                )
+            }
         }
 
         if (topUsersIdCopyArray.isNotEmpty()) {

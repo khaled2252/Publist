@@ -200,13 +200,15 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
             },
             seenCountListener = { wishId ->
                 viewModel.incrementSeenCount(wishId)
-            }, seeMoreListener = { position ->
+            },
+            seeMoreListener = { position ->
                 wishesRecyclerView.post {
                     val currentWishView = wishesRecyclerView.getChildAt(0)
                     if (currentWishView.top.absoluteValue > currentWishView.height * 0.55)
                         wishesRecyclerView.smoothScrollToPosition(position)
                 }
-            }, getCategoryNameById = { categoryId ->
+            },
+            getCategoryNameById = { categoryId ->
                 viewModel.getCategoryNameById(categoryId)
             })
         val linearLayoutManager = LinearLayoutManager(this.context)
