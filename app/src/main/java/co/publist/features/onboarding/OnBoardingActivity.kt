@@ -91,9 +91,9 @@ class OnBoardingActivity : BaseActivity<OnBoardingViewModel>() {
     private fun setupImageSlider() {
         sliderAdapter = SliderAdapter(
             arrayListOf(
+                R.drawable.onboarding_one,
                 R.drawable.onboarding_two,
-                R.drawable.onboarding_four,
-                R.drawable.onboarding_two,
+                R.drawable.onboarding_three,
                 R.drawable.onboarding_four
             )
         )
