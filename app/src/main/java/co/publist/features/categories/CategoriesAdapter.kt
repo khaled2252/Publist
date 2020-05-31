@@ -58,7 +58,7 @@ class CategoriesAdapter(
                 itemView.btnCategory.setBackgroundColor(
                     ContextCompat.getColor(
                         itemView.btnCategory.context,
-                        R.color.outerSpace
+                        R.color.categoryColor
                     )
                 )
                 itemView.btnCategory.setTextColor(
@@ -80,7 +80,7 @@ class CategoriesAdapter(
                 itemView.btnCategory.setTextColor(
                     ContextCompat.getColor(
                         itemView.btnCategory.context,
-                        R.color.outerSpace
+                        R.color.categoryColor
                     )
                 )
             }

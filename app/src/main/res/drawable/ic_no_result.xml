@@ -12,7 +12,7 @@
             <clip-path android:pathData="M-140,596L360,596L360,-486.667L-140,-486.667Z" />
             <path
                 android:fillAlpha="1"
-                android:fillColor="#fafafa"
+                android:fillColor="@color/colorPrimary"
                 android:fillType="nonZero"
                 android:pathData="M-6.667,-5.333L229.333,-5.333L229.333,101.333L-6.667,101.333Z"
                 android:strokeColor="#00000000" />

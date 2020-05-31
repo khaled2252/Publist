@@ -22,7 +22,8 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:background="@color/colorPrimaryDark">
 
                 <androidx.appcompat.widget.Toolbar
                     android:id="@+id/app_bar"
@@ -103,7 +104,7 @@
                     android:layout_marginEnd="@dimen/horizontal_default_margin"
                     android:fontFamily="@font/sfprodisplaybold"
                     android:gravity="center"
-                    android:textColor="@android:color/black"
+                    android:textColor="@color/inverse"
                     android:textSize="16sp"
                     app:layout_constraintBottom_toTopOf="@id/tab_layout"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -122,7 +123,8 @@
                     app:tabMode="fixed"
                     app:tabRippleColor="@android:color/transparent"
                     app:tabIndicator="@drawable/tab_indicator"
-                    app:tabSelectedTextColor="@android:color/black"
+                    app:tabSelectedTextColor="@color/inverse"
+                    android:background="@color/colorPrimaryDark"
                     app:tabTextAppearance="@style/MyCustomTextAppearance"
                     app:tabTextColor="@color/tab_text_selector" />
 

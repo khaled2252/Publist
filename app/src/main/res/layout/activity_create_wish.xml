@@ -15,13 +15,14 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:context=".features.createwish.CreateWishActivity">
+            tools:context=".features.createwish.CreateWishActivity"
+            android:background="@color/colorPrimaryDark">
 
             <com.google.android.material.appbar.AppBarLayout
                 android:id="@+id/app_bar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/white"
+                android:background="@color/colorPrimaryDark"
                 app:elevation="0dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -29,7 +30,8 @@
 
                 <androidx.appcompat.widget.Toolbar
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:background="@color/colorPrimaryDark">
 
                     <include layout="@layout/back_button_layout" />
 
@@ -51,12 +53,14 @@
                 android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/app_bar">
+                app:layout_constraintTop_toBottomOf="@+id/app_bar"
+                android:background="@color/colorPrimary">
 
                 <TextView
                     android:id="@+id/addCategoryTextView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:drawableTint="@color/outerSpace"
                     android:drawableEnd="@drawable/ic_plus"
                     android:fontFamily="@font/sfprodisplaysemibold"
                     android:paddingStart="40dp"
@@ -118,7 +122,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="30dp"
                         android:layout_marginEnd="30dp"
-                        app:boxBackgroundColor="@color/white"
+                        app:boxBackgroundColor="@color/colorPrimary"
                         app:boxStrokeColor="@color/text_input_layout_stroke_color"
                         app:boxStrokeWidth="1dp"
                         app:hintEnabled="false">
@@ -260,7 +264,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/add_item_hint"
-                    app:boxBackgroundColor="@color/white"
+                    app:boxBackgroundColor="@color/colorPrimary"
                     app:boxStrokeColor="@color/text_input_layout_stroke_color"
                     app:boxStrokeWidth="1dp"
                     app:hintAnimationEnabled="false"
@@ -276,7 +280,7 @@
                         android:maxLines="1"
                         android:paddingEnd="50dp"
                         android:nextFocusForward="@id/itemEditText"
-                        android:textColor="@color/dimGray" />
+                        android:textColor="@color/outerSpace" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -286,6 +290,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="end|center"
                     android:padding="13dp"
+                    android:backgroundTint="@color/dimGray"
                     android:background="?android:attr/selectableItemBackground"
                     android:src="@drawable/ic_done" />
             </FrameLayout>
@@ -302,6 +307,7 @@
                 android:enabled="false"
                 android:fontFamily="@font/sfprodisplaybold"
                 android:text="@string/create_wish_post"
+                android:textColor="@color/inverse"
                 app:cornerRadius="10dp"
                 app:layout_constraintBottom_toBottomOf="parent" />
 
@@ -321,7 +327,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/bg_rounded"
-        android:backgroundTint="@color/white"
+        android:backgroundTint="@color/colorPrimaryDark"
         android:clipToPadding="true"
         android:orientation="vertical"
         android:paddingBottom="30dp"

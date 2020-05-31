@@ -53,7 +53,7 @@ dependencies {
 
     //Authentication
     implementation 'com.google.android.gms:play-services-auth:17.0.0'
-    implementation 'com.facebook.android:facebook-login:5.13.0'
+    implementation 'com.facebook.android:facebook-login:7.0.0'
 
     //Firebase
     implementation 'com.google.firebase:firebase-core:17.2.2'

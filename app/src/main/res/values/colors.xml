@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="sunsetOrange">#ff5a60</color>
+    <color name="colorPrimary">#ffffff</color>
+    <color name="colorPrimaryDark">#ffffff</color>
     <color name="dimGray">#646464</color>
-    <color name="outerSpace">#4a4a4a</color>
-    <color name="taupeGray">#8e8e93</color>
-    <color name="gray">#EDEFF1</color>
-    <color name="cornflowerBlue">#5699ff</color>
-    <color name="white">#ffffff</color>
-    <color name="platinum">#e6e6e6</color>
     <color name="Manatee">#9b9b9b</color>
+    <color name="taupeGray">#8e8e93</color>
+    <color name="platinum">#e6e6e6</color>
+    <color name="outerSpace">#4a4a4a</color>
+    <color name="categoryColor">#4a4a4a</color>
+    <color name="cornflowerBlue">#5699ff</color>
+    <color name="gray">#EDEFF1</color>
     <color name="old_lavender">#777474</color>
     <color name="dark_grey">#a7a7a7</color>
     <color name="liver">#505050</color>
+    <color name="inverse">#000000</color>
 </resources>
