@@ -10,7 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="7dp"
-        android:textColor="@color/gray"
+        android:textColor="@color/outerSpace"
         android:backgroundTint="@color/gray"
         android:fontFamily="@font/sfprodisplaysemibold"
         android:textSize="@dimen/default_text_size"
