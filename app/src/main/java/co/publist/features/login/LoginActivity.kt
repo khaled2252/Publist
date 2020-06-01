@@ -7,6 +7,7 @@ import androidx.lifecycle.Observer
 import co.publist.R
 import co.publist.core.platform.BaseActivity
 import co.publist.core.platform.ViewModelFactory
+import co.publist.core.utils.Utils
 import co.publist.core.utils.Utils.Constants.EMAIL_PERMISSION
 import co.publist.core.utils.Utils.Constants.PROFILE_PICTURE_PERMISSION
 import co.publist.features.editprofile.EditProfileActivity
@@ -19,6 +20,7 @@ import com.facebook.login.LoginResult
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.common.api.ApiException
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_login.*
 import timber.log.Timber
 import javax.inject.Inject
@@ -51,7 +53,7 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == RC_SIGN_IN) {
+        if (requestCode == RC_SIGN_IN) { //Coming from GoogleSignIn
             val task = GoogleSignIn.getSignedInAccountFromIntent(data)
             try {
                 // Google Sign In was successful, authenticate with Firebase
@@ -60,7 +62,7 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
             } catch (e: ApiException) {
                 Timber.e(e, "Google sign in failed")
             }
-        } else
+        } else //Coming from Facebook CallBackManager
             mCallbackManager.onActivityResult(requestCode, resultCode, data)
 
         super.onActivityResult(requestCode, resultCode, data)
@@ -95,7 +97,12 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
                 }
 
                 override fun onError(error: FacebookException) {
-                    Timber.d(error, "facebook:onError")
+                    if (!Utils.isConnectedToNetwork(this@LoginActivity))
+                        Snackbar.make(
+                            this@LoginActivity.window.decorView.rootView,
+                            getString(R.string.check_your_internet_connection),
+                            Snackbar.LENGTH_LONG
+                        ).show()
                 }
             })
     }

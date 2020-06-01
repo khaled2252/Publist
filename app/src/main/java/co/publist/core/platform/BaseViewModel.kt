@@ -3,6 +3,7 @@ package co.publist.core.platform
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.algolia.search.saas.AlgoliaException
+import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.functions.FirebaseFunctionsException
 import io.reactivex.Completable
@@ -156,7 +157,8 @@ abstract class BaseViewModel : ViewModel() {
             .doOnError {
                 Timber.e(it)
                 handleError(it)
-                if (it is FirebaseFirestoreException && it.code == FirebaseFirestoreException.Code.UNAVAILABLE ||
+                if (it is FirebaseNetworkException || //While logging in using google
+                    it is FirebaseFirestoreException && it.code == FirebaseFirestoreException.Code.UNAVAILABLE ||
                     it is FirebaseFirestoreException && it.code == FirebaseFirestoreException.Code.INTERNAL ||
                     it is AlgoliaException
                 )
@@ -177,7 +179,8 @@ abstract class BaseViewModel : ViewModel() {
         return completable.doOnError {
             Timber.e(it)
             handleError(it)
-            if (it is FirebaseFirestoreException && it.code == FirebaseFirestoreException.Code.UNAVAILABLE ||
+            if (it is FirebaseNetworkException ||
+                it is FirebaseFirestoreException && it.code == FirebaseFirestoreException.Code.UNAVAILABLE ||
                 it is FirebaseFunctionsException && it.code == FirebaseFunctionsException.Code.INTERNAL ||
                 it is AlgoliaException
             )

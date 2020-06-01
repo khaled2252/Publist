@@ -77,6 +77,11 @@ class ProfileActivity : BaseActivity<ProfileViewModel>() {
             nameTextView.text = user.name
             loadProfilePicture(profilePictureImageView, user.profilePictureUrl)
         })
+
+        viewModel.logoutLiveData.observe(this, Observer {
+            finishAffinity() //To clear all past activities
+            startActivity(Intent(this, LoginActivity::class.java))
+        })
     }
 
     private fun setListeners() {
@@ -95,8 +100,6 @@ class ProfileActivity : BaseActivity<ProfileViewModel>() {
             builder.setMessage(getString(R.string.logout_dialog_title))
             builder.setPositiveButton(getString(R.string.yes)) { _, _ ->
                 viewModel.handleLogout()
-                finishAffinity() //To clear all past activities
-                startActivity(Intent(this, LoginActivity::class.java))
             }
             builder.setNegativeButton(getString(R.string.cancel)) { _, _ ->
             }

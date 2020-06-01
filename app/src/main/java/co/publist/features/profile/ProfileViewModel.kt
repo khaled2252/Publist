@@ -20,6 +20,7 @@ class ProfileViewModel @Inject constructor(
 
 ) : BaseViewModel() {
     var userLiveData = MutableLiveData<User>()
+    var logoutLiveData = MutableLiveData<Boolean>()
 
     init {
         userLiveData.postValue(userRepository.getUser())
@@ -31,14 +32,19 @@ class ProfileViewModel @Inject constructor(
         userRepository.deleteCurrentUser()
 
         //Remotely
-        mGoogleSignInClient.signOut() //Google
+        mGoogleSignInClient.signOut().addOnSuccessListener {//Google
+            logoutLiveData.postValue(true)
+        }
 
         GraphRequest( //Facebook
             AccessToken.getCurrentAccessToken(),
             "/me/permissions/",
             null,
             HttpMethod.DELETE,
-            GraphRequest.Callback { mLoginManager.logOut() })
+            GraphRequest.Callback {
+                mLoginManager.logOut()
+                logoutLiveData.postValue(true)
+            })
             .executeAsync()
     }
 }

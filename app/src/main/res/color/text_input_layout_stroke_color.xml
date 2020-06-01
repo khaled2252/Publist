@@ -1,6 +1,6 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:color="@color/gray" android:state_focused="true" />
-    <item android:color="@color/gray" android:state_hovered="true" />
-    <item android:color="@color/gray" android:state_enabled="true" />
-    <item android:color="@color/gray" />
+    <item android:color="@color/platinum" android:state_focused="true" />
+    <item android:color="@color/platinum" android:state_hovered="true" />
+    <item android:color="@color/platinum" android:state_enabled="true" />
+    <item android:color="@color/platinum" />
 </selector>
