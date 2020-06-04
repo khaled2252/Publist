@@ -323,7 +323,7 @@ class ProfileWishesAdapter(
         private fun collapseWish() {
             isExpanded = false
             setWishItemsAdapter(isExpanded)
-            binding.arrowImageView.clearAnimation()
+            binding.arrowImageView.setImageResource(R.drawable.ic_down)
             applySeeMoreText()
         }
     }
