@@ -726,8 +726,7 @@ class WishesRepository @Inject constructor(
                 singleEmitter.onSuccess(arrayListOf()) //Return empty array instead of doing Firestore network call (because whereIn filter requires non empty array)
             else
                 mFirebaseFirestore.collection(WISHES_COLLECTION_PATH)
-                    .whereIn(WISH_ID_FIELD, wishIdsArray)
-                    .orderBy(DATE_FIELD, Query.Direction.DESCENDING)
+                    .whereIn(FieldPath.documentId(), wishIdsArray)
                     .get(Source.SERVER)
                     .addOnSuccessListener { querySnapshot ->
                         singleEmitter.onSuccess(Mapper.mapToWishArrayList(querySnapshot))

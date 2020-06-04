@@ -70,6 +70,10 @@ class PublicWishesAdapter(
         }
     }
 
+    override fun getItemId(position: Int): Long {
+        return wishList[position]?.wishId.hashCode().toLong()
+    }
+
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (holder is WishViewHolder) {
             val wish = wishList[position]

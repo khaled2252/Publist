@@ -165,7 +165,7 @@ object Mapper {
     fun mapToWishArrayList(documents: QuerySnapshot): ArrayList<Wish> {
         var arrayList = ArrayList<Wish>()
         for (document in documents)
-            arrayList.add(document.toObject(Wish::class.java))
+            arrayList.add(mapToWish(document))
         arrayList.sortByDescending { it.date }
         return arrayList
     }

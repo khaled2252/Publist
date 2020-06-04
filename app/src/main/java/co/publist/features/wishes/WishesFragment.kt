@@ -62,6 +62,8 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
     private fun setObservers() {
         viewModel.preLoadedWishesType.observe(viewLifecycleOwner, Observer { type ->
             refreshLayout.isRefreshing = true
+            refreshLayout.setColorSchemeResources(R.color.sunsetOrange)
+            refreshLayout.setProgressBackgroundColorSchemeResource(R.color.colorPrimary)
             wishesType = type
             if (wishesType == PUBLIC || wishesType == SEARCH || wishesType == DETAILS) {
                 setPublicWishesAdapter()
@@ -154,6 +156,24 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
                     viewModel.getCategoryNameById(categoryId)
                 })
 
+        val linearLayoutManager = LinearLayoutManager(this.context)
+        wishesRecyclerView.layoutManager = linearLayoutManager
+
+        if (wishesType != DETAILS) {
+            scrollListener = RecyclerViewLoadMoreScroll(linearLayoutManager)
+            scrollListener.setOnLoadMoreListener(object : OnLoadMoreListener {
+                override fun onLoadMore() {
+                    if (viewModel.isLoadingMore) {
+                        profileWishesAdapter.renderLoadMoreUi(true)
+                        viewModel.loadWishes(wishesType)
+                    }
+                }
+
+            })
+            wishesRecyclerView.addOnScrollListener(scrollListener)
+        }
+
+        profileWishesAdapter.setHasStableIds(true)
         val placeHolder =
             this.parentFragment?.view?.findViewById<LinearLayout>(R.id.placeHolderView)
         profileWishesAdapter.registerAdapterDataObserver(
@@ -162,20 +182,7 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
                 placeHolder!!
             )
         )
-        val linearLayoutManager = LinearLayoutManager(this.context)
-        wishesRecyclerView.layoutManager = linearLayoutManager
 
-        scrollListener = RecyclerViewLoadMoreScroll(linearLayoutManager)
-        scrollListener.setOnLoadMoreListener(object : OnLoadMoreListener {
-            override fun onLoadMore() {
-                if (viewModel.isLoadingMore) {
-                    profileWishesAdapter.renderLoadMoreUi(true)
-                    viewModel.loadWishes(wishesType)
-                }
-            }
-
-        })
-        wishesRecyclerView.addOnScrollListener(scrollListener)
         wishesRecyclerView.adapter = profileWishesAdapter
     }
 
@@ -227,6 +234,7 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
             })
             wishesRecyclerView.addOnScrollListener(scrollListener)
         }
+        publicWishesAdapter.setHasStableIds(true)
         wishesRecyclerView.adapter = publicWishesAdapter
     }
 
