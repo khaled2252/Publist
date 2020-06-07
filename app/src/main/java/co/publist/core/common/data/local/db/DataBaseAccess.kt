@@ -1,7 +1,6 @@
 package co.publist.core.common.data.local.db
 
 import android.content.Context
-import androidx.paging.DataSource
 import co.publist.core.common.data.local.db.publist.PublistDao
 import co.publist.core.common.data.local.db.publist.PublistDataBase
 import co.publist.core.common.data.local.db.seenwishes.SeenWishesDao
@@ -27,41 +26,17 @@ class DataBaseAccess @Inject constructor(context: Context) : DataBaseInterface {
         ioExecutor = Executors.newSingleThreadExecutor()
     }
 
-    override fun updateCategories(categoriesList: List<CategoryDbEntity>) {
+    override fun updateSelectedCategories(categoriesList: List<CategoryDbEntity>) {
         publistDao.deleteCategories()
         publistDao.insertCategoriesList(categoriesList)
     }
 
-    override fun getCategories(): Single<List<CategoryDbEntity>> {
+    override fun getSelectedCategories(): Single<List<CategoryDbEntity>> {
         return publistDao.getCategories()
     }
 
-    override fun getCategoriesDataSource(): DataSource.Factory<Int, CategoryDbEntity> {
-        return publistDao.getCategoriesDataSource()
-    }
-
-    override fun deleteCategories() {
+    override fun deleteSelectedCategories() {
         return publistDao.deleteCategories()
-    }
-
-    override fun getMyLists(): Single<List<MyListDbEntity>> {
-        return publistDao.getMyLists()
-    }
-
-    override fun getMyListsDataSource(): DataSource.Factory<Int, MyListDbEntity> {
-        return publistDao.getMyListsDataSource()
-    }
-
-    override fun insertIntoMyLists(myList: MyListDbEntity) {
-        return publistDao.insertIntoMyLists(myList)
-    }
-
-    override fun addMyLists(myList: List<MyListDbEntity>) {
-        return publistDao.insertMyLists(myList)
-    }
-
-    override fun deleteFromMyLists(wishId: String) {
-        return publistDao.deleteFromMyLists(wishId)
     }
 
     override fun isWishSeen(wishId: String): Single<Boolean> {
@@ -77,18 +52,35 @@ class DataBaseAccess @Inject constructor(context: Context) : DataBaseInterface {
         return seenWishesDao.insertSeenWish(SeenWish(wishId))
     }
 
+    //Unused
+    override fun getMyLists(): Single<List<MyListDbEntity>> {
+        return publistDao.getMyLists()
+    }
+
+    override fun insertIntoMyLists(myList: MyListDbEntity) {
+        return publistDao.insertIntoMyLists(myList)
+    }
+
+    override fun deleteFromMyLists(wishId: String) {
+        return publistDao.deleteFromMyLists(wishId)
+    }
+
+    override fun addMyLists(myList: List<MyListDbEntity>) {
+        return publistDao.insertMyLists(myList)
+    }
+
 }
 
 interface DataBaseInterface {
-    fun getCategories(): Single<List<CategoryDbEntity>>
-    fun getCategoriesDataSource(): DataSource.Factory<Int, CategoryDbEntity>
-    fun updateCategories(categoriesList: List<CategoryDbEntity>)
-    fun deleteCategories()
-    fun getMyLists(): Single<List<MyListDbEntity>>
-    fun getMyListsDataSource(): DataSource.Factory<Int, MyListDbEntity>
-    fun insertIntoMyLists(myList: MyListDbEntity)
-    fun addMyLists(myList: List<MyListDbEntity>)
-    fun deleteFromMyLists(wishId: String)
+    fun getSelectedCategories(): Single<List<CategoryDbEntity>>
+    fun updateSelectedCategories(categoriesList: List<CategoryDbEntity>)
+    fun deleteSelectedCategories()
     fun isWishSeen(wishId: String): Single<Boolean>
     fun insertSeenWish(wishId: String)
+
+    //Unused
+    fun getMyLists(): Single<List<MyListDbEntity>>
+    fun insertIntoMyLists(myList: MyListDbEntity)
+    fun deleteFromMyLists(wishId: String)
+    fun addMyLists(myList: List<MyListDbEntity>)
 }

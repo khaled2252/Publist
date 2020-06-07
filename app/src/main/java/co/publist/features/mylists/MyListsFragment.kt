@@ -14,6 +14,7 @@ import co.publist.core.platform.ViewModelFactory
 import co.publist.core.utils.Utils.Constants.EDIT_WISH_INTENT
 import co.publist.core.utils.Utils.Constants.LISTS
 import co.publist.features.createwish.CreateWishActivity
+import co.publist.features.home.HomeActivity
 import co.publist.features.wishes.WishesFragment
 import kotlinx.android.synthetic.main.fragment_my_lists.*
 import javax.inject.Inject
@@ -31,6 +32,10 @@ class MyListsFragment : BaseFragment<MyListsViewModel>() {
 
     lateinit var wishesFragment: WishesFragment
 
+    object Data {
+        var isChanged = false
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -46,6 +51,15 @@ class MyListsFragment : BaseFragment<MyListsViewModel>() {
         wishesFragment.viewModel.loadWishes(LISTS)
     }
 
+    override fun onStart() {
+        if (Data.isChanged) {
+            wishesFragment.clearLoadedData()
+            wishesFragment.viewModel.loadWishes(LISTS)
+            Data.isChanged = false
+        }
+        super.onStart()
+    }
+
     private fun setObservers() {
         wishesFragment.viewModel.wishDeletedLiveData.observe(viewLifecycleOwner, Observer {
             wishesFragment.clearLoadedData()
@@ -58,13 +72,14 @@ class MyListsFragment : BaseFragment<MyListsViewModel>() {
             intent.putExtra(EDIT_WISH_INTENT, wish)
             startActivity(intent)
         })
+
+        wishesFragment.viewModel.dataChangedLiveData.observe(viewLifecycleOwner, Observer {
+            Data.isChanged = true
+            HomeActivity.Data.isChanged = true
+        })
     }
 
     private fun setListeners() {
-        addListBtn.setOnHoverListener { v, event ->
-
-            true
-        }
         addListBtn.setOnClickListener {
             addListBtn.startAnimation(
                 AnimationUtils.loadAnimation(

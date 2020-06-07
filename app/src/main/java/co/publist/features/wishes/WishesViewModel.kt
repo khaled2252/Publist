@@ -46,6 +46,7 @@ class WishesViewModel @Inject constructor(
     val isFavoriteAdded = MutableLiveData<Boolean>()
     val wishDeletedLiveData = MutableLiveData<Boolean>()
     val editWishLiveData = MutableLiveData<WishAdapterItem>()
+    val dataChangedLiveData = MutableLiveData<Boolean>()
 
     //Paging properties
     var isLoadingMore = false
@@ -55,15 +56,9 @@ class WishesViewModel @Inject constructor(
     var profileItemsAttributesPair: Pair<ArrayList<String>, ArrayList<String>>? = null
 
     lateinit var searchQuery: String
-    lateinit var selectedWish: WishAdapterItem
+    var selectedWish: WishAdapterItem? = null
     val user = userRepository.getUser()
     var allCategories = arrayListOf<Category>()
-
-    init {
-        subscribe(categoryRepository.fetchAllCategories(), Consumer { categoriesList ->
-            allCategories = categoriesList
-        })
-    }
 
     fun loadWishes(type: Int) {
         if (!isLoadingMore || type != preLoadedWishesType.value) //Check if first time loading data or changed from type to another
@@ -71,18 +66,15 @@ class WishesViewModel @Inject constructor(
             preLoadedWishesType.postValue(type)
             isLoadingMore = true
         }
-        if (allCategories.isEmpty())
-            subscribe(categoryRepository.fetchAllCategories(), Consumer { categoriesList ->
-                allCategories = categoriesList
-            })
+
         when (type) {
             PUBLIC -> {
-                subscribe(categoryRepository.getLocalSelectedCategories()
+                val publicWishesObservable = categoryRepository.getLocalSelectedCategories()
                     .flatMap { categories ->
-                        val wishesSingleObservable =
+                        val wishesPageObservable =
                             wishesRepository.getAllWishesPage(lastVisibleWishesPageDocumentSnapshot)
                         if (categories.isNullOrEmpty())
-                            wishesSingleObservable.flatMap { wishesDataPair ->
+                            wishesPageObservable.flatMap { wishesDataPair ->
                                 val wishesList = wishesDataPair.first
                                 lastVisibleWishesPageDocumentSnapshot = wishesDataPair.second
 
@@ -92,7 +84,7 @@ class WishesViewModel @Inject constructor(
                                 Single.just(Mapper.mapToWishAdapterItemArrayList(wishesList)) //UnfilteredWishes for guest mode
                             }
                         else {
-                            wishesSingleObservable.flatMap { wishesDataPair ->
+                            wishesPageObservable.flatMap { wishesDataPair ->
                                 val wishesList = wishesDataPair.first
                                 lastVisibleWishesPageDocumentSnapshot = wishesDataPair.second
 
@@ -138,19 +130,29 @@ class WishesViewModel @Inject constructor(
                                 }
                             }
                         }
-                    }, Consumer { list ->
+                    }
+                val publicWishesConsumer = Consumer<ArrayList<WishAdapterItem>> { list ->
                     if (list.isEmpty() && isLoadingMore) //Current loaded page is empty (no data due to categories filtration)
                         loadWishes(preLoadedWishesType.value!!) //Pass this page and load the next one
                     else
                         publicWishesListLiveData.postValue(list)
-                }, showLoading = false
-                )
+                }
+
+                if (allCategories.isEmpty()) //To make sure its called once (first time only , other times are load mores)
+                    subscribe(
+                        categoryRepository.fetchAllCategories().flatMap { categoriesList ->
+                            allCategories = categoriesList
+                            publicWishesObservable
+                        }, publicWishesConsumer
+                    )
+                else
+                    subscribe(publicWishesObservable, publicWishesConsumer)
             }
+
             LISTS -> {
-                subscribe(
-                    if (profileWishesIds == null)
-                        wishesRepository.getMyListsWishesIds().flatMap { wishIdsList ->
-                            profileWishesIds = wishIdsList
+                val listsWishesObservable = if (profileWishesIds == null)
+                    wishesRepository.getMyListsWishesIds().flatMap { wishIdsList ->
+                        profileWishesIds = wishIdsList
                         wishesRepository.getUserLikedItems().flatMap { likedItemsList ->
                             wishesRepository.getDoneItemsInMyLists().flatMap { doneItemsList ->
                                 Single.just(Pair(doneItemsList, likedItemsList))
@@ -169,35 +171,47 @@ class WishesViewModel @Inject constructor(
                                 }
                             }
                         }
-                        }
-                    else {
-                        val currentWishIdsList = getCurrentPageWishesIds(profileWishesIds!!)
-                        wishesRepository.getProfileWishesPageFromCorrespondingPublicWishes(
-                            currentWishIdsList
-                        ).flatMap { wishList ->
-                            Single.just(
-                                Pair(
-                                    Mapper.mapToWishAdapterItemArrayList(wishList),
-                                    profileItemsAttributesPair!!
-                                )
+                    }
+                else {
+                    val currentWishIdsList = getCurrentPageWishesIds(profileWishesIds!!)
+                    wishesRepository.getProfileWishesPageFromCorrespondingPublicWishes(
+                        currentWishIdsList
+                    ).flatMap { wishList ->
+                        Single.just(
+                            Pair(
+                                Mapper.mapToWishAdapterItemArrayList(wishList),
+                                profileItemsAttributesPair!!
                             )
-                        }
-                    },
-                    Consumer { dataPair ->
+                        )
+                    }
+                }
+
+                val listsWishesConsumer =
+                    Consumer<Pair<ArrayList<WishAdapterItem>, Pair<ArrayList<String>, ArrayList<String>>>>
+                    { dataPair ->
                         profileWishesDataPairLiveData.postValue(dataPair)
-                    })
+                    }
+
+                if (allCategories.isEmpty())
+                    subscribe(
+                        categoryRepository.fetchAllCategories().flatMap { categoriesList ->
+                            allCategories = categoriesList
+                            listsWishesObservable
+                        }, listsWishesConsumer
+                    )
+                else
+                    subscribe(listsWishesObservable, listsWishesConsumer)
             }
 
             FAVORITES -> {
-                subscribe(
-                    if (profileWishesIds == null)
-                        wishesRepository.getMyFavoritesWishesIds().flatMap { wishIdsList ->
-                            profileWishesIds = wishIdsList
-                            wishesRepository.getUserLikedItems().flatMap { likedItemsList ->
-                                wishesRepository.getDoneItemsInMyFavorites()
-                                    .flatMap { doneItemsList ->
-                                        Single.just(Pair(doneItemsList, likedItemsList))
-                                    }.flatMap { itemsAttributesPair ->
+                val favoritesWishesObservable = if (profileWishesIds == null)
+                    wishesRepository.getMyFavoritesWishesIds().flatMap { wishIdsList ->
+                        profileWishesIds = wishIdsList
+                        wishesRepository.getUserLikedItems().flatMap { likedItemsList ->
+                            wishesRepository.getDoneItemsInMyFavorites()
+                                .flatMap { doneItemsList ->
+                                    Single.just(Pair(doneItemsList, likedItemsList))
+                                }.flatMap { itemsAttributesPair ->
                                     profileItemsAttributesPair = itemsAttributesPair
                                     val currentWishIdsList =
                                         getCurrentPageWishesIds(profileWishesIds!!)
@@ -213,29 +227,42 @@ class WishesViewModel @Inject constructor(
                                         )
                                     }
                                 }
-                            }
                         }
-                    else {
-                        val currentWishIdsList = getCurrentPageWishesIds(profileWishesIds!!)
-                        wishesRepository.getProfileWishesPageFromCorrespondingPublicWishes(
-                            currentWishIdsList
-                        ).flatMap { wishList ->
-                            Single.just(
-                                Pair(
-                                    Mapper.mapToWishAdapterItemArrayList(wishList),
-                                    profileItemsAttributesPair!!
-                                )
+                    }
+                else {
+                    val currentWishIdsList = getCurrentPageWishesIds(profileWishesIds!!)
+                    wishesRepository.getProfileWishesPageFromCorrespondingPublicWishes(
+                        currentWishIdsList
+                    ).flatMap { wishList ->
+                        Single.just(
+                            Pair(
+                                Mapper.mapToWishAdapterItemArrayList(wishList),
+                                profileItemsAttributesPair!!
                             )
-                        }
-                    },
-                    Consumer { dataPair ->
+                        )
+                    }
+                }
+
+                val favoritesWishesConsumer =
+                    Consumer<Pair<ArrayList<WishAdapterItem>, Pair<ArrayList<String>, ArrayList<String>>>> { dataPair ->
                         profileWishesDataPairLiveData.postValue(dataPair)
-                    })
+                    }
+
+                if (allCategories.isEmpty())
+                    subscribe(
+                        categoryRepository.fetchAllCategories().flatMap { categoriesList ->
+                            allCategories = categoriesList
+                            favoritesWishesObservable
+                        }, favoritesWishesConsumer
+                    )
+                else
+                    subscribe(favoritesWishesObservable, favoritesWishesConsumer)
             }
 
             DETAILS -> {
-                if (selectedWish.wishId != null) //Check because of iOS bug
-                    subscribe(wishesRepository.getSpecificWish(selectedWish.wishId!!).flatMap { wish ->
+                subscribe(categoryRepository.fetchAllCategories().flatMap { categoriesList ->
+                    allCategories = categoriesList
+                    wishesRepository.getSpecificWish(selectedWish?.wishId!!).flatMap { wish ->
                         if (user != null) {
                             favoritesRepository.getUserFavoriteWishes().flatMap { favoritesList ->
                                 wishesRepository.getDoneItemsInMyLists()
@@ -270,72 +297,73 @@ class WishesViewModel @Inject constructor(
                         } else
                             Single.just(arrayListOf(Mapper.mapToWishAdapterItem(wish)))
 
-                    }, Consumer { oneElementList ->
+                    }
+                }, Consumer { oneElementList ->
                         publicWishesListLiveData.postValue(oneElementList)
                     })
             }
 
             SEARCH -> {
-                    val categoriesNames = allCategories.map { it.name }
-                    var selectedCategory: Category? = null
-                    for (categoryIndex in categoriesNames.indices) {
-                        if (searchQuery.equals(categoriesNames[categoryIndex], true)) {
-                            selectedCategory = allCategories[categoryIndex]
-                            break
-                        }
+                val categoriesNames = allCategories.map { it.name }
+                var selectedCategory: Category? = null
+                for (categoryIndex in categoriesNames.indices) {
+                    if (searchQuery.equals(categoriesNames[categoryIndex], true)) {
+                        selectedCategory = allCategories[categoryIndex]
+                        break
                     }
+                }
 
-                    val searchResultsObservable =
-                        if (selectedCategory != null) wishesRepository.getWishesByCategoryPage(
-                            selectedCategory.id!!,
-                            lastVisibleWishesPageDocumentSnapshot
-                        )
-                        else wishesRepository.getWishesByTitle(
-                            searchQuery,
-                            lastVisibleWishesPageDocumentSnapshot
-                        )
+                val searchResultsObservable =
+                    if (selectedCategory != null) wishesRepository.getWishesByCategoryPage(
+                        selectedCategory.id!!,
+                        lastVisibleWishesPageDocumentSnapshot
+                    )
+                    else wishesRepository.getWishesByTitle(
+                        searchQuery,
+                        lastVisibleWishesPageDocumentSnapshot
+                    )
 
                 subscribe(searchResultsObservable.flatMap { wishesDataPair ->
-                        val wishesList = wishesDataPair.first
-                        lastVisibleWishesPageDocumentSnapshot = wishesDataPair.second
-                        if (lastVisibleWishesPageDocumentSnapshot == null)
-                            isLoadingMore = false
-                        if (wishesList.isNotEmpty()) {
-                            var list = Mapper.mapToWishAdapterItemArrayList(wishesList)
-                            if (user != null) {
-                                favoritesRepository.getUserFavoriteWishes()
-                                    .flatMap { favoriteList ->
-                                        wishesRepository.getDoneItemsInMyFavorites()
-                                            .flatMap { doneItemsInFavoritesArrayList ->
-                                                list = filterWishesByFavorites(
-                                                    list,
-                                                    favoriteList,
-                                                    doneItemsInFavoritesArrayList
-                                                )
-                                                wishesRepository.getDoneItemsInMyLists()
-                                                    .flatMap { doneItemsInMyListsArrayList ->
-                                                        list = filterWishesByCreator(
-                                                            list,
-                                                            user.id!!,
-                                                            doneItemsInMyListsArrayList
-                                                        )
-                                                        wishesRepository.getUserLikedItems()
-                                                            .flatMap { likedItemsList ->
-                                                                list =
-                                                                    applyUserLikedItems(
-                                                                        list,
-                                                                        likedItemsList
-                                                                    )
-                                                                Single.just(list)
-                                                            }
-                                                    }
+                    val wishesList = wishesDataPair.first
+                    lastVisibleWishesPageDocumentSnapshot = wishesDataPair.second
+                    if (lastVisibleWishesPageDocumentSnapshot == null)
+                        isLoadingMore = false
+                    if (wishesList.isNotEmpty()) {
+                        var list = Mapper.mapToWishAdapterItemArrayList(wishesList)
+                        if (user != null) {
+                            favoritesRepository.getUserFavoriteWishes()
+                                .flatMap { favoriteList ->
+                                    wishesRepository.getDoneItemsInMyFavorites()
+                                        .flatMap { doneItemsInFavoritesArrayList ->
+                                            list = filterWishesByFavorites(
+                                                list,
+                                                favoriteList,
+                                                doneItemsInFavoritesArrayList
+                                            )
+                                            wishesRepository.getDoneItemsInMyLists()
+                                                .flatMap { doneItemsInMyListsArrayList ->
+                                                    list = filterWishesByCreator(
+                                                        list,
+                                                        user.id!!,
+                                                        doneItemsInMyListsArrayList
+                                                    )
+                                                    wishesRepository.getUserLikedItems()
+                                                        .flatMap { likedItemsList ->
+                                                            list =
+                                                                applyUserLikedItems(
+                                                                    list,
+                                                                    likedItemsList
+                                                                )
+                                                            Single.just(list)
+                                                        }
+                                                }
 
-                                            }
-                                    }
-                            } else
-                                Single.just(Mapper.mapToWishAdapterItemArrayList(wishesList))
+                                        }
+                                }
                         } else
-                            Single.just(arrayListOf())
+                            Single.just(Mapper.mapToWishAdapterItemArrayList(wishesList))
+                    } else
+                        Single.just(arrayListOf())
                 }, Consumer { list ->
                     publicWishesListLiveData.postValue(list)
                 }, showLoading = false)
@@ -344,33 +372,7 @@ class WishesViewModel @Inject constructor(
         }
     }
 
-    private fun getCurrentPageWishesIds(profileWishesIds: ArrayList<String>): ArrayList<String> {
-        val currentWishIdsList = ArrayList<String>()
-        for (index in 0 until WISHES_NUM_PER_PAGE) {
-            if (profileWishesIds.isNotEmpty()) {
-                currentWishIdsList.add(profileWishesIds.last())
-                profileWishesIds.removeAt(profileWishesIds.size - 1)
-            } else {
-                isLoadingMore = false
-                break
-            }
-        }
-        return currentWishIdsList
-    }
-
-    private fun applyUserLikedItems(
-        filteredWishes: ArrayList<WishAdapterItem>,
-        likedItemsList: ArrayList<String>
-    ): ArrayList<WishAdapterItem> {
-        val wishes = ArrayList(filteredWishes)
-        for (wish in filteredWishes)
-            for (itemMap in wish.items!!)
-                if (likedItemsList.contains(itemMap.key))
-                    itemMap.value.isLiked = true
-
-        return wishes
-    }
-
+    //Filtration functions
     private fun filterWishesByCreator(
         wishes: ArrayList<WishAdapterItem>,
         id: String,
@@ -429,45 +431,125 @@ class WishesViewModel @Inject constructor(
         return filteredList
     }
 
-    fun modifyFavorite(wish: Wish, isFavoriting: Boolean) {
-        if (wish.wishId != null) //Check because of iOS bug
-        {
-            if (isFavoriting)
-                subscribe(
-                    favoritesRepository.addToMyFavoritesRemotely(wish)
-                        .mergeWith(wishesRepository.incrementOrganicSeen(wish.wishId!!))
-                    , Action {
-                        isFavoriteAdded.postValue(true)
-                    }, showLoading = false
-                )
-            else {
-                val doneItems = arrayListOf<String>()
-                for (itemIndex in wish.items!!.values.indices)
-                    if (wish.items!!.values.elementAt(itemIndex).done!!)
-                        doneItems.add(wish.items!!.keys.elementAt(itemIndex))
-                subscribe(
-                    favoritesRepository.deleteFromFavoritesRemotely(wish.wishId!!).mergeWith(
-                        wishesRepository.decrementCompleteCountInDoneItems(wish.wishId!!, doneItems)
-                    )
-                        .mergeWith(
-                            wishesRepository.removeUserIdFromTopCompletedItems(
-                                doneItems,
-                                wish.wishId!!
-                            )
-                        )
-                    , Action {
-                        isFavoriteAdded.postValue(false)
-                    }, showLoading = false
-                )
+    private fun applyUserLikedItems(
+        filteredWishes: ArrayList<WishAdapterItem>,
+        likedItemsList: ArrayList<String>
+    ): ArrayList<WishAdapterItem> {
+        val wishes = ArrayList(filteredWishes)
+        for (wish in filteredWishes)
+            for (itemMap in wish.items!!)
+                if (likedItemsList.contains(itemMap.key))
+                    itemMap.value.isLiked = true
+
+        return wishes
+    }
+
+    // Helper functions
+    private fun getCurrentPageWishesIds(profileWishesIds: ArrayList<String>): ArrayList<String> {
+        val currentWishIdsList = ArrayList<String>()
+        for (index in 0 until WISHES_NUM_PER_PAGE) {
+            if (profileWishesIds.isNotEmpty()) {
+                currentWishIdsList.add(profileWishesIds.last())
+                profileWishesIds.removeAt(profileWishesIds.size - 1)
+            } else {
+                isLoadingMore = false
+                break
             }
+        }
+        return currentWishIdsList
+    }
+
+    fun resetCurrentPagingSate() {
+        if (preLoadedWishesType.value == PUBLIC || preLoadedWishesType.value == SEARCH) {
+            lastVisibleWishesPageDocumentSnapshot = null
+            loadedUserCategoriesFilteredWishes = false
+        } else {
+            profileWishesIds = null
+            profileItemsAttributesPair = null
+        }
+        isLoadingMore = false
+
+    }
+
+    fun getSuggestedCategoriesFromQuery(query: String): ArrayList<String> {
+        val suggestedCategoriesNames = arrayListOf<String>()
+        val currentDeviceLanguage = Locale.getDefault().language
+        val localizedNames =
+            allCategories.map { it.localizations?.getField<String>(currentDeviceLanguage) }
+        for (categoryName in localizedNames)
+            if (categoryName.equals(query, true))
+                suggestedCategoriesNames.add(categoryName!!.capitalize())
+        if (suggestedCategoriesNames.isEmpty())
+            for (categoryName in localizedNames)
+                if (categoryName!!.startsWith(query, true))
+                    suggestedCategoriesNames.add(categoryName.capitalize())
+
+
+        return suggestedCategoriesNames
+    }
+
+    fun getCategoryNameById(categoryId: String): String {
+        val category = allCategories.find { it.id == categoryId }
+        val currentDeviceLanguage = Locale.getDefault().language
+        val localizedName =
+            category?.localizations?.getField<String>(currentDeviceLanguage)?.capitalize()
+                .toString()
+        return localizedName
+    }
+
+    fun incrementSeenCount(wishId: String) {
+        subscribe(wishesRepository.isWishSeen(wishId).flatMapCompletable { isSeen ->
+            if (!isSeen) {
+                wishesRepository.incrementSeenCountLocally(wishId)
+                wishesRepository.incrementSeenCountRemotely(wishId)
+            } else
+                Completable.complete()
+
+        }, Action {
+
+        }, showLoading = false)
+    }
+
+    //Wish actions functions
+    fun modifyFavorite(wish: Wish, isFavoriting: Boolean) {
+        dataChangedLiveData.postValue(true)
+        if (isFavoriting)
+            subscribe(
+                favoritesRepository.addToMyFavoritesRemotely(wish)
+                    .mergeWith(wishesRepository.incrementOrganicSeen(wish.wishId!!))
+                , Action {
+                    isFavoriteAdded.postValue(true)
+                }, showLoading = false
+            )
+        else {
+            val doneItems = arrayListOf<String>()
+            for (itemIndex in wish.items!!.values.indices)
+                if (wish.items!!.values.elementAt(itemIndex).done!!)
+                    doneItems.add(wish.items!!.keys.elementAt(itemIndex))
+            subscribe(
+                favoritesRepository.deleteFromFavoritesRemotely(wish.wishId!!).mergeWith(
+                    wishesRepository.decrementCompleteCountInDoneItems(wish.wishId!!, doneItems)
+                )
+                    .mergeWith(
+                        wishesRepository.removeUserIdFromTopCompletedItems(
+                            doneItems,
+                            wish.wishId!!
+                        )
+                    )
+                , Action {
+                    isFavoriteAdded.postValue(false)
+                }, showLoading = false
+            )
         }
     }
 
     fun deleteSelectedWish() {
         //Merge operator runs both calls in parallel (independent calls)
-        subscribe(wishesRepository.deleteWishFromWishes(Mapper.mapToWish(selectedWish))
-            .mergeWith(wishesRepository.deleteWishFromMyLists(Mapper.mapToWish(selectedWish)))
+        subscribe(
+            wishesRepository.deleteWishFromWishes(Mapper.mapToWish(selectedWish!!))
+                .mergeWith(wishesRepository.deleteWishFromMyLists(Mapper.mapToWish(selectedWish!!)))
             , Action {
+                dataChangedLiveData.postValue(true)
                 wishDeletedLiveData.postValue(true)
             })
 
@@ -478,6 +560,7 @@ class WishesViewModel @Inject constructor(
     }
 
     fun completeItem(itemId: String, wishId: String, isCreator: Boolean, isDone: Boolean) {
+        dataChangedLiveData.postValue(true)
         val collectionTobeEdited =
             if (isCreator) MY_LISTS_COLLECTION_PATH else MY_FAVORITES_COLLECTION_PATH
 
@@ -521,6 +604,7 @@ class WishesViewModel @Inject constructor(
     }
 
     fun likeItem(itemId: String, wishId: String, isLiked: Boolean) {
+        dataChangedLiveData.postValue(true)
         subscribe(wishesRepository.addItemToUserViewedItems(itemId, isLiked)
             .mergeWith(wishesRepository.incrementOrganicSeen(wishId))
             .andThen(
@@ -555,54 +639,4 @@ class WishesViewModel @Inject constructor(
         )
     }
 
-    fun incrementSeenCount(wishId: String) {
-        subscribe(wishesRepository.isWishSeen(wishId).flatMapCompletable { isSeen ->
-            if (!isSeen) {
-                wishesRepository.incrementSeenCountLocally(wishId)
-                wishesRepository.incrementSeenCountRemotely(wishId)
-            } else
-                Completable.complete()
-
-        }, Action {
-
-        }, showLoading = false)
-    }
-
-    fun resetCurrentPagingSate() {
-        if (preLoadedWishesType.value == PUBLIC || preLoadedWishesType.value == SEARCH) {
-            lastVisibleWishesPageDocumentSnapshot = null
-            loadedUserCategoriesFilteredWishes = false
-        } else {
-            profileWishesIds = null
-            profileItemsAttributesPair = null
-        }
-        isLoadingMore = false
-
-    }
-
-    fun getSuggestedCategoriesFromQuery(query: String): ArrayList<String> {
-        val suggestedCategoriesNames = arrayListOf<String>()
-        val currentDeviceLanguage = Locale.getDefault().language
-        val localizedNames =
-            allCategories.map { it.localizations?.getField<String>(currentDeviceLanguage) }
-        for (categoryName in localizedNames)
-            if (categoryName.equals(query, true))
-                suggestedCategoriesNames.add(categoryName!!.capitalize())
-        if (suggestedCategoriesNames.isEmpty())
-            for (categoryName in localizedNames)
-                if (categoryName!!.startsWith(query, true))
-                    suggestedCategoriesNames.add(categoryName.capitalize())
-
-
-        return suggestedCategoriesNames
-    }
-
-    fun getCategoryNameById(categoryId: String): String {
-        val category = allCategories.find { it.id == categoryId }
-        val currentDeviceLanguage = Locale.getDefault().language
-        val localizedName =
-            category?.localizations?.getField<String>(currentDeviceLanguage)?.capitalize()
-                .toString()
-        return localizedName
-    }
 }

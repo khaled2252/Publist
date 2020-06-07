@@ -55,7 +55,6 @@ class CategoriesViewModel @Inject constructor(
     }
 
     fun getCategories(vararg editedWishCategory: CategoryWish) {
-        //fixme if fetchAllCategories() is called first then getLocalSelectedCategories() in flatMap , the latter doesn't get called maybe because of backPressure?
         subscribe(categoriesRepository.getLocalSelectedCategories()
             .flatMap { selectedCategories ->
                 categoriesRepository.fetchAllCategories()

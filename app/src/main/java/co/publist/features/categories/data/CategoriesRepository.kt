@@ -11,6 +11,7 @@ import co.publist.core.utils.Utils.Constants.USERS_COLLECTION_PATH
 import com.google.firebase.firestore.*
 import io.reactivex.Completable
 import io.reactivex.Single
+import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
 class CategoriesRepository @Inject constructor(
@@ -68,9 +69,9 @@ class CategoriesRepository @Inject constructor(
     }
 
     override fun getLocalSelectedCategories(): Single<ArrayList<CategoryAdapterItem>> {
-        return localDataSource.getPublistDataBase().getCategories().flatMap {
+        return localDataSource.getPublistDataBase().getSelectedCategories().flatMap {
             Single.just(Mapper.mapToCategoryAdapterItemList(it))
-        }
+        }.subscribeOn(Schedulers.io())
     }
 
     override fun updateRemoteSelectedCategories(selectedCategoriesList: ArrayList<Category>): Completable {
@@ -117,14 +118,14 @@ class CategoriesRepository @Inject constructor(
 
     override fun clearLocalSelectedCategories() {
         AsyncTask.execute {
-            localDataSource.getPublistDataBase().deleteCategories()
+            localDataSource.getPublistDataBase().deleteSelectedCategories()
         }
     }
 
     override fun updateLocalSelectedCategories(selectedCategoriesList: ArrayList<Category>) {
         AsyncTask.execute {
             localDataSource.getPublistDataBase()
-                .updateCategories(Mapper.mapToCategoryDbEntityList(selectedCategoriesList))
+                .updateSelectedCategories(Mapper.mapToCategoryDbEntityList(selectedCategoriesList))
         }
     }
 

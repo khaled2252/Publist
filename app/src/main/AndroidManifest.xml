@@ -29,7 +29,8 @@
 
         <activity
             android:name=".features.login.LoginActivity"
-            android:theme="@style/AppTheme.LoginScreen">
+            android:theme="@style/AppTheme.LoginScreen"
+            android:launchMode="singleTop">
         </activity>
 
         <activity
@@ -70,7 +71,6 @@
 
         <activity
             android:name=".features.onboarding.OnBoardingActivity"
-            android:launchMode="singleTop"
             android:label="On boarding"
             android:theme="@style/AppTheme.OnBoarding"
             android:screenOrientation="portrait" />

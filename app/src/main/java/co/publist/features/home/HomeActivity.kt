@@ -53,6 +53,10 @@ class HomeActivity : BaseActivity<HomeViewModel>() {
     private lateinit var wishesFragment: WishesFragment
     private lateinit var sheetBehavior: BottomSheetBehavior<*>
 
+    object Data {
+        var isChanged = false
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         DataBindingUtil.setContentView<ActivityHomeBinding>(
@@ -70,8 +74,16 @@ class HomeActivity : BaseActivity<HomeViewModel>() {
     }
 
     override fun onStart() {
+        //Collapse sheet if coming from CreateWishActivity(edit mode)
         if (sheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED)
             sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+
+        if (Data.isChanged) // Check if data has been changed by another activity (details/profile)
+        {
+            wishesFragment.clearLoadedData()
+            wishesFragment.viewModel.loadWishes(PUBLIC)
+            Data.isChanged = false
+        }
 
         super.onStart()
     }

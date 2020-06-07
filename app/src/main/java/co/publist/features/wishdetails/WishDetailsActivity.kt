@@ -14,6 +14,9 @@ import co.publist.core.utils.Utils
 import co.publist.core.utils.Utils.Constants.DETAILS
 import co.publist.core.utils.Utils.Constants.WISH_DETAILS_INTENT
 import co.publist.features.createwish.CreateWishActivity
+import co.publist.features.home.HomeActivity
+import co.publist.features.myfavorites.MyFavoritesFragment
+import co.publist.features.mylists.MyListsFragment
 import co.publist.features.wishes.WishesFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.snackbar.Snackbar
@@ -50,11 +53,22 @@ class WishDetailsActivity : BaseActivity<WishDetailsViewModel>() {
         wishesFragment =
             supportFragmentManager.findFragmentById(R.id.wishesFragment) as WishesFragment
         sheetBehavior = BottomSheetBehavior.from(editWishBottomSheet)
+    }
 
-        val selectedWish = intent.getParcelableExtra<WishAdapterItem>(WISH_DETAILS_INTENT)!!
-        wishesFragment.viewModel.selectedWish = selectedWish
-        viewModel.incrementOrganicSeen(selectedWish.wishId!!)
-        wishesFragment.viewModel.loadWishes(DETAILS)
+    override fun onStart() {
+        if (wishesFragment.viewModel.selectedWish == null) //first time loading details
+        {
+            val selectedWish = intent.getParcelableExtra<WishAdapterItem>(WISH_DETAILS_INTENT)!!
+            wishesFragment.viewModel.selectedWish = selectedWish
+            wishesFragment.viewModel.loadWishes(DETAILS)
+
+            viewModel.incrementOrganicSeen(selectedWish.wishId!!)
+        } else //Coming back from another screen (i.e edit wish)
+        {
+            wishesFragment.clearLoadedData()
+            wishesFragment.viewModel.loadWishes(DETAILS)
+        }
+        super.onStart()
     }
 
     private fun setObservers() {
@@ -83,11 +97,15 @@ class WishDetailsActivity : BaseActivity<WishDetailsViewModel>() {
                     getString(R.string.remove_favorite),
                     Snackbar.LENGTH_SHORT
                 ).show()
-                finish()
             }
 
         })
 
+        wishesFragment.viewModel.dataChangedLiveData.observe(this, Observer {
+            HomeActivity.Data.isChanged = true
+            MyListsFragment.Data.isChanged = true
+            MyFavoritesFragment.Data.isChanged = true
+        })
     }
 
     private fun setListeners() {

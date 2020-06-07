@@ -40,6 +40,8 @@ import co.publist.core.utils.Utils.navigateToGallery
 import co.publist.core.utils.Utils.resultUri
 import co.publist.core.utils.Utils.startCroppingActivity
 import co.publist.features.categories.CategoriesFragment
+import co.publist.features.home.HomeActivity
+import co.publist.features.mylists.MyListsFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.theartofdev.edmodo.cropper.CropImage
 import kotlinx.android.synthetic.main.activity_create_wish.*
@@ -221,6 +223,8 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
             if (isCreated) {
                 Toast.makeText(this, getString(R.string.post_wish_success), Toast.LENGTH_SHORT)
                     .show()
+                HomeActivity.Data.isChanged = true
+                MyListsFragment.Data.isChanged = true
                 finish()
             } else
                 Toast.makeText(
@@ -230,9 +234,11 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
                 ).show()
         })
 
-        viewModel.editingWishLiveData.observe(this, Observer {
+        viewModel.editedWishLiveData.observe(this, Observer {
             Toast.makeText(this, getString(R.string.edit_wish_success), Toast.LENGTH_SHORT)
                 .show()
+            HomeActivity.Data.isChanged = true
+            MyListsFragment.Data.isChanged = true
             finish()
         })
     }
