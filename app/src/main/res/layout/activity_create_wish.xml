@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
 
-    <!--    frameLayout for blurredBg to overlay the whole layout-->
+    <!--    frameLayout for blurredBg , progress bar and its holder to overlay the whole layout-->
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -86,7 +86,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
                 android:background="@color/platinum"
-
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/addCategoryLayout" />
 
@@ -307,7 +306,7 @@
                 android:enabled="false"
                 android:fontFamily="@font/sfprodisplaybold"
                 android:text="@string/create_wish_post"
-                android:textColor="@color/inverse"
+                android:textColor="@android:color/white"
                 app:cornerRadius="10dp"
                 app:layout_constraintBottom_toBottomOf="parent" />
 
@@ -318,6 +317,25 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="#999D9D9D"
+            android:visibility="gone" />
+
+        <FrameLayout
+            android:id="@+id/progressBarHolder"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:alpha="0.35"
+            android:animateLayoutChanges="true"
+            android:background="@color/dimGray"
+            android:visibility="gone"></FrameLayout>
+
+        <ProgressBar
+            android:id="@+id/progress_circular"
+            style="@style/Widget.AppCompat.ProgressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:indeterminateTint="@color/sunsetOrange"
+            android:indeterminate="true"
             android:visibility="gone" />
     </FrameLayout>
 
@@ -363,26 +381,9 @@
             android:background="@color/sunsetOrange"
             android:fontFamily="@font/sfprodisplaybold"
             android:text="@string/choose_category_done"
+            android:textColor="@android:color/white"
             app:cornerRadius="10dp" />
     </LinearLayout>
 
-    <FrameLayout
-        android:id="@+id/progressBarHolder"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:alpha="0.35"
-        android:animateLayoutChanges="true"
-        android:background="@color/dimGray"
-        android:visibility="gone"></FrameLayout>
-
-    <ProgressBar
-        android:id="@+id/progress_circular"
-        style="@style/Widget.AppCompat.ProgressBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:indeterminateTint="@color/sunsetOrange"
-        android:indeterminate="true"
-        android:visibility="gone" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

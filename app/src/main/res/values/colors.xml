@@ -15,4 +15,5 @@
     <color name="dark_grey">#a7a7a7</color>
     <color name="liver">#505050</color>
     <color name="inverse">#000000</color>
+    <color name="refreshIconColor">#646464</color>
 </resources>

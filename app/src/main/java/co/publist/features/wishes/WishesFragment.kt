@@ -62,7 +62,7 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
     private fun setObservers() {
         viewModel.preLoadedWishesType.observe(viewLifecycleOwner, Observer { type ->
             refreshLayout.isRefreshing = true
-            refreshLayout.setColorSchemeResources(R.color.sunsetOrange)
+            refreshLayout.setColorSchemeResources(R.color.refreshIconColor)
             refreshLayout.setProgressBackgroundColorSchemeResource(R.color.colorPrimary)
             wishesType = type
             if (wishesType == PUBLIC || wishesType == SEARCH || wishesType == DETAILS) {

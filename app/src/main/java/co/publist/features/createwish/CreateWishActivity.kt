@@ -454,7 +454,7 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
 
     private fun showCameraGalleryDialog() {
         val pictureDialog =
-            AlertDialog.Builder(this, android.R.style.Theme_Material_Light_Dialog_NoActionBar)
+            AlertDialog.Builder(this, R.style.AlertDialogCustom)
         pictureDialog.setTitle(getString(R.string.camera_gallery_dialog_title))
         val pictureDialogItems =
             arrayOf(getString(R.string.select_from_gallery), getString(R.string.select_from_camera))
