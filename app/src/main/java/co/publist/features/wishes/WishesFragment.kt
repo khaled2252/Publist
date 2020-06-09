@@ -173,7 +173,6 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
             wishesRecyclerView.addOnScrollListener(scrollListener)
         }
 
-        profileWishesAdapter.setHasStableIds(true)
         val placeHolder =
             this.parentFragment?.view?.findViewById<LinearLayout>(R.id.placeHolderView)
         profileWishesAdapter.registerAdapterDataObserver(
@@ -234,7 +233,6 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
             })
             wishesRecyclerView.addOnScrollListener(scrollListener)
         }
-        publicWishesAdapter.setHasStableIds(true)
         wishesRecyclerView.adapter = publicWishesAdapter
     }
 

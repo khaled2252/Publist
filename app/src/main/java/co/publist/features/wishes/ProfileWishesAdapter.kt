@@ -43,7 +43,7 @@ class ProfileWishesAdapter(
     private lateinit var loadMoreView: View
     private val wishList = ArrayList<WishAdapterItem?>()
     var loadMoreViewHeight = 0
-    val expandableViewHolders = mutableMapOf<String, WishViewHolder>()
+    var currentExpandedWishId: String? = null
     var doneItemsList = ArrayList<String>()
     var likedItemsList = ArrayList<String>()
     var currentRemovedWish: WishAdapterItem? = null
@@ -72,20 +72,10 @@ class ProfileWishesAdapter(
         }
     }
 
-    override fun getItemId(position: Int): Long {
-        return wishList[position]?.wishId.hashCode().toLong()
-    }
-
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (holder is WishViewHolder) {
             val wish = wishList[position]
-
-            if (wish!!.items!!.size <= MAX_VISIBLE_WISH_ITEMS) //To preserve expandable items see more layout
-                holder.setIsRecyclable(false)
-
-            if (wish.wishId != null) //Fixme checking because of iOS bug where some wishes are without wishId
-                seenCountListener(wish.wishId!!)
-
+            seenCountListener(wish?.wishId!!)
             holder.bind(wish, position)
         }
     }
@@ -129,16 +119,6 @@ class ProfileWishesAdapter(
         ) {
             holderWish = wish
             binding.apply {
-                if (wishesType == DETAILS)
-                    seeMoreLayout.visibility = View.GONE
-                else {
-                    root.setOnClickListener {
-                        val intent = Intent(it.context, WishDetailsActivity::class.java)
-                        intent.putExtra(WISH_DETAILS_INTENT, wish)
-                        it.context.startActivity(intent)
-                    }
-                }
-
                 //Apply done,liked items in this wish
                 for (itemMap in wish.items!!) {
                     if (likedItemsList.contains(itemMap.key))
@@ -147,6 +127,7 @@ class ProfileWishesAdapter(
                         itemMap.value.done = true
                 }
 
+                //Setup edit dots or favorite icon
                 if (wish.isCreator)
                     wishActionImageView.apply {
                         setImageResource(R.drawable.ic_dots)
@@ -185,6 +166,7 @@ class ProfileWishesAdapter(
                         }
                     }
 
+                //Category , Title
                 categoryNameTextView.text = getCategoryNameById(wish.categoryId!![0])
                 titleTextView.text = wish.title
 
@@ -207,33 +189,42 @@ class ProfileWishesAdapter(
                 //Load wish Items
                 //sort Items map by orderId
                 wish.items = wish.items?.toList()?.sortedBy { it.second.orderId }?.toMap()
+
                 //Setup expanding conditions
-                if (wishesType == DETAILS)
+                if (wishesType == DETAILS) {
+                    seeMoreLayout.visibility = View.GONE
                     setWishItemsAdapter(true) //Expanded wish in details screen
+                }
                 else {
+                    root.setOnClickListener {//Navigate to details screen when clicking on empty spaces in wish (while not in details)
+                        val intent = Intent(it.context, WishDetailsActivity::class.java)
+                        intent.putExtra(WISH_DETAILS_INTENT, wish)
+                        it.context.startActivity(intent)
+                    }
+
                     if (wish.items!!.size <= MAX_VISIBLE_WISH_ITEMS) {
                         seeMoreTextSwitcher.visibility = View.GONE
                         arrowImageView.visibility = View.GONE
                     } else {//Expandable wish
+                        seeMoreTextSwitcher.visibility = View.VISIBLE
+                        arrowImageView.visibility = View.VISIBLE
                         setTextSwitcherFactory()
                         applySeeMoreText()
                         seeMoreLayout.setOnClickListener {
                             if (!isExpanded) {
+                                notifyDataSetChanged() // To reload all wishes thus collapsing the other expanded one
                                 expandWish(position, true)
-                                //Collapse all other expandable wishes except for the current one expanding
-                                for (viewHolderWishId in expandableViewHolders.keys) {
-                                    if (viewHolderWishId != holderWish.wishId && expandableViewHolders[viewHolderWishId]!!.isExpanded)
-                                        expandableViewHolders[viewHolderWishId]!!.collapseWish()
-                                }
+                                currentExpandedWishId = holderWish.wishId
                             } else {
                                 val intent = Intent(it.context, WishDetailsActivity::class.java)
                                 intent.putExtra(WISH_DETAILS_INTENT, wish)
                                 it.context.startActivity(intent)
                             }
                         }
-                        if (expandableViewHolders.containsKey(holderWish.wishId) && expandableViewHolders[holderWish.wishId]!!.isExpanded) //Expand wish that was expanded after loading more wishes (causing it to be recycled)
+                        if (holderWish.wishId == currentExpandedWishId) //Expand wish that was already expanded (was collapsed due to recycling)
                             expandWish(position, false)
-                        expandableViewHolders[holderWish.wishId!!] = this@WishViewHolder
+                        else
+                            collapseWish()
                     }
                     setWishItemsAdapter(isExpanded)
                 }
@@ -301,7 +292,7 @@ class ProfileWishesAdapter(
         private fun applySeeMoreText() {
             binding.apply {
                 val extraWishItemsNumber = (holderWish.items!!.size) - MAX_VISIBLE_WISH_ITEMS
-                seeMoreTextSwitcher.setText(
+                seeMoreTextSwitcher.setCurrentText(
                     seeMoreTextSwitcher.context.resources.getQuantityString(
                         R.plurals.see_more_text,
                         extraWishItemsNumber,
@@ -311,13 +302,20 @@ class ProfileWishesAdapter(
             }
         }
 
-        private fun expandWish(position: Int, callScrolling: Boolean) {
-            if (callScrolling)
-                seeMoreListener(position)
+        private fun expandWish(position: Int, withAnimation: Boolean) {
+            if (withAnimation) {
+                //seeMoreListener(position)
+                binding.seeMoreTextSwitcher.setText(binding.seeMoreTextSwitcher.context.getString(R.string.go_to_details))
+            } else
+                binding.seeMoreTextSwitcher.setCurrentText(
+                    binding.seeMoreTextSwitcher.context.getString(
+                        R.string.go_to_details
+                    )
+                )
+
             isExpanded = true
             setWishItemsAdapter(isExpanded)
             binding.arrowImageView.setImageResource(R.drawable.ic_right)
-            binding.seeMoreTextSwitcher.setText(binding.seeMoreTextSwitcher.context.getString(R.string.go_to_details))
         }
 
         private fun collapseWish() {

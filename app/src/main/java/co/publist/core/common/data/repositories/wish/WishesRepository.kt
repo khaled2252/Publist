@@ -56,8 +56,10 @@ class WishesRepository @Inject constructor(
                 .get()
                 .addOnFailureListener {
                     singleEmitter.onError(it)
-                }.addOnSuccessListener { wish ->
-                    singleEmitter.onSuccess(wish.toObject(Wish::class.java)!!)
+                }.addOnSuccessListener { wishDocumentSnapshot ->
+                    val wish = wishDocumentSnapshot.toObject(Wish::class.java)
+                    wish?.wishId = wishDocumentSnapshot.id
+                    singleEmitter.onSuccess(wish!!)
                 }
         }
     }
