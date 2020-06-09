@@ -289,7 +289,7 @@ class PublicWishesAdapter(
 
             isExpanded = true
             setWishItemsAdapter(isExpanded)
-            binding.arrowImageView.setImageResource(R.drawable.ic_right)
+            binding.arrowImageView.setImageResource(R.drawable.ic_details)
         }
 
         private fun collapseWish() {

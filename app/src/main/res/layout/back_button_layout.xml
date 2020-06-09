@@ -9,5 +9,5 @@
         android:layout_width="40dp"
         android:layout_height="30dp"
         android:background="?android:attr/selectableItemBackgroundBorderless"
-        android:src="@drawable/ic_left_arrow" />
+        android:src="@drawable/ic_back_arrow" />
 </LinearLayout>

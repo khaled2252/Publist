@@ -1,10 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <plurals name="see_more_text" tools:ignore="MissingQuantity">
-        <item quantity="one" tools:ignore="MissingQuantity">يوجد %1$d نقاط اخرى</item>
+<resources>
+    <plurals name="see_more_text">
+        <item quantity="one">يوجد %1$d نقاط اخرى</item>
+        <item quantity="two">يوجد %1$d نقاط اخرى</item>
+        <item quantity="few">يوجد %1$d نقاط اخرى</item>
+        <item quantity="many">يوجد %1$d نقاط اخرى</item>
+        <item quantity="zero">يوجد %1$d نقاط اخرى</item>
     </plurals>
-    <plurals name="minimum_categories" tools:ignore="MissingQuantity">
+    <plurals name="minimum_categories">
         <item quantity="one">يجب ان تختار فئة</item>
-        <item quantity="other">يجب ان تختار على الاقل %1$d فئة</item>
+        <item quantity="two">يجب ان تختار على الاقل فئتين</item>
+        <item quantity="few">يجب ان تختار على الاقل %1$d فئة</item>
+        <item quantity="many">يجب ان تختار على الاقل %1$d فئة</item>
+        <item quantity="zero">يجب ان تختار على الاقل %1$d فئة</item>
     </plurals>
 </resources>
