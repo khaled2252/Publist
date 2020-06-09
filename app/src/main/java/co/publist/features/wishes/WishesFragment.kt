@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,14 +18,21 @@ import co.publist.core.platform.ViewModelFactory
 import co.publist.core.utils.OnLoadMoreListener
 import co.publist.core.utils.PlaceHolderAdapterDataObserver
 import co.publist.core.utils.RecyclerViewLoadMoreScroll
+import co.publist.core.utils.Utils.Constants.CHECK_ITEM
 import co.publist.core.utils.Utils.Constants.DETAILS
+import co.publist.core.utils.Utils.Constants.DISLIKE_ITEM
+import co.publist.core.utils.Utils.Constants.ITEM_ID
+import co.publist.core.utils.Utils.Constants.LIKE_ITEM
 import co.publist.core.utils.Utils.Constants.LOAD_MORE_DELAY
 import co.publist.core.utils.Utils.Constants.PUBLIC
 import co.publist.core.utils.Utils.Constants.SEARCH
+import co.publist.core.utils.Utils.Constants.UNCHECK_ITEM
 import co.publist.core.utils.Utils.Constants.VISIBLE_THRESHOLD
+import co.publist.core.utils.Utils.Constants.WISH_ID
 import co.publist.features.home.HomeActivity
 import co.publist.features.profile.ProfileActivity
 import co.publist.features.wishdetails.WishDetailsActivity
+import com.google.firebase.analytics.FirebaseAnalytics
 import kotlinx.android.synthetic.main.fragment_wishes.*
 import javax.inject.Inject
 import kotlin.math.absoluteValue
@@ -37,6 +45,9 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
+
+    @Inject
+    lateinit var mFirebaseAnalytics: FirebaseAnalytics
 
     override fun getBaseViewModel() = viewModel
 
@@ -137,9 +148,43 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
                 },
                 completeListener = { itemId, wishId, isCreator, isDone ->
                     viewModel.completeItem(itemId, wishId, isCreator, isDone)
+
+                    if (isDone)
+                        mFirebaseAnalytics.logEvent(
+                            CHECK_ITEM,
+                            bundleOf(
+                                Pair(WISH_ID, wishId),
+                                Pair(ITEM_ID, itemId)
+                            )
+                        )
+                    else
+                        mFirebaseAnalytics.logEvent(
+                            UNCHECK_ITEM,
+                            bundleOf(
+                                Pair(WISH_ID, wishId),
+                                Pair(ITEM_ID, itemId)
+                            )
+                        )
                 },
                 likeListener = { itemId, wishId, isLiked ->
                     viewModel.likeItem(itemId, wishId, isLiked)
+
+                    if (isLiked)
+                        mFirebaseAnalytics.logEvent(
+                            LIKE_ITEM,
+                            bundleOf(
+                                Pair(WISH_ID, wishId),
+                                Pair(ITEM_ID, itemId)
+                            )
+                        )
+                    else
+                        mFirebaseAnalytics.logEvent(
+                            DISLIKE_ITEM,
+                            bundleOf(
+                                Pair(WISH_ID, wishId),
+                                Pair(ITEM_ID, itemId)
+                            )
+                        )
                 },
                 seenCountListener = { wishId ->
                     viewModel.incrementSeenCount(wishId)
@@ -200,9 +245,43 @@ class WishesFragment : BaseFragment<WishesViewModel>() {
             },
             completeListener = { itemId, wishId, isCreator, isDone ->
                 viewModel.completeItem(itemId, wishId, isCreator, isDone)
+
+                if (isDone)
+                    mFirebaseAnalytics.logEvent(
+                        CHECK_ITEM,
+                        bundleOf(
+                            Pair(WISH_ID, wishId),
+                            Pair(ITEM_ID, itemId)
+                        )
+                    )
+                else
+                    mFirebaseAnalytics.logEvent(
+                        UNCHECK_ITEM,
+                        bundleOf(
+                            Pair(WISH_ID, wishId),
+                            Pair(ITEM_ID, itemId)
+                        )
+                    )
             },
             likeListener = { itemId, wishId, isLiked ->
                 viewModel.likeItem(itemId, wishId, isLiked)
+
+                if (isLiked)
+                    mFirebaseAnalytics.logEvent(
+                        LIKE_ITEM,
+                        bundleOf(
+                            Pair(WISH_ID, wishId),
+                            Pair(ITEM_ID, itemId)
+                        )
+                    )
+                else
+                    mFirebaseAnalytics.logEvent(
+                        DISLIKE_ITEM,
+                        bundleOf(
+                            Pair(WISH_ID, wishId),
+                            Pair(ITEM_ID, itemId)
+                        )
+                    )
             },
             seenCountListener = { wishId ->
                 viewModel.incrementSeenCount(wishId)

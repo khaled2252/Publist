@@ -1,14 +1,21 @@
 package co.publist.features.login
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.provider.Settings
 import android.widget.Toast
+import androidx.core.os.bundleOf
 import androidx.lifecycle.Observer
 import co.publist.R
 import co.publist.core.platform.BaseActivity
 import co.publist.core.platform.ViewModelFactory
 import co.publist.core.utils.Utils
+import co.publist.core.utils.Utils.Constants.CONNECT_WITH_FACEBOOK
+import co.publist.core.utils.Utils.Constants.CONTINUE_AS_GUEST
+import co.publist.core.utils.Utils.Constants.DEVICE_ID
 import co.publist.core.utils.Utils.Constants.EMAIL_PERMISSION
+import co.publist.core.utils.Utils.Constants.FB_ID
 import co.publist.core.utils.Utils.Constants.PROFILE_PICTURE_PERMISSION
 import co.publist.features.editprofile.EditProfileActivity
 import co.publist.features.home.HomeActivity
@@ -21,6 +28,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.common.api.ApiException
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.analytics.FirebaseAnalytics
 import kotlinx.android.synthetic.main.activity_login.*
 import timber.log.Timber
 import javax.inject.Inject
@@ -39,6 +47,9 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
 
     @Inject
     lateinit var mCallbackManager: CallbackManager
+
+    @Inject
+    lateinit var mFirebaseAnalytics: FirebaseAnalytics
 
     override fun getBaseViewModel() = viewModel
 
@@ -82,6 +93,16 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
 
         buttonGuest.setOnClickListener {
             startActivity(Intent(this, IntroActivity::class.java))
+
+            @SuppressLint("HardwareIds")
+            val androidID = Settings.Secure.getString(
+                contentResolver,
+                Settings.Secure.ANDROID_ID
+            )
+            mFirebaseAnalytics.logEvent(
+                CONTINUE_AS_GUEST,
+                bundleOf(Pair(DEVICE_ID, androidID))
+            )
         }
 
         facebookLoginButton.setPermissions(EMAIL_PERMISSION, PROFILE_PICTURE_PERMISSION)
@@ -90,6 +111,10 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
             object : FacebookCallback<LoginResult> {
                 override fun onSuccess(loginResult: LoginResult) {
                     viewModel.facebookFirebaseAuth(loginResult.accessToken)
+                    mFirebaseAnalytics.logEvent(
+                        CONNECT_WITH_FACEBOOK,
+                        bundleOf(Pair(FB_ID, loginResult.accessToken.userId))
+                    )
                 }
 
                 override fun onCancel() {

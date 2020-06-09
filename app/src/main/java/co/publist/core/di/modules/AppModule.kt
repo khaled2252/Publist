@@ -13,9 +13,12 @@ import com.facebook.login.LoginManager
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.functions.FirebaseFunctions
+import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import dagger.Module
 import dagger.Provides
@@ -82,5 +85,10 @@ class AppModule {
         return Client(ALGOLIA_APP_ID, ALGOLIA_API_KEY)
     }
 
+    @Singleton
+    @Provides
+    fun provideFirebaseAnalytics(): FirebaseAnalytics {
+        return Firebase.analytics
+    }
 
 }

@@ -12,11 +12,15 @@ import co.publist.core.platform.BaseActivity
 import co.publist.core.platform.ViewModelFactory
 import co.publist.core.utils.DataBindingAdapters.loadProfilePicture
 import co.publist.core.utils.Utils.Constants.COMING_FROM_PROFILE_INTENT
+import co.publist.core.utils.Utils.Constants.LOGOUT
+import co.publist.core.utils.Utils.Constants.VIEW_MY_FAVORITES
+import co.publist.core.utils.Utils.Constants.VIEW_MY_LISTS
 import co.publist.features.editprofile.EditProfileActivity
 import co.publist.features.login.LoginActivity
 import co.publist.features.mylists.MyListsFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.tabs.TabLayoutMediator
+import com.google.firebase.analytics.FirebaseAnalytics
 import kotlinx.android.synthetic.main.activity_profile.*
 import kotlinx.android.synthetic.main.back_button_layout.*
 import kotlinx.android.synthetic.main.edit_wish_bottom_sheet.*
@@ -30,6 +34,9 @@ class ProfileActivity : BaseActivity<ProfileViewModel>() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
+
+    @Inject
+    lateinit var mFirebaseAnalytics: FirebaseAnalytics
 
     override fun getBaseViewModel() = viewModel
 
@@ -81,6 +88,8 @@ class ProfileActivity : BaseActivity<ProfileViewModel>() {
         viewModel.logoutLiveData.observe(this, Observer {
             finishAffinity() //To clear all past activities
             startActivity(Intent(this, LoginActivity::class.java))
+
+            mFirebaseAnalytics.logEvent(LOGOUT, null)
         })
     }
 
@@ -134,6 +143,17 @@ class ProfileActivity : BaseActivity<ProfileViewModel>() {
             sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
             showDeleteDialog()
         }
+
+        profile_pager!!.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                if (position == 0)
+                    mFirebaseAnalytics.logEvent(VIEW_MY_FAVORITES, null)
+                else
+                    mFirebaseAnalytics.logEvent(VIEW_MY_LISTS, null)
+
+                super.onPageSelected(position)
+            }
+        })
     }
 
     private fun showDeleteDialog() {

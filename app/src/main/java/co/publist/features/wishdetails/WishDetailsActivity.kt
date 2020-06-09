@@ -5,14 +5,19 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.core.os.bundleOf
 import androidx.lifecycle.Observer
 import co.publist.R
 import co.publist.core.common.data.models.wish.WishAdapterItem
 import co.publist.core.platform.BaseActivity
 import co.publist.core.platform.ViewModelFactory
-import co.publist.core.utils.Utils
+import co.publist.core.utils.Utils.Constants.DELETE_WISH
 import co.publist.core.utils.Utils.Constants.DETAILS
+import co.publist.core.utils.Utils.Constants.EDIT_WISH
+import co.publist.core.utils.Utils.Constants.EDIT_WISH_INTENT
+import co.publist.core.utils.Utils.Constants.SHOW_WISH_DETAILS
 import co.publist.core.utils.Utils.Constants.WISH_DETAILS_INTENT
+import co.publist.core.utils.Utils.Constants.WISH_ID
 import co.publist.features.createwish.CreateWishActivity
 import co.publist.features.home.HomeActivity
 import co.publist.features.myfavorites.MyFavoritesFragment
@@ -20,6 +25,7 @@ import co.publist.features.mylists.MyListsFragment
 import co.publist.features.wishes.WishesFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.analytics.FirebaseAnalytics
 import kotlinx.android.synthetic.main.activity_wish_details.*
 import kotlinx.android.synthetic.main.back_button_layout.*
 import kotlinx.android.synthetic.main.edit_wish_bottom_sheet.*
@@ -33,6 +39,9 @@ class WishDetailsActivity : BaseActivity<WishDetailsViewModel>() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
+
+    @Inject
+    lateinit var mFirebaseAnalytics: FirebaseAnalytics
 
     override fun getBaseViewModel() = viewModel
 
@@ -63,6 +72,11 @@ class WishDetailsActivity : BaseActivity<WishDetailsViewModel>() {
             wishesFragment.viewModel.loadWishes(DETAILS)
 
             viewModel.incrementOrganicSeen(selectedWish.wishId!!)
+
+            mFirebaseAnalytics.logEvent(
+                SHOW_WISH_DETAILS,
+                bundleOf(Pair(WISH_ID, selectedWish.wishId))
+            )
         } else //Coming back from another screen (i.e edit wish)
         {
             wishesFragment.clearLoadedData()
@@ -75,13 +89,17 @@ class WishDetailsActivity : BaseActivity<WishDetailsViewModel>() {
         wishesFragment.viewModel.wishDeletedLiveData.observe(this, Observer {
             Toast.makeText(this, getString(R.string.delete_wish), Toast.LENGTH_SHORT).show()
             finish()
+
+            mFirebaseAnalytics.logEvent(DELETE_WISH, null)
         })
 
         wishesFragment.viewModel.editWishLiveData.observe(this, Observer { wish ->
             val intent = Intent(this, CreateWishActivity::class.java)
-            intent.putExtra(Utils.Constants.EDIT_WISH_INTENT, wish)
+            intent.putExtra(EDIT_WISH_INTENT, wish)
             startActivity(intent)
             sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+
+            mFirebaseAnalytics.logEvent(EDIT_WISH, bundleOf(Pair(WISH_ID, wish.wishId)))
         })
 
         wishesFragment.viewModel.isFavoriteAdded.observe(this, Observer { isFavoriteAdded ->

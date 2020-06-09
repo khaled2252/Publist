@@ -10,6 +10,7 @@ import android.widget.AutoCompleteTextView
 import android.widget.SearchView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import co.publist.R
@@ -18,9 +19,15 @@ import co.publist.core.platform.BaseActivity
 import co.publist.core.platform.ViewModelFactory
 import co.publist.core.utils.DataBindingAdapters.loadProfilePicture
 import co.publist.core.utils.Utils.Constants.AUTO_COMPLETE_TEXT_VIEW_ID
+import co.publist.core.utils.Utils.Constants.DELETE_WISH
+import co.publist.core.utils.Utils.Constants.EDIT_WISH
 import co.publist.core.utils.Utils.Constants.EDIT_WISH_INTENT
+import co.publist.core.utils.Utils.Constants.GO_TO_ADD_WISH
+import co.publist.core.utils.Utils.Constants.OPEN_PROFILE
 import co.publist.core.utils.Utils.Constants.PUBLIC
 import co.publist.core.utils.Utils.Constants.SEARCH
+import co.publist.core.utils.Utils.Constants.SEARCH_ANALYTICS
+import co.publist.core.utils.Utils.Constants.WISH_ID
 import co.publist.core.utils.Utils.showLoginPromptForGuest
 import co.publist.databinding.ActivityHomeBinding
 import co.publist.features.createwish.CreateWishActivity
@@ -33,6 +40,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipDrawable
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.analytics.FirebaseAnalytics
 import kotlinx.android.synthetic.main.activity_home.*
 import kotlinx.android.synthetic.main.edit_wish_bottom_sheet.*
 import javax.inject.Inject
@@ -45,6 +53,9 @@ class HomeActivity : BaseActivity<HomeViewModel>() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
+
+    @Inject
+    lateinit var mFirebaseAnalytics: FirebaseAnalytics
 
     override fun getBaseViewModel() = viewModel
 
@@ -113,15 +124,19 @@ class HomeActivity : BaseActivity<HomeViewModel>() {
         viewModel.profilePictureClickLiveData.observe(this, Observer { isGuest ->
             if (isGuest)
                 showLoginPromptForGuest(this)
-            else
+            else {
+                mFirebaseAnalytics.logEvent(OPEN_PROFILE, null)
                 startActivity(Intent(this, ProfileActivity::class.java))
+            }
         })
 
         viewModel.addWishClickLiveData.observe(this, Observer { isGuest ->
             if (isGuest)
                 showLoginPromptForGuest(this)
-            else
+            else {
+                mFirebaseAnalytics.logEvent(GO_TO_ADD_WISH, null)
                 startActivity(Intent(this, CreateWishActivity::class.java))
+            }
         })
 
         wishesFragment.viewModel.isFavoriteAdded.observe(this, Observer { isFavoriteAdded ->
@@ -144,6 +159,8 @@ class HomeActivity : BaseActivity<HomeViewModel>() {
             wishesFragment.viewModel.loadWishes(PUBLIC)
             Toast.makeText(this, getString(R.string.delete_wish), Toast.LENGTH_SHORT).show()
             sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+
+            mFirebaseAnalytics.logEvent(DELETE_WISH, null)
         })
 
         wishesFragment.viewModel.editWishLiveData.observe(this, Observer { wish ->
@@ -151,6 +168,7 @@ class HomeActivity : BaseActivity<HomeViewModel>() {
             intent.putExtra(EDIT_WISH_INTENT, wish)
             startActivity(intent)
 
+            mFirebaseAnalytics.logEvent(EDIT_WISH, bundleOf(Pair(WISH_ID, wish.wishId)))
         })
 
 
@@ -259,6 +277,8 @@ class HomeActivity : BaseActivity<HomeViewModel>() {
                     wishesFragment.viewModel.loadWishes(SEARCH)
                     this@HomeActivity.hideKeyboard()
                     searchView.clearFocus()
+
+                    mFirebaseAnalytics.logEvent(SEARCH_ANALYTICS, null)
                     return true
                 }
 

@@ -18,6 +18,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ItemTouchHelper.*
@@ -32,6 +33,8 @@ import co.publist.core.utils.Utils.Constants.CAMERA
 import co.publist.core.utils.Utils.Constants.EDIT_WISH_INTENT
 import co.publist.core.utils.Utils.Constants.GALLERY
 import co.publist.core.utils.Utils.Constants.MINIMUM_WISH_ITEMS
+import co.publist.core.utils.Utils.Constants.PUBLISH_NEW_WISH
+import co.publist.core.utils.Utils.Constants.WISH_ID
 import co.publist.core.utils.Utils.getDistanceBetweenViews
 import co.publist.core.utils.Utils.getField
 import co.publist.core.utils.Utils.isConnectedToNetwork
@@ -43,6 +46,7 @@ import co.publist.features.categories.CategoriesFragment
 import co.publist.features.home.HomeActivity
 import co.publist.features.mylists.MyListsFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.theartofdev.edmodo.cropper.CropImage
 import kotlinx.android.synthetic.main.activity_create_wish.*
 import kotlinx.android.synthetic.main.back_button_layout.*
@@ -57,6 +61,9 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
+
+    @Inject
+    lateinit var mFirebaseAnalytics: FirebaseAnalytics
 
     override fun getBaseViewModel() = viewModel
 
@@ -219,13 +226,18 @@ class CreateWishActivity : BaseActivity<CreateWishViewModel>() {
             postButton.isEnabled = isValid
         })
 
-        viewModel.addingWishLiveData.observe(this, Observer { isCreated ->
-            if (isCreated) {
+        viewModel.addingWishLiveData.observe(this, Observer { createdWishId ->
+            if (createdWishId != null) {
                 Toast.makeText(this, getString(R.string.post_wish_success), Toast.LENGTH_SHORT)
                     .show()
                 HomeActivity.Data.isChanged = true
                 MyListsFragment.Data.isChanged = true
                 finish()
+
+                mFirebaseAnalytics.logEvent(
+                    PUBLISH_NEW_WISH,
+                    bundleOf(Pair(WISH_ID, createdWishId))
+                )
             } else
                 Toast.makeText(
                     this,

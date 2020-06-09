@@ -291,5 +291,34 @@ object Utils {
         const val NULL_STRING = "null"
         const val GENERAL_TYPE = -1
         const val LOADING_MORE = -2
+
+        //Firebase analytics keys
+        const val CONNECT_WITH_FACEBOOK = "connect_with_facebook"
+        const val CONTINUE_AS_GUEST = "continue_as_guest"
+        const val CHOOSE_CATEGORIES = "choose_categories"
+        const val SKIP_CHOOSING_CATEGORIES = "skip_choosing_categries"
+        const val GUEST_CHOOSING_CATEGORY = "guest_choosing_category"
+        const val SEARCH_ANALYTICS = "search"
+        const val OPEN_PROFILE = "open_profile"
+        const val GO_TO_ADD_WISH = "go_to_addWish"
+        const val SHOW_WISH_DETAILS = "show_wish_details"
+        const val LIKE_ITEM = "like_item"
+        const val DISLIKE_ITEM = "dislike_item"
+        const val CHECK_ITEM = "check_item"
+        const val UNCHECK_ITEM = "uncheck_item"
+        const val EDIT_WISH = "edit_wish"
+        const val DELETE_WISH = "delete_wish"
+        const val PUBLISH_NEW_WISH = "publish_new_wish"
+        const val SHARE_WISH = "share_wish"
+        const val VIEW_MY_FAVORITES = "view_myfavourites"
+        const val VIEW_MY_LISTS = "view_myList"
+        const val LOGOUT = "logout"
+
+        //Firebase Analytics params
+        const val FB_ID = "fb_id"
+        const val DEVICE_ID = "device_id"
+        const val CATEGORY_IDS = "category_ids"
+        const val WISH_ID = "wish_id"
+        const val ITEM_ID = "item_id"
     }
 }

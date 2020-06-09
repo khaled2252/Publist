@@ -165,9 +165,10 @@ class WishesRepository @Inject constructor(
         }
     }
 
-    override fun createWish(wish: Wish): Completable {
-        return addWishToWishes(wish).flatMapCompletable {
+    override fun createWish(wish: Wish): Single<String> {
+        return addWishToWishes(wish).flatMap {
             addWishToMyLists(it)
+            Single.just(it.wishId)
         }
 
     }

@@ -13,7 +13,7 @@ interface WishesRepositoryInterface {
         lastVisibleWishesDocumentSnapshot: DocumentSnapshot?
     ): Single<Pair<ArrayList<Wish>, DocumentSnapshot?>>
     fun getMyListWishes(): Single<ArrayList<Wish>>
-    fun createWish(wish: Wish): Completable
+    fun createWish(wish: Wish): Single<String>
     fun updateWish(wish: Wish): Completable
     fun uploadImage(imageUri: String): Single<Pair<String, String>>
     fun deleteWishFromMyLists(selectedWish: Wish): Completable

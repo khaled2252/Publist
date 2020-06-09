@@ -7,6 +7,7 @@ import co.publist.core.common.data.repositories.wish.WishesRepositoryInterface
 import co.publist.core.platform.BaseViewModel
 import com.google.firebase.Timestamp
 import io.reactivex.functions.Action
+import io.reactivex.functions.Consumer
 import java.util.*
 import javax.inject.Inject
 import kotlin.collections.ArrayList
@@ -18,7 +19,7 @@ class CreateWishViewModel @Inject constructor(
 
     //LiveData
     val validationLiveData = MutableLiveData<Boolean>()
-    val addingWishLiveData = MutableLiveData<Boolean>()
+    val addingWishLiveData = MutableLiveData<String?>()
     val editedWishLiveData = MutableLiveData<Boolean>()
 
     //Current user data
@@ -46,7 +47,7 @@ class CreateWishViewModel @Inject constructor(
 
     fun postWish() {
         if (wishItemsMap.size < 3)
-            addingWishLiveData.postValue(false)
+            addingWishLiveData.postValue(null)
         else {
             val wish = makeWish(category!!, title, wishItemsMap)
             postWish(wish)
@@ -107,18 +108,18 @@ class CreateWishViewModel @Inject constructor(
             }
         } else { // Creating a new wish
             if (wishImageUri.isNotEmpty()) {
-                subscribe(wishesRepository.uploadImage(wishImageUri).flatMapCompletable { result ->
+                subscribe(wishesRepository.uploadImage(wishImageUri).flatMap { result ->
                     val wishImageUrl = result.first
                     val photoName = result.second
                     wish.wishPhotoURL = wishImageUrl
                     wish.photoName = photoName
                     wishesRepository.createWish(wish)
-                }, Action {
-                    addingWishLiveData.postValue(true)
+                }, Consumer { wishId ->
+                    addingWishLiveData.postValue(wishId)
                 })
             } else {
-                subscribe(wishesRepository.createWish(wish), Action {
-                    addingWishLiveData.postValue(true)
+                subscribe(wishesRepository.createWish(wish), Consumer { wishId ->
+                    addingWishLiveData.postValue(wishId)
                 })
             }
         }

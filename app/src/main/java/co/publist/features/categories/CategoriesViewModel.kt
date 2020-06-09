@@ -137,7 +137,7 @@ class CategoriesViewModel @Inject constructor(
                 selectedCategoriesList
             )
         )
-        saveCategoriesLiveData.postValue(true)
+        saveCategoriesLiveData.postValue(false)
     }
 
     fun removeWishCategory() {
@@ -148,4 +148,7 @@ class CategoriesViewModel @Inject constructor(
         categoriesListLiveData.postValue(categoriesListLiveData.value)
     }
 
+    fun getSelectedCategoriesIds(): List<String> {
+        return selectedCategoriesList.map { it.id!! }
+    }
 }
