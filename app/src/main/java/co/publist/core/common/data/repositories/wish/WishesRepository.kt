@@ -37,6 +37,7 @@ import com.google.firebase.storage.StorageMetadata
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
+import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
 import kotlin.collections.ArrayList
@@ -661,7 +662,8 @@ class WishesRepository @Inject constructor(
                     completableEmitter.onComplete()
                 }
                 .addOnFailureListener {
-                    completableEmitter.onError(it)
+                    Timber.d(it)
+                    completableEmitter.onComplete()
                 }
         }
     }
@@ -680,7 +682,8 @@ class WishesRepository @Inject constructor(
                     completableEmitter.onComplete()
                 }
                 .addOnFailureListener {
-                    completableEmitter.onError(it)
+                    Timber.d(it)
+                    completableEmitter.onComplete()
                 }
         }
     }
