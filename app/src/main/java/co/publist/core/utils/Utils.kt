@@ -247,6 +247,7 @@ object Utils {
         const val LIKED_USERS_IDS_COLLECTION_PATH = "viewedUsersId"
         const val USER_VIEWED_ITEMS_COLLECTION_PATH = "viewedItems"
         const val PROFILE_PICTURE_URL_FIELD = "profilePictureUrl"
+        const val FACEBOOK_ID_FIELD = "fb_id"
         const val TOP_COMPLETED_USER_IDS_FIELD = "topCompletedUsersId"
         const val TOP_VIEWED_USER_IDS_FIELD = "topViewedUsersId"
         const val CREATOR_FIELD = "creator"

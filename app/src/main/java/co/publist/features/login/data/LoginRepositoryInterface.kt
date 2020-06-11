@@ -13,8 +13,7 @@ interface LoginRepositoryInterface {
         email: String,
         name: String,
         profilePictureUrl: String,
-        uid: String,
-        platform: String
+        facebookId: String?
     ): Single<String>
 
     fun authenticateGoogleUserWithFirebase(userIdToken: String): Single<String>

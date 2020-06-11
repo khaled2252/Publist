@@ -24,6 +24,42 @@ class LoginViewModel @Inject constructor(
 
     private lateinit var registeringUser: RegisteringUser
 
+    fun googleFirebaseAuth(user: GoogleSignInAccount) {
+        subscribe(
+            loginRepository.authenticateGoogleUserWithFirebase(user.idToken!!).flatMap { uId ->
+                registeringUser = RegisteringUser(
+                    user.email!!,
+                    user.displayName!!,
+                    user.photoUrl.toString(),
+                    uId = uId,
+                    platform = PLATFORM_GOOGLE
+                )
+                registerFlow(registeringUser)
+            },
+            Consumer { registeredUser ->
+                val isNewUser = registeredUser.first
+                val isCategoriesEmpty = registeredUser.second
+                userLoggedIn.postValue(Pair(isNewUser, isCategoriesEmpty))
+            })
+    }
+
+    fun facebookFirebaseAuth(accessToken: AccessToken) {
+        subscribe(
+            loginRepository.authenticateFacebookUserWithFirebase(accessToken.token).flatMap { uId ->
+                loginRepository.setFaceBookGraphRequest(accessToken)
+                    .flatMap { registeringUser ->
+                        registeringUser.uId = uId
+                        registeringUser.platform = PLATFORM_FACEBOOK
+                        registerFlow(registeringUser)
+                    }
+            },
+            Consumer { registeredUser ->
+                val isNewUser = registeredUser.first
+                val isCategoriesEmpty = registeredUser.second
+                userLoggedIn.postValue(Pair(isNewUser, isCategoriesEmpty))
+            })
+    }
+
     private fun registerFlow(registeringUser: RegisteringUser): Single<Pair<Boolean, Boolean>> {
         return loginRepository.fetchUserDocId(registeringUser.email!!)
             .flatMap { documentId ->
@@ -53,13 +89,12 @@ class LoginViewModel @Inject constructor(
         registeringUser: RegisteringUser,
         documentId: String?
     ): Single<Pair<String, Boolean>> {
-        if (documentId == NULL_STRING) {
+        if (documentId == NULL_STRING) { //Case : new user (not previously registered with the same email)
             return loginRepository.addNewUser(
                 registeringUser.email!!,
                 registeringUser.name!!,
                 registeringUser.profilePictureUrl!!,
-                registeringUser.uId!!,
-                registeringUser.platform!!
+                registeringUser.facebookId
             ).flatMap { newDocumentId ->
                 loginRepository.addUidInUserAccounts(
                     newDocumentId,
@@ -67,7 +102,7 @@ class LoginViewModel @Inject constructor(
                     registeringUser.platform!!
                 ).andThen(Single.just(Pair(newDocumentId, true)))
             }
-        } else {
+        } else { //Case : existing user (already has entry in 'users' in firestore with the same email)
             return loginRepository.addUidInUserAccounts(
                 documentId!!,
                 registeringUser.uId!!,
@@ -80,43 +115,6 @@ class LoginViewModel @Inject constructor(
                     )
                 ).andThen(Single.just(Pair(documentId, false)))
         }
-    }
-
-    fun googleFirebaseAuth(user: GoogleSignInAccount) {
-        subscribe(
-            loginRepository.authenticateGoogleUserWithFirebase(user.idToken!!).flatMap { uId ->
-                registeringUser = RegisteringUser(
-                    user.email!!,
-                    user.displayName!!,
-                    user.id!!,
-                    user.idToken!!,
-                    user.photoUrl.toString(),
-                    uId, PLATFORM_GOOGLE
-                )
-                registerFlow(registeringUser)
-            },
-            Consumer { registeredUser ->
-                val isNewUser = registeredUser.first
-                val isCategoriesEmpty = registeredUser.second
-                userLoggedIn.postValue(Pair(isNewUser, isCategoriesEmpty))
-            })
-    }
-
-    fun facebookFirebaseAuth(accessToken: AccessToken) {
-        subscribe(
-            loginRepository.authenticateFacebookUserWithFirebase(accessToken.token).flatMap { uId ->
-                loginRepository.setFaceBookGraphRequest(accessToken)
-                    .flatMap { registeringUser ->
-                        registeringUser.uId = uId
-                        registeringUser.platform = PLATFORM_FACEBOOK
-                        registerFlow(registeringUser)
-                    }
-            },
-            Consumer { registeredUser ->
-                val isNewUser = registeredUser.first
-                val isCategoriesEmpty = registeredUser.second
-                userLoggedIn.postValue(Pair(isNewUser, isCategoriesEmpty))
-            })
     }
 
 }

@@ -6,6 +6,7 @@ import co.publist.core.common.data.models.Mapper
 import co.publist.core.common.data.models.User
 import co.publist.core.utils.Utils.Constants.CREATOR_FIELD
 import co.publist.core.utils.Utils.Constants.EMAIL_FIELD
+import co.publist.core.utils.Utils.Constants.FACEBOOK_ID_FIELD
 import co.publist.core.utils.Utils.Constants.ID_FIELD
 import co.publist.core.utils.Utils.Constants.IMAGE_PATH_FIELD
 import co.publist.core.utils.Utils.Constants.MY_LISTS_COLLECTION_PATH
@@ -129,16 +130,16 @@ class LoginRepository @Inject constructor(
         email: String,
         name: String,
         profilePictureUrl: String,
-        uid: String,
-        platform: String
+        facebookId: String?
     ): Single<String> {
         return Single.create { singleEmitter ->
-            mFirebaseFirestore.let { it ->
+            mFirebaseFirestore.let {
                 val users: CollectionReference = it.collection(USERS_COLLECTION_PATH)
                 val data = hashMapOf(
                     EMAIL_FIELD to email,
                     NAME_FIELD to name,
-                    PROFILE_PICTURE_URL_FIELD to profilePictureUrl
+                    PROFILE_PICTURE_URL_FIELD to profilePictureUrl,
+                    FACEBOOK_ID_FIELD to facebookId
                 )
                 users.add(data).addOnSuccessListener { documentReference ->
                     singleEmitter.onSuccess(documentReference.id)
@@ -197,7 +198,8 @@ class LoginRepository @Inject constructor(
                         RegisteringUser(
                             email,
                             name,
-                            profilePictureUrl = profilePictureUrl
+                            profilePictureUrl = profilePictureUrl,
+                            facebookId = id
                         )
                     )
                 } catch (e: Exception) {
