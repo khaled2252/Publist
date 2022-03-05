@@ -1,6 +1,6 @@
-package co.publist.features.home.data
+package com.publist.features.home.data
 
-import co.publist.core.common.data.local.LocalDataSource
+import com.publist.core.common.data.local.LocalDataSource
 import javax.inject.Inject
 
 class HomeRepository @Inject constructor(

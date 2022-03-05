@@ -1,10 +1,10 @@
-package co.publist.core.common.data.local.db.seenwishes
+package com.publist.core.common.data.local.db.seenwishes
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import co.publist.core.common.data.models.wish.SeenWish
+import com.publist.core.common.data.models.wish.SeenWish
 
 
 @Database(

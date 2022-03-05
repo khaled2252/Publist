@@ -1,7 +1,7 @@
-package co.publist.features.login.data
+package com.publist.features.login.data
 
-import co.publist.core.common.data.models.User
 import com.facebook.AccessToken
+import com.publist.core.common.data.models.User
 import io.reactivex.Completable
 import io.reactivex.Single
 

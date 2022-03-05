@@ -1,13 +1,13 @@
-package co.publist.core.common.data.local.db
+package com.publist.core.common.data.local.db
 
 import android.content.Context
-import co.publist.core.common.data.local.db.publist.PublistDao
-import co.publist.core.common.data.local.db.publist.PublistDataBase
-import co.publist.core.common.data.local.db.seenwishes.SeenWishesDao
-import co.publist.core.common.data.local.db.seenwishes.SeenWishesDataBase
-import co.publist.core.common.data.models.category.CategoryDbEntity
-import co.publist.core.common.data.models.wish.MyListDbEntity
-import co.publist.core.common.data.models.wish.SeenWish
+import com.publist.core.common.data.local.db.publist.PublistDao
+import com.publist.core.common.data.local.db.publist.PublistDataBase
+import com.publist.core.common.data.local.db.seenwishes.SeenWishesDao
+import com.publist.core.common.data.local.db.seenwishes.SeenWishesDataBase
+import com.publist.core.common.data.models.category.CategoryDbEntity
+import com.publist.core.common.data.models.wish.MyListDbEntity
+import com.publist.core.common.data.models.wish.SeenWish
 import io.reactivex.Single
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors

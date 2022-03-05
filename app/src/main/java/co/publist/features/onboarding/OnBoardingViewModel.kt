@@ -1,8 +1,8 @@
-package co.publist.features.onboarding
+package com.publist.features.onboarding
 
 import androidx.lifecycle.MutableLiveData
-import co.publist.core.common.data.local.LocalDataSource
-import co.publist.core.platform.BaseViewModel
+import com.publist.core.common.data.local.LocalDataSource
+import com.publist.core.platform.BaseViewModel
 import javax.inject.Inject
 
 

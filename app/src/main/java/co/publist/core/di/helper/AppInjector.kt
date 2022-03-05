@@ -1,4 +1,4 @@
-package co.publist.core.di.helper
+package com.publist.core.di.helper
 
 import android.app.Activity
 import android.app.Application
@@ -6,9 +6,9 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
-import co.publist.core.PubListApp
-import co.publist.core.di.component.AppComponent
-import co.publist.core.di.component.DaggerAppComponent
+import com.publist.core.PubListApp
+import com.publist.core.di.component.AppComponent
+import com.publist.core.di.component.DaggerAppComponent
 
 import dagger.android.AndroidInjection
 import dagger.android.support.AndroidSupportInjection
@@ -50,9 +50,9 @@ object AppInjector {
 
             }
 
-            override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle?) {
-
+            override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {
             }
+
 
             override fun onActivityDestroyed(activity: Activity) {
 

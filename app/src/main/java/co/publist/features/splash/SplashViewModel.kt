@@ -1,10 +1,10 @@
-package co.publist.features.splash
+package com.publist.features.splash
 
 import androidx.lifecycle.MutableLiveData
-import co.publist.core.common.data.local.LocalDataSource
-import co.publist.core.common.data.repositories.user.UserRepositoryInterface
-import co.publist.core.platform.BaseViewModel
-import co.publist.features.categories.data.CategoriesRepositoryInterface
+import com.publist.core.common.data.local.LocalDataSource
+import com.publist.core.common.data.repositories.user.UserRepositoryInterface
+import com.publist.core.platform.BaseViewModel
+import com.publist.features.categories.data.CategoriesRepositoryInterface
 import io.reactivex.functions.Consumer
 import javax.inject.Inject
 

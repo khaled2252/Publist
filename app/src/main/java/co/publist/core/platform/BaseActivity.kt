@@ -1,4 +1,4 @@
-package co.publist.core.platform
+package com.publist.core.platform
 
 
 import android.os.Bundle
@@ -12,9 +12,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import co.publist.R
-import co.publist.core.utils.Utils
 import com.google.android.material.snackbar.Snackbar
+import com.publist.R
+import com.publist.core.utils.Utils
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import javax.inject.Inject

@@ -1,19 +1,19 @@
-package co.publist.features.wishes
+package com.publist.features.wishes
 
 import android.graphics.Paint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import co.publist.R
-import co.publist.core.common.data.models.User
-import co.publist.core.common.data.models.wish.WishItem
-import co.publist.core.utils.Utils.Constants.FLAME_ICON_COMPLETED_MINIMUM
-import co.publist.core.utils.Utils.Constants.FLAME_ICON_VIEWED_COUNT_PERCENTAGE
-import co.publist.core.utils.Utils.Constants.MINIMUM_WISH_ITEMS
-import co.publist.core.utils.Utils.Constants.TOP_USERS_THRESHOLD
-import co.publist.core.utils.Utils.loadTopUsersPictures
-import co.publist.core.utils.Utils.showLoginPromptForGuest
+import com.publist.R
+import com.publist.core.common.data.models.User
+import com.publist.core.common.data.models.wish.WishItem
+import com.publist.core.utils.Utils.Constants.FLAME_ICON_COMPLETED_MINIMUM
+import com.publist.core.utils.Utils.Constants.FLAME_ICON_VIEWED_COUNT_PERCENTAGE
+import com.publist.core.utils.Utils.Constants.MINIMUM_WISH_ITEMS
+import com.publist.core.utils.Utils.Constants.TOP_USERS_THRESHOLD
+import com.publist.core.utils.Utils.loadTopUsersPictures
+import com.publist.core.utils.Utils.showLoginPromptForGuest
 import kotlinx.android.synthetic.main.item_wish_item.view.*
 
 

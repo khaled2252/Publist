@@ -1,11 +1,6 @@
-package co.publist.core.di.modules
+package com.publist.core.di.modules
 
 import android.content.Context
-import co.publist.R
-import co.publist.core.common.data.local.LocalDataSource
-import co.publist.core.common.data.local.LocalDataSourceImpl
-import co.publist.core.utils.Utils.Constants.ALGOLIA_API_KEY
-import co.publist.core.utils.Utils.Constants.ALGOLIA_APP_ID
 import com.algolia.search.saas.Client
 import com.facebook.CallbackManager
 import com.facebook.internal.CallbackManagerImpl
@@ -20,6 +15,11 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.functions.FirebaseFunctions
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
+import com.publist.R
+import com.publist.core.common.data.local.LocalDataSource
+import com.publist.core.common.data.local.LocalDataSourceImpl
+import com.publist.core.utils.Utils.Constants.ALGOLIA_API_KEY
+import com.publist.core.utils.Utils.Constants.ALGOLIA_APP_ID
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton

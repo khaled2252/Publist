@@ -1,6 +1,6 @@
-package co.publist.core.common.data.repositories.user
+package com.publist.core.common.data.repositories.user
 
-import co.publist.core.common.data.models.User
+import com.publist.core.common.data.models.User
 
 interface UserRepositoryInterface {
     fun getUser(): User?

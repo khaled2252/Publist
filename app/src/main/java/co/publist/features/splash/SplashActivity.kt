@@ -1,4 +1,4 @@
-package co.publist.features.splash
+package com.publist.features.splash
 
 
 import android.content.Intent
@@ -7,14 +7,14 @@ import android.os.Handler
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.Observer
-import co.publist.R
-import co.publist.core.platform.BaseActivity
-import co.publist.core.platform.ViewModelFactory
-import co.publist.core.utils.Utils
-import co.publist.features.editprofile.EditProfileActivity
-import co.publist.features.home.HomeActivity
-import co.publist.features.login.LoginActivity
-import co.publist.features.onboarding.OnBoardingActivity
+import com.publist.R
+import com.publist.core.platform.BaseActivity
+import com.publist.core.platform.ViewModelFactory
+import com.publist.core.utils.Utils
+import com.publist.features.editprofile.EditProfileActivity
+import com.publist.features.home.HomeActivity
+import com.publist.features.login.LoginActivity
+import com.publist.features.onboarding.OnBoardingActivity
 import javax.inject.Inject
 
 

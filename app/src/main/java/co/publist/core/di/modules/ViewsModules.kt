@@ -1,18 +1,18 @@
-package co.publist.core.di.modules
+package com.publist.core.di.modules
 
-import co.publist.features.categories.CategoriesFragment
-import co.publist.features.createwish.CreateWishActivity
-import co.publist.features.editprofile.EditProfileActivity
-import co.publist.features.home.HomeActivity
-import co.publist.features.intro.IntroActivity
-import co.publist.features.login.LoginActivity
-import co.publist.features.myfavorites.MyFavoritesFragment
-import co.publist.features.mylists.MyListsFragment
-import co.publist.features.onboarding.OnBoardingActivity
-import co.publist.features.profile.ProfileActivity
-import co.publist.features.splash.SplashActivity
-import co.publist.features.wishdetails.WishDetailsActivity
-import co.publist.features.wishes.WishesFragment
+import com.publist.features.categories.CategoriesFragment
+import com.publist.features.createwish.CreateWishActivity
+import com.publist.features.editprofile.EditProfileActivity
+import com.publist.features.home.HomeActivity
+import com.publist.features.intro.IntroActivity
+import com.publist.features.login.LoginActivity
+import com.publist.features.myfavorites.MyFavoritesFragment
+import com.publist.features.mylists.MyListsFragment
+import com.publist.features.onboarding.OnBoardingActivity
+import com.publist.features.profile.ProfileActivity
+import com.publist.features.splash.SplashActivity
+import com.publist.features.wishdetails.WishDetailsActivity
+import com.publist.features.wishes.WishesFragment
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 

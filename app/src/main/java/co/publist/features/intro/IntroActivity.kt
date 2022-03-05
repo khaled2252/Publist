@@ -1,4 +1,4 @@
-package co.publist.features.intro
+package com.publist.features.intro
 
 
 import android.annotation.SuppressLint
@@ -8,18 +8,18 @@ import android.provider.Settings
 import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.lifecycle.Observer
-import co.publist.R
-import co.publist.core.platform.BaseActivity
-import co.publist.core.platform.ViewModelFactory
-import co.publist.core.utils.Utils.Constants.CATEGORY_IDS
-import co.publist.core.utils.Utils.Constants.CHOOSE_CATEGORIES
-import co.publist.core.utils.Utils.Constants.DEVICE_ID
-import co.publist.core.utils.Utils.Constants.GUEST_CHOOSING_CATEGORY
-import co.publist.core.utils.Utils.Constants.MINIMUM_SELECTED_CATEGORIES
-import co.publist.core.utils.Utils.Constants.SKIP_CHOOSING_CATEGORIES
-import co.publist.features.categories.CategoriesFragment
-import co.publist.features.home.HomeActivity
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.publist.R
+import com.publist.core.platform.BaseActivity
+import com.publist.core.platform.ViewModelFactory
+import com.publist.core.utils.Utils.Constants.CATEGORY_IDS
+import com.publist.core.utils.Utils.Constants.CHOOSE_CATEGORIES
+import com.publist.core.utils.Utils.Constants.DEVICE_ID
+import com.publist.core.utils.Utils.Constants.GUEST_CHOOSING_CATEGORY
+import com.publist.core.utils.Utils.Constants.MINIMUM_SELECTED_CATEGORIES
+import com.publist.core.utils.Utils.Constants.SKIP_CHOOSING_CATEGORIES
+import com.publist.features.categories.CategoriesFragment
+import com.publist.features.home.HomeActivity
 import kotlinx.android.synthetic.main.activity_intro.*
 import javax.inject.Inject
 

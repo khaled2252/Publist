@@ -1,14 +1,14 @@
-package co.publist.features.categories.data
+package com.publist.features.categories.data
 
 import android.os.AsyncTask
-import co.publist.core.common.data.local.LocalDataSource
-import co.publist.core.common.data.models.Mapper
-import co.publist.core.common.data.models.category.Category
-import co.publist.core.common.data.models.category.CategoryAdapterItem
-import co.publist.core.utils.Utils.Constants.CATEGORIES_COLLECTION_PATH
-import co.publist.core.utils.Utils.Constants.MY_CATEGORIES_COLLECTION_PATH
-import co.publist.core.utils.Utils.Constants.USERS_COLLECTION_PATH
 import com.google.firebase.firestore.*
+import com.publist.core.common.data.local.LocalDataSource
+import com.publist.core.common.data.models.Mapper
+import com.publist.core.common.data.models.category.Category
+import com.publist.core.common.data.models.category.CategoryAdapterItem
+import com.publist.core.utils.Utils.Constants.CATEGORIES_COLLECTION_PATH
+import com.publist.core.utils.Utils.Constants.MY_CATEGORIES_COLLECTION_PATH
+import com.publist.core.utils.Utils.Constants.USERS_COLLECTION_PATH
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers

@@ -1,16 +1,16 @@
-package co.publist.features.myfavorites
+package com.publist.features.myfavorites
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
-import co.publist.R
-import co.publist.core.platform.BaseFragment
-import co.publist.core.platform.ViewModelFactory
-import co.publist.core.utils.Utils.Constants.FAVORITES
-import co.publist.features.home.HomeActivity
-import co.publist.features.wishes.WishesFragment
+import com.publist.R
+import com.publist.core.platform.BaseFragment
+import com.publist.core.platform.ViewModelFactory
+import com.publist.core.utils.Utils.Constants.FAVORITES
+import com.publist.features.home.HomeActivity
+import com.publist.features.wishes.WishesFragment
 import javax.inject.Inject
 
 class MyFavoritesFragment : BaseFragment<MyFavoritesViewModel>() {

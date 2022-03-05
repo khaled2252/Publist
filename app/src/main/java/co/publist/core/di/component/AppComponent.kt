@@ -1,9 +1,9 @@
-package co.publist.core.di.component
+package com.publist.core.di.component
 
 import android.app.Application
 import android.content.Context
-import co.publist.core.PubListApp
-import co.publist.core.di.modules.AppModule
+import com.publist.core.PubListApp
+import com.publist.core.di.modules.AppModule
 import dagger.BindsInstance
 import dagger.Component
 import dagger.android.AndroidInjectionModule

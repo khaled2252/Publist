@@ -105,7 +105,7 @@
 
                     <androidx.fragment.app.FragmentContainerView
                         android:id="@+id/wishesFragment"
-                        android:name="co.publist.features.wishes.WishesFragment"
+                        android:name="com.publist.features.wishes.WishesFragment"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
 

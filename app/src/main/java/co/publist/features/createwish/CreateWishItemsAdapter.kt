@@ -1,4 +1,4 @@
-package co.publist.features.createwish
+package com.publist.features.createwish
 
 import android.graphics.Color
 import android.view.LayoutInflater
@@ -6,8 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.RecyclerView
-import co.publist.R
-import co.publist.core.common.data.models.wish.WishItem
+import com.publist.R
+import com.publist.core.common.data.models.wish.WishItem
 import kotlinx.android.synthetic.main.item_create_wish.view.*
 import java.util.*
 import kotlin.collections.ArrayList

@@ -1,10 +1,10 @@
-package co.publist.core.utils
+package com.publist.core.utils
 
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import co.publist.core.utils.Utils.Constants.VISIBLE_THRESHOLD
+import com.publist.core.utils.Utils.Constants.VISIBLE_THRESHOLD
 
 class RecyclerViewLoadMoreScroll : RecyclerView.OnScrollListener {
 

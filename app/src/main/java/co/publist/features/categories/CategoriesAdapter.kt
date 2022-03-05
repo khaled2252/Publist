@@ -1,13 +1,13 @@
-package co.publist.features.categories
+package com.publist.features.categories
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import co.publist.R
-import co.publist.core.common.data.models.category.CategoryAdapterItem
-import co.publist.core.utils.Utils.getField
+import com.publist.R
+import com.publist.core.common.data.models.category.CategoryAdapterItem
+import com.publist.core.utils.Utils.getField
 import kotlinx.android.synthetic.main.item_category.view.*
 import java.util.*
 

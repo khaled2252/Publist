@@ -1,6 +1,6 @@
-package co.publist.features.intro
+package com.publist.features.intro
 
-import co.publist.core.platform.BaseViewModel
+import com.publist.core.platform.BaseViewModel
 import javax.inject.Inject
 
 

@@ -1,4 +1,4 @@
-package co.publist.core.utils
+package com.publist.core.utils
 
 import android.app.Activity
 import android.content.Context
@@ -19,17 +19,17 @@ import android.widget.ImageView
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat.startActivity
 import androidx.core.content.FileProvider
-import co.publist.R
-import co.publist.core.common.data.models.User
-import co.publist.core.utils.DataBindingAdapters.loadProfilePicture
-import co.publist.core.utils.Utils.Constants.FETCH_USER_PICTURE_CLOUD_FUNCTION
-import co.publist.core.utils.Utils.Constants.GALLERY
-import co.publist.core.utils.Utils.Constants.TEMP_IMAGE
-import co.publist.core.utils.Utils.Constants.USER_IDS_FIELD
-import co.publist.core.utils.Utils.Constants.WISH_IMAGE_FIXED_HEIGHT
-import co.publist.core.utils.Utils.Constants.WISH_IMAGE_FIXED_WIDTH
-import co.publist.features.login.LoginActivity
 import com.google.firebase.functions.FirebaseFunctions
+import com.publist.R
+import com.publist.core.common.data.models.User
+import com.publist.core.utils.DataBindingAdapters.loadProfilePicture
+import com.publist.core.utils.Utils.Constants.FETCH_USER_PICTURE_CLOUD_FUNCTION
+import com.publist.core.utils.Utils.Constants.GALLERY
+import com.publist.core.utils.Utils.Constants.TEMP_IMAGE
+import com.publist.core.utils.Utils.Constants.USER_IDS_FIELD
+import com.publist.core.utils.Utils.Constants.WISH_IMAGE_FIXED_HEIGHT
+import com.publist.core.utils.Utils.Constants.WISH_IMAGE_FIXED_WIDTH
+import com.publist.features.login.LoginActivity
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
 import java.io.File

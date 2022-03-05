@@ -1,11 +1,11 @@
-package co.publist.features.createwish
+package com.publist.features.createwish
 
 import androidx.lifecycle.MutableLiveData
-import co.publist.core.common.data.models.wish.*
-import co.publist.core.common.data.repositories.user.UserRepositoryInterface
-import co.publist.core.common.data.repositories.wish.WishesRepositoryInterface
-import co.publist.core.platform.BaseViewModel
 import com.google.firebase.Timestamp
+import com.publist.core.common.data.models.wish.*
+import com.publist.core.common.data.repositories.user.UserRepositoryInterface
+import com.publist.core.common.data.repositories.wish.WishesRepositoryInterface
+import com.publist.core.platform.BaseViewModel
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
 import java.util.*

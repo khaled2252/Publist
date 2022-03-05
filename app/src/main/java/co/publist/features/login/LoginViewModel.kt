@@ -1,15 +1,15 @@
-package co.publist.features.login
+package com.publist.features.login
 
 import androidx.lifecycle.MutableLiveData
-import co.publist.core.platform.BaseViewModel
-import co.publist.core.utils.Utils.Constants.NULL_STRING
-import co.publist.core.utils.Utils.Constants.PLATFORM_FACEBOOK
-import co.publist.core.utils.Utils.Constants.PLATFORM_GOOGLE
-import co.publist.features.categories.data.CategoriesRepositoryInterface
-import co.publist.features.login.data.LoginRepositoryInterface
-import co.publist.features.login.data.RegisteringUser
 import com.facebook.AccessToken
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.publist.core.platform.BaseViewModel
+import com.publist.core.utils.Utils.Constants.NULL_STRING
+import com.publist.core.utils.Utils.Constants.PLATFORM_FACEBOOK
+import com.publist.core.utils.Utils.Constants.PLATFORM_GOOGLE
+import com.publist.features.categories.data.CategoriesRepositoryInterface
+import com.publist.features.login.data.LoginRepositoryInterface
+import com.publist.features.login.data.RegisteringUser
 import io.reactivex.Single
 import io.reactivex.functions.Consumer
 import javax.inject.Inject

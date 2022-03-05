@@ -1,9 +1,9 @@
-package co.publist.features.editprofile
+package com.publist.features.editprofile
 
 import androidx.lifecycle.MutableLiveData
-import co.publist.core.common.data.models.User
-import co.publist.core.common.data.repositories.user.UserRepositoryInterface
-import co.publist.core.platform.BaseViewModel
+import com.publist.core.common.data.models.User
+import com.publist.core.common.data.repositories.user.UserRepositoryInterface
+import com.publist.core.platform.BaseViewModel
 import javax.inject.Inject
 
 class EditProfileViewModel @Inject constructor(

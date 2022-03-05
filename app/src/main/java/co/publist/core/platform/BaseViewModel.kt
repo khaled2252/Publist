@@ -1,4 +1,4 @@
-package co.publist.core.platform
+package com.publist.core.platform
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel

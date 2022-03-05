@@ -1,9 +1,9 @@
-package co.publist.core.common.data.local.db.seenwishes
+package com.publist.core.common.data.local.db.seenwishes
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
-import co.publist.core.common.data.models.wish.SeenWish
+import com.publist.core.common.data.models.wish.SeenWish
 import io.reactivex.Single
 
 

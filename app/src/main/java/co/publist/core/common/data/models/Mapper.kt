@@ -1,14 +1,14 @@
-package co.publist.core.common.data.models
+package com.publist.core.common.data.models
 
-import co.publist.core.common.data.models.category.Category
-import co.publist.core.common.data.models.category.CategoryAdapterItem
-import co.publist.core.common.data.models.category.CategoryDbEntity
-import co.publist.core.common.data.models.category.Localization
-import co.publist.core.common.data.models.wish.*
-import co.publist.core.utils.Utils.Constants.ALGOLIA_HITS_FIELD
-import co.publist.core.utils.Utils.Constants.ALGOLIA_WISH_ID_FIELD
 import com.google.firebase.firestore.QueryDocumentSnapshot
 import com.google.firebase.firestore.QuerySnapshot
+import com.publist.core.common.data.models.category.Category
+import com.publist.core.common.data.models.category.CategoryAdapterItem
+import com.publist.core.common.data.models.category.CategoryDbEntity
+import com.publist.core.common.data.models.category.Localization
+import com.publist.core.common.data.models.wish.*
+import com.publist.core.utils.Utils.Constants.ALGOLIA_HITS_FIELD
+import com.publist.core.utils.Utils.Constants.ALGOLIA_WISH_ID_FIELD
 import org.json.JSONObject
 import java.util.*
 import kotlin.collections.ArrayList

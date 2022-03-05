@@ -1,7 +1,7 @@
-package co.publist.core.common.data.repositories.wish
+package com.publist.core.common.data.repositories.wish
 
-import co.publist.core.common.data.models.wish.Wish
 import com.google.firebase.firestore.DocumentSnapshot
+import com.publist.core.common.data.models.wish.Wish
 import io.reactivex.Completable
 import io.reactivex.Single
 

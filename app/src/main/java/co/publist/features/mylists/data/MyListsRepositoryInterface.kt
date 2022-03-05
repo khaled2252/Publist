@@ -1,7 +1,7 @@
-package co.publist.features.mylists.data
+package com.publist.features.mylists.data
 
-import co.publist.core.common.data.models.wish.Wish
 import com.google.firebase.firestore.Query
+import com.publist.core.common.data.models.wish.Wish
 import io.reactivex.Completable
 import io.reactivex.Single
 

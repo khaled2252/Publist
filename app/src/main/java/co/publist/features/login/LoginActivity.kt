@@ -1,4 +1,4 @@
-package co.publist.features.login
+package com.publist.features.login
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -7,19 +7,6 @@ import android.provider.Settings
 import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.lifecycle.Observer
-import co.publist.R
-import co.publist.core.platform.BaseActivity
-import co.publist.core.platform.ViewModelFactory
-import co.publist.core.utils.Utils
-import co.publist.core.utils.Utils.Constants.CONNECT_WITH_FACEBOOK
-import co.publist.core.utils.Utils.Constants.CONTINUE_AS_GUEST
-import co.publist.core.utils.Utils.Constants.DEVICE_ID
-import co.publist.core.utils.Utils.Constants.EMAIL_PERMISSION
-import co.publist.core.utils.Utils.Constants.FB_ID
-import co.publist.core.utils.Utils.Constants.PROFILE_PICTURE_PERMISSION
-import co.publist.features.editprofile.EditProfileActivity
-import co.publist.features.home.HomeActivity
-import co.publist.features.intro.IntroActivity
 import com.facebook.CallbackManager
 import com.facebook.FacebookCallback
 import com.facebook.FacebookException
@@ -29,6 +16,19 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.common.api.ApiException
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.publist.R
+import com.publist.core.platform.BaseActivity
+import com.publist.core.platform.ViewModelFactory
+import com.publist.core.utils.Utils
+import com.publist.core.utils.Utils.Constants.CONNECT_WITH_FACEBOOK
+import com.publist.core.utils.Utils.Constants.CONTINUE_AS_GUEST
+import com.publist.core.utils.Utils.Constants.DEVICE_ID
+import com.publist.core.utils.Utils.Constants.EMAIL_PERMISSION
+import com.publist.core.utils.Utils.Constants.FB_ID
+import com.publist.core.utils.Utils.Constants.PROFILE_PICTURE_PERMISSION
+import com.publist.features.editprofile.EditProfileActivity
+import com.publist.features.home.HomeActivity
+import com.publist.features.intro.IntroActivity
 import kotlinx.android.synthetic.main.activity_login.*
 import timber.log.Timber
 import javax.inject.Inject

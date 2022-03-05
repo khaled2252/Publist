@@ -1,4 +1,4 @@
-package co.publist.core.utils
+package com.publist.core.utils
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView

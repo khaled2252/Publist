@@ -1,4 +1,4 @@
-package co.publist.core.di.helper
+package com.publist.core.di.helper
 
 import androidx.lifecycle.ViewModel
 import dagger.MapKey

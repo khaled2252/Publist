@@ -1,15 +1,15 @@
-package co.publist.core.common.data.local.db.publist
+package com.publist.core.common.data.local.db.publist
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import co.publist.core.common.data.local.db.Converters
-import co.publist.core.common.data.models.category.CategoryDbEntity
-import co.publist.core.common.data.models.wish.MyFavoritesDbEntity
-import co.publist.core.common.data.models.wish.MyListDbEntity
-import co.publist.core.utils.Utils.Constants.DB_NAME
+import com.publist.core.common.data.local.db.Converters
+import com.publist.core.common.data.models.category.CategoryDbEntity
+import com.publist.core.common.data.models.wish.MyFavoritesDbEntity
+import com.publist.core.common.data.models.wish.MyListDbEntity
+import com.publist.core.utils.Utils.Constants.DB_NAME
 
 
 @Database(

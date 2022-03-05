@@ -1,4 +1,4 @@
-package co.publist.core.platform
+package com.publist.core.platform
 
 import android.os.Bundle
 import android.view.View
@@ -7,10 +7,10 @@ import android.widget.ProgressBar
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import co.publist.R
-import co.publist.core.di.helper.Injectable
-import co.publist.core.utils.Utils.hideSoftKeyboard
 import com.google.android.material.snackbar.Snackbar
+import com.publist.R
+import com.publist.core.di.helper.Injectable
+import com.publist.core.utils.Utils.hideSoftKeyboard
 
 abstract class BaseFragment<MBaseViewModel : BaseViewModel>
     : Fragment(), Injectable {

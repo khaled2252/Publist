@@ -1,8 +1,8 @@
-package co.publist.features.wishdetails
+package com.publist.features.wishdetails
 
-import co.publist.core.common.data.repositories.user.UserRepository
-import co.publist.core.common.data.repositories.wish.WishesRepository
-import co.publist.core.platform.BaseViewModel
+import com.publist.core.common.data.repositories.user.UserRepository
+import com.publist.core.common.data.repositories.wish.WishesRepository
+import com.publist.core.platform.BaseViewModel
 import io.reactivex.functions.Action
 import javax.inject.Inject
 

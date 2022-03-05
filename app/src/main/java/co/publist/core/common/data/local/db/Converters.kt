@@ -1,14 +1,14 @@
-package co.publist.core.common.data.local.db
+package com.publist.core.common.data.local.db
 
 import androidx.room.TypeConverter
-import co.publist.core.common.data.models.category.Category
-import co.publist.core.common.data.models.category.Localization
-import co.publist.core.common.data.models.wish.CategoryWish
-import co.publist.core.common.data.models.wish.Creator
-import co.publist.core.common.data.models.wish.WishItem
 import com.google.firebase.Timestamp
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.publist.core.common.data.models.category.Category
+import com.publist.core.common.data.models.category.Localization
+import com.publist.core.common.data.models.wish.CategoryWish
+import com.publist.core.common.data.models.wish.Creator
+import com.publist.core.common.data.models.wish.WishItem
 import java.lang.reflect.Type
 
 class Converters {

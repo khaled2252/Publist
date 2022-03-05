@@ -1,10 +1,10 @@
-package co.publist.features.onboarding
+package com.publist.features.onboarding
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import co.publist.R
-import co.publist.features.onboarding.SliderAdapter.SliderAdapterVH
+import com.publist.R
+import com.publist.features.onboarding.SliderAdapter.SliderAdapterVH
 import com.smarteist.autoimageslider.SliderViewAdapter
 import kotlinx.android.synthetic.main.image_slider_layout_item.view.*
 import java.util.*

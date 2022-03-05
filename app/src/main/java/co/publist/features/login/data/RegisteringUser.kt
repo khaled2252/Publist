@@ -1,4 +1,4 @@
-package co.publist.features.login.data
+package com.publist.features.login.data
 
 data class RegisteringUser(
     //This will go to 'users' in Firestore database

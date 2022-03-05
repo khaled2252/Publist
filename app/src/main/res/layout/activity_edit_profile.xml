@@ -67,7 +67,7 @@
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/categoriesFragment"
-            android:name="co.publist.features.categories.CategoriesFragment"
+            android:name="com.publist.features.categories.CategoriesFragment"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginStart="@dimen/horizontal_button_margin"

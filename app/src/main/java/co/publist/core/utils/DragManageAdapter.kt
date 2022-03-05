@@ -1,8 +1,8 @@
-package co.publist.core.utils
+package com.publist.core.utils
 
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
-import co.publist.features.createwish.CreateWishItemsAdapter
+import com.publist.features.createwish.CreateWishItemsAdapter
 
 class DragManageAdapter(
     private val adapterCreateWish: CreateWishItemsAdapter,

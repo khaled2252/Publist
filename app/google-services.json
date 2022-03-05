@@ -10,7 +10,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:202193710218:android:de8dd6b6f99f092d431173",
         "android_client_info": {
-          "package_name": "co.publist"
+          "package_name": "com.publist"
         }
       },
       "oauth_client": [
@@ -18,7 +18,7 @@
           "client_id": "202193710218-cqdeu7mdoinog1sdc6huecaj4p1itjqc.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "co.publist",
+            "package_name": "com.publist",
             "certificate_hash": "27e09ba994e305517ad51117ca836d153db8cf65"
           }
         },
@@ -43,7 +43,7 @@
               "client_id": "202193710218-7181nuip3ksvqesl48tmdhdqt8gbe1fo.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "co.publist",
+                "bundle_id": "com.publist",
                 "app_store_id": "962194608"
               }
             }

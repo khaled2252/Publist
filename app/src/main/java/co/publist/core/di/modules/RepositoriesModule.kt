@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-package co.publist.core.di.modules
+package com.publist.core.di.modules
 
 
-import co.publist.core.common.data.repositories.user.UserRepository
-import co.publist.core.common.data.repositories.user.UserRepositoryInterface
-import co.publist.core.common.data.repositories.wish.WishesRepository
-import co.publist.core.common.data.repositories.wish.WishesRepositoryInterface
-import co.publist.features.categories.data.CategoriesRepository
-import co.publist.features.categories.data.CategoriesRepositoryInterface
-import co.publist.features.home.data.HomeRepository
-import co.publist.features.home.data.HomeRepositoryInterface
-import co.publist.features.login.data.LoginRepository
-import co.publist.features.login.data.LoginRepositoryInterface
-import co.publist.features.myfavorites.data.MyFavoritesRepository
-import co.publist.features.myfavorites.data.MyFavoritesRepositoryInterface
-import co.publist.features.mylists.data.MyListsRepository
-import co.publist.features.mylists.data.MyListsRepositoryInterface
+import com.publist.core.common.data.repositories.user.UserRepository
+import com.publist.core.common.data.repositories.user.UserRepositoryInterface
+import com.publist.core.common.data.repositories.wish.WishesRepository
+import com.publist.core.common.data.repositories.wish.WishesRepositoryInterface
+import com.publist.features.categories.data.CategoriesRepository
+import com.publist.features.categories.data.CategoriesRepositoryInterface
+import com.publist.features.home.data.HomeRepository
+import com.publist.features.home.data.HomeRepositoryInterface
+import com.publist.features.login.data.LoginRepository
+import com.publist.features.login.data.LoginRepositoryInterface
+import com.publist.features.myfavorites.data.MyFavoritesRepository
+import com.publist.features.myfavorites.data.MyFavoritesRepositoryInterface
+import com.publist.features.mylists.data.MyListsRepository
+import com.publist.features.mylists.data.MyListsRepositoryInterface
 import dagger.Binds
 import dagger.Module
 import javax.inject.Singleton

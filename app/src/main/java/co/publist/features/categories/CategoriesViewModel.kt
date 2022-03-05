@@ -1,14 +1,14 @@
-package co.publist.features.categories
+package com.publist.features.categories
 
 import androidx.lifecycle.MutableLiveData
-import co.publist.core.common.data.models.Mapper
-import co.publist.core.common.data.models.category.Category
-import co.publist.core.common.data.models.category.CategoryAdapterItem
-import co.publist.core.common.data.models.wish.CategoryWish
-import co.publist.core.platform.BaseViewModel
-import co.publist.core.utils.Utils.Constants.MAXIMUM_SELECTED_CATEGORIES
-import co.publist.core.utils.Utils.Constants.MINIMUM_SELECTED_CATEGORIES
-import co.publist.features.categories.data.CategoriesRepositoryInterface
+import com.publist.core.common.data.models.Mapper
+import com.publist.core.common.data.models.category.Category
+import com.publist.core.common.data.models.category.CategoryAdapterItem
+import com.publist.core.common.data.models.wish.CategoryWish
+import com.publist.core.platform.BaseViewModel
+import com.publist.core.utils.Utils.Constants.MAXIMUM_SELECTED_CATEGORIES
+import com.publist.core.utils.Utils.Constants.MINIMUM_SELECTED_CATEGORIES
+import com.publist.features.categories.data.CategoriesRepositoryInterface
 import io.reactivex.Single
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer

@@ -1,6 +1,6 @@
-package co.publist.core.common.data.local
+package com.publist.core.common.data.local
 
-import co.publist.core.common.data.local.db.DataBaseInterface
+import com.publist.core.common.data.local.db.DataBaseInterface
 
 interface LocalDataSource {
 

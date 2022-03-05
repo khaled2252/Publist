@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package co.publist.core.platform
+package com.publist.core.platform
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider

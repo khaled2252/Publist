@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package co.publist.core.di.helper
+package com.publist.core.di.helper
 
 /**
  * Marks an activity / fragment injectable.

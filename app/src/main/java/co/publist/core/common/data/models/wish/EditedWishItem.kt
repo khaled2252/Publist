@@ -1,4 +1,4 @@
-package co.publist.core.common.data.models.wish
+package com.publist.core.common.data.models.wish
 
 import java.io.Serializable
 

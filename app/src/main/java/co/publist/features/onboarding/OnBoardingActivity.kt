@@ -1,4 +1,4 @@
-package co.publist.features.onboarding
+package com.publist.features.onboarding
 
 
 import android.content.Intent
@@ -8,10 +8,10 @@ import android.widget.TextSwitcher
 import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.Observer
-import co.publist.R
-import co.publist.core.platform.BaseActivity
-import co.publist.core.platform.ViewModelFactory
-import co.publist.features.login.LoginActivity
+import com.publist.R
+import com.publist.core.platform.BaseActivity
+import com.publist.core.platform.ViewModelFactory
+import com.publist.features.login.LoginActivity
 import com.smarteist.autoimageslider.IndicatorAnimations
 import kotlinx.android.synthetic.main.activity_onboarding.*
 import javax.inject.Inject

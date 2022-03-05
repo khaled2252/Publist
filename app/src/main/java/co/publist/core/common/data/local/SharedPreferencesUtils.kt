@@ -1,10 +1,10 @@
-package co.publist.core.common.data.local
+package com.publist.core.common.data.local
 
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
-import co.publist.core.common.data.models.User
 import com.google.gson.Gson
+import com.publist.core.common.data.models.User
 import javax.inject.Inject
 
 class SharedPreferencesUtils @Inject constructor(context: Context) :

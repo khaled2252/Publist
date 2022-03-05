@@ -1,13 +1,13 @@
-package co.publist.features.myfavorites.data
+package com.publist.features.myfavorites.data
 
-import co.publist.core.common.data.local.LocalDataSource
-import co.publist.core.common.data.models.Mapper
-import co.publist.core.common.data.models.wish.Wish
-import co.publist.core.utils.Utils.Constants.DATE_FIELD
-import co.publist.core.utils.Utils.Constants.MY_FAVORITES_COLLECTION_PATH
-import co.publist.core.utils.Utils.Constants.USERS_COLLECTION_PATH
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import com.publist.core.common.data.local.LocalDataSource
+import com.publist.core.common.data.models.Mapper
+import com.publist.core.common.data.models.wish.Wish
+import com.publist.core.utils.Utils.Constants.DATE_FIELD
+import com.publist.core.utils.Utils.Constants.MY_FAVORITES_COLLECTION_PATH
+import com.publist.core.utils.Utils.Constants.USERS_COLLECTION_PATH
 import io.reactivex.Completable
 import io.reactivex.Single
 import javax.inject.Inject

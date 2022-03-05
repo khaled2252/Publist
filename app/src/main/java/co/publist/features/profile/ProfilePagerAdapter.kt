@@ -1,11 +1,11 @@
-package co.publist.features.profile
+package com.publist.features.profile
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import co.publist.features.myfavorites.MyFavoritesFragment
-import co.publist.features.mylists.MyListsFragment
+import com.publist.features.myfavorites.MyFavoritesFragment
+import com.publist.features.mylists.MyListsFragment
 
 class ProfilePagerAdapter(manager: FragmentManager, lifecycle: Lifecycle) :
     FragmentStateAdapter(manager, lifecycle) {

@@ -1,4 +1,4 @@
-package co.publist.core.common.data.models.wish
+package com.publist.core.common.data.models.wish
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

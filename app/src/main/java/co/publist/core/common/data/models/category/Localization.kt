@@ -1,4 +1,4 @@
-package co.publist.core.common.data.models.category
+package com.publist.core.common.data.models.category
 
 data class Localization(
     var ar: String? = null,

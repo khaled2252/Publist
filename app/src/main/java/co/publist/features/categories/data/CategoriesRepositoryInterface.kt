@@ -1,8 +1,8 @@
-package co.publist.features.categories.data
+package com.publist.features.categories.data
 
-import co.publist.core.common.data.models.category.Category
-import co.publist.core.common.data.models.category.CategoryAdapterItem
 import com.google.firebase.firestore.CollectionReference
+import com.publist.core.common.data.models.category.Category
+import com.publist.core.common.data.models.category.CategoryAdapterItem
 import io.reactivex.Completable
 import io.reactivex.Single
 

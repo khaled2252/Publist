@@ -1,13 +1,13 @@
-package co.publist.core.common.data.local.db.publist
+package com.publist.core.common.data.local.db.publist
 
 import androidx.paging.DataSource
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import co.publist.core.common.data.models.category.CategoryDbEntity
-import co.publist.core.common.data.models.wish.MyFavoritesDbEntity
-import co.publist.core.common.data.models.wish.MyListDbEntity
+import com.publist.core.common.data.models.category.CategoryDbEntity
+import com.publist.core.common.data.models.wish.MyFavoritesDbEntity
+import com.publist.core.common.data.models.wish.MyListDbEntity
 import io.reactivex.Single
 
 

@@ -368,7 +368,7 @@
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/categoriesFragment"
-            android:name="co.publist.features.categories.CategoriesFragment"
+            android:name="com.publist.features.categories.CategoriesFragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp" />

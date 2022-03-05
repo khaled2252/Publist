@@ -1,4 +1,4 @@
-package co.publist.features.mylists
+package com.publist.features.mylists
 
 import android.content.Intent
 import android.os.Bundle
@@ -9,18 +9,18 @@ import android.view.animation.AnimationUtils
 import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.lifecycle.Observer
-import co.publist.R
-import co.publist.core.platform.BaseFragment
-import co.publist.core.platform.ViewModelFactory
-import co.publist.core.utils.Utils.Constants.DELETE_WISH
-import co.publist.core.utils.Utils.Constants.EDIT_WISH
-import co.publist.core.utils.Utils.Constants.EDIT_WISH_INTENT
-import co.publist.core.utils.Utils.Constants.LISTS
-import co.publist.core.utils.Utils.Constants.WISH_ID
-import co.publist.features.createwish.CreateWishActivity
-import co.publist.features.home.HomeActivity
-import co.publist.features.wishes.WishesFragment
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.publist.R
+import com.publist.core.platform.BaseFragment
+import com.publist.core.platform.ViewModelFactory
+import com.publist.core.utils.Utils.Constants.DELETE_WISH
+import com.publist.core.utils.Utils.Constants.EDIT_WISH
+import com.publist.core.utils.Utils.Constants.EDIT_WISH_INTENT
+import com.publist.core.utils.Utils.Constants.LISTS
+import com.publist.core.utils.Utils.Constants.WISH_ID
+import com.publist.features.createwish.CreateWishActivity
+import com.publist.features.home.HomeActivity
+import com.publist.features.wishes.WishesFragment
 import kotlinx.android.synthetic.main.fragment_my_lists.*
 import javax.inject.Inject
 

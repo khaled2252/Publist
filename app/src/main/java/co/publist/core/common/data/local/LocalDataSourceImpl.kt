@@ -1,8 +1,8 @@
-package co.publist.core.common.data.local
+package com.publist.core.common.data.local
 
 import android.content.Context
-import co.publist.core.common.data.local.db.DataBaseAccess
-import co.publist.core.common.data.local.db.DataBaseInterface
+import com.publist.core.common.data.local.db.DataBaseAccess
+import com.publist.core.common.data.local.db.DataBaseInterface
 
 class LocalDataSourceImpl(val context: Context) :
     LocalDataSource {

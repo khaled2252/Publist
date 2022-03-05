@@ -1,15 +1,15 @@
-package co.publist.features.profile
+package com.publist.features.profile
 
 import androidx.lifecycle.MutableLiveData
-import co.publist.core.common.data.models.User
-import co.publist.core.common.data.repositories.user.UserRepositoryInterface
-import co.publist.core.platform.BaseViewModel
-import co.publist.features.categories.data.CategoriesRepositoryInterface
 import com.facebook.AccessToken
 import com.facebook.GraphRequest
 import com.facebook.HttpMethod
 import com.facebook.login.LoginManager
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.publist.core.common.data.models.User
+import com.publist.core.common.data.repositories.user.UserRepositoryInterface
+import com.publist.core.platform.BaseViewModel
+import com.publist.features.categories.data.CategoriesRepositoryInterface
 import javax.inject.Inject
 
 class ProfileViewModel @Inject constructor(

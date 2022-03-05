@@ -14,24 +14,24 @@
  * limitations under the License.
  */
 
-package co.publist.core.di.modules
+package com.publist.core.di.modules
 
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import co.publist.core.di.helper.ViewModelKey
-import co.publist.core.platform.ViewModelFactory
-import co.publist.features.categories.CategoriesViewModel
-import co.publist.features.createwish.CreateWishViewModel
-import co.publist.features.editprofile.EditProfileViewModel
-import co.publist.features.home.HomeViewModel
-import co.publist.features.intro.IntroViewModel
-import co.publist.features.myfavorites.MyFavoritesViewModel
-import co.publist.features.mylists.MyListsViewModel
-import co.publist.features.onboarding.OnBoardingViewModel
-import co.publist.features.profile.ProfileViewModel
-import co.publist.features.splash.SplashViewModel
-import co.publist.features.wishes.WishesViewModel
+import com.publist.core.di.helper.ViewModelKey
+import com.publist.core.platform.ViewModelFactory
+import com.publist.features.categories.CategoriesViewModel
+import com.publist.features.createwish.CreateWishViewModel
+import com.publist.features.editprofile.EditProfileViewModel
+import com.publist.features.home.HomeViewModel
+import com.publist.features.intro.IntroViewModel
+import com.publist.features.myfavorites.MyFavoritesViewModel
+import com.publist.features.mylists.MyListsViewModel
+import com.publist.features.onboarding.OnBoardingViewModel
+import com.publist.features.profile.ProfileViewModel
+import com.publist.features.splash.SplashViewModel
+import com.publist.features.wishes.WishesViewModel
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap
