@@ -18,7 +18,7 @@
         tools:ignore="GoogleAppIndexingWarning">
 
         <activity
-            android:name="com.publist.features.splash.SplashActivity"
+            android:name=".features.splash.SplashActivity"
             android:theme="@style/AppTheme.SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -64,14 +64,19 @@
 
         <activity
             android:name=".features.wishdetails.WishDetailsActivity"
-            android:launchMode = "singleTop"
+            android:launchMode="singleTop"
             android:label="Wish details"
             android:theme="@style/AppTheme.WishDetailsScreen"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
 
         <activity
             android:name=".features.onboarding.OnBoardingActivity"
             android:label="On boarding"
+            android:theme="@style/AppTheme.OnBoarding"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".features.terms.TermsActivity"
             android:theme="@style/AppTheme.OnBoarding"
             android:screenOrientation="portrait" />
 
